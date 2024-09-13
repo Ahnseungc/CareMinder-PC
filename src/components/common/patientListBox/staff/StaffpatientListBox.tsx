@@ -1,62 +1,42 @@
 import { Stack, styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { ChatBox } from "@components/home";
+import { PatientListBoxType } from "..";
+import { roleColor } from "@utils/homePage";
+import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 
 type StaffListBoxProps = {
   isAccept: boolean;
+  data: PatientListBoxType;
 };
 
-function StaffPatientListBox({ isAccept }: StaffListBoxProps) {
-  /**
-   * props
-   * 1. isAccept 수락인지 아닌지.
-   * 2. 각 데이터
-   *
-   */
-
-  const select = {
-    Nurse: {
-      dark: "#30B4FF",
-      light: "#D6F0FF",
-    },
-    Nurse1: {
-      dark: "#F24679",
-      light: "#FCDAE4",
-    },
-    Nurse2: {
-      dark: "#5D6DBE",
-      light: "#DCE2FF",
-    },
-    Nurse3: {
-      dark: "#5E5F65",
-      light: "#E8E8E9",
-    },
-  };
+function StaffPatientListBox({ isAccept, data }: StaffListBoxProps) {
+  const roleColorPick = roleColor(data.role);
 
   return (
-    <InnerContainer color={"#D6F0FF"}>
-      <Title color={"#30B4FF"}>
-        <div>경증환자실1 (T13)</div>
+    <InnerContainer color={roleColorPick.light}>
+      <Title color={roleColorPick.dark}>
+        <div>{data.place}</div>
         <MoreHorizRoundedIcon sx={{ color: "#C4C5CC" }} />
       </Title>
       <Bottom>
         <TxtBox>
           <TxtBoxLeft>
-            <SmallCheck color={"#30B4FF"}>N</SmallCheck>
-            진통제를 추가적으로 받을 수 있나요?진통제를 추가적으로 받을 수 있나요?
+            {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
+            {data.request}
           </TxtBoxLeft>
-          <TxtBoxRight>33분전</TxtBoxRight>
+          <TxtBoxRight>{data.time}분전</TxtBoxRight>
         </TxtBox>
-        <Check color={"#30B4FF"}>
-          {isAccept ? <CheckRoundedIcon /> : <ArrowForwardRoundedIcon />}
+        <Check color={roleColorPick.dark}>
+          {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon />}
         </Check>
       </Bottom>
-
-      <ChatContainer>
-        <ChatBox leftorRight="right" />
-      </ChatContainer>
+      {isAccept && (
+        <ChatContainer>
+          <ChatBox leftorRight="right" />
+        </ChatContainer>
+      )}
     </InnerContainer>
   );
 }
@@ -124,7 +104,7 @@ const SmallCheck = styled("div")<{ color: string }>`
   width: 20px;
   height: 20px;
   display: flex;
-  padding-top: 1px;
+  padding-top: 2px;
   justify-content: center;
   margin-right: 6px;
   font-size: 13px;
