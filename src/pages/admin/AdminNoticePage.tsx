@@ -8,7 +8,7 @@ import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCard
 
 const mock = [1, 2, 3, 4, 5, 6, 7];
 
-const AdminWardInoutManagementPage = () => {
+const AdminNoticePage = () => {
   return (
     <Container>
       <div>
@@ -48,7 +48,7 @@ const AdminWardInoutManagementPage = () => {
   );
 };
 
-export default AdminWardInoutManagementPage;
+export default AdminNoticePage;
 
 /** styles */
 
