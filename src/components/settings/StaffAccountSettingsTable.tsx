@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -28,6 +28,7 @@ const rows = [
 ];
 
 const StaffAccountSettingsTable: FC = () => {
+  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
   return (
     <StTable>
       <thead>
@@ -41,19 +42,16 @@ const StaffAccountSettingsTable: FC = () => {
             <tr>
               <td>
                 <ShortComBoxLayout>
-                  <CComboBox placeholder={"스태프"} options={[]} />
+                  <CComboBox placeholder={"스태프"} options={[]} value={""} onChange={() => null} />
                 </ShortComBoxLayout>
               </td>
               <td>
                 <ShortComBoxLayout>
                   <CComboBox
                     placeholder={"간호사"}
-                    options={[
-                      { label: "간호사", id: 1 },
-                      { label: "조무사", id: 2 },
-                      { label: "의사", id: 3 },
-                      { label: "직원", id: 4 },
-                    ]}
+                    options={["간호사", "의사", "조무사", "직원"]}
+                    value={""}
+                    onChange={() => null}
                   />
                 </ShortComBoxLayout>
               </td>
@@ -61,13 +59,13 @@ const StaffAccountSettingsTable: FC = () => {
                 <LongComBoxLayout>
                   <CComboBox
                     placeholder={"구역"}
-                    options={[
-                      { label: "구역1", id: 111 },
-                      { label: "구역2", id: 112 },
-                      { label: "구역3", id: 113 },
-                      { label: "구역4", id: 114 },
-                      { id: -1, label: "구역 추가" },
-                    ]}
+                    options={options}
+                    value={""}
+                    onChange={() => null}
+                    allowCustomInput={true}
+                    onCustomInputAdd={newValue => {
+                      setOptions([...options, newValue]);
+                    }}
                   />
                 </LongComBoxLayout>
               </td>
