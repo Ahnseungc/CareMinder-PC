@@ -2,9 +2,12 @@ import SearchBox from "@components/common/SearachBox/SearchBox";
 import SignOutButton from "./SignOutButton";
 import { Box, styled, Typography } from "@mui/material";
 
+import { ReactComponent as Logo } from "@assets/full-logo.svg";
+
 export default function UserHeader() {
   return (
     <>
+      <Logo />
       <Typography>
         <HeaderContainer>
           <SearchBoxWrapper>

@@ -50,6 +50,6 @@ const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
     backgroundColor: theme.palette.secondary.main,
   }),
   ...(adminType === "admin" && {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.success.main,
   }),
 }));
