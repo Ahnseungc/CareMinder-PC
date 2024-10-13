@@ -13,7 +13,7 @@ type TextFieldProps = {
 };
 
 const iconMap = {
-  id: PermIdentityOutlinedIcon,
+  loginId: PermIdentityOutlinedIcon,
   password: LockOutlinedIcon,
 };
 

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -27,33 +27,37 @@ const rows = [
   { id: 9, Section: "Snow", TableName: "Jon", PatientName: 35 },
 ];
 
-const StaffAccountSettingsTable: FC = () => {
+interface StaffAccountSettingsTableProps {
+  onDelete: () => void;
+}
+
+const StaffAccountSettingsTable = ({ onDelete }: StaffAccountSettingsTableProps) => {
+  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
   return (
     <StTable>
       <thead>
-        {columns.map(column => {
-          return <th>{column.headerName}</th>;
-        })}
+        <tr>
+          {columns.map((column, index) => {
+            return <th key={index}>{column.headerName}</th>;
+          })}
+        </tr>
       </thead>
       <tbody>
-        {rows.map(row => {
+        {rows.map((row, index) => {
           return (
-            <tr>
+            <tr key={index}>
               <td>
                 <ShortComBoxLayout>
-                  <CComboBox placeholder={"스태프"} options={[]} />
+                  <CComboBox placeholder={"스태프"} options={[]} value={""} onChange={() => null} />
                 </ShortComBoxLayout>
               </td>
               <td>
                 <ShortComBoxLayout>
                   <CComboBox
                     placeholder={"간호사"}
-                    options={[
-                      { label: "간호사", id: 1 },
-                      { label: "조무사", id: 2 },
-                      { label: "의사", id: 3 },
-                      { label: "직원", id: 4 },
-                    ]}
+                    options={["간호사", "의사", "조무사", "직원"]}
+                    value={""}
+                    onChange={() => null}
                   />
                 </ShortComBoxLayout>
               </td>
@@ -61,13 +65,13 @@ const StaffAccountSettingsTable: FC = () => {
                 <LongComBoxLayout>
                   <CComboBox
                     placeholder={"구역"}
-                    options={[
-                      { label: "구역1", id: 111 },
-                      { label: "구역2", id: 112 },
-                      { label: "구역3", id: 113 },
-                      { label: "구역4", id: 114 },
-                      { id: -1, label: "구역 추가" },
-                    ]}
+                    options={options}
+                    value={""}
+                    onChange={() => null}
+                    allowCustomInput={true}
+                    onCustomInputAdd={newValue => {
+                      setOptions([...options, newValue]);
+                    }}
                   />
                 </LongComBoxLayout>
               </td>
@@ -108,7 +112,7 @@ const StaffAccountSettingsTable: FC = () => {
                 </LongComBoxLayout>
               </td>
               <td>
-                <DeleteLayout>
+                <DeleteLayout onClick={onDelete}>
                   <DeleteButton />
                 </DeleteLayout>
               </td>
@@ -161,4 +165,5 @@ const DeleteLayout = styled.div`
   width: 80px;
   height: 36px;
   margin: 0 auto;
+  cursor: pointer;
 `;

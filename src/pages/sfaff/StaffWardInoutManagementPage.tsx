@@ -6,7 +6,7 @@ import CSearchBox from "@components/common/atom/C-SearchBox";
 import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
 
-const AdminWardInoutManagementPage = () => {
+const StaffWardInoutManagementPage = () => {
   return (
     <Container>
       <div>
@@ -23,13 +23,13 @@ const AdminWardInoutManagementPage = () => {
             </SectionArrayLayout>
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
-            <div>
+            <SearchLayout>
               <CSearchBox
                 value={""}
                 onChange={() => null}
-                plaeholder={"환자 이름을 검색해 주세요."}
+                placeholder={"환자 이름을 검색해 주세요."}
               />
-            </div>
+            </SearchLayout>
             <ButtonLayout>
               <CButton buttonType={"primarySpaure"}>퇴원 처리</CButton>
             </ButtonLayout>
@@ -48,13 +48,12 @@ const AdminWardInoutManagementPage = () => {
   );
 };
 
-export default AdminWardInoutManagementPage;
+export default StaffWardInoutManagementPage;
 
 /** styles */
 
 const Container = styled(Stack)({
   height: "100%",
-  maxHeight: "957px",
 });
 
 const AdminInoutSubTitleContainer = styled(Box)({
@@ -113,4 +112,8 @@ const SectionArrayLayout = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "5px",
+});
+
+const SearchLayout = styled(Box)({
+  width: "373px",
 });

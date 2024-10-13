@@ -4,9 +4,7 @@ import AuthenticatedLayout from "@components/layout";
 import AuthorizedRoute from "@routes/AuthorizedRoute";
 import {
   AdminSigninPage,
-  AdminStaffManagementPage,
-  AdminWardManagementPage,
-  AdminWardInoutManagementPage,
+  StaffWardInoutManagementPage,
   CompletedRequestsPage,
   DietPage,
   NoticePage,
@@ -14,6 +12,8 @@ import {
   RequestsPage,
   SettingsPage,
   SigninPage,
+  StaffNoticeWritePage,
+  StaffNoticePage,
 } from "@pages/index";
 import MainHomePage from "@pages/user/MainHomePage";
 import StaffHomePage from "@pages/user/StaffHomePage";
@@ -24,7 +24,7 @@ const routes: RouteObject[] = [
     element: <AuthenticatedLayout />,
     children: [
       {
-        element: <AuthorizedRoute allowedRoles={["main", "staff"]} />,
+        element: <AuthorizedRoute allowedRoles={["main"]} />,
         children: [
           { index: true, element: <MainHomePage /> },
           { path: RoutePath.StaffHomePage, element: <StaffHomePage /> },
@@ -37,13 +37,19 @@ const routes: RouteObject[] = [
         ],
       },
       {
-        path: RoutePath.AdminWardManagement,
-        element: <AuthorizedRoute allowedRoles={["admin"]} />,
+        path: RoutePath.StaffWardManagement,
+        element: <AuthorizedRoute allowedRoles={["staff"]} />,
         children: [
-          { index: true, element: <AdminWardManagementPage /> },
-          { path: RoutePath.AdminWardInOut, element: <AdminWardInoutManagementPage /> },
-          { path: RoutePath.AdminStaffManagement, element: <AdminStaffManagementPage /> },
+          { index: true, element: <MainHomePage /> },
+          { path: RoutePath.StaffWardInOut, element: <StaffWardInoutManagementPage /> },
+          { path: RoutePath.StaffNotice, element: <StaffNoticePage /> },
+          { path: RoutePath.StaffNoticeWrite, element: <StaffNoticeWritePage /> },
         ],
+      },
+      {
+        path: RoutePath.StaffWardManagement,
+        element: <AuthorizedRoute allowedRoles={["admin"]} />,
+        children: [{ path: RoutePath.AdminWardManagement, element: <div>어드민</div> }],
       },
     ],
   },

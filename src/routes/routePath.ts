@@ -1,4 +1,5 @@
 const RoutePath = {
+  //main
   Home: "/",
   StaffHomePage: "/staff",
   Requests: "/request",
@@ -7,10 +8,15 @@ const RoutePath = {
   Diet: "/diet",
   Notice: "/notice",
   Settings: "/settings",
-  AdminWardManagement: "/admin",
-  AdminWardInOut: "/admin/inout",
 
-  AdminStaffManagement: "/admin/staff",
+  //staff
+  StaffWardManagement: "/staff",
+  StaffWardInOut: "/staff/inout",
+  StaffNotice: "/staff/notice",
+  StaffNoticeWrite: "/staff/noticeWrite",
+
+  //admin
+  AdminWardManagement: "/staff/admin",
 
   Signin: "/sign-in",
   AdminSignin: "/sign-in/admin",
