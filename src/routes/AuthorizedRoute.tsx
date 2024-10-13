@@ -26,35 +26,34 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
 
   useEffect(() => {
     //accessToken && refreshToken
-    getUser();
-    if (isLogin) {
-      if (user && allowedRoles.includes(user.type)) {
-        setIsChecking(false);
-      } else {
-        navigatePrev();
-      }
+    // getUser();
+    // if (isLogin) {
+    if (user && allowedRoles.includes(user.type)) {
+      setIsChecking(false);
+    } else {
+      navigatePrev();
     }
+    // }
   }, [user, allowedRoles, navigatePrev, navigate]);
 
-  const getUser = async () => {
-    const accessToken = Cookies.get("accessToken");
-    try {
-      const res = await axiosInstance.get("/", {
-        headers: {
-          Authorization: accessToken,
-        },
-      });
-      if (res.data.success) {
-        setIsLogin(true);
-      }
-    } catch {
-      alert("로그인이 필요합니다.");
-      Cookies.set("accessToken", "");
-      Cookies.set("refreshToken", "");
-      setIsLogin(false);
-      navigate("/sign-in");
-    }
-  };
+  // const getUser = async () => {
+  //   const accessToken = Cookies.get("accessToken");
+  //   try {
+  //     const res = await axiosInstance.get("/", {
+  //       headers: {
+  //         Authorization: accessToken,
+  //       },
+  //     });
+  //     if (res.data.success) {
+  //       setIsLogin(true);
+  //     }
+  //   } catch {
+  //     alert("로그인이 필요합니다.");
+  //     Cookies.set("accessToken", "");
+  //     setIsLogin(false);
+  //     navigate("/sign-in");
+  //   }
+  // };
   if (isChecking && isLogin) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
