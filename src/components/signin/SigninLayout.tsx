@@ -18,7 +18,6 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
   const { mutate: adminSignin } = useAdminSignin();
-  console.log(type);
   const onSubmit = type === "admin" ? adminSignin : signin;
 
   return (

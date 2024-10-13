@@ -5,9 +5,25 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 
 const signOut = async (type: string) => {
-  const res = await axiosInstance.post(`/${type}/logout`);
-  if (res.data.accessToken && res.data.refreshToken) {
+  let typeQuery = "";
+  switch (type) {
+    case "main":
+      typeQuery = "wards";
+      break;
+    case "staff":
+      typeQuery = "staff";
+      break;
+    case "admin":
+      typeQuery = "admin";
+      break;
+  }
+
+  const res = await axiosInstance.post(`/${typeQuery}/logout`);
+  if (type === "main" && res.data.accessToken && res.data.refreshToken) {
     Cookies.set("accessToken", "");
+  }
+  if (type === "staff" && res.data.accessToken && res.data.refreshToken) {
+    Cookies.set("accessTokenAdmin", "");
   }
   return res.data;
 };

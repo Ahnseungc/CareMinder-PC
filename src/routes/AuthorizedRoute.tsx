@@ -17,6 +17,7 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const user = useRecoilValue(userState);
   const [isChecking, setIsChecking] = useState(true);
   const accessToken = Cookies.get("accessToken");
+  const accessTokenAdmin = Cookies.get("accessTokenAdmin");
 
   const navigatePrev = useCallbackOnce(() => {
     console.error(`접근이 불가능한 경로입니다. (접근 경로: ${pathname}, 권한: ${user?.type})`);
@@ -24,17 +25,31 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   }, []);
 
   useEffect(() => {
-    if (!user || !accessToken) {
+    //병동
+    if (!user && !accessToken) {
       navigate("/sign-in");
     }
-    if (user && allowedRoles.includes(user.type) && accessToken) {
-      setIsChecking(false);
-    } else if (user && pathname.includes("staff") && accessToken) {
+
+    //스태프 페이지
+    if (pathname.includes("staff") && !accessTokenAdmin) {
       navigate("/sign-in/admin");
-    } else {
-      navigatePrev();
     }
-  }, [user, allowedRoles, pathname, accessToken, navigatePrev, navigate]);
+
+    if (user) {
+      //병동 권한 충족
+      if (
+        (allowedRoles.includes(user.type) && accessToken) ||
+        (allowedRoles.includes(user.type) && accessTokenAdmin)
+      ) {
+        setIsChecking(false);
+      }
+
+      //스태프 페이지 접근
+      if (pathname.includes("staff") && accessToken && !accessTokenAdmin) {
+        navigate("/sign-in/admin");
+      }
+    }
+  }, [user, allowedRoles, pathname, accessTokenAdmin, accessToken, navigatePrev, navigate]);
 
   if (isChecking) {
     return (

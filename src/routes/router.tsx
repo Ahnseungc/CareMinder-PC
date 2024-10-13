@@ -28,10 +28,6 @@ const routes: RouteObject[] = [
         children: [
           { index: true, element: <MainHomePage /> },
           { path: RoutePath.StaffHomePage, element: <StaffHomePage /> },
-          // { path: RoutePath.Diet, element: <DietPage /> },
-          // { path: RoutePath.Notice, element: <NoticePage /> },
-          // { path: RoutePath.PatientManagement, element: <PatientManagementPage /> },
-          // { path: RoutePath.Requests, element: <RequestsPage /> },
           { path: RoutePath.Settings, element: <SettingsPage /> },
         ],
       },

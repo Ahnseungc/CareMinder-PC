@@ -18,6 +18,7 @@ export default function AdminSigninPage() {
       navigate(-1);
     }
   }, []);
+
   return (
     <Grid container>
       <Thumbnail isAdmin />
