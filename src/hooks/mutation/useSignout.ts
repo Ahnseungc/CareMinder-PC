@@ -5,10 +5,9 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 
 const signOut = async () => {
-  const res = await axiosInstance.post("/staff/logout");
+  const res = await axiosInstance.post("/wards/logout");
   if (res.data.accessToken && res.data.refreshToken) {
     Cookies.set("accessToken", "");
-    Cookies.set("refreshToken", "");
   }
   return res.data;
 };

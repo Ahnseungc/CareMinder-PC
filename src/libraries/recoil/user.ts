@@ -1,10 +1,13 @@
-import { v4 as uuidv4 } from "uuid";
 import { User } from "@models/user";
 import { atom } from "recoil";
+import { recoilPersist } from "recoil-persist";
+
+const { persistAtom } = recoilPersist();
 
 const userState = atom<User | null>({
-  key: `userState${uuidv4()}`,
+  key: `userState`,
   default: null,
+  effects_UNSTABLE: [persistAtom],
 });
 
 export default userState;

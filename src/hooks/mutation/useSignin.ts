@@ -2,7 +2,7 @@ import { SigninFormData } from "@models/signin";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axios/axiosInstance";
 import Cookies from "js-cookie";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +18,7 @@ const signin = async (useInfo: SigninFormData) => {
 export default function useSignin() {
   const navigate = useNavigate();
   const setUserState = useSetRecoilState(userState);
+
   return useMutation({
     mutationFn: signin,
     onSuccess: res => {
@@ -28,6 +29,7 @@ export default function useSignin() {
         name: "테스트",
         type: "main",
       });
+
       // 추가 응답 API 개발 완료 후
       // setUserState({
       //   id: res.id,
