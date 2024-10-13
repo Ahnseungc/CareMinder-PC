@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const signin = async (useInfo: SigninFormData) => {
   const res = await axiosInstance.post("/wards/login", useInfo);
-
   if (res.data.accessToken) {
     Cookies.set("accessToken", res.data.accessToken);
   }
@@ -29,7 +28,6 @@ export default function useSignin() {
         name: "테스트",
         type: "main",
       });
-
       // 추가 응답 API 개발 완료 후
       // setUserState({
       //   id: res.id,
@@ -51,5 +49,5 @@ export default function useSignin() {
  * @name AppControllerInitialize
  * @summary 로그인 요청
  * @request POST:
- * @secure /staff/sign-up
+ * @secure /wards/sign-up
  */

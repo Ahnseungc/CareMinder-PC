@@ -4,7 +4,7 @@ import useSignOut from "@hooks/mutation/useSignout";
 
 export default function SignOutButton() {
   // Todo: 로그아웃
-  const { mutate: signOut } = useSignOut();
+  const { mutate: signOut } = useSignOut("ward");
 
   return (
     <Button variant="text" startIcon={<SignOut />} onClick={() => signOut()}>

@@ -4,18 +4,18 @@ import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 
-const signOut = async () => {
-  const res = await axiosInstance.post("/wards/logout");
+const signOut = async (type: string) => {
+  const res = await axiosInstance.post(`/${type}/logout`);
   if (res.data.accessToken && res.data.refreshToken) {
     Cookies.set("accessToken", "");
   }
   return res.data;
 };
 
-export default function useSignOut() {
+export default function useSignOut(type: string) {
   const setUserState = useSetRecoilState(userState);
   return useMutation({
-    mutationFn: signOut,
+    mutationFn: () => signOut(type),
     onSuccess: () => {
       console.log("로그아웃 성공");
       setUserState(null);
