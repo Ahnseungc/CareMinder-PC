@@ -6,7 +6,7 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 
 const signin = async (useInfo: SigninFormData) => {
-  const res = await axiosInstance.post("/staff/login", useInfo);
+  const res = await axiosInstance.post("/wards/login", useInfo);
 
   if (res.data.accessToken) {
     Cookies.set("accessToken", res.data.accessToken);
