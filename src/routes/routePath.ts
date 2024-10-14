@@ -3,13 +3,13 @@ const RoutePath = {
   Home: "/",
   StaffHomePage: "/staff",
   Requests: "/request",
-  CompletedRequests: "/completed",
   PatientManagement: "/management",
   Diet: "/diet",
   Notice: "/notice",
   Settings: "/settings",
 
   //staff
+  StaffCompletedRequests: "/staff/completed",
   StaffWardManagement: "/staff",
   StaffWardInOut: "/staff/inout",
   StaffNotice: "/staff/notice",

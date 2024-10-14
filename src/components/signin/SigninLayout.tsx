@@ -2,6 +2,7 @@ import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin } from "@hooks/mutation";
+import useAdminSignin from "@hooks/mutation/useAdminSignin";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
@@ -16,13 +17,15 @@ type SigninLayoutProps = {
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
+  const { mutate: adminSignin } = useAdminSignin();
+  const onSubmit = type === "admin" ? adminSignin : signin;
 
   return (
     <Container item xs>
       <Content>
         <SigninHeader />
         <UserTypeTag type={type} />
-        <SigninForm form={form} onSubmit={signin} />
+        <SigninForm form={form} onSubmit={onSubmit} />
         {options}
       </Content>
       {footer && (

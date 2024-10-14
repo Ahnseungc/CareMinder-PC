@@ -17,7 +17,6 @@ axiosInstance.interceptors.response.use(
   async error => {
     if (error.response.status === 401) {
       const isAccessToken = Cookies.get("accessToken") !== undefined;
-      
 
       if (!isAccessToken) {
         return Promise.reject(error);
@@ -41,7 +40,7 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
   config => {
-    const token = Cookies.get("accessToekn");
+    const token = Cookies.get("accessToken");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
