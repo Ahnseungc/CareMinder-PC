@@ -19,11 +19,16 @@ export default function MainHomePage() {
   const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
+    onStaffLogIn();
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
     console.log(id, type);
   };
 
-  const { data, isLoading } = useGetPatientRequests();
+  // const { data: getPatient, isLoading } = useGetPatientRequests();
+
+  const onStaffLogIn = () => {
+    if (userStatus?.type === "main") return navigate("스태프 로그인화면으로");
+  };
 
   useEffect(() => {
     setlayoutState("home");
@@ -46,9 +51,12 @@ export default function MainHomePage() {
           <SubTitle>
             <SubTitleLeft>
               <span>내 환자만 보기</span>
-              <CSwitch onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)} />
+              <CSwitch
+                onClick={onStaffLogIn}
+                onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
+              />
             </SubTitleLeft>
-            <SubTitleRight>
+            <SubTitleRight onClick={onStaffLogIn}>
               <span>직종</span>
               <CComboBox
                 placeholder={"전체"}
@@ -72,7 +80,10 @@ export default function MainHomePage() {
           <SubTitle>
             <SubTitleLeft>
               <span>환자별로 묶기</span>
-              <CSwitch onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)} />
+              <CSwitch
+                onClick={onStaffLogIn}
+                onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
+              />
             </SubTitleLeft>
           </SubTitle>
           {waitPatientmockData.map(el => (
