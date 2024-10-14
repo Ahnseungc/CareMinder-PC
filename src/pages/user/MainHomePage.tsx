@@ -2,6 +2,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
+import { useGetPatientRequests } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import { CSwitchType } from "@models/home";
@@ -21,6 +22,8 @@ export default function MainHomePage() {
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
     console.log(id, type);
   };
+
+  const { data, isLoading } = useGetPatientRequests();
 
   useEffect(() => {
     setlayoutState("home");
