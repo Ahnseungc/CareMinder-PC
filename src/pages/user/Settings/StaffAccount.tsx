@@ -14,6 +14,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import settingsLoginState from "@libraries/recoil/settings";
 import modalState from "@libraries/recoil/modal";
 import TOSModal from "@components/settings/modal/TOSModal";
+import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 
 // 스태프 계정 설정
 
@@ -148,12 +149,22 @@ export const StaffAccount = () => {
               </CButton>
             </StaffButtonContainer>
           </BodyTitleContainer>
-          <StaffAccountSettingsTable onDelete={handleDeleteStaff} />
-          <PaginationContainer>
-            <div>
-              <PaginationComponent totalPage={5} />
-            </div>
-          </PaginationContainer>
+          {/* 스태프 리스트 실제 데이터 조건문으로 변경해야함 */}
+          {false ? (
+            <EmptyStaffContainer>
+              <EmptyStaff />
+              <p>등록된 스태프가 없습니다.</p>
+            </EmptyStaffContainer>
+          ) : (
+            <>
+              <StaffAccountSettingsTable onDelete={handleDeleteStaff} />
+              <PaginationContainer>
+                <div>
+                  <PaginationComponent totalPage={5} />
+                </div>
+              </PaginationContainer>
+            </>
+          )}
         </>
       )}
     </>
@@ -211,3 +222,13 @@ const Title = styled(Typography)(({ theme }) => ({
   lineHeight: "24px",
   letterSpacing: "-3%",
 }));
+
+const EmptyStaffContainer = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+
+  minHeight: "600px",
+  marginBottom: "100px",
+});

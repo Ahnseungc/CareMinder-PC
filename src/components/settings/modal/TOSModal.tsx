@@ -115,7 +115,7 @@ const ContentLayout = styled(Box)({
 });
 
 const TOSContainer = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.light,
+  backgroundColor: theme.palette.success.main,
   borderRadius: "24px",
 
   marginBottom: "30px",
