@@ -1,6 +1,6 @@
-export { default as AdminStaffManagementPage } from "./admin/AdminStaffManagementPage";
-export { default as AdminWardManagementPage } from "./admin/AdminWardManagementPage";
-export { default as AdminWardInoutManagementPage } from "./admin/AdminWardInoutManagementPage";
+export { default as StaffWardInoutManagementPage } from "./staff/StaffWardInoutManagementPage";
+export { default as StaffNoticePage } from "./staff/StaffNoticePage";
+export { default as StaffNoticeWritePage } from "./staff/StaffNoticeWritePage";
 
 export { default as CompletedRequestsPage } from "./user/CompletedRequestsPage";
 export { default as DietPage } from "./user/DietPage";
