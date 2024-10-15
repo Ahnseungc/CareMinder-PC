@@ -26,7 +26,7 @@ export default function useSignin() {
       setUserState({
         id: 0,
         name: "테스트",
-        type: "main",
+        type: "admin",
       });
       // 추가 응답 API 개발 완료 후
       // setUserState({
