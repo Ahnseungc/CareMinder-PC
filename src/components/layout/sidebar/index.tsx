@@ -16,7 +16,7 @@ export default function Sidebar() {
   const user = useRecoilValue(userState);
 
   return (
-    <Layout adminType={user?.type as UserType}>
+    <Layout admintype={user?.type as UserType}>
       <SwitchCase
         value={user?.type as UserType}
         caseBy={{
@@ -31,25 +31,23 @@ export default function Sidebar() {
 
 /** styles */
 
-const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
+const Layout = styled(Stack)<LayoutType>(({ admintype, theme }) => ({
   position: "fixed",
   left: 0,
   top: "64px",
-
   width: "72px",
   minHeight: "max-content",
   height: "calc(100vh - 64px)",
   overflowY: "auto",
-
   alignItems: "center",
   gap: "14px",
   padding: "16px 0",
   backgroundColor: theme.palette.primary.main,
 
-  ...(adminType === "staff" && {
+  ...(admintype === "staff" && {
     backgroundColor: theme.palette.secondary.main,
   }),
-  ...(adminType === "admin" && {
+  ...(admintype === "admin" && {
     backgroundColor: theme.palette.primary.main,
   }),
 }));

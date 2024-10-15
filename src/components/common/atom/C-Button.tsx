@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Button, ButtonProps, colors, styled } from "@mui/material";
 
 export type CustomButtonProps = {
-  buttonType:
+  buttontype:
     | "primary"
     | "primarySpaure"
     | "primarySpaureWhite"
@@ -12,9 +12,9 @@ export type CustomButtonProps = {
     | "primarySpaureLong";
 } & ButtonProps;
 
-const CButton: FC<CustomButtonProps> = ({ children, buttonType, ...props }) => {
+const CButton: FC<CustomButtonProps> = ({ children, buttontype, ...props }) => {
   return (
-    <StyledButton buttonType={buttonType} {...props}>
+    <StyledButton buttontype={buttontype} {...props}>
       {children}
     </StyledButton>
   );
@@ -24,8 +24,8 @@ export default CButton;
 
 /** styled */
 
-const StyledButton = styled(Button)<CustomButtonProps>(({ buttonType, theme }) => ({
-  ...(buttonType === "primary" && {
+const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) => ({
+  ...(buttontype === "primary" && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
     borderRadius: "100px",
@@ -34,7 +34,7 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttonType, theme }) =
     fontWeight: "700",
     width: "100%",
   }),
-  ...(buttonType === "primaryWhite" && {
+  ...(buttontype === "primaryWhite" && {
     backgroundColor: theme.palette.primary.contrastText,
     color: theme.palette.primary.dark,
     borderRadius: "100px",
@@ -44,23 +44,23 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttonType, theme }) =
     border: "1px solid #ECECEC",
     width: "100%",
   }),
-  ...(buttonType === "primarySpaure" && {
+  ...(buttontype === "primarySpaure" && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
     width: "100%",
   }),
-  ...(buttonType === "primarySpaureLong" && {
+  ...(buttontype === "primarySpaureLong" && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
     width: "338px",
   }),
-  ...(buttonType === "primarySpaureWhite" && {
+  ...(buttontype === "primarySpaureWhite" && {
     backgroundColor: theme.palette.primary.contrastText,
     color: theme.palette.primary.main,
     border: `1px solid ${theme.palette.primary.main}`,
     width: "100%",
   }),
-  ...(buttonType === "primaryBlack" && {
+  ...(buttontype === "primaryBlack" && {
     backgroundColor: theme.palette.primary.contrastText,
     color: "black",
     border: `1px solid #8C8E94`,
@@ -69,7 +69,7 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttonType, theme }) =
     borderRadius: "100px",
     fontSize: "14px",
   }),
-  ...(buttonType === "login" && {
+  ...(buttontype === "login" && {
     "backgroundImage": "linear-gradient(#5D6DBE,#607AFF)",
     "color": theme.palette.primary.contrastText,
     "border": `1px solid ${theme.palette.primary.main}`,

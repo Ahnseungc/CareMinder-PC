@@ -27,18 +27,18 @@ const StaffNoticePage = () => {
           <AdminInoutSubTitleRightContainer>
             <ButtonListLayout>
               <ButtonLayout width={"124px"}>
-                <CButton buttonType={"primaryBlack"}>내 환자 대상 공지</CButton>
+                <CButton buttontype={"primaryBlack"}>내 환자 대상 공지</CButton>
               </ButtonLayout>
               <ButtonLayout width={"121px"}>
-                <CButton buttonType={"primaryBlack"}>내가 작성한 공지</CButton>
+                <CButton buttontype={"primaryBlack"}>내가 작성한 공지</CButton>
               </ButtonLayout>
               <ButtonLayout width={"150px"}>
-                <CButton buttonType={"primaryBlack"}>내 근무 시간동안 공지</CButton>
+                <CButton buttontype={"primaryBlack"}>내 근무 시간동안 공지</CButton>
               </ButtonLayout>
             </ButtonListLayout>
             <ButtonLayout width={"148px"}>
               <Link to={RoutePath.StaffNoticeWrite}>
-                <CButton buttonType={"primarySpaureWhite"}>공지 작성</CButton>
+                <CButton buttontype={"primarySpaureWhite"}>공지 작성</CButton>
               </Link>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
