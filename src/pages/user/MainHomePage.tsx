@@ -2,9 +2,11 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
+import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
 import { useGetPatientRequests } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
+import modalState from "@libraries/recoil/modal";
 import { CSwitchType } from "@models/home";
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -14,6 +16,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 export default function MainHomePage() {
   const navigate = useNavigate();
   const setlayoutState = useSetRecoilState(layoutState);
+  const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
   const [mainWaitIsMine, setMainWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
   const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
@@ -27,7 +30,12 @@ export default function MainHomePage() {
   // const { data: getPatient, isLoading } = useGetPatientRequests();
 
   const onStaffLogIn = () => {
-    if (userStatus?.type === "main") return navigate("스태프 로그인화면으로");
+    setIsModal(true);
+    // if (userStatus?.type === "main") return navigate("스태프 로그인화면으로");
+  };
+
+  const handleOnClose = () => {
+    setIsModal(false);
   };
 
   useEffect(() => {
@@ -46,6 +54,7 @@ export default function MainHomePage() {
   return (
     <>
       <>
+        <StaffSigninModal onClose={handleOnClose} open={isModal} />
         <LeftSection>
           <Title>대기중인 환자</Title>
           <SubTitle>
