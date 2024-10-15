@@ -15,7 +15,7 @@ const StaffNoticeWritePage = () => {
           <AdminInoutSubTitleLeftContainer></AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <ButtonLayout width={"148px"}>
-              <CButton buttonType={"primarySpaure"}>공지 작성</CButton>
+              <CButton buttontype={"primarySpaure"}>공지 작성</CButton>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
         </AdminInoutSubTitleContainer>

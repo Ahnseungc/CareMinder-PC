@@ -2,7 +2,7 @@ import { FunctionComponent } from "react";
 
 import { Link, Stack, styled, SvgIcon, SxProps, Theme, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { UserType } from "@models/user";
+
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
 
@@ -16,9 +16,8 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
   const { pathname } = useLocation();
   const isActive = pathname === routePath;
   const user = useRecoilValue(userState);
-  let menuButtonStyle = useMenuButtonStyles(isActive);
 
-  console.log(routePath);
+  let menuButtonStyle = useMenuButtonStyles(isActive);
 
   switch (user?.type) {
     case "main":

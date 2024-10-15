@@ -70,7 +70,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
               />
             ) : null}
             <CButton
-              buttonType={customInput ? "primarySpaure" : "primarySpaureWhite"}
+              buttontype={customInput ? "primarySpaure" : "primarySpaureWhite"}
               onClick={e => {
                 e.stopPropagation();
                 handleCustomInputAdd();

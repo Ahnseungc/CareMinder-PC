@@ -13,16 +13,15 @@ export default function SigninForm({ form, onSubmit }: SigninFormProps) {
   const { handleSubmit } = form;
 
   const handleFormSubmit = (data: SigninFormData) => {
-    console.log(data);
     onSubmit(data);
   };
 
   return (
     <Container>
       <TextField label="ID" name="loginId" form={form} />
-      <TextField label="PW" name="password" form={form} />
+      <TextField label="PW" name="password" form={form} type="password" />
       <CButton
-        buttonType="login"
+        buttontype="login"
         style={{ marginTop: "43.22px" }}
         onClick={handleSubmit(handleFormSubmit)}
       >

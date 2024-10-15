@@ -31,7 +31,7 @@ const StaffWardInoutManagementPage = () => {
               />
             </SearchLayout>
             <ButtonLayout>
-              <CButton buttonType={"primarySpaure"}>퇴원 처리</CButton>
+              <CButton buttontype={"primarySpaure"}>퇴원 처리</CButton>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
         </AdminInoutSubTitleContainer>

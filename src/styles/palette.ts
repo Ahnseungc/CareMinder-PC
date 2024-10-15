@@ -51,6 +51,9 @@ const palette = {
   action: {
     disabled: CMColors.disabled,
   },
+  success: {
+    main: CMColors.primary.a95,
+  },
   divider: CMColors.border,
 } as const;
 
