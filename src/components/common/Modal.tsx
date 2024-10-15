@@ -32,7 +32,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     borderRadius: "24px",
     minWidth: "300px",
     width: "100%",
-    maxHeight: "660px",
+    maxHeight: "900px",
   },
   "& .MuiDialogTitle-root": {
     fontSize: "18px",

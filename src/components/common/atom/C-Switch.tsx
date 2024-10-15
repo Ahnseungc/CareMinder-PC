@@ -1,17 +1,40 @@
 import { Switch, styled, SwitchProps } from "@mui/material";
 import { FC } from "react";
 
-export type CustomSwitchProps = {} & SwitchProps;
+export type CustomSwitchProps = {
+  onText?: string;
+  offText?: string;
+} & SwitchProps;
 
-const CSwitch: FC<CustomSwitchProps> = ({ onChange, checked, value, id, ...props }) => {
-  return <StyledSwitch id={id} checked={checked} value={value} onChange={onChange} {...props} />;
+const CSwitch: FC<CustomSwitchProps> = ({
+  onChange,
+  checked,
+  value,
+  id,
+  onText = "ON",
+  offText = "OFF",
+  ...props
+}) => {
+  return (
+    <StyledSwitch
+      id={id}
+      checked={checked}
+      value={value}
+      onChange={onChange}
+      onText={onText}
+      offText={offText}
+      {...props}
+    />
+  );
 };
 
 export default CSwitch;
 
 /** styled */
 
-const StyledSwitch = styled(Switch)(({ theme }) => ({
+const StyledSwitch = styled(Switch, {
+  shouldForwardProp: prop => prop !== "onText" && prop !== "offText",
+})<{ onText: string; offText: string }>(({ theme, onText, offText }) => ({
   "width": "64px",
   "height": "30px",
   "padding": 0,
@@ -47,9 +70,9 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
       duration: 500,
     }),
     "&:before": {
-      content: '"OFF"',
+      content: `"${offText}"`,
       position: "absolute",
-      right: "8px", // OFF 텍스트를 왼쪽에 배치
+      right: "8px",
       top: "50%",
       transform: "translateY(-50%)",
       color: "#fff",
@@ -59,9 +82,9 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
       opacity: 1,
     },
     "&:after": {
-      content: '"ON"',
+      content: `"${onText}"`,
       position: "absolute",
-      left: "10px", // ON 텍스트를 오른쪽에 배치
+      left: "10px",
       top: "50%",
       transform: "translateY(-50%)",
       color: "#fff",
@@ -73,10 +96,10 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
   },
   "& .Mui-checked + .MuiSwitch-track": {
     "&:before": {
-      opacity: 0, // OFF 숨김
+      opacity: 0,
     },
     "&:after": {
-      opacity: 1, // ON 표시
+      opacity: 1,
     },
   },
 }));
