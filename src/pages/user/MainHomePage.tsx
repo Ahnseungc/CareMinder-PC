@@ -22,16 +22,15 @@ export default function MainHomePage() {
   const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    onStaffLogIn();
-    //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
-    console.log(id, type);
+    if (userStatus?.type === "main") return setIsModal(true);
   };
 
   // const { data: getPatient, isLoading } = useGetPatientRequests();
 
   const onStaffLogIn = () => {
-    setIsModal(true);
-    // if (userStatus?.type === "main") return navigate("스태프 로그인화면으로");
+    if (userStatus?.type === "main") {
+      setIsModal(true);
+    }
   };
 
   const handleOnClose = () => {
@@ -49,7 +48,7 @@ export default function MainHomePage() {
         navigate("/staff");
         break;
     }
-  }, [setlayoutState]);
+  }, []);
 
   return (
     <>
@@ -60,10 +59,12 @@ export default function MainHomePage() {
           <SubTitle>
             <SubTitleLeft>
               <span>내 환자만 보기</span>
-              <CSwitch
-                onClick={onStaffLogIn}
-                onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
-              />
+              <span onClick={onStaffLogIn}>
+                <CSwitch
+                  onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
+                  disabled={userStatus?.type === "main"}
+                />
+              </span>
             </SubTitleLeft>
             <SubTitleRight onClick={onStaffLogIn}>
               <span>직종</span>
@@ -89,10 +90,12 @@ export default function MainHomePage() {
           <SubTitle>
             <SubTitleLeft>
               <span>환자별로 묶기</span>
-              <CSwitch
-                onClick={onStaffLogIn}
-                onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
-              />
+              <span onClick={onStaffLogIn}>
+                <CSwitch
+                  onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
+                  disabled={userStatus?.type === "main"}
+                />
+              </span>
             </SubTitleLeft>
           </SubTitle>
           {waitPatientmockData.map(el => (

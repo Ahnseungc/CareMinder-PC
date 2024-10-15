@@ -79,4 +79,7 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
       opacity: 1, // ON 표시
     },
   },
+  "& .Mui-disabled + .MuiSwitch-track": {
+    backgroundColor: "black",
+  },
 }));
