@@ -1,3 +1,5 @@
+import { light } from "@mui/material/styles/createPalette";
+
 const CMColors = {
   primary: {
     a0: "#000000",
@@ -41,9 +43,6 @@ const palette = {
     primary: CMColors.text,
     secondary: CMColors.primary.a60,
   },
-  success: {
-    main: CMColors.admin,
-  },
   background: {
     default: CMColors.background,
     paper: CMColors.white,
@@ -53,6 +52,7 @@ const palette = {
   },
   success: {
     main: CMColors.primary.a95,
+    light: CMColors.admin,
   },
   divider: CMColors.border,
 } as const;
