@@ -47,11 +47,6 @@ const routes: RouteObject[] = [
         element: <AuthorizedRoute allowedRoles={["admin"]} />,
         children: [{ path: RoutePath.AdminWardManagement, element: <div>어드민</div> }],
       },
-      {
-        path: RoutePath.StaffWardManagement,
-        element: <AuthorizedRoute allowedRoles={["admin"]} />,
-        children: [{ path: RoutePath.AdminWardManagement, element: <div>어드민</div> }],
-      },
     ],
   },
   { path: RoutePath.Signin, element: <SigninPage /> },
