@@ -2,8 +2,11 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
+import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
+import { useGetPatientRequests } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
+import modalState from "@libraries/recoil/modal";
 import { CSwitchType } from "@models/home";
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -13,13 +16,25 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 export default function MainHomePage() {
   const navigate = useNavigate();
   const setlayoutState = useSetRecoilState(layoutState);
+  const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
   const [mainWaitIsMine, setMainWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
   const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
-    console.log(id, type);
+    if (userStatus?.type === "main") return setIsModal(true);
+  };
+
+  // const { data: getPatient, isLoading } = useGetPatientRequests();
+
+  const onStaffLogIn = () => {
+    if (userStatus?.type === "main") {
+      setIsModal(true);
+    }
+  };
+
+  const handleOnClose = () => {
+    setIsModal(false);
   };
 
   useEffect(() => {
@@ -33,19 +48,25 @@ export default function MainHomePage() {
         navigate("/staff");
         break;
     }
-  }, [setlayoutState]);
+  }, []);
 
   return (
     <>
       <>
+        <StaffSigninModal onClose={handleOnClose} open={isModal} />
         <LeftSection>
           <Title>대기중인 환자</Title>
           <SubTitle>
             <SubTitleLeft>
               <span>내 환자만 보기</span>
-              <CSwitch onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)} />
+              <span onClick={onStaffLogIn}>
+                <CSwitch
+                  onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
+                  disabled={userStatus?.type === "main"}
+                />
+              </span>
             </SubTitleLeft>
-            <SubTitleRight>
+            <SubTitleRight onClick={onStaffLogIn}>
               <span>직종</span>
               <CComboBox
                 placeholder={"전체"}
@@ -69,7 +90,12 @@ export default function MainHomePage() {
           <SubTitle>
             <SubTitleLeft>
               <span>환자별로 묶기</span>
-              <CSwitch onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)} />
+              <span onClick={onStaffLogIn}>
+                <CSwitch
+                  onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
+                  disabled={userStatus?.type === "main"}
+                />
+              </span>
             </SubTitleLeft>
           </SubTitle>
           {waitPatientmockData.map(el => (

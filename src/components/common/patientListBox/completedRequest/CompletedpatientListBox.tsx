@@ -45,9 +45,9 @@ function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
         <TxtBox>
           <TxtBoxLeft>
             {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
-            {data.request}
+            {data.content}
           </TxtBoxLeft>
-          <TxtBoxRight>{data.time}분전</TxtBoxRight>
+          <TxtBoxRight>{data.createdAt}분전</TxtBoxRight>
         </TxtBox>
         {isAccept && (
           <Check color={roleColorPick.dark}>

@@ -36,3 +36,5 @@ export type StaffListBoxProps = {
 };
 
 export type CSwitchType = React.ChangeEvent<HTMLInputElement>;
+
+export type PatientStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED";

@@ -19,7 +19,6 @@ export default function MainHomePage() {
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
-    console.log(id, type);
   };
 
   useEffect(() => {
