@@ -1,11 +1,16 @@
 import { Button } from "@mui/material";
 import { ReactComponent as SignOut } from "@assets/signout.svg";
+import useSignOut from "@hooks/mutation/useSignout";
+import { useRecoilValue } from "recoil";
+import { userState } from "@libraries/recoil";
 
 export default function SignOutButton() {
-  // Todo: 로그아웃
+  const userType = useRecoilValue(userState)?.type;
+
+  const { mutate: signOut } = useSignOut(userType as string);
 
   return (
-    <Button variant="text" startIcon={<SignOut />}>
+    <Button variant="text" startIcon={<SignOut />} onClick={() => signOut()}>
       로그아웃
     </Button>
   );

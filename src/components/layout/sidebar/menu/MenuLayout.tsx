@@ -18,8 +18,6 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
   const user = useRecoilValue(userState);
   let menuButtonStyle = useMenuButtonStyles(isActive);
 
-  console.log(routePath);
-
   switch (user?.type) {
     case "main":
       menuButtonStyle = useMenuButtonStyles(isActive);

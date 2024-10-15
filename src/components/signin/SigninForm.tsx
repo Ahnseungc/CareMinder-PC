@@ -13,13 +13,12 @@ export default function SigninForm({ form, onSubmit }: SigninFormProps) {
   const { handleSubmit } = form;
 
   const handleFormSubmit = (data: SigninFormData) => {
-    console.log(data);
     onSubmit(data);
   };
 
   return (
     <Container>
-      <TextField label="ID" name="id" form={form} />
+      <TextField label="ID" name="loginId" form={form} />
       <TextField label="PW" name="password" form={form} />
       <CButton
         buttonType="login"
