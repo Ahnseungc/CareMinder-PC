@@ -96,7 +96,7 @@ export const StaffAccount = () => {
                 {quickRegisters.map(quickReg => (
                   <Stack gap={"3px"}>
                     <Typography variant="h3">{quickReg.label}</Typography>
-                    <CButton buttonType="primarySpaureWhite" style={{ height: "50px" }}>
+                    <CButton buttontype="primarySpaureWhite" style={{ height: "50px" }}>
                       {quickReg.value}
                     </CButton>
                   </Stack>
@@ -104,14 +104,14 @@ export const StaffAccount = () => {
               </Stack>
               <ConfirmLayout>
                 <CButton
-                  buttonType="primaryWhite"
+                  buttontype="primaryWhite"
                   onClick={() => setIsCreate(prev => !prev)}
                   style={{ width: "134px", height: "45px" }}
                 >
                   이전으로
                 </CButton>
                 <CButton
-                  buttonType="primary"
+                  buttontype="primary"
                   onClick={handleSubmit(onSubmit)}
                   style={{ width: "134px", height: "45px" }}
                 >
@@ -137,11 +137,11 @@ export const StaffAccount = () => {
               <Title variant="h1">스태프 계정 수정</Title>
             </div>
             <StaffButtonContainer>
-              <CButton buttonType="primarySpaureWhite" onClick={createNewStaff}>
+              <CButton buttontype="primarySpaureWhite" onClick={createNewStaff}>
                 스태프 계정 생성
               </CButton>
               <CButton
-                buttonType="primarySpaureWhite"
+                buttontype="primarySpaureWhite"
                 onClick={settingsLogin ? openCreateModal : handleLogin}
               >
                 스태프 추가

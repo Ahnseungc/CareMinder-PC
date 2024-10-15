@@ -21,7 +21,7 @@ export default function SigninForm({ form, onSubmit }: SigninFormProps) {
       <TextField label="ID" name="loginId" form={form} />
       <TextField label="PW" name="password" form={form} />
       <CButton
-        buttonType="login"
+        buttontype="login"
         style={{ marginTop: "43.22px" }}
         onClick={handleSubmit(handleFormSubmit)}
       >
