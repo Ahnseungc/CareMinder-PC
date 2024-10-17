@@ -1,10 +1,11 @@
 import UserHeader from "./UserHeader";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
-import { Box, styled, Typography } from "@mui/material";
+import { Box, styled } from "@mui/material";
 import { SwitchCase } from "@toss/react";
 import { useRecoilValue } from "recoil";
 import { LayoutType } from "../sidebar";
+import AdminHeader from "./AdminHeader";
 
 export default function Header() {
   const user = useRecoilValue(userState);
@@ -16,11 +17,7 @@ export default function Header() {
         caseBy={{
           main: <UserHeader />,
           staff: <UserHeader />,
-          admin: (
-            <Typography variant="h1" sx={{ color: "white" }}>
-              Administrator
-            </Typography>
-          ),
+          admin: <AdminHeader />,
         }}
       />
     </Layout>
@@ -44,6 +41,6 @@ const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
     backgroundColor: theme.palette.secondary.main,
   }),
   ...(adminType === "admin" && {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.success.light,
   }),
 }));

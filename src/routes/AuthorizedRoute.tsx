@@ -19,6 +19,7 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const [isChecking, setIsChecking] = useState(true);
   const accessToken = Cookies.get("accessToken");
   const accessTokenStaff = Cookies.get("accessTokenStaff");
+  const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const setIsModalOpen = useSetRecoilState(modalState);
 
   const navigatePrev = useCallbackOnce(() => {
@@ -38,11 +39,16 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
       setIsChecking(true);
     }
 
+    // if (pathname.includes("admin") && !accessTokenAdmin) {
+    //   setIsChecking(true);
+    // }
+
     if (user) {
       //병동 권한 충족
       if (
         (allowedRoles.includes(user.type) && accessToken) ||
-        (allowedRoles.includes(user.type) && accessTokenStaff)
+        (allowedRoles.includes(user.type) && accessTokenStaff) ||
+        (allowedRoles.includes(user.type) && accessTokenAdmin)
       ) {
         setIsChecking(false);
         setIsModalOpen(false);

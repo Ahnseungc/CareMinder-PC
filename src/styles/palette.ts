@@ -1,5 +1,3 @@
-import { light } from "@mui/material/styles/createPalette";
-
 const CMColors = {
   primary: {
     a0: "#000000",

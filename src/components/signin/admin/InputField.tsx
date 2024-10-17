@@ -1,6 +1,6 @@
 import { AdminUserField, NewAdminUser } from "@models/user";
 import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
-import { validateBusinessNumber } from "@utils/signin";
+// import { validateBusinessNumber } from "@utils/signin";
 import { Controller, UseFormReturn } from "react-hook-form";
 
 type InputFieldProps = { form: UseFormReturn<NewAdminUser>; field: AdminUserField };
@@ -45,8 +45,8 @@ const validationRules = {
   hospitalAddress: { required: "병원 주소를 입력해주세요." },
   registrationNumber: {
     required: "사업자등록번호를 입력해주세요.",
-    validate: (value: string) =>
-      validateBusinessNumber(value) || "올바른 사업자등록번호를 입력해주세요.",
+    // validate: (value: string) =>
+    //   validateBusinessNumber(value) || "올바른 사업자등록번호를 입력해주세요.",
   },
   username: { required: "아이디를 입력해주세요." },
   password: {
