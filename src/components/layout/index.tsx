@@ -37,6 +37,7 @@ export default function AuthenticatedLayout() {
   }
 
   const handleOnClose = () => {
+    navigate(-1);
     setIsModalOpen(false);
   };
 
