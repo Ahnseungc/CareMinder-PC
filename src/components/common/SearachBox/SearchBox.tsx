@@ -12,8 +12,12 @@ import { ReactComponent as UpArrow } from "@/assets/serachIcons/UpArrow.svg";
 //staff
 import { ReactComponent as UserStaff } from "@/assets/serachIcons/user-staff.svg";
 import { ReactComponent as UserSearch } from "@/assets/serachIcons/search-staff.svg";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
+import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
+import modalState from "@libraries/recoil/modal";
+import { useNavigate } from "react-router-dom";
+import { useBooleanState } from "@toss/react";
 
 export default function SearchBox() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -23,6 +27,9 @@ export default function SearchBox() {
   const [searching, setSearching] = useState<boolean>(false);
   const [selectedNurse, setSelectedNurse] = useState<string>("");
   const user = useRecoilValue(userState);
+  const [openStaff, openStaffMoadl, closeStaffModal] = useBooleanState();
+
+  const navigate = useNavigate();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,61 +61,70 @@ export default function SearchBox() {
   };
 
   return (
-    <SearchInputWrapper>
-      <SearchInput
-        ref={inputRef}
-        type="search"
-        value={query}
-        onChange={searchHandler}
-        onFocus={() => setIsOpen(true)}
-        onBlur={() => setIsOpen(false)}
-        placeholder="스태프 선택"
-        disableUnderline={true}
-        startAdornment={
-          <ListBox onClick={handleList} isEmpty={selectedNurse}>
-            {user?.type === "main" ? (
-              <User style={{ marginBottom: "2px" }} />
+    <>
+      <StaffSigninModal open={openStaff} onClose={closeStaffModal} />
+      <SearchInputWrapper>
+        <SearchInput
+          ref={inputRef}
+          type="search"
+          value={query}
+          onChange={searchHandler}
+          onFocus={() => setIsOpen(true)}
+          onBlur={() => setIsOpen(false)}
+          placeholder="스태프 선택"
+          disableUnderline={true}
+          startAdornment={
+            <ListBox onClick={handleList} isEmpty={selectedNurse}>
+              {user?.type === "main" ? (
+                <User style={{ marginBottom: "2px" }} />
+              ) : (
+                <UserStaff style={{ marginBottom: "2px" }} />
+              )}
+              {selectedNurse === "" ? null : (
+                <>
+                  {" "}
+                  <span>{selectedNurse}</span>
+                  {isOpen ? <UpArrow /> : <DownArrow />}
+                </>
+              )}
+            </ListBox>
+          }
+          endAdornment={
+            user?.type === "main" ? (
+              <Search style={{ cursor: "pointer" }} />
             ) : (
-              <UserStaff style={{ marginBottom: "2px" }} />
-            )}
-            {selectedNurse === "" ? null : (
+              <UserSearch style={{ cursor: "pointer" }} />
+            )
+          }
+          isOpen={isOpen}
+        />
+        {isOpen && (
+          <StaffList>
+            {searching ? (
+              <span>검색중..</span>
+            ) : (
               <>
-                {" "}
-                <span>{selectedNurse}</span>
-                {isOpen ? <UpArrow /> : <DownArrow />}
+                {nurses.length === 0 ? (
+                  <NoSearchStaff>검색 결과 없음</NoSearchStaff>
+                ) : (
+                  nurses.map((nurse, index) => (
+                    <Staff
+                      key={index}
+                      onMouseDown={() => {
+                        selectNurse(nurse.name);
+                        openStaffMoadl();
+                      }}
+                    >
+                      {nurse.name}
+                    </Staff>
+                  ))
+                )}
               </>
             )}
-          </ListBox>
-        }
-        endAdornment={
-          user?.type === "main" ? (
-            <Search style={{ cursor: "pointer" }} />
-          ) : (
-            <UserSearch style={{ cursor: "pointer" }} />
-          )
-        }
-        isOpen={isOpen}
-      />
-      {isOpen && (
-        <StaffList>
-          {searching ? (
-            <span>검색중..</span>
-          ) : (
-            <>
-              {nurses.length === 0 ? (
-                <NoSearchStaff>검색 결과 없음</NoSearchStaff>
-              ) : (
-                nurses.map((nurse, index) => (
-                  <Staff key={index} onMouseDown={() => selectNurse(nurse.name)}>
-                    {nurse.name}
-                  </Staff>
-                ))
-              )}
-            </>
-          )}
-        </StaffList>
-      )}
-    </SearchInputWrapper>
+          </StaffList>
+        )}
+      </SearchInputWrapper>
+    </>
   );
 }
 
