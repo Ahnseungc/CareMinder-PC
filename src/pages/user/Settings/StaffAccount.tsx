@@ -4,7 +4,7 @@ import PaginationComponent from "@components/common/pagination";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { Stack, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
-import NewStaffModal from "@components/settings/modal/NewStaffModal";
+
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { NewStaff, NewStaffField, QuickRegisterNewStaff } from "@models/staff";
@@ -12,6 +12,7 @@ import NewStaffInputField from "@components/settings/NewStaffInputField";
 import InfoModal from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
+import ChangeModal from "@components/settings/modal/ChangeModal";
 
 // 스태프 계정 설정
 
@@ -96,7 +97,14 @@ export const StaffAccount = () => {
       ) : (
         <>
           {" "}
-          <NewStaffModal open={open} onClose={closeCreateModal} />
+          <ChangeModal
+            open={open}
+            onClose={closeCreateModal}
+            onConfirm={() => null}
+            modalTitle={"스태프 추가"}
+            subTitle={"아이디/휴대폰 번호/이메일 중 택일"}
+            rightText={"추가"}
+          />
           <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
           <InfoModal
             open={openDelete}

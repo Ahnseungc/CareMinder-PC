@@ -2,23 +2,37 @@ import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import CInput from "@components/common/atom/C-Input";
 import { Box, styled, Typography } from "@mui/material";
 
-export default function NewStaffModal({ onClose, ...props }: CMModalProps) {
+interface ChangeModalProps extends Omit<CMModalProps, "title"> {
+  onConfirm: () => void;
+  modalTitle: string;
+  subTitle: string;
+  rightText: string;
+}
+
+export default function ChangeModal({
+  onClose,
+  onConfirm,
+  modalTitle,
+  subTitle,
+  rightText,
+  ...props
+}: ChangeModalProps) {
   return (
     <CMModal
       onClose={onClose}
-      title={"스태프 추가"}
+      title={modalTitle}
       footer={
         <>
           <ModalActionButton color="secondary" onClick={onClose}>
             취소
           </ModalActionButton>
-          <ModalActionButton>추가</ModalActionButton>
+          <ModalActionButton onClick={onConfirm}>{rightText}</ModalActionButton>
         </>
       }
       {...props}
     >
       <ContentLayout>
-        <Typography variant="h4">아이디/휴대폰 번호/이메일 중 택일</Typography>
+        <Typography variant="h4">{subTitle}</Typography>
         <InputLayout>
           <CInput
             variant={"outlined"}

@@ -4,13 +4,23 @@ import PaginationComponent from "@components/common/pagination";
 import WardManagementTable from "@components/admin/WardManagementTable";
 import { useBooleanState } from "@toss/react";
 import ChangeWardMoadl from "@components/admin/adminModal/ChangeWardModal";
+import ChangeModal from "@components/settings/modal/ChangeModal";
 
 export default function AdminWardManagementPage() {
   const [openEdit, openEditModal, closeEditModal] = useBooleanState(false);
   const [openDelete, openDeleteModal, closeDeleteModal] = useBooleanState(false);
+
   return (
     <>
       <ChangeWardMoadl open={openEdit} onClose={closeEditModal} />
+      <ChangeModal
+        open={openDelete}
+        onClose={closeDeleteModal}
+        onConfirm={() => null}
+        modalTitle={"비밀번호 입력"}
+        subTitle={"비밀번호"}
+        rightText={"다음"}
+      />
       <Container>
         <HeadContainer>
           <div>
