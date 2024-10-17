@@ -4,17 +4,15 @@ import PaginationComponent from "@components/common/pagination";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { Stack, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
-import NewStaffModal from "@components/settings/modal/NewStaffModal";
+
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { NewStaff, NewStaffField, QuickRegisterNewStaff } from "@models/staff";
 import NewStaffInputField from "@components/settings/NewStaffInputField";
 import InfoModal from "@components/settings/modal/InfoModal";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import settingsLoginState from "@libraries/recoil/settings";
-import modalState from "@libraries/recoil/modal";
 import TOSModal from "@components/settings/modal/TOSModal";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
+import ChangeModal from "@components/settings/modal/ChangeModal";
 
 // 스태프 계정 설정
 
@@ -39,9 +37,6 @@ export const StaffAccount = () => {
 
   const [isCreate, setIsCreate] = useState<boolean>(false);
 
-  const settingsLogin = useRecoilValue(settingsLoginState);
-  const setIsModalOpen = useSetRecoilState(modalState);
-
   const form = useForm<NewStaff>({
     defaultValues,
     mode: "onChange",
@@ -51,29 +46,6 @@ export const StaffAccount = () => {
 
   const onSubmit: SubmitHandler<NewStaff> = data => {
     console.log(data);
-  };
-
-  const createNewStaff = () => {
-    if (settingsLogin) {
-      openTOSModal();
-    } else {
-      window.alert("스태프 로그인을 해주세요");
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleLogin = () => {
-    window.alert("스태프 로그인을 해주세요");
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteStaff = () => {
-    if (settingsLogin) {
-      openDeleteModal();
-    } else {
-      window.alert("스태프 로그인을 해주세요");
-      setIsModalOpen(true);
-    }
   };
 
   const handleTOS = () => {
@@ -125,7 +97,14 @@ export const StaffAccount = () => {
       ) : (
         <>
           {" "}
-          <NewStaffModal open={open} onClose={closeCreateModal} />
+          <ChangeModal
+            open={open}
+            onClose={closeCreateModal}
+            onConfirm={() => null}
+            modalTitle={"스태프 추가"}
+            subTitle={"아이디/휴대폰 번호/이메일 중 택일"}
+            rightText={"추가"}
+          />
           <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
           <InfoModal
             open={openDelete}
@@ -138,13 +117,10 @@ export const StaffAccount = () => {
               <Title variant="h1">스태프 계정 수정</Title>
             </div>
             <StaffButtonContainer>
-              <CButton buttontype="primarySpaureWhite" onClick={createNewStaff}>
+              <CButton buttontype="primarySpaureWhite" onClick={openTOSModal}>
                 스태프 계정 생성
               </CButton>
-              <CButton
-                buttontype="primarySpaureWhite"
-                onClick={settingsLogin ? openCreateModal : handleLogin}
-              >
+              <CButton buttontype="primarySpaureWhite" onClick={openCreateModal}>
                 스태프 추가
               </CButton>
             </StaffButtonContainer>
@@ -157,7 +133,7 @@ export const StaffAccount = () => {
             </EmptyStaffContainer>
           ) : (
             <>
-              <StaffAccountSettingsTable onDelete={handleDeleteStaff} />
+              <StaffAccountSettingsTable onDelete={openDeleteModal} />
               <PaginationContainer>
                 <div>
                   <PaginationComponent totalPage={5} />

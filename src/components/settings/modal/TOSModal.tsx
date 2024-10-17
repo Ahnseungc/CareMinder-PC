@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { Box, Checkbox, styled, Typography } from "@mui/material";
+import InfoModal from "./InfoModal";
+import { useBooleanState } from "@toss/react";
 
 interface TOSModalProps extends Omit<CMModalProps, "title"> {
   onConfirm?: () => void;
@@ -10,6 +12,7 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 export default function TOSModal({ onClose, onConfirm, ...props }: TOSModalProps) {
   const [isChecked, setIsChecked] = useState(false);
+  const [open, openTOSModal, closeCreateModal] = useBooleanState(false);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
@@ -19,90 +22,93 @@ export default function TOSModal({ onClose, onConfirm, ...props }: TOSModalProps
     if (isChecked) {
       onConfirm?.();
     } else {
-      alert("필수 약관에 동의해야 합니다.");
+      openTOSModal();
     }
   };
 
   return (
-    <CMModal
-      maxWidth="sm"
-      onClose={onClose}
-      title={"스태프 계정 생성 약관 동의서"}
-      footer={
-        <>
-          <ModalActionButton color="secondary" onClick={onClose}>
-            취소
-          </ModalActionButton>
-          <ModalActionButton onClick={handleConfirm}>동의합니다</ModalActionButton>
-        </>
-      }
-      {...props}
-    >
-      <ContentLayout>
-        <TOSContainer sx={{ width: "calc(100% - 24px)" }}>
-          <TOSContentField>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-            <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
-              약관 동의 조항 제목이 노출됩니다.
-            </Typography>
-            <Typography variant="body2">
-              약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
-              조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항
-              상세내용이 노출됩니다.
-            </Typography>
-          </TOSContentField>
-        </TOSContainer>
-        <div style={{ display: "flex" }}>
-          <Checkbox
-            {...label}
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-            size="medium"
-            color="primary"
-          />
-          <Typography variant="subtitle1">필수 약관에 동의합니다.</Typography>
-        </div>
-      </ContentLayout>
-    </CMModal>
+    <>
+      <InfoModal open={open} onClose={closeCreateModal} modalType={"checkTOS"}></InfoModal>
+      <CMModal
+        maxWidth="sm"
+        onClose={onClose}
+        title={"스태프 계정 생성 약관 동의서"}
+        footer={
+          <>
+            <ModalActionButton color="secondary" onClick={onClose}>
+              취소
+            </ModalActionButton>
+            <ModalActionButton onClick={handleConfirm}>동의합니다</ModalActionButton>
+          </>
+        }
+        {...props}
+      >
+        <ContentLayout>
+          <TOSContainer sx={{ width: "calc(100% - 24px)" }}>
+            <TOSContentField>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                약관 동의 조항 제목이 노출됩니다.
+              </Typography>
+              <Typography variant="body2">
+                약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                조항 상세내용이 노출됩니다.
+              </Typography>
+            </TOSContentField>
+          </TOSContainer>
+          <div style={{ display: "flex" }}>
+            <Checkbox
+              {...label}
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+              size="medium"
+              color="primary"
+            />
+            <Typography variant="subtitle1">필수 약관에 동의합니다.</Typography>
+          </div>
+        </ContentLayout>
+      </CMModal>
+    </>
   );
 }
 

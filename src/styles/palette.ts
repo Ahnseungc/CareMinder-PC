@@ -6,10 +6,6 @@ const CMColors = {
     a95: "#EFF1F9",
     a100: "#FFFFFF",
   },
-
-  nurse: {
-    test: "a",
-  },
   black: "#000000",
   text: "#5E5F65",
   disabled: "#C4C5CC",
@@ -22,6 +18,7 @@ const CMColors = {
     finish: "#5E5F65",
   },
   error: "#F24679",
+  admin: "#5DB8BE",
 } as const;
 
 const palette = {
@@ -53,6 +50,7 @@ const palette = {
   },
   success: {
     main: CMColors.primary.a95,
+    light: CMColors.admin,
   },
   divider: CMColors.border,
 } as const;

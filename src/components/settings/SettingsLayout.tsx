@@ -7,6 +7,7 @@ import { Close } from "@mui/icons-material";
 import { SettingsHeader } from ".";
 import { useSetRecoilState } from "recoil";
 import settingsLoginState from "@libraries/recoil/settings";
+import { useNavigate } from "react-router-dom";
 
 type SettingsLayoutProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -16,12 +17,14 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
   const setSettingsLoginState = useSetRecoilState(settingsLoginState);
+  const navigate = useNavigate();
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
       onSuccess: data => {
         console.log("로그인 성공:", data);
-        setSettingsLoginState(true);
+        navigate("/settings");
+        setSettingsLoginState(false);
       },
       onError: error => {
         console.error("로그인 실패:", error);

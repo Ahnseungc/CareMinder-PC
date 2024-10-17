@@ -23,6 +23,9 @@ const signOut = async (type: string) => {
     Cookies.set("accessToken", "");
   }
   if (type === "staff" && res.data.accessToken && res.data.refreshToken) {
+    Cookies.set("accessTokenStaff", "");
+  }
+  if (type === "admin" && res.data.accessToken && res.data.refreshToken) {
     Cookies.set("accessTokenAdmin", "");
   }
   return res.data;

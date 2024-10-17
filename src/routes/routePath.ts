@@ -17,7 +17,9 @@ const RoutePath = {
   StaffSettings: "staff/settings",
 
   //admin
-  AdminWardManagement: "/staff/admin",
+  AdminCreateWard: "/admin",
+  AdminWardManagement: "/admin/ward-manage",
+  AdminStaffManagement: "/admin/staff-manage",
 
   Signin: "/sign-in",
   AdminSignin: "/sign-in/admin",
