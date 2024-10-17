@@ -21,8 +21,3 @@ const HeaderContainer = styled(Box)({
   alignItems: "flex-start",
   gap: "20px",
 });
-
-const SearchBoxWrapper = styled(Box)({
-  position: "relative",
-  height: "36px",
-});

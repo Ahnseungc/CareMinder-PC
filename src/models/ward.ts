@@ -1,22 +1,23 @@
 export type Ward = {
   section: string;
   wardName: string;
-  manageName: string;
+  managerName: string;
   loginId: string;
   password: string;
-  managePhoneNumber: string;
-  manageEmail: string;
+  managerPhoneNumber: string;
+  managerEmail: string;
 };
 
-export type NewWard = {
+export type NewWardRequest = {
   wardName: string;
   loginId: string;
   password: string;
-  confirmPassword: string;
-  manageName: string;
-  managePhoneNumber: string;
-  manageEmail: string;
+  managerName: string;
+  managerPhoneNumber: string;
+  managerEmail: string;
 };
+
+export type NewWard = NewWardRequest & { confirmPassword: string };
 
 export type NewWardField = {
   name: keyof NewWard;

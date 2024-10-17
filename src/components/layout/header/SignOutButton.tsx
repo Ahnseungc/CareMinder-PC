@@ -10,7 +10,12 @@ export default function SignOutButton() {
   const { mutate: signOut } = useSignOut(userType as string);
 
   return (
-    <Button variant="text" startIcon={<SignOut />} onClick={() => signOut()}>
+    <Button
+      variant="text"
+      startIcon={<SignOut />}
+      onClick={() => signOut()}
+      sx={{ color: "#FFFFFF" }}
+    >
       로그아웃
     </Button>
   );

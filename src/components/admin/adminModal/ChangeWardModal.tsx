@@ -6,8 +6,6 @@ import { useState } from "react";
 
 export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
   const [options] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
-
-  // State for each input field
   const [ward, setWard] = useState<string>("");
   const [wardName, setWardName] = useState<string>("");
   const [name, setName] = useState<string>("홍길동");
@@ -16,7 +14,6 @@ export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
   const [email, setEmail] = useState<string>("User1234@email.com");
 
   const handleSubmit = () => {
-    // Here you can access all the values
     console.log({
       ward,
       wardName,
@@ -25,7 +22,6 @@ export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
       phoneNumber,
       email,
     });
-    // Perform any necessary actions with the data
   };
 
   return (

@@ -17,7 +17,7 @@ export default function AdminWardManagementPage() {
             <Title variant="h1">병동 계정 관리</Title>
           </div>
           <div style={{ maxWidth: "148px" }}>
-            <CButton buttonType="primarySpaureWhite">병동 계정 생성</CButton>
+            <CButton buttontype="primarySpaureWhite">병동 계정 생성</CButton>
           </div>
         </HeadContainer>
         <BodyContainer>

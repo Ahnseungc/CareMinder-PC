@@ -1,6 +1,5 @@
 import { NewWard, NewWardField } from "@models/ward";
 import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
-import { validateBusinessNumber } from "@utils/signin";
 import { Controller, UseFormReturn } from "react-hook-form";
 
 type InputFieldProps = { form: UseFormReturn<NewWard>; field: NewWardField };
@@ -51,12 +50,12 @@ const validationRules = {
     validate: (value: string, { password }: NewWard) =>
       value === password || "비밀번호가 일치하지 않습니다.",
   },
-  manageName: { required: "담당자 이름을 입력해주세요." },
-  managePhoneNumber: {
+  managerName: { required: "담당자 이름을 입력해주세요." },
+  managerPhoneNumber: {
     required: "전화번호를 입력해주세요.",
     pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
   },
-  manageEmail: {
+  managerEmail: {
     required: "이메일을 입력해주세요.",
     pattern: {
       value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
@@ -67,10 +66,10 @@ const validationRules = {
 
 const inputTypes: { [key in keyof NewWard]: string } = {
   wardName: "text",
-  manageName: "text",
+  managerName: "text",
   loginId: "text",
   password: "password",
   confirmPassword: "password",
-  managePhoneNumber: "tel",
-  manageEmail: "email",
+  managerPhoneNumber: "tel",
+  managerEmail: "email",
 };

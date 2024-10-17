@@ -29,7 +29,7 @@ export default function AdminCreateWardPage() {
             <EmptyStaff />
             <EmptyText>등록된 병동 계정이 없습니다.</EmptyText>
             <div style={{ maxWidth: "148px" }}>
-              <CButton buttonType="primarySpaureWhite" onClick={openTOSModal}>
+              <CButton buttontype="primarySpaureWhite" onClick={openTOSModal}>
                 병동 계정 생성
               </CButton>
             </div>
