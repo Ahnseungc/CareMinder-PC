@@ -1,5 +1,4 @@
 import UserHeader from "./UserHeader";
-import { ReactComponent as Logo } from "@assets/full-logo.svg";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 import { Box, styled, Typography } from "@mui/material";
@@ -12,7 +11,6 @@ export default function Header() {
 
   return (
     <Layout adminType={user?.type as UserType}>
-      <Logo />
       <SwitchCase
         value={user?.type as UserType}
         caseBy={{
@@ -29,7 +27,7 @@ export default function Header() {
   );
 }
 
-const Layout = styled(Box)<LayoutType>(({ theme, admintype }) => ({
+const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
   position: "fixed",
   top: 0,
   left: 0,
@@ -42,7 +40,7 @@ const Layout = styled(Box)<LayoutType>(({ theme, admintype }) => ({
   zIndex: "10",
 
   backgroundColor: theme.palette.primary.main,
-  ...(admintype === "staff" && {
+  ...(adminType === "staff" && {
     backgroundColor: theme.palette.secondary.main,
   }),
   ...(adminType === "admin" && {

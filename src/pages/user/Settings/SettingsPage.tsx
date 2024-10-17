@@ -1,11 +1,11 @@
 import { SettingsModal } from "@components/settings";
-import modalState from "@libraries/recoil/modal";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { StaffAccount } from "./StaffAccount";
 import { TabletManagement } from "./TabletManagement";
 import { useNavigate } from "react-router-dom";
+import settingsLoginState from "@libraries/recoil/settings";
 
 export type TabButtonProps = {
   isActive?: boolean;
@@ -13,7 +13,7 @@ export type TabButtonProps = {
 
 export default function SettingsPage() {
   // 로그인 되어있지 않은 상태에서 병동 설정 선택 시 로그인 모달 open
-  const [isModalOpen, setIsModalOpen] = useRecoilState(modalState);
+  const [isModalOpen, setIsModalOpen] = useRecoilState(settingsLoginState);
   const [activeTab, setActiveTab] = useState<string>("스태프 계정 수정");
   const navigate = useNavigate();
 
