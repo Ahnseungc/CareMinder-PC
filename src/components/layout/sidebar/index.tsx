@@ -35,12 +35,10 @@ const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
   position: "fixed",
   left: 0,
   top: "64px",
-
   width: "72px",
   minHeight: "max-content",
   height: "calc(100vh - 64px)",
   overflowY: "auto",
-
   alignItems: "center",
   gap: "14px",
   padding: "16px 0",

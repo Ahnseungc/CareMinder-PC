@@ -1,10 +1,10 @@
 import { ReactComponent as CompletedRequests } from "@assets/menuIcons/completedRequests.svg";
 import MenuLayout from "./MenuLayout";
+import RoutePath from "@routes/routePath";
+import { UserType } from "@models/user";
 import { SwitchCase } from "@toss/react";
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
-import { UserType } from "@models/user";
-import RoutePath from "@routes/routePath";
 
 export default function CompletedRequestsMenu() {
   const user = useRecoilValue(userState);

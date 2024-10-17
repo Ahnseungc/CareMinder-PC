@@ -27,7 +27,7 @@ const routes: RouteObject[] = [
     element: <AuthenticatedLayout />,
     children: [
       {
-        element: <AuthorizedRoute allowedRoles={["main"]} />,
+        element: <AuthorizedRoute allowedRoles={["main", "staff"]} />,
         children: [
           { index: true, element: <MainHomePage /> },
           { path: RoutePath.StaffHomePage, element: <StaffHomePage /> },

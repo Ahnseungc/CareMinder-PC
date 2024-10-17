@@ -5,15 +5,19 @@ import { Box, Stack, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import RoutePath from "@routes/routePath";
 import { useCallbackOnce } from "@toss/react";
 import InnerContainer from "./inner/InnerContainer";
+import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
+import modalState from "@libraries/recoil/modal";
 
 export default function AuthenticatedLayout() {
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
   const [isChecking, setIsChecking] = useState(true);
+  const isModal = useRecoilValue(modalState);
+  const setIsModalOpen = useSetRecoilState(modalState);
 
   const navigateSignin = useCallbackOnce(() => {
     console.error("로그인이 필요한 서비스입니다.");
@@ -32,8 +36,13 @@ export default function AuthenticatedLayout() {
     return null;
   }
 
+  const handleOnClose = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <Container>
+      <StaffSigninModal onClose={handleOnClose} open={isModal} />
       <Header />
       <Body>
         <Sidebar />

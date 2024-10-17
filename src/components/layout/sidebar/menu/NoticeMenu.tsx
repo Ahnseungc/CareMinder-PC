@@ -3,8 +3,8 @@ import MenuLayout from "./MenuLayout";
 import RoutePath from "@routes/routePath";
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
-import { SwitchCase } from "@toss/react";
 import { UserType } from "@models/user";
+import { SwitchCase } from "@toss/react";
 
 export default function NoticeMenu() {
   const user = useRecoilValue(userState);

@@ -102,4 +102,7 @@ const StyledSwitch = styled(Switch, {
       opacity: 1,
     },
   },
+  "& .Mui-disabled + .MuiSwitch-track": {
+    backgroundColor: "black",
+  },
 }));

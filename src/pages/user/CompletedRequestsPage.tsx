@@ -3,8 +3,9 @@ import { styled } from "@mui/material";
 import { useState } from "react";
 import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
 import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
-import PatientBox, { PatientListBoxType } from "@components/common/patientListBox";
+import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
+import { PatientListBoxType } from "@models/home";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
@@ -29,9 +30,9 @@ export default function CompletedRequestsPage() {
             <Empty />
           )}
           <PatientList>
-            {waitPatientmockData.completedRequest.map(el => (
-              <div key={el.id} onClick={() => setIsFocusPatientData(el)}>
-                <PatientBox key={el.id} user="completedRequest" data={el} />
+            {waitPatientmockData.map(el => (
+              <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
+                <PatientBox key={el.patientRequestId} user="completedRequest" data={el} />
               </div>
             ))}
           </PatientList>
