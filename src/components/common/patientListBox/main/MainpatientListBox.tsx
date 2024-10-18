@@ -2,6 +2,7 @@ import { Stack, styled } from "@mui/material";
 import { roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { MainListBoxProps } from "@models/home";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
   const roleColorPick = roleColor(data.role);
@@ -21,7 +22,11 @@ function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps
           color={roleColorPick.dark}
           onClick={() => onWaitOrAccept(data.patientRequestId, isAccept ? "accept" : "wait")}
         >
-          {isAccept ? "OK" : <CheckIcon style={{ cursor: "pointer" }} />}
+          {isAccept ? (
+            <CheckIcon style={{ cursor: "pointer" }} />
+          ) : (
+            <ArrowForwardRoundedIcon style={{ cursor: "pointer", color: "white" }} />
+          )}
         </Check>
       </Bottom>
     </InnerContainer>
