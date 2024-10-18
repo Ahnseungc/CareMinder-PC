@@ -1,4 +1,5 @@
 import { WardPatientRequest } from "@libraries/axios";
+import { UserType } from "@models/user";
 import { useQuery } from "@tanstack/react-query";
 
 const getWardPatientInProgress = async () => {
@@ -6,10 +7,11 @@ const getWardPatientInProgress = async () => {
   return res.data.data;
 };
 
-export default function useGetWardPatientInProgress() {
+export default function useGetWardPatientInProgress(type: UserType) {
   const { data, isLoading } = useQuery({
     queryKey: ["useGetWardPatientInProgress"],
     queryFn: getWardPatientInProgress,
+    enabled: type === "main",
   });
   return { data, isLoading };
 }

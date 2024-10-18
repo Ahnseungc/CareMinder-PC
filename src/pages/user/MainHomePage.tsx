@@ -19,8 +19,8 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  const { data: getPendingData } = useGetWardPatientPending();
-  const { data: getInprogressData } = useGetWardPatientInProgress();
+  const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);
+  const { data: getInprogressData } = useGetWardPatientInProgress(userStatus!.type);
 
   const onStaffLogIn = () => {
     if (userStatus?.type === "main") {
