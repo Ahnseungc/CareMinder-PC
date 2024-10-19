@@ -38,3 +38,12 @@ export type StaffListBoxProps = {
 export type CSwitchType = React.ChangeEvent<HTMLInputElement>;
 
 export type PatientStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED";
+
+export type CSwitchProps = "간호사" | "조무사" | "직원" | "의사" | "전체";
+export type isRoleType =
+  | "NURSE"
+  | "NURSE_ASSISTANT"
+  | "WORKER"
+  | "DOCTOR"
+  | "NOT_CLASSIFIED"
+  | null;

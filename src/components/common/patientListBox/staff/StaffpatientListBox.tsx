@@ -73,15 +73,15 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
         <TxtBox>
           <TxtBoxLeft>
             {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
-            {data.request}
+            {data.content}
           </TxtBoxLeft>
-          <TxtBoxRight>{data.time}분전</TxtBoxRight>
+          <TxtBoxRight>{data.createdAt}분전</TxtBoxRight>
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={() => onWaitOrAccept(data.id, isAccept ? "accept" : "wait")}
+          onClick={() => onWaitOrAccept(data.patientRequestId, isAccept ? "accept" : "wait")}
         >
-          {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon />}
+          {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
         </Check>
       </Bottom>
       {isAccept && isChatting && (
@@ -150,6 +150,7 @@ const Check = styled("div")<{ color: string }>`
   justify-content: center;
   margin-left: 12px;
   font-weight: 900;
+  cursor: pointer;
 `;
 const SmallCheck = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
