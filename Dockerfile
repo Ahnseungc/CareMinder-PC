@@ -16,7 +16,7 @@ FROM nginx:stable-alpine
 
 # nginx의 기본 service를 제거한다.
 RUN rm -rf /etc/nginx/sites-enabled/default.conf
-
+ 
 # nginx에 serving할 html의 설정파일을 복사한다.
 COPY nginx.conf /etc/nginx/conf.d/
 
@@ -24,7 +24,7 @@ COPY nginx.conf /etc/nginx/conf.d/
 COPY --from=build /code/dist /usr/share/nginx/html
 
 # frontend Port를 설정한다.
-EXPOSE 5050
+EXPOSE 80
 
 #container 종료 될때 정상 종료 유도
 STOPSIGNAL SIGTERM
