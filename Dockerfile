@@ -14,9 +14,8 @@ WORKDIR /code
 # 배포할 파일을 복사한다.
 COPY dist/ dist/
 
-
-
 #젠킨슨 테스트03
+
 
 # frontend Port를 설정한다.
 EXPOSE 5000
