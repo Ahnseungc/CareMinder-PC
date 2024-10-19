@@ -18,7 +18,7 @@ FROM nginx:stable-alpine
 RUN rm -rf /etc/nginx/sites-enabled/default
 
 # nginx에 serving할 html의 설정파일을 복사한다.
-COPY nginx.conf /etc/nginx/conf.d
+COPY nginx.conf /etc/nginx/conf.d/
 
 
 COPY --from=build /code/dist /usr/share/nginx/html
