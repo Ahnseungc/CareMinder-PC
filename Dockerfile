@@ -16,6 +16,8 @@ COPY dist/ dist/
 
 
 
+#젠킨슨 테스트01
+
 # frontend Port를 설정한다.
 EXPOSE 5000
 
