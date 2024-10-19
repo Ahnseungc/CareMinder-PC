@@ -1,4 +1,16 @@
 
+# Build stage
+FROM node:16-alpine AS build
+
+WORKDIR /code
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# Production stage
 # base image는 node image로 시작한다. npm과 yarn이 모두 설치되어 있다.
 FROM nginx:stable-alpine
 
@@ -8,17 +20,15 @@ RUN rm -rf /etc/nginx/sites-enabled/default
 # nginx에 serving할 html의 설정파일을 복사한다.
 COPY nginx.conf /etc/nginx/conf.d
 
-# 작업영역을 선택한다. mkdir, cd를 동시에 진행한다 생각하면 된다.
-WORKDIR /code
 
-# 배포할 파일을 복사한다.
-COPY dist/ dist/
-
-#젠킨슨 테스트05
-
+COPY --from=build /code/dist /usr/share/nginx/html
 
 # frontend Port를 설정한다.
 EXPOSE 5000
+
+#container 종료 될때 정상 종료 유도
+STOPSIGNAL SIGTERM
+
 
 # container가 종료될 때 정상종료를 유도한다.
 STOPSIGNAL SIGTERM
