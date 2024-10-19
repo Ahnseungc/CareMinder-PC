@@ -15,7 +15,7 @@ RUN npm run build
 FROM nginx:stable-alpine
 
 # nginx의 기본 service를 제거한다.
-RUN rm -rf /etc/nginx/sites-enabled/default
+RUN rm -rf /etc/nginx/sites-enabled/default.conf
 
 # nginx에 serving할 html의 설정파일을 복사한다.
 COPY nginx.conf /etc/nginx/conf.d/
