@@ -35,7 +35,7 @@ const routes: RouteObject[] = [
         path: RoutePath.StaffWardManagement,
         element: <AuthorizedRoute allowedRoles={["staff"]} />,
         children: [
-          { index: true, element: <MainHomePage /> },
+          { index: true, element: <StaffHomePage /> },
           { path: RoutePath.StaffCompletedRequests, element: <CompletedRequestsPage /> },
           { path: RoutePath.StaffWardInOut, element: <StaffWardInoutManagementPage /> },
           { path: RoutePath.StaffNotice, element: <StaffNoticePage /> },
