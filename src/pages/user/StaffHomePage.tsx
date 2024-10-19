@@ -2,23 +2,49 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
+import { useStaffAccept } from "@hooks/mutation/useStaffAccept";
+import useGetStaffPatientInprogress from "@hooks/queries/useGetStaffPatientInprogress";
+import useGetStaffPatientInprogressGroup from "@hooks/queries/useGetStaffPatientInprogressGroup";
+import useGetStaffPatientPending from "@hooks/queries/useGetStaffPatientPending";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
-import { CSwitchType } from "@models/home";
+import { CSwitchProps, CSwitchType, isRoleType } from "@models/home";
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
-export default function MainHomePage() {
+export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [userStatus] = useRecoilState(userState);
   const navigate = useNavigate();
   const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
   const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
+  const [isRole, setIsRole] = useState<isRoleType>(null);
+
+  const { data: getPending } = useGetStaffPatientPending(isRole, staffWaitIsMine);
+  const { data: getInprogress } = useGetStaffPatientInprogress(staffAcceptIsGroup);
+  const { data: getInprogressGroup } = useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
+  const { mutate: postAccept } = useStaffAccept();
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
+    if (type === "wait") return postAccept(id);
+  };
+
+  const isFindRole = (role: CSwitchProps) => {
+    switch (role) {
+      case "간호사":
+        return "NURSE";
+      case "조무사":
+        return "NURSE_ASSISTANT";
+      case "직원":
+        return "WORKER";
+      case "의사":
+        return "DOCTOR";
+      case "전체":
+        return "NOT_CLASSIFIED";
+    }
   };
 
   useEffect(() => {
@@ -32,7 +58,7 @@ export default function MainHomePage() {
         navigate("/staff");
         break;
     }
-  }, [setlayoutState]);
+  }, []);
 
   return (
     <>
@@ -46,15 +72,20 @@ export default function MainHomePage() {
           <SubTitleRight>
             <span>직종</span>
             <CComboBox
-              placeholder={"테스트"}
-              options={["테스트1", "테스트2"]}
+              placeholder={"전체"}
+              options={["전체", "간호사", "조무사", "직원", "의사"]}
               value={""}
-              onChange={() => null}
+              onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>
         </SubTitle>
-        {waitPatientmockData.staffWait.map(el => (
-          <PatientBox key={el.id} user="staffWait" data={el} onWaitOrAccept={onWaitOrAccept} />
+        {waitPatientmockData.map(el => (
+          <PatientBox
+            key={el.patientRequestId}
+            user="staffWait"
+            data={el}
+            onWaitOrAccept={onWaitOrAccept}
+          />
         ))}
       </LeftSection>
       <RightSection>
@@ -65,8 +96,13 @@ export default function MainHomePage() {
             <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>
-        {waitPatientmockData.staffAccept.map(el => (
-          <PatientBox key={el.id} user="staffAccept" data={el} onWaitOrAccept={onWaitOrAccept} />
+        {waitPatientmockData.map(el => (
+          <PatientBox
+            key={el.patientRequestId}
+            user="staffAccept"
+            data={el}
+            onWaitOrAccept={onWaitOrAccept}
+          />
         ))}
       </RightSection>
     </>
