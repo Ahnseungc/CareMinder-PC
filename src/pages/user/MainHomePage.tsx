@@ -1,7 +1,6 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { waitPatientmockData } from "@components/home/wordMainMockData";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
 import useGetWardPatientInProgress from "@hooks/queries/useGetWardPatientInprogress";
 import useGetWardPatientPending from "@hooks/queries/useGetWardPatientPending";
@@ -72,7 +71,7 @@ export default function MainHomePage() {
               />
             </SubTitleRight>
           </SubTitle>
-          {waitPatientmockData.map(el => (
+          {getPendingData?.map(el => (
             <PatientBox
               key={el.patientRequestId}
               user="mainWait"
@@ -91,7 +90,7 @@ export default function MainHomePage() {
               </span>
             </SubTitleLeft>
           </SubTitle>
-          {waitPatientmockData.map(el => (
+          {getInprogressData?.map(el => (
             <PatientBox
               key={el.patientRequestId}
               user="mainAccept"

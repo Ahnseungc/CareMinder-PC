@@ -1,5 +1,3 @@
-import { roleProps } from "@utils/homePage";
-
 export type UserTypes = {
   user:
     | "mainWait"
@@ -8,31 +6,19 @@ export type UserTypes = {
     | "staffAccept"
     | "completedRequest"
     | "completedRequestFocus";
-  data: PatientListBoxType;
+  data: RequestsData;
   onWaitOrAccept?: (id: number, type: "wait" | "accept") => void;
-};
-
-export type PatientListBoxType = {
-  tabletId: number;
-  staffId: number;
-  patientRequestId: number;
-  place: string;
-  content: string;
-  createdAt: string;
-  role: roleProps;
-  requestStatus: string;
-  isNew?: boolean;
 };
 
 export type MainListBoxProps = {
   isAccept: boolean;
-  data: PatientListBoxType;
+  data: RequestsData;
   onWaitOrAccept: (id: number, type: "wait" | "accept") => void;
 };
 
 export type StaffListBoxProps = {
   isAccept: boolean;
-  data: PatientListBoxType;
+  data: RequestsData;
 };
 
 export type CSwitchType = React.ChangeEvent<HTMLInputElement>;
@@ -47,3 +33,28 @@ export type isRoleType =
   | "DOCTOR"
   | "NOT_CLASSIFIED"
   | null;
+
+export type RequestsData = {
+  requestStatus: PatientStatus;
+  content: string;
+  areaSimple: {
+    areaId: number;
+    areaName: string;
+  };
+  tabletSimple: {
+    tabletId: number;
+    tabletName: string;
+  };
+  patientSimple: {
+    patientId: number;
+    patientName: string;
+  };
+  staffSimple: {
+    staffId: number;
+    staffRole: "NURSE";
+    name: string;
+  };
+  createdAt: string;
+  aiRole: Exclude<isRoleType, null>;
+  patientRequestId: number;
+};

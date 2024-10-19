@@ -1,7 +1,6 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { waitPatientmockData } from "@components/home/wordMainMockData";
 import { useStaffAccept } from "@hooks/mutation/useStaffAccept";
 import useGetStaffPatientInprogress from "@hooks/queries/useGetStaffPatientInprogress";
 import useGetStaffPatientInprogressGroup from "@hooks/queries/useGetStaffPatientInprogressGroup";
@@ -79,7 +78,7 @@ export default function StaffHomePage() {
             />
           </SubTitleRight>
         </SubTitle>
-        {waitPatientmockData.map(el => (
+        {getPending?.map(el => (
           <PatientBox
             key={el.patientRequestId}
             user="staffWait"
@@ -96,7 +95,7 @@ export default function StaffHomePage() {
             <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>
-        {waitPatientmockData.map(el => (
+        {getInprogress?.map(el => (
           <PatientBox
             key={el.patientRequestId}
             user="staffAccept"

@@ -1,4 +1,5 @@
 import { StaffPatientRequest } from "@libraries/axios";
+import { RequestsData } from "@models/home";
 import { useQuery } from "@tanstack/react-query";
 
 const getStaffPatientInprogressGroup = async () => {
@@ -7,7 +8,7 @@ const getStaffPatientInprogressGroup = async () => {
 };
 
 export default function useGetStaffPatientInprogressGroup(staffAcceptIsGroup: boolean) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetStaffPatientInprogressGroup"],
     queryFn: getStaffPatientInprogressGroup,
     enabled: staffAcceptIsGroup,

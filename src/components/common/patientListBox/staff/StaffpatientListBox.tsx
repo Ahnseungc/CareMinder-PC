@@ -9,7 +9,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { MainListBoxProps } from "@models/home";
 
 function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
-  const roleColorPick = roleColor(data.role);
+  const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -32,7 +32,7 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
   return (
     <InnerContainer color={roleColorPick.light} onClick={onOpenChatting}>
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
-        <div>{data.place}</div>
+        <div>{data.areaSimple.areaName}</div>
         <div>
           <MoreHorizRoundedIcon
             onClick={onOptionOnOff}
@@ -71,10 +71,7 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
       </Title>
       <Bottom>
         <TxtBox>
-          <TxtBoxLeft>
-            {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
-            {data.content}
-          </TxtBoxLeft>
+          <TxtBoxLeft>{data.content}</TxtBoxLeft>
           <TxtBoxRight>{data.createdAt}분전</TxtBoxRight>
         </TxtBox>
         <Check

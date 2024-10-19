@@ -1,5 +1,5 @@
 import { StaffPatientRequest } from "@libraries/axios";
-import { isRoleType } from "@models/home";
+import { RequestsData, isRoleType } from "@models/home";
 import { useQuery } from "@tanstack/react-query";
 
 const getStaffPatientPending = async (aiRole: isRoleType, myArea: boolean) => {
@@ -8,7 +8,7 @@ const getStaffPatientPending = async (aiRole: isRoleType, myArea: boolean) => {
 };
 
 export default function useGetStaffPatientPending(aiRole: isRoleType, myArea: boolean) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetStaffPatientPending", aiRole, myArea],
     queryFn: () => getStaffPatientPending(aiRole, myArea),
   });
