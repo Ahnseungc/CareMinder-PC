@@ -1,8 +1,6 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosHeaders } from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
-import { useRecoilValue } from "recoil";
-import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 
 const axiosInstance = axios.create({
@@ -18,24 +16,24 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async error => {
-    const user = useRecoilValue(userState);
-    let accessToken = "";
-    switch (user as unknown as UserType) {
-      case "main":
-        accessToken = Cookies.get("accessToken") as string;
-        break;
+    // const user = useRecoilValue(userState);
+    // let accessToken = "";
+    // switch (user as unknown as UserType) {
+    //   case "main":
+    //     accessToken = Cookies.get("accessToken") as string;
+    //     break;
 
-      case "staff":
-        accessToken = Cookies.get("accessTokenStaff") as string;
-        break;
+    //   case "staff":
+    //     accessToken = Cookies.get("accessTokenStaff") as string;
+    //     break;
 
-      case "admin":
-        accessToken = Cookies.get("accessTokenAdmin") as string;
-        break;
-    }
+    //   case "admin":
+    //     accessToken = Cookies.get("accessTokenAdmin") as string;
+    //     break;
+    // }
 
     if (error.response.status === 401) {
-      const isAccessToken = accessToken !== "";
+      const isAccessToken = Cookies.get("accessToekn") !== undefined;
 
       if (!isAccessToken) {
         return Promise.reject(error);
@@ -58,25 +56,33 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use(
-  config => {
-    const user = useRecoilValue(userState);
-    let accessToken = "";
-    switch (user as unknown as UserType) {
+  (config: InternalAxiosRequestConfig<any>) => {
+    const userType: UserType | undefined = (config as any).userType;
+
+    // const token = Cookies.get("accessToken");
+    let token = "";
+
+    switch (userType) {
       case "main":
-        accessToken = Cookies.get("accessToken") as string;
+        token = Cookies.get("accessToken") as string;
         break;
-
       case "staff":
-        accessToken = Cookies.get("accessTokenStaff") as string;
+        token = Cookies.get("accessTokenStaff") as string;
         break;
-
       case "admin":
-        accessToken = Cookies.get("accessTokenAdmin") as string;
+        token = Cookies.get("accessTokenAdmin") as string;
         break;
     }
 
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if (token) {
+      if (!config.headers) {
+        config.headers = new AxiosHeaders();
+      }
+
+      // 4. Authorization 헤더에 토큰 설정
+      (config.headers as AxiosHeaders).set("Authorization", `Bearer ${token}`);
+
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
