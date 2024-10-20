@@ -11,6 +11,7 @@ const adminSignin = async (useInfo: SigninFormData) => {
 
   if (res.data.accessToken) {
     Cookies.set("accessTokenAdmin", res.data.accessToken);
+    Cookies.set("refreshTokenAdmin", res.data.refreshToken);
   }
 
   return res.data;

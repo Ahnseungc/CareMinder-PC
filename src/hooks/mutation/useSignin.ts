@@ -10,6 +10,7 @@ const signin = async (useInfo: SigninFormData) => {
   const res = await axiosInstance.post("/wards/login", useInfo);
   if (res.data.accessToken) {
     Cookies.set("accessToken", res.data.accessToken);
+    Cookies.set("refreshToken", res.data.refreshToken);
   }
   return res.data;
 };

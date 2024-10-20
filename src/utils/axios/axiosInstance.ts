@@ -1,6 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
+import { useRecoilValue } from "recoil";
+import { userState } from "@libraries/recoil";
+import { UserType } from "@models/user";
 
 const axiosInstance = axios.create({
   baseURL: SEVER_URL,
@@ -15,14 +18,30 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async error => {
+    const user = useRecoilValue(userState);
+    let accessToken = "";
+    switch (user as unknown as UserType) {
+      case "main":
+        accessToken = Cookies.get("accessToken") as string;
+        break;
+
+      case "staff":
+        accessToken = Cookies.get("accessTokenStaff") as string;
+        break;
+
+      case "admin":
+        accessToken = Cookies.get("accessTokenAdmin") as string;
+        break;
+    }
+
     if (error.response.status === 401) {
-      const isAccessToken = Cookies.get("accessToken") !== undefined;
+      const isAccessToken = accessToken !== "";
 
       if (!isAccessToken) {
         return Promise.reject(error);
       }
 
-      //refresh
+      // refresh
       //   const res = await axios.post(`${SEVER_URL}/refresh`, {
       //     accessToekn: Cookies.get("accessToken"),
       //     refreshToken: Cookies.get("refreshToken"),
@@ -40,10 +59,24 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
   config => {
-    const token = Cookies.get("accessToken");
+    const user = useRecoilValue(userState);
+    let accessToken = "";
+    switch (user as unknown as UserType) {
+      case "main":
+        accessToken = Cookies.get("accessToken") as string;
+        break;
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      case "staff":
+        accessToken = Cookies.get("accessTokenStaff") as string;
+        break;
+
+      case "admin":
+        accessToken = Cookies.get("accessTokenAdmin") as string;
+        break;
+    }
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
