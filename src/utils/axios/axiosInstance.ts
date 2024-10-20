@@ -16,22 +16,6 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async error => {
-    // const user = useRecoilValue(userState);
-    // let accessToken = "";
-    // switch (user as unknown as UserType) {
-    //   case "main":
-    //     accessToken = Cookies.get("accessToken") as string;
-    //     break;
-
-    //   case "staff":
-    //     accessToken = Cookies.get("accessTokenStaff") as string;
-    //     break;
-
-    //   case "admin":
-    //     accessToken = Cookies.get("accessTokenAdmin") as string;
-    //     break;
-    // }
-
     if (error.response.status === 401) {
       const isAccessToken = Cookies.get("accessToekn") !== undefined;
 
@@ -58,8 +42,6 @@ axiosInstance.interceptors.response.use(
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
     const userType: UserType | undefined = (config as any).userType;
-
-    // const token = Cookies.get("accessToken");
     let token = "";
 
     switch (userType) {
