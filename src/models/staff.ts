@@ -17,3 +17,4 @@ export type QuickRegisterNewStaff = {
   label: string;
   value: string;
 };
+export type VoidFn = () => void;

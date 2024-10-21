@@ -32,8 +32,8 @@ const StaffPatientRequest: StaffPatientRequestApiType = {
   },
 
   //환자 요청 수락
-  postAccept(data) {
-    return axiosInstance.post(PATH + "/accept", data);
+  postAccept(id) {
+    return axiosInstance.post(PATH + "/accept", { patientRequestId: id });
   },
 };
 export default StaffPatientRequest;

@@ -21,10 +21,20 @@ export default function StaffHomePage() {
   const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
   const [isRole, setIsRole] = useState<isRoleType>(null);
 
-  const { data: getPending } = useGetStaffPatientPending(isRole, staffWaitIsMine);
-  const { data: getInprogress } = useGetStaffPatientInprogress(staffAcceptIsGroup);
-  const { data: getInprogressGroup } = useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
-  const { mutate: postAccept } = useStaffAccept();
+  const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(
+    isRole,
+    staffWaitIsMine,
+  );
+  const { data: getInprogress, refetch: inprogressRefetch } =
+    useGetStaffPatientInprogress(staffAcceptIsGroup);
+  const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
+    useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
+  const { mutate: postAccept } = useStaffAccept(
+    pendingRefetch,
+    inprogressRefetch,
+    inprogressGroupRefetch,
+    staffAcceptIsGroup,
+  );
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
@@ -42,7 +52,7 @@ export default function StaffHomePage() {
       case "의사":
         return "DOCTOR";
       case "전체":
-        return "NOT_CLASSIFIED";
+        return null;
     }
   };
 
@@ -95,14 +105,24 @@ export default function StaffHomePage() {
             <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>
-        {getInprogress?.map(el => (
-          <PatientBox
-            key={el.patientRequestId}
-            user="staffAccept"
-            data={el}
-            onWaitOrAccept={onWaitOrAccept}
-          />
-        ))}
+        {!staffAcceptIsGroup &&
+          getInprogress?.map(el => (
+            <PatientBox
+              key={el.patientRequestId}
+              user="staffAccept"
+              data={el}
+              onWaitOrAccept={onWaitOrAccept}
+            />
+          ))}
+        {staffAcceptIsGroup &&
+          getInprogressGroup?.map(el => (
+            <PatientBox
+              key={el.patientRequestId}
+              user="staffAccept"
+              data={el}
+              onWaitOrAccept={onWaitOrAccept}
+            />
+          ))}
       </RightSection>
     </>
   );

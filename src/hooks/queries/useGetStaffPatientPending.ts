@@ -8,9 +8,9 @@ const getStaffPatientPending = async (aiRole: isRoleType, myArea: boolean) => {
 };
 
 export default function useGetStaffPatientPending(aiRole: isRoleType, myArea: boolean) {
-  const { data, isLoading } = useQuery<RequestsData[], boolean>({
+  const { data, isLoading, refetch } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetStaffPatientPending", aiRole, myArea],
     queryFn: () => getStaffPatientPending(aiRole, myArea),
   });
-  return { data, isLoading };
+  return { data, isLoading, refetch };
 }

@@ -8,10 +8,10 @@ const getStaffPatientInprogress = async () => {
 };
 
 export default function useGetStaffPatientInprogress(staffAcceptIsGroup: boolean) {
-  const { data, isLoading } = useQuery<RequestsData[], boolean>({
+  const { data, isLoading, refetch } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetStaffPatientInprogress"],
     queryFn: getStaffPatientInprogress,
     enabled: !staffAcceptIsGroup,
   });
-  return { data, isLoading };
+  return { data, isLoading, refetch };
 }
