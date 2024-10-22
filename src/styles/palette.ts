@@ -51,6 +51,7 @@ const palette = {
   success: {
     main: CMColors.primary.a95,
     light: CMColors.admin,
+    dark: CMColors.status.excute,
   },
   divider: CMColors.border,
 } as const;

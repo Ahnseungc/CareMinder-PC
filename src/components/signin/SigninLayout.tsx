@@ -1,3 +1,4 @@
+import InfoModal from "@components/settings/modal/InfoModal";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
@@ -5,7 +6,8 @@ import { useSignin, useAdminSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
-import { ReactElement } from "react";
+import { useBooleanState } from "@toss/react";
+import { ReactElement, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type SigninLayoutProps = {
@@ -16,27 +18,40 @@ type SigninLayoutProps = {
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
-  const { mutate: adminSignin } = useAdminSignin();
+  const { mutate: adminSignin, error } = useAdminSignin();
+  const [open, openModal, closeModal] = useBooleanState();
+
+  /* 어드민 계정 로그인 시 슈퍼 어드민 계정에 의해 수락되지 않은 경우 에러 처리*/
+  useEffect(() => {
+    if (error?.response.data.statusCode) {
+      openModal();
+      console.log(error?.response.data.statusCode);
+    }
+  }, [error]);
+
   const onSubmit = type === "admin" ? adminSignin : signin;
 
   return (
-    <Container item xs>
-      <Content>
-        <SigninHeader />
-        <UserTypeTag type={type} />
-        <SigninForm form={form} onSubmit={onSubmit} />
-        {options}
-      </Content>
-      {footer && (
-        <Footer divider={<Divider orientation="vertical" />}>
-          {/* Todo */}
-          {/* <Link href="#" variant="h3">
+    <>
+      <InfoModal open={open} onClose={closeModal} modalType={"waiting"}></InfoModal>
+      <Container item xs>
+        <Content>
+          <SigninHeader />
+          <UserTypeTag type={type} />
+          <SigninForm form={form} onSubmit={onSubmit} />
+          {options}
+        </Content>
+        {footer && (
+          <Footer divider={<Divider orientation="vertical" />}>
+            {/* Todo */}
+            {/* <Link href="#" variant="h3">
             ID / PW 찾기
           </Link> */}
-          {footer}
-        </Footer>
-      )}
-    </Container>
+            {footer}
+          </Footer>
+        )}
+      </Container>
+    </>
   );
 }
 
