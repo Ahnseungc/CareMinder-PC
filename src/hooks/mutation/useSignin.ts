@@ -7,7 +7,7 @@ import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
 
 const signin = async (useInfo: SigninFormData) => {
-  const res = await axiosInstance.post("/wards/login", useInfo);
+  const res = await axiosInstance.post("/users/login", useInfo);
   if (res.data.accessToken) {
     Cookies.set("accessToken", res.data.accessToken);
     Cookies.set("refreshToken", res.data.refreshToken);

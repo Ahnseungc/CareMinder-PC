@@ -3,17 +3,23 @@ import { styled } from "@mui/material";
 import { UseFormReturn } from "react-hook-form";
 import TextField from "./TextField";
 import CButton from "@components/common/atom/C-Button";
+import { reqUserType } from "@models/user";
 
 type SigninFormProps = {
   form: UseFormReturn<SigninFormData>;
   onSubmit: (data: SigninFormData) => void;
+  type: reqUserType;
 };
 
-export default function SigninForm({ form, onSubmit }: SigninFormProps) {
+export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const { handleSubmit } = form;
 
   const handleFormSubmit = (data: SigninFormData) => {
-    onSubmit(data);
+    const updatedData = {
+      ...data,
+      accountType: type, // 원하는 accountType 설정
+    };
+    onSubmit(updatedData);
   };
 
   return (

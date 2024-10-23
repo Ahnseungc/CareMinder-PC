@@ -37,7 +37,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
       <Content>
         <CloseButton onClick={onClose} />
         <SettingsHeader />
-        <SigninForm form={form} onSubmit={handleLogin} />
+        <SigninForm form={form} onSubmit={handleLogin} type="ADMIN" />
       </Content>
       <Footer divider={<Divider orientation="vertical" />}>
         <Link href="#" variant="h3">

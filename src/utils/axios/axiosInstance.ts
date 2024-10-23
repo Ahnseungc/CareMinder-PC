@@ -26,18 +26,21 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // refresh
-      //   const res = await axios.post(`${SEVER_URL}/refresh`, {
-      //     accessToekn: Cookies.get("accessToken"),
-      //     refreshToken: Cookies.get("refreshToken"),
-      //   });
-      //   if (res.data === false) {
-      //     return false;
-      //   }
-      //   Cookies.set("accessToken", res.data.accessToken);
-      //   Cookies.set("refreshToken", res.data.refreshToken);
+      if (error.response.status === 401) {
+        const res = await axios.post(`${SEVER_URL}/users/refresh-token`, {
+          accessToekn: Cookies.get("accessToken"),
+          refreshToken: Cookies.get("refreshToken"),
+        });
+        if (res.data === false) {
+          return false;
+        }
+        Cookies.set("accessToken", res.data.accessToken);
+        Cookies.set("refreshToken", res.data.refreshToken);
+      }
 
-      //   return Promise.reject(error);
+      // refresh
+
+      return Promise.reject(error);
     }
   },
 );
@@ -64,7 +67,6 @@ axiosInstance.interceptors.request.use(
         config.headers = new AxiosHeaders();
       }
 
-      // 4. Authorization 헤더에 토큰 설정
       (config.headers as AxiosHeaders).set("Authorization", `Bearer ${token}`);
 
       config.headers.Authorization = `Bearer ${token}`;

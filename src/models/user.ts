@@ -1,4 +1,5 @@
 export type UserType = "admin" | "main" | "staff";
+export type reqUserType = "ADMIN" | "WARD" | "STAFF";
 
 export type User = {
   id: number;
