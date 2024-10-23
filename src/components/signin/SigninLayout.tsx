@@ -14,9 +14,6 @@ type SigninLayoutProps = {
   options?: ReactElement;
 };
 
-// 로직 통합
-// 토큰 들어가는지 확인
-
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
