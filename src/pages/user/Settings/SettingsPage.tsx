@@ -5,7 +5,7 @@ import { useRecoilState } from "recoil";
 import { StaffAccount } from "./StaffAccount";
 import { TabletManagement } from "./TabletManagement";
 import { useNavigate } from "react-router-dom";
-import settingsLoginState from "@libraries/recoil/settings";
+import settingsLoginState from "@libraries/recoil/settings/login";
 
 export type TabButtonProps = {
   isActive?: boolean;

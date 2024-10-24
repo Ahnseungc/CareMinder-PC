@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { Close } from "@mui/icons-material";
 import { SettingsHeader } from ".";
 import { useSetRecoilState } from "recoil";
-import settingsLoginState from "@libraries/recoil/settings";
+import settingsLoginState from "@libraries/recoil/settings/login";
 import { useNavigate } from "react-router-dom";
 
 type SettingsLayoutProps = {

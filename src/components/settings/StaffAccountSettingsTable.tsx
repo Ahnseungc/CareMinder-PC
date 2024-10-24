@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-import { ReactComponent as DeleteButton } from "@/assets/x-circle-fill.svg";
+import { Checkbox, Typography } from "@mui/material";
+
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
+// import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
+import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { editingState } from "@libraries/recoil";
 
 const columns = [
+  { field: "check", headerName: "" },
   { field: "StaffName", headerName: "스태프 이름" },
   { field: "Occupation", headerName: "직업" },
   { field: "Section", headerName: "구역" },
-  { field: "Password", headerName: "비밀번호" },
+  { field: "LoginId", headerName: "아이디" },
   { field: "Phone", headerName: "전화번호" },
   { field: "Email", headerName: "이메일" },
-  { field: "Delete", headerName: "" },
+  { field: "AccountStatus", headerName: "계정상태" },
+  { field: "AccountManage", headerName: "계정관리" },
 ];
 
 const rows = [
@@ -28,11 +37,44 @@ const rows = [
 ];
 
 interface StaffAccountSettingsTableProps {
+  onEdit: () => void;
+  onLock: () => void;
   onDelete: () => void;
+  isClear: boolean;
+  setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const StaffAccountSettingsTable = ({ onDelete }: StaffAccountSettingsTableProps) => {
+const StaffAccountSettingsTable = ({
+  onEdit,
+  onLock,
+  onDelete,
+  isClear,
+  setIsClear,
+}: StaffAccountSettingsTableProps) => {
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  const [selectIndex, setSelectIndex] = useState<number[]>([]);
+
+  const isConnecting = true;
+
+  const setIsEditing = useSetRecoilState(editingState);
+  const isEditing = useRecoilValue(editingState);
+
+  useEffect(() => {
+    if (selectIndex.length === 0) {
+      setIsEditing([]);
+    } else {
+      setIsEditing(selectIndex);
+    }
+  }, [selectIndex, setIsEditing]);
+
+  useEffect(() => {
+    if (isClear) {
+      setIsClear(false);
+      setSelectIndex([]);
+    }
+  }, [isEditing, isClear, setIsClear]);
+
   return (
     <StTable>
       <thead>
@@ -45,10 +87,48 @@ const StaffAccountSettingsTable = ({ onDelete }: StaffAccountSettingsTableProps)
       <tbody>
         {rows.map((row, index) => {
           return (
-            <tr key={index}>
+            <tr
+              key={index}
+              style={{ backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}` }}
+            >
+              <td>
+                <Checkbox
+                  {...label}
+                  sx={{
+                    "&.MuiCheckbox-root": {
+                      color: "#ECECEC",
+                    },
+                    "& .MuiSvgIcon-root": {
+                      fontSize: 28,
+                    },
+                    "&.Mui-checked": {
+                      "& .MuiSvgIcon-root": {
+                        fill: "#B4C0FF",
+                      },
+                    },
+                  }}
+                  checked={selectIndex.includes(index)}
+                  onClick={() => {
+                    setSelectIndex(prevList => {
+                      if (prevList.includes(index)) {
+                        return prevList.filter(item => item !== index);
+                      } else {
+                        return [...prevList, index];
+                      }
+                    });
+                  }}
+                />
+              </td>
               <td>
                 <ShortComBoxLayout>
-                  <CComboBox placeholder={"스태프"} options={[]} value={""} onChange={() => null} />
+                  <CInput
+                    variant={"outlined"}
+                    placeholder={"스태프"}
+                    onChange={() => null}
+                    value={""}
+                    disabled={false}
+                    id={""}
+                  ></CInput>
                 </ShortComBoxLayout>
               </td>
               <td>
@@ -79,7 +159,7 @@ const StaffAccountSettingsTable = ({ onDelete }: StaffAccountSettingsTableProps)
                 <LongComBoxLayout>
                   <CInput
                     variant={"outlined"}
-                    placeholder={"비밀번호"}
+                    placeholder={"아이디"}
                     onChange={() => null}
                     value={""}
                     disabled={false}
@@ -112,9 +192,36 @@ const StaffAccountSettingsTable = ({ onDelete }: StaffAccountSettingsTableProps)
                 </LongComBoxLayout>
               </td>
               <td>
-                <DeleteLayout onClick={onDelete}>
-                  <DeleteButton />
-                </DeleteLayout>
+                <ShortComBoxLayout>
+                  {isConnecting ? (
+                    <>
+                      <div
+                        style={{
+                          width: "6px",
+                          height: "6px",
+                          backgroundColor: "#1ADE00",
+                          borderRadius: "50%",
+                          boxShadow: "0px 0px 2px rgba(26,222,0,0.5)",
+                          marginRight: "7px",
+                        }}
+                      ></div>
+                      <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
+                    </>
+                  ) : (
+                    <Typography>
+                      미접속
+                      <br />
+                      3시간전
+                    </Typography>
+                  )}
+                </ShortComBoxLayout>
+              </td>
+              <td>
+                <AccountMenuLayout>
+                  <Edit onClick={onEdit} />
+                  <Lock onClick={onLock} />
+                  <Delete onClick={onDelete} />
+                </AccountMenuLayout>
               </td>
             </tr>
           );
@@ -150,20 +257,20 @@ const StTable = styled.table`
 `;
 
 const ShortComBoxLayout = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 138px;
   height: 36px;
   margin: 0 auto;
+`;
+
+const AccountMenuLayout = styled(ShortComBoxLayout)`
+  gap: 28px;
 `;
 
 const LongComBoxLayout = styled.div`
   width: 224px;
   height: 36px;
   margin: 0 auto;
-`;
-
-const DeleteLayout = styled.div`
-  width: 80px;
-  height: 36px;
-  margin: 0 auto;
-  cursor: pointer;
 `;
