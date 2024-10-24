@@ -236,6 +236,7 @@ export default StaffAccountSettingsTable;
 const StTable = styled.table`
   width: 100%;
   height: 100%;
+  border-collapse: collapse;
   & thead {
     width: 100%;
     height: 20%;
