@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosError } from "axios";
 import { NewAdminUserRequests } from "@models/user";
 import axiosInstance from "@utils/axios/axiosInstance";
 

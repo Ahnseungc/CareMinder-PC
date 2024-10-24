@@ -3,7 +3,7 @@ import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
-import { reqUserType, UserType } from "@models/user";
+import { UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
 import { ReactElement } from "react";
 import { useForm } from "react-hook-form";
