@@ -3,9 +3,9 @@ import axiosInstance from "@/utils/axios/axiosInstance";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
+import { UserType } from "@models/user";
 
-const signOut = async (type: string) => {
-  console.log(type);
+const signOut = async (type: UserType) => {
   let typeQuery = "";
   switch (type) {
     case "WARD":
@@ -19,29 +19,47 @@ const signOut = async (type: string) => {
       break;
   }
 
-  const res = await axiosInstance.post(`/${typeQuery}/logout`);
+  // const res = await axiosInstance.post(`/${typeQuery}/logout`);
 
-  if (res.data) {
-    if (type === "main" && res.data.accessToken && res.data.refreshToken) {
-      Cookies.set("accessToken", "");
-    }
-    if (type === "staff" && res.data.accessToken && res.data.refreshToken) {
-      Cookies.set("accessTokenStaff", "");
-    }
-    if (type === "admin" && res.data.accessToken && res.data.refreshToken) {
-      Cookies.set("accessTokenAdmin", "");
-    }
+  if (type === "WARD") {
+    Cookies.set("accessTokenWard", "");
+    Cookies.set("refreshTokenWard", "");
   }
-  return res.data;
+  if (type === "STAFF") {
+    Cookies.set("accessTokenStaff", "");
+    Cookies.set("refreshTokenStaff", "");
+  }
+  if (type === "ADMIN") {
+    Cookies.set("accessTokenAdmin", "");
+    Cookies.set("refreshTokenAdmin", "");
+  }
+
+  return true;
 };
 
-export default function useSignOut(type: string) {
+export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
   return useMutation({
     mutationFn: () => signOut(type),
     onSuccess: () => {
       console.log("로그아웃 성공");
-      setUserState(null);
+
+      if (type === "STAFF") {
+        setUserState(prev => {
+          if (!prev) {
+            return { id: 0, name: "", type: "WARD" };
+          }
+
+          return {
+            ...prev,
+            type: "WARD",
+            id: prev.id,
+            name: prev.name,
+          };
+        });
+      } else {
+        setUserState(null);
+      }
     },
     onError: error => {
       console.error("로그아웃 실패:", error);

@@ -75,7 +75,7 @@ export default function SearchBox() {
           disableUnderline={true}
           startAdornment={
             <ListBox onClick={handleList} isEmpty={selectedNurse}>
-              {user?.type === "main" ? (
+              {user?.type === "WARD" ? (
                 <User style={{ marginBottom: "2px" }} />
               ) : (
                 <UserStaff style={{ marginBottom: "2px" }} />
@@ -90,7 +90,7 @@ export default function SearchBox() {
             </ListBox>
           }
           endAdornment={
-            user?.type === "main" ? (
+            user?.type === "WARD" ? (
               <Search style={{ cursor: "pointer" }} />
             ) : (
               <UserSearch style={{ cursor: "pointer" }} />

@@ -66,7 +66,6 @@ axiosInstance.interceptors.request.use(
       if (!config.headers) {
         config.headers = new AxiosHeaders();
       }
-
       (config.headers as AxiosHeaders).set("Authorization", `Bearer ${token}`);
 
       config.headers.Authorization = `Bearer ${token}`;

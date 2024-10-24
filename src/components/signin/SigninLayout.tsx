@@ -1,7 +1,7 @@
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
-import { useSignin, useAdminSignin } from "@hooks/mutation";
+import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { reqUserType, UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
@@ -10,15 +10,14 @@ import { useForm } from "react-hook-form";
 
 type SigninLayoutProps = {
   type: UserType;
-  reqType: reqUserType;
   footer?: ReactElement;
   options?: ReactElement;
 };
 
-export default function SigninLayout({ type, reqType, footer, options }: SigninLayoutProps) {
+export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
-  const { mutate: adminSignin } = useAdminSignin();
+
   const onSubmit = signin;
 
   return (
@@ -26,7 +25,7 @@ export default function SigninLayout({ type, reqType, footer, options }: SigninL
       <Content>
         <SigninHeader />
         <UserTypeTag type={type} />
-        <SigninForm form={form} onSubmit={onSubmit} type={reqType} />
+        <SigninForm form={form} onSubmit={onSubmit} type={type} />
         {options}
       </Content>
       {footer && (
