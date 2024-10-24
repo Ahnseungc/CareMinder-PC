@@ -30,6 +30,7 @@ export default function SigninPage() {
       <Thumbnail />
       <SigninLayout
         type="main"
+        reqType="WARD"
         footer={
           <Link href={RoutePath.AdminSignin} variant="h3">
             어드민 계정 로그인

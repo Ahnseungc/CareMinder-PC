@@ -51,13 +51,13 @@ axiosInstance.interceptors.request.use(
     let token = "";
 
     switch (userType) {
-      case "main":
-        token = Cookies.get("accessToken") as string;
+      case "WARD":
+        token = Cookies.get("accessTokenWard") as string;
         break;
-      case "staff":
+      case "STAFF":
         token = Cookies.get("accessTokenStaff") as string;
         break;
-      case "admin":
+      case "ADMIN":
         token = Cookies.get("accessTokenAdmin") as string;
         break;
     }

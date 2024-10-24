@@ -15,6 +15,7 @@ import modalState from "@libraries/recoil/modal";
 export default function AuthenticatedLayout() {
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
+  const setUser = useSetRecoilState(userState);
   const [isChecking, setIsChecking] = useState(true);
   const isModal = useRecoilValue(modalState);
   const setIsModalOpen = useSetRecoilState(modalState);

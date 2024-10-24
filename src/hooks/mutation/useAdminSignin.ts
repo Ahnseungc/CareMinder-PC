@@ -30,7 +30,7 @@ export default function useAdminSignin() {
       setUserState({
         id: 0,
         name: "테스트",
-        type: "admin",
+        type: "ADMIN",
       });
       // 추가 응답 API 개발 완료 후
       // setUserState({

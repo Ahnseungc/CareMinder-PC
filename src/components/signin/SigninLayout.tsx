@@ -3,29 +3,30 @@ import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin, useAdminSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
-import { UserType } from "@models/user";
+import { reqUserType, UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
 import { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 
 type SigninLayoutProps = {
   type: UserType;
+  reqType: reqUserType;
   footer?: ReactElement;
   options?: ReactElement;
 };
 
-export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
+export default function SigninLayout({ type, reqType, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
   const { mutate: adminSignin } = useAdminSignin();
-  const onSubmit = type === "admin" ? adminSignin : signin;
+  const onSubmit = signin;
 
   return (
     <Container item xs>
       <Content>
         <SigninHeader />
         <UserTypeTag type={type} />
-        <SigninForm form={form} onSubmit={onSubmit} type={"WARD"} />
+        <SigninForm form={form} onSubmit={onSubmit} type={reqType} />
         {options}
       </Content>
       {footer && (

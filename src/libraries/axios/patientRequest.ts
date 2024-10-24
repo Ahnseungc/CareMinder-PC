@@ -14,7 +14,7 @@ const PatientRequest: PatientRequestApiType = {
   getPatientRequests() {
     return axiosInstance.get(PATH, {
       headers: { "Custom-Header": "value" },
-      userType: "main", // 선택적으로 userType을 추가
+      userType: "WARD", // 선택적으로 userType을 추가
     } as any);
   },
 

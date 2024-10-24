@@ -32,7 +32,7 @@ export default function useStaffSignin() {
       setUserState({
         id: 0,
         name: "테스트",
-        type: "staff",
+        type: "STAFF",
       });
       // 추가 응답 API 개발 완료 후
       // setUserState({

@@ -32,7 +32,8 @@ export default function AdminSigninPage() {
       <Grid container>
         <Thumbnail isAdmin />
         <SigninLayout
-          type="admin"
+          reqType="ADMIN"
+          type="ADMIN"
           footer={
             <Link href={RoutePath.Signin} variant="h3">
               병동 계정 로그인

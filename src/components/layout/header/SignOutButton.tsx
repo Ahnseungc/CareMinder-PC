@@ -7,6 +7,8 @@ import { userState } from "@libraries/recoil";
 export default function SignOutButton() {
   const userType = useRecoilValue(userState)?.type;
 
+  console.log(userType);
+
   const { mutate: signOut } = useSignOut(userType as string);
 
   return (
