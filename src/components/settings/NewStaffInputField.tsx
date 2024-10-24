@@ -3,13 +3,13 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import doubleCheckState from "@libraries/recoil/staff";
 import { NewStaff, NewStaffField } from "@models/staff";
 import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
+import axios from "axios";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
 
 type InputFieldProps = { form: UseFormReturn<NewStaff>; field: NewStaffField };
-// const options = ["의사", "간호사", "조무사", "직원"];
 const options = [
   { label: "DOCTOR", value: "의사" },
   { label: "NURSE", value: "간호사" },
@@ -20,6 +20,58 @@ const options = [
 export default function NewStaffInputField({ field, form }: InputFieldProps) {
   const setDoubleCheck = useSetRecoilState(doubleCheckState);
   const [option, setOption] = useState<string>(options[0].value);
+  const [validState, setValidState] = useState<{
+    username?: {
+      isValid: boolean;
+      message?: string;
+    };
+    confirmPassword?: {
+      isValid: boolean;
+      message?: string;
+    };
+  }>({});
+
+  const validationRules = {
+    name: { required: "이름을 입력해주세요." },
+    occupation: {},
+    username: { required: "아이디를 입력해주세요." },
+    password: {
+      required: "비밀번호를 입력해주세요.",
+      minLength: { value: 4, message: "비밀번호는 최소 4자 이상이어야 합니다." },
+    },
+    confirmPassword: {
+      required: "비밀번호를 재입력해주세요.",
+      validate: (value: string, { password }: NewStaff) => {
+        if (value === password) {
+          setValidState(prev => ({
+            ...prev,
+            confirmPassword: {
+              isValid: true,
+              message: "비밀번호가 올바르게 확인되었습니다.",
+            },
+          }));
+          return true;
+        }
+
+        setValidState(prev => ({
+          ...prev,
+          confirmPassword: undefined,
+        }));
+        return "비밀번호가 올바르지 않습니다.";
+      },
+    },
+    phoneNumber: {
+      required: "전화번호를 입력해주세요.",
+      pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
+    },
+    email: {
+      pattern: {
+        value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+        message: "올바른 이메일을 입력해주세요.",
+      },
+    },
+  };
+
   const { name, label, placeholder } = field;
 
   const {
@@ -44,20 +96,34 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
       });
       return;
     } else {
-      const doubleCheck = {
-        loginId: username,
-        accountType: "STAFF",
-      };
-      const res = await axiosInstance.post("/users/check-login-id", doubleCheck);
-      console.log(res);
-      if (res.data === "사용 가능한 아이디입니다.") {
-        setDoubleCheck(true);
-      } else {
-        form.setError("username", {
-          type: "manual",
-          message: "이미 사용중인 아이디입니다.",
-        });
-        return;
+      try {
+        const doubleCheck = {
+          loginId: username,
+          accountType: "STAFF",
+        };
+        const res = await axiosInstance.post("/users/check-login-id", doubleCheck);
+        // console.log(res);
+        if (res.data === "사용 가능한 아이디입니다.") {
+          setDoubleCheck(true);
+          form.clearErrors("username");
+          setValidState({
+            username: {
+              isValid: true,
+              message: "사용 가능한 아이디입니다.",
+            },
+          });
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+          console.error(err.response?.status);
+          if (err.response.status === 409) {
+            form.setError("username", {
+              type: "manual",
+              message: "이미 사용중인 아이디입니다.",
+            });
+            setValidState(prev => ({ ...prev, username: undefined }));
+          }
+        }
       }
     }
   };
@@ -89,6 +155,13 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                 placeholder={placeholder}
                 type={inputTypes[name] || "text"}
                 error={Boolean(errors[name])}
+                onChange={e => {
+                  field.onChange(e);
+                  if (field.name === "username") {
+                    setDoubleCheck(false); // 값이 변경되면 doubleCheck 상태를 false로
+                    setValidState(prev => ({ ...prev, username: undefined })); // 성공 메시지도 제거
+                  }
+                }}
                 InputProps={{
                   endAdornment:
                     field.name === "username" ? (
@@ -113,36 +186,19 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
         )}
       />
       {errors[name] && <FormHelperText>{errors[name]?.message}</FormHelperText>}
+      {validState.username?.isValid && name === "username" && (
+        <FormHelperText sx={{ color: "#1ADE00" }}>{validState.username.message}</FormHelperText>
+      )}
+      {validState.confirmPassword?.isValid && name === "confirmPassword" && (
+        <FormHelperText sx={{ color: "#1ADE00" }}>
+          {validState.confirmPassword.message}
+        </FormHelperText>
+      )}
     </FormControl>
   );
 }
 
 /** utils */
-
-const validationRules = {
-  name: { required: "이름을 입력해주세요." },
-  occupation: {},
-  username: { required: "아이디를 입력해주세요." },
-  password: {
-    required: "비밀번호를 입력해주세요.",
-    minLength: { value: 4, message: "비밀번호는 최소 4자 이상이어야 합니다." },
-  },
-  confirmPassword: {
-    required: "비밀번호를 재입력해주세요.",
-    validate: (value: string, { password }: NewStaff) =>
-      value === password || "비밀번호가 일치하지 않습니다.",
-  },
-  phoneNumber: {
-    required: "전화번호를 입력해주세요.",
-    pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
-  },
-  email: {
-    pattern: {
-      value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-      message: "올바른 이메일을 입력해주세요.",
-    },
-  },
-};
 
 const inputTypes: { [key in keyof NewStaff]: string } = {
   name: "text",

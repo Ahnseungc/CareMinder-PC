@@ -45,7 +45,7 @@ export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
   const { handleSubmit } = form;
 
   const onSubmit: SubmitHandler<NewStaff> = data => {
-    console.log(data);
+    // console.log(data);
     const newStaffRequesets = {
       name: data.name,
       loginId: data.username,
@@ -60,7 +60,7 @@ export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
 
     mutate(newStaffRequesets, {
       onSuccess: () => {
-        toast.success("어드민 계정 생성이 완료되었습니다.");
+        toast.success("스태프 계정 생성이 완료되었습니다.");
         navigate("/");
         setIsDoubleCheckd(false);
       },
