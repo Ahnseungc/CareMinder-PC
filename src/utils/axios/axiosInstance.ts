@@ -1,7 +1,6 @@
 import axios, { InternalAxiosRequestConfig, AxiosHeaders } from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
-import { UserType } from "@models/user";
 
 const axiosInstance = axios.create({
   baseURL: SEVER_URL,
@@ -47,7 +46,10 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
-    const userType: UserType | undefined = (config as any).userType;
+    const userState = localStorage.getItem("recoil-persist");
+    const userStateObj = JSON.parse(userState as string);
+    const userType = userStateObj.userState.type;
+
     let token = "";
 
     switch (userType) {

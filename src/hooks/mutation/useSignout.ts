@@ -43,7 +43,6 @@ export default function useSignOut(type: UserType) {
     mutationFn: () => signOut(type),
     onSuccess: () => {
       console.log("로그아웃 성공");
-
       if (type === "STAFF") {
         setUserState(prev => {
           if (!prev) {
