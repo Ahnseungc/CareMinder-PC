@@ -49,6 +49,7 @@ const AdminInoutSubTitleContainer = styled(Box)({
 
 const AdminNoticeListLayout = styled(Box)({
   width: "50%",
+  height: "100%",
 });
 
 const AdminInoutSubTitleLeftContainer = styled(Box)({
@@ -76,6 +77,8 @@ const TableLayout = styled(Box)({
   marginTop: "40px",
   display: "flex",
   gap: "24px",
+  height: "100%",
+  maxHeight: "647px",
 });
 
 const FooterLayout = styled(Box)({

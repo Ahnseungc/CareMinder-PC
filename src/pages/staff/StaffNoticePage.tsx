@@ -90,7 +90,6 @@ const AdminNoticeListLayout = styled(Box)(({ theme }) => ({
 const AdminInoutSubTitleLeftContainer = styled(Box)({
   display: "flex",
   width: "50%",
-  // gap: "20px",
   alignItems: "center",
 });
 const AdminInoutSubTitleRightContainer = styled(Box)({
