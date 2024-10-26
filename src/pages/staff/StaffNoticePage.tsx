@@ -22,6 +22,7 @@ const StaffNoticePage = () => {
               onChange={() => null}
               placeholder={"검색 내용을 입력해주세요."}
               borderColor="#8C8E94"
+              select="선택"
             />
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
