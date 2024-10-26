@@ -8,13 +8,19 @@ import CButton from "@components/common/atom/C-Button";
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCardDetail";
 import useGetNotice from "@hooks/queries/useGetNotice";
-
-const mock = [1, 2, 3, 4, 5, 6, 7];
+import { NoticeType } from "@models/notice";
+import { useState } from "react";
 
 const StaffNoticePage = () => {
   const { data: getNotices, isLoading } = useGetNotice();
+  const [selected, setSelected] = useState<NoticeType>();
 
-  console.log(getNotices, isLoading);
+  const onChangeSelected = (id: number) => {
+    const select = getNotices.filter((notice: NoticeType) => id === notice.id);
+    setSelected(select);
+  };
+
+  console.log(getNotices);
   return (
     <Container>
       <div>
@@ -51,11 +57,17 @@ const StaffNoticePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          {mock.map(item => {
-            return <AdminNoticeCard key={item} />;
+          {getNotices?.map((notice: NoticeType) => {
+            return (
+              <AdminNoticeCard
+                key={notice.id}
+                notice={notice}
+                onChangeSelected={onChangeSelected}
+              />
+            );
           })}
         </AdminNoticeListLayout>
-        <AdminNoticeCardDeatil />
+        <AdminNoticeCardDeatil notice={selected as NoticeType} />
       </TableLayout>
       <FooterLayout>
         <PaginationComponent totalPage={5} />
@@ -83,7 +95,7 @@ const AdminInoutSubTitleContainer = styled(Box)({
 const AdminNoticeListLayout = styled(Box)(({ theme }) => ({
   width: "50%",
   height: "100%",
-  maxHeight: "647px",
+  minHeight: "648px",
   borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
@@ -113,6 +125,7 @@ const TableLayout = styled(Box)({
   gap: "24px",
   display: "flex",
   height: "100%",
+  minHeight: "648px",
 });
 
 const FooterLayout = styled(Box)({

@@ -1,18 +1,21 @@
 import { FC } from "react";
 import { Box, styled, Typography } from "@mui/material";
+import { NoticeType } from "@models/notice";
 
-const AdminNoticeCard: FC = () => {
+interface AdminNoticeCardProps {
+  notice: NoticeType;
+  onChangeSelected: (id: number) => void;
+}
+
+const AdminNoticeCard: FC<AdminNoticeCardProps> = ({ notice, onChangeSelected }) => {
   return (
-    <StyledBox>
-      <Title>
-        공지사항 제목이 노출됩니다. 공지사항 제목이 노출됩니다. 공지사항 제목이 노출됩니다. 공지사항
-        제목이 노출됩니다.제목이 노출됩니다.
-      </Title>
+    <StyledBox onClick={() => onChangeSelected(notice?.id)}>
+      <Title>{notice?.title}</Title>
       <StyledBottomBox>
         <StyledNameBox>
           <Name>홍길동 간호사</Name>|<Contact>010.0000.0000</Contact>
         </StyledNameBox>
-        <Contact>2024.05.01</Contact>
+        <Contact>{notice?.lastModifiedAt}</Contact>
       </StyledBottomBox>
     </StyledBox>
   );
