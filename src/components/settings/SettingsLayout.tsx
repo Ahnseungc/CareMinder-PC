@@ -8,6 +8,8 @@ import { SettingsHeader } from ".";
 import { useSetRecoilState } from "recoil";
 import settingsLoginState from "@libraries/recoil/settings/login";
 import { useNavigate } from "react-router-dom";
+import { userState } from "@libraries/recoil";
+import { useRecoilValue } from "recoil";
 
 type SettingsLayoutProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -18,6 +20,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
   const { mutate: signin } = useSignin();
   const setSettingsLoginState = useSetRecoilState(settingsLoginState);
   const navigate = useNavigate();
+  const user = useRecoilValue(userState);
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
@@ -37,7 +40,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
       <Content>
         <CloseButton onClick={onClose} />
         <SettingsHeader />
-        <SigninForm form={form} onSubmit={handleLogin} />
+        <SigninForm form={form} onSubmit={handleLogin} type={user?.type} />
       </Content>
       <Footer divider={<Divider orientation="vertical" />}>
         <Link href="#" variant="h3">

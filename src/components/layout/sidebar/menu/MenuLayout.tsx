@@ -20,13 +20,13 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
   let menuButtonStyle = useMenuButtonStyles(isActive);
 
   switch (user?.type) {
-    case "main":
+    case "WARD":
       menuButtonStyle = useMenuButtonStyles(isActive);
       break;
-    case "staff":
+    case "STAFF":
       menuButtonStyle = useStaffMenuButtonStyles(isActive);
       break;
-    case "admin":
+    case "ADMIN":
       menuButtonStyle = useAdminMenuButtonStyles(isActive);
       break;
   }

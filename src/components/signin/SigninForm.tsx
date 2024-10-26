@@ -3,17 +3,28 @@ import { styled } from "@mui/material";
 import { UseFormReturn } from "react-hook-form";
 import TextField from "./TextField";
 import CButton from "@components/common/atom/C-Button";
+import { UserType } from "@models/user";
+import { userState } from "@libraries/recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 type SigninFormProps = {
   form: UseFormReturn<SigninFormData>;
   onSubmit: (data: SigninFormData) => void;
+  type?: string;
 };
 
-export default function SigninForm({ form, onSubmit }: SigninFormProps) {
+export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const { handleSubmit } = form;
+  const user = useRecoilValue(userState);
+
+  const userType = type === user?.type ? user?.type : type;
 
   const handleFormSubmit = (data: SigninFormData) => {
-    onSubmit(data);
+    const updatedData = {
+      ...data,
+      accountType: userType, // 원하는 accountType 설정
+    };
+    onSubmit(updatedData);
   };
 
   return (

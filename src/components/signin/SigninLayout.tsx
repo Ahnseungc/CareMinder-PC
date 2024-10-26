@@ -2,7 +2,7 @@ import InfoModal from "@components/settings/modal/InfoModal";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
-import { useSignin, useAdminSignin } from "@hooks/mutation";
+import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
@@ -15,10 +15,10 @@ type SigninLayoutProps = {
   footer?: ReactElement;
   options?: ReactElement;
 };
+
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
-  const { mutate: signin } = useSignin();
-  const { mutate: adminSignin, error } = useAdminSignin();
+  const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
 
   /* 어드민 계정 로그인 시 슈퍼 어드민 계정에 의해 수락되지 않은 경우 에러 처리*/
@@ -29,7 +29,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
     }
   }, [error]);
 
-  const onSubmit = type === "admin" ? adminSignin : signin;
+  const onSubmit = signin;
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         <Content>
           <SigninHeader />
           <UserTypeTag type={type} />
-          <SigninForm form={form} onSubmit={onSubmit} />
+          <SigninForm form={form} onSubmit={onSubmit} type={type} />
           {options}
         </Content>
         {footer && (

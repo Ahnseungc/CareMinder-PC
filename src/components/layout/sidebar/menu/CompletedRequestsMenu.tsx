@@ -12,14 +12,14 @@ export default function CompletedRequestsMenu() {
     <SwitchCase
       value={user?.type as UserType}
       caseBy={{
-        main: (
+        WARD: (
           <MenuLayout
             routePath={RoutePath.StaffCompletedRequests}
             pageName={`완료 요청\n히스토리`}
             icon={CompletedRequests}
           />
         ),
-        staff: (
+        STAFF: (
           <MenuLayout
             routePath={RoutePath.StaffCompletedRequests}
             pageName={`완료 요청\n히스토리`}
