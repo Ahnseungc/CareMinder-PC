@@ -6,10 +6,6 @@ type PendingType = {
   aiRole: isRoleType;
   myArea: boolean;
 };
-export type PatchStateType = {
-  requestStatus: PatientStatus;
-  patientRequestId: number;
-};
 
 export type StaffPatientRequestApiType = {
   getPending(params: PendingType): Promise<AxiosResponse>;

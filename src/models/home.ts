@@ -1,5 +1,3 @@
-import { PatchStateType } from "@libraries/axios/staffPatientRequest";
-
 export type UserTypes = {
   user:
     | "mainWait"
