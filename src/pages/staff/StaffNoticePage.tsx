@@ -7,10 +7,14 @@ import CButton from "@components/common/atom/C-Button";
 
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCardDetail";
+import useGetNotice from "@hooks/queries/useGetNotice";
 
 const mock = [1, 2, 3, 4, 5, 6, 7];
 
 const StaffNoticePage = () => {
+  const { data: getNotices, isLoading } = useGetNotice();
+
+  console.log(getNotices, isLoading);
   return (
     <Container>
       <div>

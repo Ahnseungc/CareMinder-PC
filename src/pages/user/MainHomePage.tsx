@@ -24,8 +24,6 @@ export default function MainHomePage() {
     if (userStatus?.type === "WARD") return setIsModal(true);
   };
 
-  // const { data: getPatient, isLoading } = useGetPatientRequests();
-
   const onStaffLogIn = () => {
     if (userStatus?.type === "WARD") {
       setIsModal(true);
