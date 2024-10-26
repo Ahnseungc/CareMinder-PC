@@ -15,9 +15,9 @@ export default function Header() {
       <SwitchCase
         value={user?.type as UserType}
         caseBy={{
-          main: <UserHeader />,
-          staff: <UserHeader />,
-          admin: <AdminHeader />,
+          WARD: <UserHeader />,
+          STAFF: <UserHeader />,
+          ADMIN: <AdminHeader />,
         }}
       />
     </Layout>
@@ -37,10 +37,10 @@ const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
   zIndex: "10",
 
   backgroundColor: theme.palette.primary.main,
-  ...(adminType === "staff" && {
+  ...(adminType === "STAFF" && {
     backgroundColor: theme.palette.secondary.main,
   }),
-  ...(adminType === "admin" && {
+  ...(adminType === "ADMIN" && {
     backgroundColor: theme.palette.success.light,
   }),
 }));

@@ -15,7 +15,7 @@ const options = [
 
 export default function SigninPage() {
   const user = useRecoilValue(userState);
-  const accessToken = Cookies.get("accessToken");
+  const accessToken = Cookies.get("accessTokenWard");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function SigninPage() {
     <Grid container>
       <Thumbnail />
       <SigninLayout
-        type="main"
+        type="WARD"
         footer={
           <Link href={RoutePath.AdminSignin} variant="h3">
             어드민 계정 로그인

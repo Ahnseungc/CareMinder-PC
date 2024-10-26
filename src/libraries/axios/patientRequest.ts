@@ -12,7 +12,10 @@ const PATH = "/patient-requests";
 const PatientRequest: PatientRequestApiType = {
   //모든 환자 요청 조회
   getPatientRequests() {
-    return axiosInstance.get(PATH);
+    return axiosInstance.get(PATH, {
+      headers: { "Custom-Header": "value" },
+      userType: "WARD", // 선택적으로 userType을 추가
+    } as any);
   },
 
   //요청 상태별 환자 요청 조회

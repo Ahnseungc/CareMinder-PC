@@ -12,6 +12,7 @@ const staffSignin = async (useInfo: SigninFormData) => {
 
   if (res.data.accessToken) {
     Cookies.set("accessTokenStaff", res.data.accessToken);
+    Cookies.set("refreshTokenStaff", res.data.refreshToken);
   }
 
   return res.data;
@@ -25,13 +26,13 @@ export default function useStaffSignin() {
   return useMutation({
     mutationFn: staffSignin,
     onSuccess: res => {
-      console.log("로그인 성공");
+      console.log("스테프 로그인 성공");
 
       //개발 전
       setUserState({
         id: 0,
         name: "테스트",
-        type: "staff",
+        type: "STAFF",
       });
       // 추가 응답 API 개발 완료 후
       // setUserState({

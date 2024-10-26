@@ -3,7 +3,6 @@ import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import { waitPatientmockData } from "@components/home/wordMainMockData";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
-import { useGetPatientRequests } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import modalState from "@libraries/recoil/modal";
@@ -22,13 +21,13 @@ export default function MainHomePage() {
   const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    if (userStatus?.type === "main") return setIsModal(true);
+    if (userStatus?.type === "WARD") return setIsModal(true);
   };
 
   // const { data: getPatient, isLoading } = useGetPatientRequests();
 
   const onStaffLogIn = () => {
-    if (userStatus?.type === "main") {
+    if (userStatus?.type === "WARD") {
       setIsModal(true);
     }
   };
@@ -41,10 +40,10 @@ export default function MainHomePage() {
     setlayoutState("home");
 
     switch (userStatus?.type) {
-      case "main":
+      case "WARD":
         navigate("/");
         break;
-      case "staff":
+      case "STAFF":
         navigate("/staff");
         break;
     }
@@ -62,7 +61,7 @@ export default function MainHomePage() {
               <span onClick={onStaffLogIn}>
                 <CSwitch
                   onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
-                  disabled={userStatus?.type === "main"}
+                  disabled={userStatus?.type === "WARD"}
                 />
               </span>
             </SubTitleLeft>
@@ -93,7 +92,7 @@ export default function MainHomePage() {
               <span onClick={onStaffLogIn}>
                 <CSwitch
                   onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
-                  disabled={userStatus?.type === "main"}
+                  disabled={userStatus?.type === "WARD"}
                 />
               </span>
             </SubTitleLeft>

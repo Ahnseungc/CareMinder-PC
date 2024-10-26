@@ -27,7 +27,7 @@ const routes: RouteObject[] = [
     element: <AuthenticatedLayout />,
     children: [
       {
-        element: <AuthorizedRoute allowedRoles={["main", "staff"]} />,
+        element: <AuthorizedRoute allowedRoles={["WARD", "STAFF"]} />,
         children: [
           { index: true, element: <MainHomePage /> },
           { path: RoutePath.StaffHomePage, element: <StaffHomePage /> },
@@ -36,7 +36,7 @@ const routes: RouteObject[] = [
       },
       {
         path: RoutePath.StaffWardManagement,
-        element: <AuthorizedRoute allowedRoles={["staff"]} />,
+        element: <AuthorizedRoute allowedRoles={["STAFF"]} />,
         children: [
           { index: true, element: <MainHomePage /> },
           { path: RoutePath.StaffCompletedRequests, element: <CompletedRequestsPage /> },
@@ -47,7 +47,7 @@ const routes: RouteObject[] = [
       },
       {
         path: RoutePath.AdminCreateWard,
-        element: <AuthorizedRoute allowedRoles={["admin"]} />,
+        element: <AuthorizedRoute allowedRoles={["ADMIN"]} />,
         children: [
           { index: true, element: <AdminCreateWardPage /> },
           { path: RoutePath.AdminWardManagement, element: <AdminWardManagementPage /> },
