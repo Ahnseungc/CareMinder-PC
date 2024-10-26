@@ -10,14 +10,12 @@ export type UserTypes = {
     | "completedRequestFocus";
   data: RequestsData;
   onWaitOrAccept?: (id: number, type: "wait" | "accept") => void;
-  patchState?: ({ requestStatus, patientRequestId }: PatchStateType) => void;
 };
 
 export type MainListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
   onWaitOrAccept: (id: number, type: "wait" | "accept") => void;
-  patchState?: ({ requestStatus, patientRequestId }: PatchStateType) => void;
 };
 
 export type StaffListBoxProps = {
