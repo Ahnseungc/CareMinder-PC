@@ -46,11 +46,15 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
-    const userState = localStorage.getItem("recoil-persist");
-    const userStateObj = JSON.parse(userState as string);
-    const userType = userStateObj.userState.type;
-
     let token = "";
+    const userState = localStorage.getItem("recoil-persist");
+
+    // const userType = userStateObj.userState.type;
+    let userType = "";
+    if (userState) {
+      const userStateObj = JSON.parse(userState as string);
+      userType = userStateObj.userState.type;
+    }
 
     switch (userType) {
       case "WARD":
@@ -62,6 +66,8 @@ axiosInstance.interceptors.request.use(
       case "ADMIN":
         token = Cookies.get("accessTokenAdmin") as string;
         break;
+      default:
+        null;
     }
 
     if (token) {
