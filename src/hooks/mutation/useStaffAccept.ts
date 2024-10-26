@@ -2,7 +2,7 @@ import { StaffPatientRequest } from "@libraries/axios";
 import { VoidFn } from "@models/staff";
 import { useMutation } from "@tanstack/react-query";
 
-export const useStaffAccept = (
+const useStaffAccept = (
   pendingRefetch: VoidFn,
   inprogressRefetch: VoidFn,
   inprogressGroupRefetch: VoidFn,
@@ -18,3 +18,5 @@ export const useStaffAccept = (
     },
   });
 };
+
+export default useStaffAccept;

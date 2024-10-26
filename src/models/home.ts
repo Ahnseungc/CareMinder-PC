@@ -1,3 +1,5 @@
+import { PatchStateType } from "@libraries/axios/staffPatientRequest";
+
 export type UserTypes = {
   user:
     | "mainWait"
@@ -8,12 +10,14 @@ export type UserTypes = {
     | "completedRequestFocus";
   data: RequestsData;
   onWaitOrAccept?: (id: number, type: "wait" | "accept") => void;
+  patchState?: ({ requestStatus, patientRequestId }: PatchStateType) => void;
 };
 
 export type MainListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
   onWaitOrAccept: (id: number, type: "wait" | "accept") => void;
+  patchState?: ({ requestStatus, patientRequestId }: PatchStateType) => void;
 };
 
 export type StaffListBoxProps = {
@@ -57,4 +61,12 @@ export type RequestsData = {
   createdAt: string;
   aiRole: Exclude<isRoleType, null>;
   patientRequestId: number;
+};
+
+type NewRequestsData = Omit<RequestsData, "tabletSimple" | "patientSimple">;
+
+export type RequestsGroupData = {
+  tabletSimple: Pick<RequestsData, "tabletSimple">;
+  patientSimple: Pick<RequestsData, "patientSimple">;
+  patientRequests: NewRequestsData[];
 };

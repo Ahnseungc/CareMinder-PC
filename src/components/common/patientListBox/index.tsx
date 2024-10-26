@@ -5,7 +5,7 @@ import MainPatientListBox from "./main/MainpatientListBox";
 import CompletedPatientListBox from "./completedRequest/CompletedpatientListBox";
 import { UserTypes } from "@models/home";
 
-export default function PatientBox({ user, data, onWaitOrAccept }: UserTypes) {
+export default function PatientBox({ user, data, onWaitOrAccept, patchState }: UserTypes) {
   // props로 user 'mainWait' | 'mainAccept' | 'staffWait' | 'staffAccept' 로 분리
 
   return (
@@ -23,7 +23,12 @@ export default function PatientBox({ user, data, onWaitOrAccept }: UserTypes) {
             <StaffPatientListBox isAccept={false} data={data} onWaitOrAccept={onWaitOrAccept!} />
           ),
           staffAccept: (
-            <StaffPatientListBox isAccept={true} data={data} onWaitOrAccept={onWaitOrAccept!} />
+            <StaffPatientListBox
+              isAccept={true}
+              data={data}
+              onWaitOrAccept={onWaitOrAccept!}
+              patchState={patchState!}
+            />
           ),
           completedRequest: <CompletedPatientListBox isAccept={false} data={data} />,
           completedRequestFocus: <CompletedPatientListBox isAccept={true} data={data} />,

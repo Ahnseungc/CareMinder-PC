@@ -8,7 +8,7 @@ import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { MainListBoxProps } from "@models/home";
 
-function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
+function StaffPatientListBox({ isAccept, data, onWaitOrAccept, patchState }: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
@@ -41,7 +41,16 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
           {isOptions && (
             <Options>
               {isAccept ? (
-                <Option onMouseDown={() => console.log("수락취소")}>수락취소</Option>
+                <Option
+                  onMouseDown={() =>
+                    patchState({
+                      requestStatus: "PENDING",
+                      patientRequestId: data.patientRequestId,
+                    })
+                  }
+                >
+                  수락취소
+                </Option>
               ) : (
                 <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
               )}

@@ -1,10 +1,13 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { useStaffAccept } from "@hooks/mutation/useStaffAccept";
-import useGetStaffPatientInprogress from "@hooks/queries/useGetStaffPatientInprogress";
-import useGetStaffPatientInprogressGroup from "@hooks/queries/useGetStaffPatientInprogressGroup";
-import useGetStaffPatientPending from "@hooks/queries/useGetStaffPatientPending";
+import { useStaffAccept, useStaffComplete, useStaffDecline } from "@hooks/mutation";
+import {
+  useGetStaffPatientInprogress,
+  useGetStaffPatientInprogressGroup,
+  useGetStaffPatientPending,
+} from "@hooks/queries";
+
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import { CSwitchProps, CSwitchType, isRoleType } from "@models/home";
@@ -35,10 +38,23 @@ export default function StaffHomePage() {
     inprogressGroupRefetch,
     staffAcceptIsGroup,
   );
+  const { mutate: patchComplete } = useStaffComplete(
+    pendingRefetch,
+    inprogressRefetch,
+    inprogressGroupRefetch,
+    staffAcceptIsGroup,
+  );
+  const { mutate: patchDecline } = useStaffDecline(
+    pendingRefetch,
+    inprogressRefetch,
+    inprogressGroupRefetch,
+    staffAcceptIsGroup,
+  );
 
   const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
     //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
     if (type === "wait") return postAccept(id);
+    if (type === "accept") return;
   };
 
   const isFindRole = (role: CSwitchProps) => {
@@ -112,17 +128,21 @@ export default function StaffHomePage() {
               user="staffAccept"
               data={el}
               onWaitOrAccept={onWaitOrAccept}
+              patchState={patchState}
             />
           ))}
-        {staffAcceptIsGroup &&
-          getInprogressGroup?.map(el => (
-            <PatientBox
-              key={el.patientRequestId}
-              user="staffAccept"
-              data={el}
-              onWaitOrAccept={onWaitOrAccept}
-            />
-          ))}
+        {/* 디자인 나오기 전이여서 주석 처리 */}
+        {staffAcceptIsGroup && (
+          // getInprogressGroup?.map(el => (
+          //   <PatientBox
+          //     key={el.patientRequestId}
+          //     user="staffAccept"
+          //     data={el}
+          //     onWaitOrAccept={onWaitOrAccept}
+          //   />
+          // ))
+          <></>
+        )}
       </RightSection>
     </>
   );

@@ -1,16 +1,23 @@
-import { isRoleType } from "@models/home";
+import { PatientStatus, isRoleType } from "@models/home";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
 
-export type PendingType = {
+type PendingType = {
   aiRole: isRoleType;
   myArea: boolean;
 };
+export type PatchStateType = {
+  requestStatus: PatientStatus;
+  patientRequestId: number;
+};
+
 export type StaffPatientRequestApiType = {
   getPending(params: PendingType): Promise<AxiosResponse>;
   getInprogress(): Promise<AxiosResponse>;
   getInprogressGroup(): Promise<AxiosResponse>;
-  postAccept(data: number): Promise<AxiosResponse>;
+  postAccept(id: number): Promise<AxiosResponse>;
+  patchComplete(id: number): Promise<AxiosResponse>;
+  patchDecline(id: number): Promise<AxiosResponse>;
 };
 
 const PATH = "/staff-patient-requests";
@@ -34,6 +41,16 @@ const StaffPatientRequest: StaffPatientRequestApiType = {
   //환자 요청 수락
   postAccept(id) {
     return axiosInstance.post(PATH + "/accept", { patientRequestId: id });
+  },
+
+  //환자 요청 상태 완료 처리
+  patchComplete(id) {
+    return axiosInstance.patch(PATH + "/state", { patientRequestId: id });
+  },
+
+  //환자 요청 상태 처리 취소
+  patchDecline(id) {
+    return axiosInstance.patch(PATH + "/state", { patientRequestId: id });
   },
 };
 export default StaffPatientRequest;
