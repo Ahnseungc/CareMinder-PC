@@ -27,6 +27,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   paddingBottom: "20.5px",
   paddingTop: "20px",
   maxHeight: "92.5px",
+  cursor: "pointer",
 }));
 
 const StyledNameBox = styled(Box)({

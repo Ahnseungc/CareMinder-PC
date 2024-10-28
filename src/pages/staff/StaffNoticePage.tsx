@@ -14,6 +14,8 @@ import { useState } from "react";
 const StaffNoticePage = () => {
   const { data: getNotices, isLoading } = useGetNotice();
   const [selected, setSelected] = useState<NoticeType>();
+  const [totalCount, setTotalCount] = useState(0);
+  const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
     const select = getNotices.filter((notice: NoticeType) => id === notice.id);
@@ -70,7 +72,7 @@ const StaffNoticePage = () => {
         <AdminNoticeCardDeatil notice={selected as NoticeType} />
       </TableLayout>
       <FooterLayout>
-        <PaginationComponent totalPage={5} />
+        {size <= getNotices.length && <PaginationComponent totalPage={5} />}
       </FooterLayout>
     </Container>
   );
