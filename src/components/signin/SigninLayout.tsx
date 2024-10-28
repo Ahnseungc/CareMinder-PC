@@ -13,16 +13,19 @@ type SigninLayoutProps = {
   footer?: ReactElement;
   options?: ReactElement;
 };
+
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
   const { mutate: signin } = useSignin();
+
+  const onSubmit = signin;
 
   return (
     <Container item xs>
       <Content>
         <SigninHeader />
         <UserTypeTag type={type} />
-        <SigninForm form={form} onSubmit={signin} />
+        <SigninForm form={form} onSubmit={onSubmit} type={type} />
         {options}
       </Content>
       {footer && (

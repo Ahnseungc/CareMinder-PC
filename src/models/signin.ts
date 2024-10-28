@@ -1,4 +1,5 @@
 export type SigninFormData = {
-  id: string;
+  loginId: string;
   password: string;
+  accountType?: string;
 };

@@ -10,20 +10,22 @@ type TextFieldProps = {
   label: string;
   name: keyof SigninFormData;
   form: UseFormReturn<SigninFormData>;
+  type?: string;
 };
 
 const iconMap = {
-  id: PermIdentityOutlinedIcon,
+  loginId: PermIdentityOutlinedIcon,
   password: LockOutlinedIcon,
 };
 
-export default function TextField({ label, name, form }: TextFieldProps) {
+export default function TextField({ label, name, form, type }: TextFieldProps) {
   const Icon = iconMap[name];
 
   return (
     <MuiTextField
       placeholder={label}
       variant="outlined"
+      type={type}
       {...form.register(name)}
       InputProps={{
         startAdornment: (

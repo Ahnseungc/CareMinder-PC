@@ -1,14 +1,25 @@
 const RoutePath = {
+  //main
   Home: "/",
+  StaffHomePage: "/staff",
   Requests: "/request",
-  CompletedRequests: "/completed",
   PatientManagement: "/management",
   Diet: "/diet",
   Notice: "/notice",
   Settings: "/settings",
 
-  AdminWardManagement: "/admin",
-  AdminStaffManagement: "/admin/staff",
+  //staff
+  StaffCompletedRequests: "/staff/completed",
+  StaffWardManagement: "/staff",
+  StaffWardInOut: "/staff/inout",
+  StaffNotice: "/staff/notice",
+  StaffNoticeWrite: "/staff/noticeWrite",
+  StaffSettings: "staff/settings",
+
+  //admin
+  AdminCreateWard: "/admin",
+  AdminWardManagement: "/admin/ward-manage",
+  AdminStaffManagement: "/admin/staff-manage",
 
   Signin: "/sign-in",
   AdminSignin: "/sign-in/admin",

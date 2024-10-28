@@ -12,9 +12,9 @@ export default function UserTypeTag({ type }: UserTypeProps) {
       <SwitchCase
         value={type}
         caseBy={{
-          admin: <>어드민</>,
-          main: <>병동</>,
-          staff: <>스태프</>,
+          ADMIN: <>어드민</>,
+          WARD: <>병동</>,
+          STAFF: <>스태프</>,
         }}
       />
     </Container>

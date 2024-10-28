@@ -1,3 +1,4 @@
+import { UserType } from "@models/user";
 import { DialogProps, styled } from "@mui/material";
 import { Dialog as Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { PropsWithChildren, ReactElement } from "react";
@@ -32,6 +33,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     borderRadius: "24px",
     minWidth: "300px",
     width: "100%",
+    maxHeight: "900px",
   },
   "& .MuiDialogTitle-root": {
     fontSize: "18px",

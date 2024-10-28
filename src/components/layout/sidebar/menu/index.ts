@@ -8,3 +8,4 @@ export { default as PatientManagementMenu } from "./PatientManagementMenu";
 export { default as RequestsMenu } from "./RequestsMenu";
 export { default as SettingsMenu } from "./SettingsMenu";
 export { default as StaffManageMenu } from "./AdminStaffManagementMenu";
+export { default as AdminCreateNewWard } from "./AdminCreateNewWard";
