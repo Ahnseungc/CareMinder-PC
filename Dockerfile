@@ -5,10 +5,10 @@ FROM node:16-alpine AS build
 WORKDIR /code
 
 COPY package*.json ./
-RUN npm install
+RUN bun install
 
 COPY . .
-RUN npm run build
+RUN bun run build
 
 # Production stage
 # base image는 node image로 시작한다. npm과 yarn이 모두 설치되어 있다.
