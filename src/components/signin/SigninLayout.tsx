@@ -22,12 +22,12 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const [open, openModal, closeModal] = useBooleanState();
 
   /* 어드민 계정 로그인 시 슈퍼 어드민 계정에 의해 수락되지 않은 경우 에러 처리*/
-  useEffect(() => {
-    if (error?.response.data.statusCode) {
-      openModal();
-      console.log(error?.response.data.statusCode);
-    }
-  }, [error]);
+  // useEffect(() => {
+  //   if (error?.response.data.statusCode) {
+  //     openModal();
+  //     console.log(error?.response.data.statusCode);
+  //   }
+  // }, [error]);
 
   const onSubmit = signin;
 

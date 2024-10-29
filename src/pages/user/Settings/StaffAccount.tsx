@@ -6,7 +6,7 @@ import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 
 import { useState } from "react";
-import InfoModal from "@components/settings/modal/InfoModal";
+import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 import ChangeModal from "@components/settings/modal/ChangeModal";
@@ -18,12 +18,13 @@ import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import { CreateStaff } from "./CreateStaff";
 
 export const StaffAccount = () => {
-  const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
-  const [openDelete, openDeleteModal, closeDeleteModal] = useBooleanState(false);
+  const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
+  const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [openTOS, openTOSModal, closeTOSModal] = useBooleanState(false);
 
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [isClear, setIsClear] = useState<boolean>(false);
+  const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
   const [isEditing, setIsEditing] = useRecoilState(editingState);
 
   const handleClear = () => {
@@ -36,6 +37,23 @@ export const StaffAccount = () => {
     closeTOSModal();
   };
 
+  const handleInfoModal = (modalType: string) => {
+    switch (modalType) {
+      case "edit":
+        return;
+      case "lock":
+        setIsModalType("checkUnLockStaff");
+        break;
+      case "unlock":
+        setIsModalType("checkLockStaff");
+        break;
+      case "delete":
+        setIsModalType("checkDeleteStaff");
+        break;
+    }
+    openInfoModal();
+  };
+
   return (
     <>
       {isCreate ? (
@@ -43,7 +61,7 @@ export const StaffAccount = () => {
       ) : (
         <>
           <ChangeModal
-            open={open}
+            open={isOpen}
             onClose={closeCreateModal}
             onConfirm={() => null}
             modalTitle={"스태프 추가"}
@@ -52,9 +70,9 @@ export const StaffAccount = () => {
           />
           <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
           <InfoModal
-            open={openDelete}
-            onClose={closeDeleteModal}
-            modalType={"checkDeleteStaff"}
+            open={isInfoModalOpen}
+            onClose={closeInfoModal}
+            modalType={isModalType}
             onConfirm={() => null}
           ></InfoModal>
           <BodyTitleContainer>
@@ -116,7 +134,7 @@ export const StaffAccount = () => {
           ) : (
             <>
               <StaffAccountSettingsTable
-                onDelete={openDeleteModal}
+                onManage={handleInfoModal}
                 isClear={isClear}
                 setIsClear={setIsClear}
               />

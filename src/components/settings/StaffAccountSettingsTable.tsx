@@ -7,7 +7,7 @@ import { Checkbox, Typography } from "@mui/material";
 
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
-// import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
+import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState } from "@libraries/recoil";
@@ -25,29 +25,25 @@ const columns = [
 ];
 
 const rows = [
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 2, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 3, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 4, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 5, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 6, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 7, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 8, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 9, Section: "Snow", TableName: "Jon", PatientName: 35 },
+  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
+  { id: 2, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
+  { id: 3, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
+  { id: 4, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
+  { id: 5, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
+  { id: 6, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
+  { id: 7, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
+  { id: 8, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
+  { id: 9, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
 ];
 
 interface StaffAccountSettingsTableProps {
-  onEdit: () => void;
-  onLock: () => void;
-  onDelete: () => void;
+  onManage: (modalType: string) => void;
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StaffAccountSettingsTable = ({
-  onEdit,
-  onLock,
-  onDelete,
+  onManage,
   isClear,
   setIsClear,
 }: StaffAccountSettingsTableProps) => {
@@ -89,7 +85,10 @@ const StaffAccountSettingsTable = ({
           return (
             <tr
               key={index}
-              style={{ backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}` }}
+              style={{
+                backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
+                opacity: `${row.isLock ? 0.6 : 1}`,
+              }}
             >
               <td>
                 <Checkbox
@@ -125,8 +124,8 @@ const StaffAccountSettingsTable = ({
                     variant={"outlined"}
                     placeholder={"스태프"}
                     onChange={() => null}
-                    value={""}
-                    disabled={false}
+                    value={"홍길동"}
+                    disabled={row.isLock}
                     id={""}
                   ></CInput>
                 </ShortComBoxLayout>
@@ -137,6 +136,7 @@ const StaffAccountSettingsTable = ({
                     placeholder={"간호사"}
                     options={["간호사", "의사", "조무사", "직원"]}
                     value={""}
+                    disabled={row.isLock}
                     onChange={() => null}
                   />
                 </ShortComBoxLayout>
@@ -147,8 +147,9 @@ const StaffAccountSettingsTable = ({
                     placeholder={"구역"}
                     options={options}
                     value={""}
+                    disabled={true}
                     onChange={() => null}
-                    allowCustomInput={true}
+                    allowCustomInput={row.isLock}
                     onCustomInputAdd={newValue => {
                       setOptions([...options, newValue]);
                     }}
@@ -161,8 +162,8 @@ const StaffAccountSettingsTable = ({
                     variant={"outlined"}
                     placeholder={"아이디"}
                     onChange={() => null}
-                    value={""}
-                    disabled={false}
+                    value={"User1234"}
+                    disabled={row.isLock}
                     id={""}
                   ></CInput>
                 </LongComBoxLayout>
@@ -173,8 +174,8 @@ const StaffAccountSettingsTable = ({
                     variant={"outlined"}
                     placeholder={"전화번호"}
                     onChange={() => null}
-                    value={""}
-                    disabled={false}
+                    value={"010-0000-0000"}
+                    disabled={row.isLock}
                     id={""}
                   ></CInput>
                 </LongComBoxLayout>
@@ -185,8 +186,8 @@ const StaffAccountSettingsTable = ({
                     variant={"outlined"}
                     placeholder={"이메일"}
                     onChange={() => null}
-                    value={""}
-                    disabled={false}
+                    value={"User1234@naver.com"}
+                    disabled={row.isLock}
                     id={""}
                   ></CInput>
                 </LongComBoxLayout>
@@ -218,9 +219,32 @@ const StaffAccountSettingsTable = ({
               </td>
               <td>
                 <AccountMenuLayout>
-                  <Edit onClick={onEdit} />
-                  <Lock onClick={onLock} />
-                  <Delete onClick={onDelete} />
+                  <Edit
+                    onClick={() => {
+                      row.isLock ? null : onManage("edit");
+                    }}
+                  />
+                  {row.isLock ? (
+                    <div style={{ color: "black" }}>
+                      <Lock
+                        onClick={() => {
+                          onManage("lock");
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <UnLock
+                      onClick={() => {
+                        row.isLock ? null : onManage("unlock");
+                      }}
+                    />
+                  )}
+
+                  <Delete
+                    onClick={() => {
+                      row.isLock ? null : onManage("delete");
+                    }}
+                  />
                 </AccountMenuLayout>
               </td>
             </tr>
@@ -267,6 +291,7 @@ const ShortComBoxLayout = styled.div`
 `;
 
 const AccountMenuLayout = styled(ShortComBoxLayout)`
+  color: #c4c5cc;
   gap: 28px;
 `;
 
