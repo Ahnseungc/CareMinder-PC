@@ -1,17 +1,17 @@
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
 
-export type NoticeRequestApiType = {
-  getWardTabletRequests(): Promise<AxiosResponse>;
+export type StaffsRequestApiType = {
+  getStaffTabletRequests(): Promise<AxiosResponse>;
   // getNoticeRequestsStatus(status: NoticeType): Promise<AxiosResponse>;
 };
 
 const PATH = "/staffs/tablet-list";
 
-const WardTabletRequest: NoticeRequestApiType = {
+const StaffTabletRequest: StaffsRequestApiType = {
   //모든 환자 요청 조회
-  getWardTabletRequests() {
+  getStaffTabletRequests() {
     return axiosInstance.get(PATH);
   },
 };
-export default WardTabletRequest;
+export default StaffTabletRequest;
