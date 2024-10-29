@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { NewAdminRequests } from "@models/user";
+import { NewAdminUserRequests } from "@models/user";
 import axiosInstance from "@utils/axios/axiosInstance";
 
 const createAdmin = async (data: NewAdminUserRequests): Promise<void> => {
@@ -9,6 +9,10 @@ const createAdmin = async (data: NewAdminUserRequests): Promise<void> => {
   return response.data;
 };
 
-export default function useCreateAdmin(): UseMutationResult<void, AxiosError, NewAdminRequests> {
+export default function useCreateAdmin(): UseMutationResult<
+  void,
+  AxiosError,
+  NewAdminUserRequests
+> {
   return useMutation({ mutationFn: createAdmin });
 }

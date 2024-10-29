@@ -26,7 +26,7 @@ export type AdminUserField = {
   placeholder: string;
 };
 
-export type NewAdminRequests = {
+export type NewAdminUserRequests = {
   adminSignUpRequest: {
     loginId: string;
     password: string;
