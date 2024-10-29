@@ -63,6 +63,23 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
 
     if (user) {
       //병동 권한 충족
+      console.log(user.type, allowedRoles);
+      if (pathname === "/") {
+        switch (user.type) {
+          case "WARD":
+            navigate("/");
+            break;
+          case "STAFF":
+            navigate("/staff");
+            break;
+          case "ADMIN":
+            navigate("/admin");
+            break;
+          default:
+            navigate("/");
+        }
+      }
+
       if (
         (allowedRoles.includes(user.type) && accessTokenWard) ||
         (allowedRoles.includes(user.type) && accessTokenStaff) ||
