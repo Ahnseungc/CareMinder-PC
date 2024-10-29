@@ -1,4 +1,3 @@
-import { NoticeType } from "@models/notice";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
 

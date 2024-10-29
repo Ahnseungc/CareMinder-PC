@@ -5,8 +5,12 @@ import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
 import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
+import useGetWardTabletRequests from "@hooks/queries/useGetWardTablet";
 
 const StaffWardInoutManagementPage = () => {
+  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+
+  console.log(getTablet);
   return (
     <Container>
       <div>

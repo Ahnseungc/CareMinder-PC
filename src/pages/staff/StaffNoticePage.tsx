@@ -22,7 +22,6 @@ const StaffNoticePage = () => {
     setSelected(select);
   };
 
-  console.log(getNotices);
   return (
     <Container>
       <div>
@@ -59,20 +58,26 @@ const StaffNoticePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          {getNotices?.map((notice: NoticeType) => {
-            return (
-              <AdminNoticeCard
-                key={notice.id}
-                notice={notice}
-                onChangeSelected={onChangeSelected}
-              />
-            );
-          })}
+          {isLoading ? (
+            <div>로딩중</div>
+          ) : (
+            <>
+              {getNotices?.map((notice: NoticeType) => {
+                return (
+                  <AdminNoticeCard
+                    key={notice.id}
+                    notice={notice}
+                    onChangeSelected={onChangeSelected}
+                  />
+                );
+              })}
+            </>
+          )}
         </AdminNoticeListLayout>
         <AdminNoticeCardDeatil notice={selected as NoticeType} />
       </TableLayout>
       <FooterLayout>
-        {size <= getNotices.length && <PaginationComponent totalPage={5} />}
+        {size <= getNotices?.length && <PaginationComponent totalPage={5} />}
       </FooterLayout>
     </Container>
   );
