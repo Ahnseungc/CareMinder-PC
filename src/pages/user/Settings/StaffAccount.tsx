@@ -15,7 +15,11 @@ import { editingState } from "@libraries/recoil";
 
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
+import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
+import { CComboBox } from "@components/common/atom/C-ComboBox";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
@@ -25,6 +29,7 @@ export const StaffAccount = () => {
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
+  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
   const [isEditing, setIsEditing] = useRecoilState(editingState);
 
   const handleClear = () => {
@@ -80,13 +85,31 @@ export const StaffAccount = () => {
               <EditContainer>
                 <X style={{ cursor: "pointer" }} onClick={handleClear} />
                 <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
-                  {isEditing.length}개 항목 선택 됨
+                  {isEditing.length}개 항목 선택됨
                 </EditMenu>
-                <EditMenu>직업</EditMenu>
-                <EditMenu>구역</EditMenu>
-                <EditMenu>계정잠금</EditMenu>
-                <EditMenu>삭제</EditMenu>
-                <EditMenu>비밀번호 재설정</EditMenu>
+                <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
+                  <CComboBox
+                    placeholder={"직업"}
+                    options={["간호사", "의사", "조무사", "직원"]}
+                    value={""}
+                    onChange={() => null}
+                  />
+                </div>
+                <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
+                  <CComboBox
+                    placeholder={"구역"}
+                    options={options}
+                    value={""}
+                    onChange={() => null}
+                    allowCustomInput={true}
+                    onCustomInputAdd={newValue => {
+                      setOptions([...options, newValue]);
+                    }}
+                  />
+                </div>
+                <Edit />
+                <Lock />
+                <Delete />
               </EditContainer>
             ) : (
               <>
@@ -195,12 +218,14 @@ const EditContainer = styled(Box)(({ theme }) => ({
   gap: "20px",
 
   width: "100%",
+  height: "60px",
   padding: "15px 12px",
 
+  border: "2px solid #5D6DBE",
   borderRadius: "100px",
-  backgroundColor: theme.palette.primary.dark,
+
   opacity: "0.6",
-  color: theme.palette.divider,
+  color: theme.palette.text.dark,
 }));
 
 const EditMenu = styled(Typography)({

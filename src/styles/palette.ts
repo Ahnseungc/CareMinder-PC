@@ -40,6 +40,7 @@ const palette = {
   text: {
     primary: CMColors.text,
     secondary: CMColors.primary.a60,
+    dark: CMColors.black,
   },
   background: {
     default: CMColors.background,

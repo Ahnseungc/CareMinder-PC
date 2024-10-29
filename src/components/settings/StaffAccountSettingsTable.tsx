@@ -87,7 +87,7 @@ const StaffAccountSettingsTable = ({
               key={index}
               style={{
                 backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                opacity: `${row.isLock ? 0.6 : 1}`,
+                opacity: `${row.isLock ? 0.5 : 1}`,
               }}
             >
               <td>
@@ -147,9 +147,9 @@ const StaffAccountSettingsTable = ({
                     placeholder={"구역"}
                     options={options}
                     value={""}
-                    disabled={true}
+                    disabled={row.isLock}
                     onChange={() => null}
-                    allowCustomInput={row.isLock}
+                    allowCustomInput={true}
                     onCustomInputAdd={newValue => {
                       setOptions([...options, newValue]);
                     }}
@@ -225,7 +225,7 @@ const StaffAccountSettingsTable = ({
                     }}
                   />
                   {row.isLock ? (
-                    <div style={{ color: "black" }}>
+                    <div style={{ color: "#73777D" }}>
                       <Lock
                         onClick={() => {
                           onManage("lock");
