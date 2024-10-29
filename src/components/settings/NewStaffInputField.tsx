@@ -4,7 +4,7 @@ import doubleCheckState from "@libraries/recoil/staff";
 import { NewStaff, NewStaffField } from "@models/staff";
 import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
 import axios from "axios";
-import axiosInstance from "@utils/axios/axiosInstance";
+import { SEVER_URL } from "@constants/baseUrl";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
@@ -101,8 +101,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
           loginId: username,
           accountType: "STAFF",
         };
-        const res = await axiosInstance.post("/users/check-login-id", doubleCheck);
-        // console.log(res);
+        const res = await axios.post(`${SEVER_URL}/users/check-login-id`, doubleCheck);
         if (res.data === "사용 가능한 아이디입니다.") {
           setDoubleCheck(true);
           form.clearErrors("username");
@@ -198,7 +197,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
   );
 }
 
-/** utils */
+/** style */
 
 const inputTypes: { [key in keyof NewStaff]: string } = {
   name: "text",

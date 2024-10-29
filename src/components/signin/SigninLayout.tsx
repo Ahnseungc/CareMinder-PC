@@ -1,4 +1,4 @@
-import InfoModal from "@components/settings/modal/InfoModal";
+import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
@@ -7,7 +7,7 @@ import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
 import { Grid, Divider, styled, Stack } from "@mui/material";
 import { useBooleanState } from "@toss/react";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type SigninLayoutProps = {
@@ -20,20 +20,29 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const form = useForm<SigninFormData>();
   const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
+  const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
-  /* 어드민 계정 로그인 시 슈퍼 어드민 계정에 의해 수락되지 않은 경우 에러 처리*/
-  // useEffect(() => {
-  //   if (error?.response.data.statusCode) {
-  //     openModal();
-  //     console.log(error?.response.data.statusCode);
-  //   }
-  // }, [error]);
+  /* 어드민 계정 로그인 시 에러 핸들링*/
+  useEffect(() => {
+    if (error?.response) {
+      if (error?.response.data.statusCode === "401") {
+        /** 계정 잠김 에러 핸들링 */
+        setIsModalType("waiting");
+      } else if (error?.response.data.statusCode === "404") {
+        /** 존재하지 않는 계정 에러 핸들링 */
+        setIsModalType("noResult");
+      } else {
+        setIsModalType("error");
+      }
+      openModal();
+    }
+  }, [error]);
 
   const onSubmit = signin;
 
   return (
     <>
-      <InfoModal open={open} onClose={closeModal} modalType={"waiting"}></InfoModal>
+      <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
       <Container item xs>
         <Content>
           <SigninHeader />
