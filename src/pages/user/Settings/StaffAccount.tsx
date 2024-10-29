@@ -20,6 +20,8 @@ import { ReactComponent as Lock } from "@/assets/completedRequests/Interface ess
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
+import { GetStaffListResponse, useGetStaffList } from "@libraries/axios/staffListRequset";
+import { GetAreaListResponse, useGetAreaList } from "@libraries/axios/areaListRequest";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
@@ -30,6 +32,7 @@ export const StaffAccount = () => {
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
   const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+
   const [isEditing, setIsEditing] = useRecoilState(editingState);
 
   const handleClear = () => {
@@ -59,12 +62,19 @@ export const StaffAccount = () => {
     openInfoModal();
   };
 
+  const { data: staffList } = useGetStaffList();
+  const { data: areaList } = useGetAreaList();
+
   return (
     <>
       {isCreate ? (
         <CreateStaff onCreate={setIsCreate} />
       ) : (
         <>
+          {/* 약관 동의 모달 */}
+          <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
+
+          {/* 스태프 추가 모달 */}
           <ChangeModal
             open={isOpen}
             onClose={closeCreateModal}
@@ -73,13 +83,15 @@ export const StaffAccount = () => {
             subTitle={"아이디/휴대폰 번호/이메일 중 택일"}
             rightText={"추가"}
           />
-          <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
+
+          {/* 계정 관리 등 정보 모달 */}
           <InfoModal
             open={isInfoModalOpen}
             onClose={closeInfoModal}
             modalType={isModalType}
             onConfirm={() => null}
-          ></InfoModal>
+          />
+
           <BodyTitleContainer>
             {isEditing.length !== 0 ? (
               <EditContainer>
@@ -149,7 +161,7 @@ export const StaffAccount = () => {
             )}
           </BodyTitleContainer>
           {/* 스태프 리스트 실제 데이터 조건문으로 변경해야함 */}
-          {false ? (
+          {staffList?.data.length === 0 ? (
             <EmptyStaffContainer>
               <EmptyStaff />
               <p>등록된 스태프가 없습니다.</p>
@@ -160,6 +172,8 @@ export const StaffAccount = () => {
                 onManage={handleInfoModal}
                 isClear={isClear}
                 setIsClear={setIsClear}
+                staffLists={staffList as GetStaffListResponse}
+                areaLists={areaList as GetAreaListResponse[]}
               />
               <PaginationContainer>
                 <div>

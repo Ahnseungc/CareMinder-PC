@@ -11,6 +11,8 @@ import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface e
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState } from "@libraries/recoil";
+import { GetStaffListResponse } from "@libraries/axios/staffListRequset";
+import { GetAreaListResponse } from "@libraries/axios/areaListRequest";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -40,15 +42,20 @@ interface StaffAccountSettingsTableProps {
   onManage: (modalType: string) => void;
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
+  staffLists: GetStaffListResponse;
+  areaLists: GetAreaListResponse[];
 }
 
 const StaffAccountSettingsTable = ({
   onManage,
   isClear,
   setIsClear,
+  staffLists,
+  areaLists,
 }: StaffAccountSettingsTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  const [option, setOption] = useState<string>();
+  const [options, setOptions] = useState<string[]>([]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
 
   const isConnecting = true;
@@ -71,6 +78,16 @@ const StaffAccountSettingsTable = ({
     }
   }, [isEditing, isClear, setIsClear]);
 
+  useEffect(() => {
+    if (areaLists) {
+      setOptions(areaLists.map(item => item.name));
+    }
+  }, [areaLists]);
+
+  const handleChange = (event: any) => {
+    const value = event.target.value;
+    setOption(value);
+  };
   return (
     <StTable>
       <thead>
@@ -146,9 +163,9 @@ const StaffAccountSettingsTable = ({
                   <CComboBox
                     placeholder={"구역"}
                     options={options}
-                    value={""}
+                    value={option}
                     disabled={row.isLock}
-                    onChange={() => null}
+                    onChange={handleChange}
                     allowCustomInput={true}
                     onCustomInputAdd={newValue => {
                       setOptions([...options, newValue]);
