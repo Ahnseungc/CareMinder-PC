@@ -15,32 +15,19 @@ const columns = [
   { id: 2, field: "PatientName", headerName: "환자 이름" },
 ];
 
-// const rows = [
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-//   { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-// ];
-
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
   form: UseFormReturn<WardTabletType>;
-  setSelected: Dispatch<SetStateAction<{ tabletId: number | null }>>;
+  onChangeSelected: (index: any) => void;
 }
 
-const AdminTable: FC<AdminTableProps> = ({ getTablet, form, setSelected }) => {
+const AdminTable: FC<AdminTableProps> = ({ getTablet, form, onChangeSelected }) => {
   // const { control } = form;
   return (
     <StTable>
       <thead>
         {columns.map(column => {
-          return <th>{column.headerName}</th>;
+          return <th key={column.id}>{column.headerName}</th>;
         })}
       </thead>
       <tbody>
@@ -110,7 +97,7 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, form, setSelected }) => {
                       placeholder={"태블릿 이름"}
                       onChange={() => null}
                       value={tablet.tabletName}
-                      disabled={false}
+                      disabled={true}
                       id={""}
                     ></CInput>
                   </ComBoxLayout>
@@ -122,7 +109,7 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, form, setSelected }) => {
                       placeholder={"환자 이름"}
                       onChange={() => null}
                       value={tablet.patientName}
-                      disabled={false}
+                      disabled={true}
                       id={""}
                     ></CInput>
                   </ComBoxLayout>

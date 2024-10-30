@@ -9,18 +9,23 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { error } from "console";
 import { toast } from "react-toastify";
 import { useState } from "react";
 
 const StaffWardInoutManagementPage = () => {
   const { data: getTablet, isLoading } = useGetWardTabletRequests();
   const { mutate, isPending } = useDischargePatients();
-  const [selected, setSelected] = useState<{ tabletId: number | null }>({
-    tabletId: null,
-  });
+  const [selected, setSelected] = useState<Array<any>>([{}]);
 
-  console.log(getTablet);
+  const onChangeSelected = (index: any) => {
+    setSelected(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(item => item !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
 
   const defaultValuesUpdate: WardTabletType = {
     areaId: 0,
@@ -41,7 +46,6 @@ const StaffWardInoutManagementPage = () => {
 
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
-
     mode: "onChange",
   });
 
@@ -90,7 +94,11 @@ const StaffWardInoutManagementPage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminTable getTablet={getTablet} setSelected={setSelected} />
+        <AdminTable
+          getTablet={getTablet}
+          onChangeSelected={onChangeSelected}
+          form={formDischarge}
+        />
       </TableLayout>
       <FooterLayout>
         <div>
