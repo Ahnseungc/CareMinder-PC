@@ -19,9 +19,10 @@ interface AdminTableProps {
   getTablet: Array<WardTabletType>;
   form: UseFormReturn<WardTabletType>;
   onChangeSelected: (index: any) => void;
+  selected: any;
 }
 
-const AdminTable: FC<AdminTableProps> = ({ getTablet, form, onChangeSelected }) => {
+const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, form, onChangeSelected }) => {
   // const { control } = form;
   return (
     <StTable>
@@ -48,8 +49,8 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, form, onChangeSelected }) 
                 <td>
                   <ComBoxLayout>
                     <Checkbox
-                      checked={true}
-                      value={tablet.tabletId}
+                      checked={selected.includes(tablet.tabletId)}
+                      onChange={() => onChangeSelected(tablet.tabletId)}
                       icon={
                         <div
                           style={{

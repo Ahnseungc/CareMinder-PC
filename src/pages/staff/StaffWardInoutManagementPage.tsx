@@ -37,12 +37,12 @@ const StaffWardInoutManagementPage = () => {
     patientName: "",
   };
 
-  const formUpdate = useForm<WardTabletType>({
-    defaultValues: defaultValuesUpdate,
-    mode: "onChange",
-  });
+  // const formUpdate = useForm<WardTabletType>({
+  //   defaultValues: defaultValuesUpdate,
+  //   mode: "onChange",
+  // });
 
-  const { handleSubmit } = formUpdate;
+  // const { handleSubmit } = formUpdate;
 
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
@@ -98,6 +98,7 @@ const StaffWardInoutManagementPage = () => {
           getTablet={getTablet}
           onChangeSelected={onChangeSelected}
           form={formDischarge}
+          selected={selected}
         />
       </TableLayout>
       <FooterLayout>
