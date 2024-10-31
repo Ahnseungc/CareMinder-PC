@@ -22,11 +22,13 @@ import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { GetStaffListResponse, useGetStaffList } from "@hooks/queries/useGetStaffList";
 import { GetAreaListResponse, useGetAreaList } from "@hooks/queries/useGetAreaList";
+import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
   const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
-  const [openTOS, openTOSModal, closeTOSModal] = useBooleanState(false);
+  const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
+  const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
 
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [isClear, setIsClear] = useState<boolean>(false);
@@ -72,7 +74,7 @@ export const StaffAccount = () => {
       ) : (
         <>
           {/* 약관 동의 모달 */}
-          <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
+          <TOSModal open={isTOSModalOpen} onClose={closeTOSModal} onConfirm={handleTOS} />
 
           {/* 스태프 추가 모달 */}
           <ChangeModal
@@ -91,6 +93,9 @@ export const StaffAccount = () => {
             modalType={isModalType}
             onConfirm={() => null}
           />
+
+          {/* 비밀번호 편집 모달 */}
+          <PasswordChangeModal open={isPWChangeModalOpen} onClose={closePWChangeModal} />
 
           <BodyTitleContainer>
             {isEditing.length !== 0 ? (
@@ -119,7 +124,7 @@ export const StaffAccount = () => {
                     }}
                   />
                 </div>
-                <Edit />
+                <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
                 <Lock />
                 <Delete />
               </EditContainer>

@@ -5,8 +5,9 @@ import { Box, styled, Typography } from "@mui/material";
 interface ChangeModalProps extends Omit<CMModalProps, "title"> {
   onConfirm: () => void;
   modalTitle: string;
-  subTitle: string;
+  subTitle: string | React.ReactNode;
   rightText: string;
+  isPasswordChange?: boolean;
 }
 
 export default function ChangeModal({
@@ -15,10 +16,12 @@ export default function ChangeModal({
   modalTitle,
   subTitle,
   rightText,
+  isPasswordChange = false,
   ...props
 }: ChangeModalProps) {
   return (
     <CMModal
+      maxWidth={isPasswordChange ? "sm" : "xs"}
       onClose={onClose}
       title={modalTitle}
       footer={
@@ -33,16 +36,18 @@ export default function ChangeModal({
     >
       <ContentLayout>
         <Typography variant="h4">{subTitle}</Typography>
-        <InputLayout>
-          <CInput
-            variant={"outlined"}
-            placeholder={"입력해주세요."}
-            onChange={() => null}
-            value={""}
-            disabled={false}
-            id={""}
-          />
-        </InputLayout>
+        {!isPasswordChange ? (
+          <InputLayout>
+            <CInput
+              variant={"outlined"}
+              placeholder={"입력해주세요."}
+              onChange={() => null}
+              value={""}
+              disabled={false}
+              id={""}
+            />
+          </InputLayout>
+        ) : null}
       </ContentLayout>
     </CMModal>
   );

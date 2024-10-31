@@ -47,6 +47,9 @@ interface StaffAccountSettingsTableProps {
   areaLists: GetAreaListResponse[];
 }
 
+/**계정 상태 테스트 변수 */
+const isConnecting = true;
+
 const StaffAccountSettingsTable = ({
   onManage,
   isClear,
@@ -58,9 +61,6 @@ const StaffAccountSettingsTable = ({
   const [option, setOption] = useState<string>();
   const [options, setOptions] = useState<string[]>([]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
-
-  const isConnecting = true;
-
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
 
@@ -97,7 +97,6 @@ const StaffAccountSettingsTable = ({
       name: newValue,
       wardId: 1,
     };
-
     createArea(areaData);
   };
 

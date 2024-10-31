@@ -12,7 +12,6 @@ export type NewStaffRequests = {
   loginId: string;
   password: string;
   phoneNumber: string;
-  areaId: number;
   email: string;
   nfc: string;
   fingerprint: string;

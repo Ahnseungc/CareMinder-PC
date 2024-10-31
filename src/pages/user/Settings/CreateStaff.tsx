@@ -51,7 +51,6 @@ export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
       loginId: data.username,
       password: data.password,
       phoneNumber: data.phoneNumber,
-      areaId: 0,
       email: data.email,
       nfc: "",
       fingerprint: "",
