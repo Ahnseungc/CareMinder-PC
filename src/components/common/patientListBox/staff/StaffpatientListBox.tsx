@@ -105,7 +105,7 @@ function StaffPatientListBox({
               <span>담당직종 변경</span>
               <BoxWrapper>
                 <CComboBox
-                  placeholder={"테스트"}
+                  placeholder={"직종 선택"}
                   options={["간호사", "의사", "조무사", "직원"]}
                   value={""}
                   onChange={el => onChangePatientRole(el.target.value)}
