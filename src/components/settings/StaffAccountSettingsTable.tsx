@@ -11,8 +11,9 @@ import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface e
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState } from "@libraries/recoil";
-import { GetStaffListResponse } from "@libraries/axios/staffListRequset";
-import { GetAreaListResponse } from "@libraries/axios/areaListRequest";
+import { GetStaffListResponse } from "@hooks/queries/useGetStaffList";
+import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
+import useCreateArea from "@hooks/mutation/useCreateArea";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -63,6 +64,8 @@ const StaffAccountSettingsTable = ({
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
 
+  const { mutate: createArea } = useCreateArea();
+
   useEffect(() => {
     if (selectIndex.length === 0) {
       setIsEditing([]);
@@ -84,10 +87,20 @@ const StaffAccountSettingsTable = ({
     }
   }, [areaLists]);
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setOption(value);
   };
+
+  const handleCreateArea = (newValue: string) => {
+    const areaData = {
+      name: newValue,
+      wardId: 1,
+    };
+
+    createArea(areaData);
+  };
+
   return (
     <StTable>
       <thead>
@@ -163,13 +176,11 @@ const StaffAccountSettingsTable = ({
                   <CComboBox
                     placeholder={"구역"}
                     options={options}
-                    value={option}
+                    value={option as string}
                     disabled={row.isLock}
                     onChange={handleChange}
                     allowCustomInput={true}
-                    onCustomInputAdd={newValue => {
-                      setOptions([...options, newValue]);
-                    }}
+                    onCustomInputAdd={handleCreateArea}
                   />
                 </LongComBoxLayout>
               </td>

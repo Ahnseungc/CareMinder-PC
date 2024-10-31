@@ -20,8 +20,8 @@ import { ReactComponent as Lock } from "@/assets/completedRequests/Interface ess
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-import { GetStaffListResponse, useGetStaffList } from "@libraries/axios/staffListRequset";
-import { GetAreaListResponse, useGetAreaList } from "@libraries/axios/areaListRequest";
+import { GetStaffListResponse, useGetStaffList } from "@hooks/queries/useGetStaffList";
+import { GetAreaListResponse, useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
