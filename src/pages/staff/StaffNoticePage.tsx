@@ -38,10 +38,10 @@ const StaffNoticePage = () => {
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <ButtonListLayout>
-              <ButtonLayout width={"124px"}>
+              <ButtonLayout width={"125px"}>
                 <CButton buttontype={"primaryBlack"}>내 환자 대상 공지</CButton>
               </ButtonLayout>
-              <ButtonLayout width={"121px"}>
+              <ButtonLayout width={"125px"}>
                 <CButton buttontype={"primaryBlack"}>내가 작성한 공지</CButton>
               </ButtonLayout>
               <ButtonLayout width={"150px"}>

@@ -29,7 +29,6 @@ EXPOSE 5050
 #container 종료 될때 정상 종료 유도
 STOPSIGNAL SIGTERM
 
-
 # container가 종료될 때 정상종료를 유도한다.
 STOPSIGNAL SIGTERM
 
