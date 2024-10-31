@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosHeaders } from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
 
@@ -16,33 +16,66 @@ axiosInstance.interceptors.response.use(
   },
   async error => {
     if (error.response.status === 401) {
-      const isAccessToken = Cookies.get("accessToken") !== undefined;
+      const isAccessToken =
+        Cookies.get("accessToken") !== undefined ||
+        Cookies.get("accessTokenStaff") !== undefined ||
+        Cookies.get("accessTokenAdmin") !== undefined;
 
       if (!isAccessToken) {
         return Promise.reject(error);
       }
 
-      //refresh
-      //   const res = await axios.post(`${SEVER_URL}/refresh`, {
-      //     accessToekn: Cookies.get("accessToken"),
-      //     refreshToken: Cookies.get("refreshToken"),
-      //   });
-      //   if (res.data === false) {
-      //     return false;
-      //   }
-      //   Cookies.set("accessToken", res.data.accessToken);
-      //   Cookies.set("refreshToken", res.data.refreshToken);
+      if (error.response.status === 401) {
+        const res = await axios.post(`${SEVER_URL}/users/refresh-token`, {
+          accessToekn: Cookies.get("accessToken"),
+          refreshToken: Cookies.get("refreshToken"),
+        });
+        if (res.data === false) {
+          return false;
+        }
+        Cookies.set("accessToken", res.data.accessToken);
+        Cookies.set("refreshToken", res.data.refreshToken);
+      }
 
-      //   return Promise.reject(error);
+      // refresh
+
+      return Promise.reject(error);
     }
   },
 );
 
 axiosInstance.interceptors.request.use(
-  config => {
-    const token = Cookies.get("accessToken");
+  (config: InternalAxiosRequestConfig<any>) => {
+    let token = "";
+    const userState = localStorage.getItem("recoil-persist");
+
+    // const userType = userStateObj.userState.type;
+    let userType = "";
+    if (userState) {
+      const userStateObj = JSON.parse(userState as string);
+      userType = userStateObj.userState.type;
+    }
+
+    switch (userType) {
+      case "WARD":
+        token = Cookies.get("accessTokenWard") as string;
+        break;
+      case "STAFF":
+        token = Cookies.get("accessTokenStaff") as string;
+        break;
+      case "ADMIN":
+        token = Cookies.get("accessTokenAdmin") as string;
+        break;
+      default:
+        null;
+    }
 
     if (token) {
+      if (!config.headers) {
+        config.headers = new AxiosHeaders();
+      }
+      (config.headers as AxiosHeaders).set("Authorization", `Bearer ${token}`);
+
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

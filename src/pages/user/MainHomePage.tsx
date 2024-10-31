@@ -21,7 +21,7 @@ export default function MainHomePage() {
   const { data: getInprogressData } = useGetWardPatientInProgress(userStatus!.type);
 
   const onStaffLogIn = () => {
-    if (userStatus?.type === "main") {
+    if (userStatus?.type === "WARD") {
       setIsModal(true);
     }
   };
@@ -38,10 +38,10 @@ export default function MainHomePage() {
     setlayoutState("home");
 
     switch (userStatus?.type) {
-      case "main":
+      case "WARD":
         navigate("/");
         break;
-      case "staff":
+      case "STAFF":
         navigate("/staff");
         break;
     }
@@ -57,10 +57,10 @@ export default function MainHomePage() {
             <SubTitleLeft>
               <span>내 환자만 보기</span>
               <span onClick={onStaffLogIn}>
-                <CSwitch disabled={userStatus?.type === "main"} />
+                <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>
             </SubTitleLeft>
-            <SubTitleRight onClick={onStaffLogIn} isDisable={userStatus?.type === "main"}>
+            <SubTitleRight onClick={onStaffLogIn} isDisable={userStatus?.type === "WARD"}>
               <span>직종</span>
               <CComboBox
                 placeholder={"전체"}
@@ -85,7 +85,7 @@ export default function MainHomePage() {
             <SubTitleLeft>
               <span>환자별로 묶기</span>
               <span onClick={onStaffLogIn}>
-                <CSwitch disabled={userStatus?.type === "main"} />
+                <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>
             </SubTitleLeft>
           </SubTitle>

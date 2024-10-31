@@ -12,8 +12,8 @@ export default function NoticeMenu() {
     <SwitchCase
       value={user?.type as UserType}
       caseBy={{
-        main: <MenuLayout routePath={RoutePath.StaffNotice} pageName={"공지"} icon={Notice} />,
-        staff: <MenuLayout routePath={RoutePath.StaffNotice} pageName={"공지"} icon={Notice} />,
+        WARD: <MenuLayout routePath={RoutePath.StaffNotice} pageName={"공지"} icon={Notice} />,
+        STAFF: <MenuLayout routePath={RoutePath.StaffNotice} pageName={"공지"} icon={Notice} />,
       }}
     />
   );

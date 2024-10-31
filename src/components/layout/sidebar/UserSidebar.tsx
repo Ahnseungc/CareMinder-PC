@@ -13,7 +13,7 @@ export default function UserSidebar() {
       <HomeMenu />
       {/* Todo */}
       {/* <DietMenu /> */}
-      <RequestsMenu />
+      {/* <RequestsMenu /> */}
       <PatientManagementMenu />
       <CompletedRequestsMenu />
       <NoticeMenu />

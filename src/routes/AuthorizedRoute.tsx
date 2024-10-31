@@ -17,8 +17,10 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const { pathname } = useLocation();
   const user = useRecoilValue(userState);
   const [isChecking, setIsChecking] = useState(true);
-  const accessToken = Cookies.get("accessToken");
+  const accessTokenWard = Cookies.get("accessTokenWard");
   const accessTokenStaff = Cookies.get("accessTokenStaff");
+  const accessTokenAdmin = Cookies.get("accessTokenAdmin");
+  const setUser = useSetRecoilState(userState);
   const setIsModalOpen = useSetRecoilState(modalState);
 
   const navigatePrev = useCallbackOnce(() => {
@@ -28,31 +30,70 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
 
   useEffect(() => {
     //병동
-    if (!user && !accessToken) {
+    if (!user && !accessTokenWard) {
       navigate("/sign-in");
     }
 
     //스태프 페이지
     if (pathname.includes("staff") && !accessTokenStaff) {
-      setIsModalOpen(true);
-      setIsChecking(true);
+      if (user?.type === "STAFF") {
+        navigate("/");
+        setIsModalOpen(false);
+        setUser(prev => {
+          if (!prev) {
+            return { id: 0, name: "", type: "WARD" };
+          }
+
+          return {
+            ...prev,
+            type: "WARD",
+            id: prev.id,
+            name: prev.name,
+          };
+        });
+      } else {
+        setIsModalOpen(true);
+        setIsChecking(true);
+      }
     }
+
+    // if (pathname.includes("admin") && !accessTokenAdmin) {
+    //   setIsChecking(true);
+    // }
 
     if (user) {
       //병동 권한 충족
+      console.log(user.type, allowedRoles);
+      if (pathname === "/") {
+        switch (user.type) {
+          case "WARD":
+            navigate("/");
+            break;
+          case "STAFF":
+            navigate("/staff");
+            break;
+          case "ADMIN":
+            navigate("/admin");
+            break;
+          default:
+            navigate("/");
+        }
+      }
+
       if (
-        (allowedRoles.includes(user.type) && accessToken) ||
-        (allowedRoles.includes(user.type) && accessTokenStaff)
+        (allowedRoles.includes(user.type) && accessTokenWard) ||
+        (allowedRoles.includes(user.type) && accessTokenStaff) ||
+        (allowedRoles.includes(user.type) && accessTokenAdmin)
       ) {
         setIsChecking(false);
         setIsModalOpen(false);
       }
       //스태프 페이지 접근
-      if (pathname.includes("staff") && accessToken && !accessTokenStaff) {
+      if (pathname.includes("staff") && accessTokenWard && !accessTokenStaff) {
         setIsModalOpen(true);
       }
     }
-  }, [user, allowedRoles, pathname, accessTokenStaff, accessToken, navigatePrev, navigate]);
+  }, [user, allowedRoles, pathname, accessTokenStaff, accessTokenWard, navigatePrev, navigate]);
 
   if (isChecking) {
     return (

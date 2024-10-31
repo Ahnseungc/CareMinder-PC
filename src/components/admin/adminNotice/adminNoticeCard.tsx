@@ -6,7 +6,7 @@ const AdminNoticeCard: FC = () => {
     <StyledBox>
       <Title>
         공지사항 제목이 노출됩니다. 공지사항 제목이 노출됩니다. 공지사항 제목이 노출됩니다. 공지사항
-        제목이 노출됩니다. 공지사항 제목이 노출됩니다.
+        제목이 노출됩니다.제목이 노출됩니다.
       </Title>
       <StyledBottomBox>
         <StyledNameBox>
@@ -23,6 +23,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   paddingBottom: "20.5px",
   paddingTop: "20px",
+  maxHeight: "92.5px",
 }));
 
 const StyledNameBox = styled(Box)({
@@ -55,6 +56,11 @@ const Title = styled(Typography)(({ theme }) => ({
   fontSize: "16px",
   fontWeight: 500,
   color: "black",
+  width: "100%",
+  maxWidth: "890px",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
 }));
 
 export default AdminNoticeCard;

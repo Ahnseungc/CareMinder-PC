@@ -1,10 +1,11 @@
 import { TextField, styled, InputProps, TextFieldVariants } from "@mui/material";
-import { FC, KeyboardEventHandler } from "react";
+import { ChangeEvent, FC, KeyboardEventHandler } from "react";
 
 export type CustomInputProps = {
   variant: TextFieldVariants;
   placeholder: string;
-  onChange: () => void;
+  // onChange: () => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   value: string;
   disabled: boolean;
   id: string;

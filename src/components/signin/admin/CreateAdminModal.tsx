@@ -6,8 +6,8 @@ import { Checkbox, Container, FormControlLabel, Stack, styled, Typography } from
 import { SwitchCase } from "@toss/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 
+import { toast } from "react-toastify";
 type Step = "어드민 계정 생성 약관 동의서" | "어드민 계정 생성";
 
 const defaultValues: NewAdminUser = {
@@ -24,7 +24,7 @@ const defaultValues: NewAdminUser = {
 
 export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   const [step, setStep] = useState<Step>("어드민 계정 생성 약관 동의서");
-  const { mutate, isPending } = useCreateAdmin();
+  const [agreementChecked, setChecked] = useState<boolean>(false);
 
   const form = useForm<NewAdminUser>({
     defaultValues,
@@ -32,12 +32,31 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   });
   const { handleSubmit } = form;
 
-  const [agreementChecked, setChecked] = useState<boolean>(false);
   const toggle = () => setChecked(prev => !prev);
 
+  const { mutate, isPending } = useCreateAdmin();
+
   const onSubmit: SubmitHandler<NewAdminUser> = data => {
-    mutate(data, {
+    const defaultAdminRequest = {
+      adminSignUpRequest: {
+        loginId: data.username,
+        password: data.password,
+        phoneNumber: data.phoneNumber,
+        email: data.email,
+        nfc: "",
+        fingerprint: "",
+      },
+      hospitalCreateRequest: {
+        name: data.hospitalName,
+        address: data.hospitalAddress,
+        businessRegistrationNumber: data.registrationNumber,
+      },
+    };
+
+    console.log(defaultAdminRequest);
+    mutate(defaultAdminRequest, {
       onSuccess: () => {
+        console.log("어드민 회원가입 성공");
         toast.success("어드민 계정 생성이 완료되었습니다.");
         onClose();
       },

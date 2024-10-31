@@ -20,14 +20,14 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
   let menuButtonStyle = useMenuButtonStyles(isActive);
 
   switch (user?.type) {
-    case "main":
+    case "WARD":
       menuButtonStyle = useMenuButtonStyles(isActive);
       break;
-    case "staff":
+    case "STAFF":
       menuButtonStyle = useStaffMenuButtonStyles(isActive);
       break;
-    case "admin":
-      menuButtonStyle = useStaffMenuButtonStyles(isActive);
+    case "ADMIN":
+      menuButtonStyle = useAdminMenuButtonStyles(isActive);
       break;
   }
 
@@ -36,7 +36,7 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
       <Link href={routePath} sx={menuButtonStyle}>
         <SvgIcon component={icon} inheritViewBox />
       </Link>
-      <Typography variant="h5" sx={getTypographyStyles(isActive)}>
+      <Typography variant="h5" sx={getTypographyStyles(isActive, user?.type!)}>
         {pageName}
       </Typography>
     </Container>
@@ -45,10 +45,12 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
 
 /** utils */
 
-const getTypographyStyles = (isActive: boolean): SxProps<Theme> => ({
+const getTypographyStyles = (isActive: boolean, userType: string): SxProps<Theme> => ({
   whiteSpace: "pre",
   textAlign: "center",
-  color: theme => theme.palette.primary[isActive ? "contrastText" : "light"],
+  color: theme => theme.palette.primary.contrastText,
+
+  opacity: isActive ? "1" : "0.2",
 });
 
 const useMenuButtonStyles = (isActive: boolean): SxProps<Theme> => ({
@@ -72,6 +74,17 @@ const useStaffMenuButtonStyles = (isActive: boolean): SxProps<Theme> => ({
 
   backgroundColor: theme => theme.palette.secondary[isActive ? "dark" : "main"],
   color: theme => theme.palette.secondary[isActive ? "contrastText" : "light"],
+});
+const useAdminMenuButtonStyles = (isActive: boolean): SxProps<Theme> => ({
+  borderRadius: "12px",
+  width: "36px",
+  height: "36px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+
+  backgroundColor: theme => (isActive ? theme.palette.secondary.dark : theme.palette.success.light),
+  color: theme => theme.palette.primary.contrastText,
 });
 
 /** styles */

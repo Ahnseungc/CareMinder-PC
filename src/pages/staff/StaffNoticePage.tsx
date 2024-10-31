@@ -22,6 +22,7 @@ const StaffNoticePage = () => {
               onChange={() => null}
               placeholder={"검색 내용을 입력해주세요."}
               borderColor="#8C8E94"
+              select="선택"
             />
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
@@ -75,9 +76,12 @@ const AdminInoutSubTitleContainer = styled(Box)({
   gap: "22px",
 });
 
-const AdminNoticeListLayout = styled(Box)({
+const AdminNoticeListLayout = styled(Box)(({ theme }) => ({
   width: "50%",
-});
+  height: "100%",
+  maxHeight: "647px",
+  borderTop: `1px solid ${theme.palette.divider}`,
+}));
 
 const AdminInoutSubTitleLeftContainer = styled(Box)({
   display: "flex",
@@ -103,8 +107,9 @@ const ButtonListLayout = styled(Box)({
 });
 const TableLayout = styled(Box)({
   marginTop: "40px",
-  display: "flex",
   gap: "24px",
+  display: "flex",
+  height: "100%",
 });
 
 const FooterLayout = styled(Box)({
@@ -114,6 +119,10 @@ const FooterLayout = styled(Box)({
   width: "100%",
   justifyContent: "center",
   alignItems: "center",
+});
+
+const TableBody = styled(Box)({
+  display: "flex",
 });
 
 const Title = styled(Typography)(({ theme }) => ({

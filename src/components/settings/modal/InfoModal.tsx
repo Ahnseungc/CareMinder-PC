@@ -10,6 +10,10 @@ const MODAL_CONTEXTS = {
   valueError: { title: "ID/PW 오류입니다.", controlAccount: false },
   checkTOS: { title: "필수 약관 체크 누락되었습니다.", controlAccount: false },
   confirmFail: { title: "인증실패되었습니다.", controlAccount: false },
+  adminPopup: {
+    title: "본 페이지는 관리자를 위한 페이지로, 관리자 외에 접근을 금합니다.",
+    controlAccount: false,
+  },
   createSuccess: { title: "계정 생성 완료되었습니다.", controlAccount: false },
   checkAddStaff: { title: "스태프를 정말로 추가하시겠습니까?", controlAccount: true },
   checkDeleteStaff: { title: "스태프를 정말로 제거하시겠습니까?", controlAccount: true },
