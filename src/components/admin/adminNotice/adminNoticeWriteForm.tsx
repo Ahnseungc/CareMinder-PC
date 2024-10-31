@@ -62,6 +62,7 @@ const Title = styled(Typography)(({ theme }) => ({
 
 const StyledBox = styled(FormControl)(({ theme }) => ({
   width: "50%",
+  height: "100%",
   backgroundColor: "white",
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: "24px",
@@ -76,6 +77,7 @@ const InputLayout = styled(Box)({
 
 const InputForm = styled(Box)(({ theme }) => ({
   "marginTop": "24px",
+
   "& p": {
     fontSize: "14px",
     fontWeight: "700",
@@ -97,6 +99,7 @@ const InputForm = styled(Box)(({ theme }) => ({
 const TextAreaLabel = styled(Box)({
   display: "flex",
   alignItems: 'center"',
+  height: "20px",
   width: "100%",
   justifyContent: "space-between",
   marginTop: "10px",

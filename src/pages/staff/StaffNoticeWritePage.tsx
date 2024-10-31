@@ -21,9 +21,7 @@ const StaffNoticeWritePage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminNoticeListLayout>
-          <AdminTable />
-        </AdminNoticeListLayout>
+        <AdminNoticeListLayout>{/* <AdminTable /> */}</AdminNoticeListLayout>
         <AdminNoticeWriteForm />
       </TableLayout>
       <FooterLayout>
