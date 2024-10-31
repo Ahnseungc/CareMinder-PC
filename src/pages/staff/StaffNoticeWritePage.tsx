@@ -5,8 +5,58 @@ import CButton from "@components/common/atom/C-Button";
 
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
+import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { WardTabletType } from "@models/ward-tablet";
+import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
+import { toast } from "react-toastify";
 
 const StaffNoticeWritePage = () => {
+  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  const [selected, setSelected] = useState<Array<any>>([{}]);
+  const { mutate, isPending } = useDischargePatients();
+
+  const onChangeSelected = (index: any) => {
+    setSelected(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(item => item !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+  const defaultValuesUpdate: WardTabletType = {
+    areaId: 0,
+    tabletId: 0,
+    areaName: "",
+    tabletName: "",
+    serialNumber: "",
+    patientId: 0,
+    patientName: "",
+  };
+
+  //To-do
+  //공지 작성 폼 완성
+  //데이터 잘 오는지 체크 달라하자
+  const formDischarge = useForm<WardTabletType>({
+    defaultValues: defaultValuesUpdate,
+    mode: "onChange",
+  });
+
+  const { handleSubmit: handleDischarge } = formDischarge;
+
+  const onDischarge: SubmitHandler<WardTabletType> = data => {
+    mutate(data.tabletId, {
+      onSuccess: () => {
+        toast.success("퇴원 처리가 완료 되었습니다.");
+      },
+      onError: error => {
+        toast.error(error.message);
+      },
+    });
+  };
+
   return (
     <Container>
       <div>
@@ -21,7 +71,14 @@ const StaffNoticeWritePage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminNoticeListLayout>{/* <AdminTable /> */}</AdminNoticeListLayout>
+        <AdminNoticeListLayout>
+          <AdminTable
+            getTablet={getTablet}
+            form={formDischarge}
+            onChangeSelected={onChangeSelected}
+            selected={selected}
+          />
+        </AdminNoticeListLayout>
         <AdminNoticeWriteForm />
       </TableLayout>
       <FooterLayout>
