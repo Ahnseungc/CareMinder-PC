@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import { FC } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -7,7 +7,6 @@ import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
 import { FormControl, SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
-import { UseFormReturn } from "react-hook-form";
 
 const columns = [
   { id: 0, field: "Section", headerName: "구역" },
@@ -17,12 +16,11 @@ const columns = [
 
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
-  form: UseFormReturn<WardTabletType>;
   onChangeSelected: (index: any) => void;
   selected: any;
 }
 
-const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, form, onChangeSelected }) => {
+const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {
   // const { control } = form;
   return (
     <StTable>

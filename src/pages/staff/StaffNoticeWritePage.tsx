@@ -8,14 +8,14 @@ import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWrite
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { WardTabletType } from "@models/ward-tablet";
-import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { toast } from "react-toastify";
+import { NoticeType } from "@models/notice";
+import useCreateNotice from "@hooks/mutation/useCreateNotice";
 
 const StaffNoticeWritePage = () => {
   const { data: getTablet, isLoading } = useGetWardTabletRequests();
   const [selected, setSelected] = useState<Array<any>>([{}]);
-  const { mutate, isPending } = useDischargePatients();
+  const { mutate, isPending } = useCreateNotice();
 
   const onChangeSelected = (index: any) => {
     setSelected(prev => {
@@ -26,28 +26,31 @@ const StaffNoticeWritePage = () => {
       }
     });
   };
-  const defaultValuesUpdate: WardTabletType = {
-    areaId: 0,
-    tabletId: 0,
-    areaName: "",
-    tabletName: "",
-    serialNumber: "",
-    patientId: 0,
-    patientName: "",
+
+  const defaultValuesUpdate: NoticeType = {
+    id: 0,
+    wardId: 0,
+    title: "",
+    content: "",
+    fileUrl: "",
+    createdAt: "",
+    lastModifiedAt: "",
   };
 
   //To-do
   //공지 작성 폼 완성
   //데이터 잘 오는지 체크 달라하자
-  const formDischarge = useForm<WardTabletType>({
+  const formDischarge = useForm<NoticeType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
 
+  console.log(formDischarge.getValues());
+
   const { handleSubmit: handleDischarge } = formDischarge;
 
-  const onDischarge: SubmitHandler<WardTabletType> = data => {
-    mutate(data.tabletId, {
+  const onSubmit: SubmitHandler<NoticeType> = data => {
+    mutate(data, {
       onSuccess: () => {
         toast.success("퇴원 처리가 완료 되었습니다.");
       },
@@ -74,12 +77,11 @@ const StaffNoticeWritePage = () => {
         <AdminNoticeListLayout>
           <AdminTable
             getTablet={getTablet}
-            form={formDischarge}
             onChangeSelected={onChangeSelected}
             selected={selected}
           />
         </AdminNoticeListLayout>
-        <AdminNoticeWriteForm />
+        <AdminNoticeWriteForm form={formDischarge} />
       </TableLayout>
       <FooterLayout>
         <PaginationComponent totalPage={5} />

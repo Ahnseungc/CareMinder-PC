@@ -2,52 +2,94 @@ import { FC } from "react";
 import { Box, styled, Typography, FormControl, TextField, Button, SvgIcon } from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
+import {
+  Controller,
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldValues,
+  UseFormReturn,
+  UseFormStateReturn,
+} from "react-hook-form";
+import { NoticeType } from "@models/notice";
 
-const AdminNoticeWriteForm: FC = () => {
+interface AdminNoticeWriteFormProps {
+  form: UseFormReturn<NoticeType>;
+}
+
+const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
+  const {
+    control,
+    formState: { errors },
+  } = form;
   return (
     <StyledBox>
-      <Title>공지 작성</Title>
+      <FormControl error={Boolean(errors)}>
+        <Title>공지 작성</Title>
+        <InputForm>
+          <label htmlFor="">수신자</label>
+          <InputLayout>
+            <Controller
+              control={control}
+              name={"title"}
+              render={({ field }) => (
+                <CInput
+                  {...field}
+                  variant={"outlined"}
+                  placeholder={"수신자를 입력해주세요."}
+                  // onChange={() => null}
+                  // value={""}
+                  disabled={false}
+                  id={""}
+                />
+              )}
+            />
+          </InputLayout>
+        </InputForm>
+        <InputForm>
+          <label htmlFor="">제목</label>
+          <InputLayout>
+            <Controller
+              control={control}
+              name={"title"}
+              render={() => (
+                <CInput
+                  variant={"outlined"}
+                  placeholder={"제목을 입력해주세요."}
+                  onChange={() => null}
+                  value={""}
+                  disabled={false}
+                  id={""}
+                />
+              )}
+            />
+          </InputLayout>
+        </InputForm>
+        <InputForm>
+          <InputForm>
+            <InputLayout>
+              <Controller
+                control={control}
+                name={"content"}
+                render={() => (
+                  <TextAreaLabel>
+                    <p>내용</p>
+                    <p className="blue">즐겨찾기 등록</p>
+                  </TextAreaLabel>
+                )}
+              />
+            </InputLayout>
+          </InputForm>
 
-      <InputForm>
-        <label htmlFor="">수신자</label>
-        <InputLayout>
-          <CInput
-            variant={"outlined"}
-            placeholder={"수신자를 입력해주세요."}
-            onChange={() => null}
-            value={""}
-            disabled={false}
-            id={""}
-          />
-        </InputLayout>
-      </InputForm>
-      <InputForm>
-        <label htmlFor="">제목</label>
-        <InputLayout>
-          <CInput
-            variant={"outlined"}
-            placeholder={"공지제목을 입력해주세요."}
-            onChange={() => null}
-            value={""}
-            disabled={false}
-            id={""}
-          />
-        </InputLayout>
-      </InputForm>
-      <InputForm>
-        <TextAreaLabel>
-          <p>내용</p>
-          <p className="blue">즐겨찾기 등록</p>
-        </TextAreaLabel>
-        <StyledTextArea />
-      </InputForm>
-      <InputForm>
-        <p>사진 첨부</p>
-        <AddPhotoButton>
-          <SvgIcon component={PhotoIcon} inheritViewBox />
-          사진 첨부
-        </AddPhotoButton>
-      </InputForm>
+          <StyledTextArea />
+        </InputForm>
+        <InputForm>
+          <p>사진 첨부</p>
+          <AddPhotoButton>
+            <SvgIcon component={PhotoIcon} inheritViewBox />
+            사진 첨부
+          </AddPhotoButton>
+        </InputForm>
+      </FormControl>
     </StyledBox>
   );
 };

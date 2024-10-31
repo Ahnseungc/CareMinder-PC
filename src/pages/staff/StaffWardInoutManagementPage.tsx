@@ -94,12 +94,7 @@ const StaffWardInoutManagementPage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminTable
-          getTablet={getTablet}
-          onChangeSelected={onChangeSelected}
-          form={formDischarge}
-          selected={selected}
-        />
+        <AdminTable getTablet={getTablet} onChangeSelected={onChangeSelected} selected={selected} />
       </TableLayout>
       <FooterLayout>
         <div>

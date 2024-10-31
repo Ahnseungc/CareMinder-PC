@@ -1,12 +1,12 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import axiosInstance from "@utils/axios/axiosInstance";
-import { NewWardRequest } from "@models/ward";
+import { NoticeType } from "@models/notice";
 
-const createNotice = async (data: NewWardRequest): Promise<void> => {
-  return (await axiosInstance.post("wards/sign-up", data)).data;
+const createNotice = async (notice: NoticeType): Promise<void> => {
+  return (await axiosInstance.post("/patients/discharge-by-web", notice)).data;
 };
 
-export default function useCreateNotice(): UseMutationResult<void, AxiosError, NewWardRequest> {
+export default function useCreateNotice(): UseMutationResult<void, AxiosError, NoticeType> {
   return useMutation({ mutationFn: createNotice });
 }
