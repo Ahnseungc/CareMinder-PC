@@ -48,7 +48,7 @@ const OPTIONS = [
 ];
 
 interface StaffAccountSettingsTableProps {
-  onManage: (modalType: string) => void;
+  onManage: (modalType: string, staffId: number[]) => void;
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -269,28 +269,28 @@ const StaffAccountSettingsTable = ({
                       <AccountMenuLayout>
                         <Edit
                           onClick={() => {
-                            row.accountLocked ? null : onManage("edit");
+                            row.accountLocked ? null : onManage("edit", [row.staffId]);
                           }}
                         />
                         {row.accountLocked ? (
                           <div style={{ color: "#73777D" }}>
                             <Lock
                               onClick={() => {
-                                onManage("lock");
+                                onManage("lock", [row.staffId]);
                               }}
                             />
                           </div>
                         ) : (
                           <UnLock
                             onClick={() => {
-                              row.accountLocked ? null : onManage("unlock");
+                              row.accountLocked ? null : onManage("unlock", [row.staffId]);
                             }}
                           />
                         )}
 
                         <Delete
                           onClick={() => {
-                            row.accountLocked ? null : onManage("delete");
+                            row.accountLocked ? null : onManage("delete", [row.staffId]);
                           }}
                         />
                       </AccountMenuLayout>

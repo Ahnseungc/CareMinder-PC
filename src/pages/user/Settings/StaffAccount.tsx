@@ -20,6 +20,8 @@ import { ReactComponent as Delete } from "@/assets/completedRequests/accountDele
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
+import useLockAccount from "@hooks/mutation/useLockAccount";
+import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
@@ -34,6 +36,9 @@ export const StaffAccount = () => {
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
 
+  const { mutate: lockAccount } = useLockAccount();
+  const { mutate: unLockAccount } = useUnLockAccount();
+
   const handleClear = () => {
     setIsEditing([]);
     setIsClear(true);
@@ -44,21 +49,24 @@ export const StaffAccount = () => {
     closeTOSModal();
   };
 
-  const handleInfoModal = (modalType: string) => {
+  const handleInfoModal = (modalType: string, staffId: number[]) => {
+    const lockData = {
+      userIds: staffId,
+    };
     switch (modalType) {
       case "edit":
         return;
       case "lock":
-        setIsModalType("checkUnLockStaff");
+        unLockAccount(lockData);
         break;
       case "unlock":
-        setIsModalType("checkLockStaff");
+        lockAccount(lockData);
         break;
       case "delete":
         setIsModalType("checkDeleteStaff");
+        openInfoModal();
         break;
     }
-    openInfoModal();
   };
 
   return (
@@ -159,29 +167,6 @@ export const StaffAccount = () => {
               </>
             )}
           </BodyTitleContainer>
-          {/* 스태프 리스트 실제 데이터 조건문으로 변경해야함 */}
-          {/* {staffList?.data.length === 0 ? (
-            <EmptyStaffContainer>
-              <EmptyStaff />
-              <p>등록된 스태프가 없습니다.</p>
-            </EmptyStaffContainer>
-          ) : (
-            <>
-              <StaffAccountSettingsTable
-                onManage={handleInfoModal}
-                isClear={isClear}
-                setIsClear={setIsClear}
-                staffLists={staffList as GetStaffListResponse}
-                areaLists={areaList as GetAreaListResponse[]}
-                isLoading={staffLoading && areaLoading}
-              />
-              <PaginationContainer>
-                <div>
-                  <PaginationComponent totalPage={5} />
-                </div>
-              </PaginationContainer>
-            </>
-          )} */}
           <>
             <StaffAccountSettingsTable
               onManage={handleInfoModal}
