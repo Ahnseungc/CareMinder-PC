@@ -1,3 +1,5 @@
+import { RefetchProps } from "./staff";
+
 export type UserTypes = {
   user:
     | "mainWait"
@@ -7,13 +9,27 @@ export type UserTypes = {
     | "completedRequest"
     | "completedRequestFocus";
   data: RequestsData;
-  onWaitOrAccept?: (id: number, type: "wait" | "accept") => void;
+  onWaitOrAccept?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    id: number,
+    type: "wait" | "accept",
+  ) => void;
+  roomId?: number | null;
+  setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
+  refetchProps?: RefetchProps;
 };
 
 export type MainListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
-  onWaitOrAccept: (id: number, type: "wait" | "accept") => void;
+  onWaitOrAccept: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    id: number,
+    type: "wait" | "accept",
+  ) => void;
+  roomId?: number | null;
+  setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
+  refetchProps?: RefetchProps;
 };
 
 export type StaffListBoxProps = {

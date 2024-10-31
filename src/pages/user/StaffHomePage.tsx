@@ -1,17 +1,17 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { useStaffAccept, useStaffComplete, useStaffDecline } from "@hooks/mutation";
+import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
   useGetStaffPatientInprogress,
   useGetStaffPatientInprogressGroup,
   useGetStaffPatientPending,
 } from "@hooks/queries";
-
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
-import { CSwitchProps, CSwitchType, isRoleType } from "@models/home";
+import { CSwitchType, isRoleType } from "@models/home";
 import { Box, styled } from "@mui/material";
+import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -20,9 +20,11 @@ export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [userStatus] = useRecoilState(userState);
   const navigate = useNavigate();
+
   const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
   const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
   const [isRole, setIsRole] = useState<isRoleType>(null);
+  const [roomId, setRoomId] = useState<number | null>(null);
 
   const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(
     isRole,
@@ -32,44 +34,21 @@ export default function StaffHomePage() {
     useGetStaffPatientInprogress(staffAcceptIsGroup);
   const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
     useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
-  const { mutate: postAccept } = useStaffAccept(
-    pendingRefetch,
-    inprogressRefetch,
-    inprogressGroupRefetch,
-    staffAcceptIsGroup,
-  );
-  const { mutate: patchComplete } = useStaffComplete(
-    pendingRefetch,
-    inprogressRefetch,
-    inprogressGroupRefetch,
-    staffAcceptIsGroup,
-  );
-  const { mutate: patchDecline } = useStaffDecline(
-    pendingRefetch,
-    inprogressRefetch,
-    inprogressGroupRefetch,
-    staffAcceptIsGroup,
-  );
 
-  const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
-    if (type === "wait") return postAccept(id);
-    if (type === "accept") return;
+  const refetchProps = {
+    pendingRefetch,
+    inprogressRefetch,
+    inprogressGroupRefetch,
+    staffAcceptIsGroup,
   };
 
-  const isFindRole = (role: CSwitchProps) => {
-    switch (role) {
-      case "간호사":
-        return "NURSE";
-      case "조무사":
-        return "NURSE_ASSISTANT";
-      case "직원":
-        return "WORKER";
-      case "의사":
-        return "DOCTOR";
-      case "전체":
-        return null;
-    }
+  const { mutate: postAccept } = useStaffAccept(refetchProps);
+  const { mutate: patchComplete } = useStaffComplete(refetchProps);
+
+  const onWaitOrAccept = (e: React.MouseEvent, id: number, type: "wait" | "accept") => {
+    e.stopPropagation();
+    if (type === "wait") return postAccept(id);
+    if (type === "accept") return patchComplete(id);
   };
 
   useEffect(() => {
@@ -110,6 +89,7 @@ export default function StaffHomePage() {
             user="staffWait"
             data={el}
             onWaitOrAccept={onWaitOrAccept}
+            refetchProps={refetchProps}
           />
         ))}
       </LeftSection>
@@ -128,7 +108,9 @@ export default function StaffHomePage() {
               user="staffAccept"
               data={el}
               onWaitOrAccept={onWaitOrAccept}
-              patchState={patchState}
+              roomId={roomId}
+              setRoomId={setRoomId}
+              refetchProps={refetchProps}
             />
           ))}
         {/* 디자인 나오기 전이여서 주석 처리 */}

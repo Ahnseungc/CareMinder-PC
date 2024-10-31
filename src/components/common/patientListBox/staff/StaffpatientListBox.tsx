@@ -1,36 +1,86 @@
 import { Stack, styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import { ChatBox } from "@components/home";
-import { roleColor } from "@utils/homePage";
+import { bottomScroll, formatTimestamp, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-import { MainListBoxProps } from "@models/home";
+import { CSwitchProps, MainListBoxProps } from "@models/home";
+import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
+import ChatInput from "@components/chat/chatInput";
+import { isFindRole } from "@utils/homePage";
+import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
+import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
+import { useStaffDecline } from "@hooks/mutation";
+import { Message } from "@models/staff";
+import ChatBox from "@components/chat/chatBox";
 
-function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
+function StaffPatientListBox({
+  isAccept,
+  data,
+  onWaitOrAccept,
+  roomId,
+  setRoomId,
+  refetchProps,
+}: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isChatting, setIsChatting] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const { pendingRefetch } = refetchProps!;
+
+  const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
+
+  const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
+  const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setIsOptions(true);
     if (isOptions || isEdit) {
       setIsEdit(false);
       setIsOptions(false);
-    } else if (!isOptions && !isEdit) {
-      setIsOptions(true);
     }
   };
-  const onOpenChatting = () => {
+
+  const onOpenChatting = async (id: number) => {
     if (!isAccept) return;
-    setIsChatting(prev => !prev);
+
+    if (roomId !== id) {
+      DisConnect(setRoomId!, roomId);
+      ConnectChat(id, setMessages);
+      const history = await LoadChatHistory(id);
+      setMessages(history);
+      setRoomId!(id);
+      bottomScroll();
+    }
+    if (roomId === id) {
+      DisConnect(setRoomId!, roomId);
+      setRoomId!(null);
+    }
+  };
+
+  const onChangePatientRole = (value: CSwitchProps) => {
+    mutateRole({
+      aiRole: isFindRole(value)!,
+      patientRequestId: data.patientRequestId,
+    });
+    setIsEdit(false);
+    setIsOptions(false);
+  };
+
+  const onCancelAccept = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    mutateDecline(data.patientRequestId);
   };
 
   return (
-    <InnerContainer color={roleColorPick.light} onClick={onOpenChatting}>
+    <InnerContainer
+      color={roleColorPick.light}
+      onClick={() => onOpenChatting(data.patientRequestId)}
+    >
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <div>{data.areaSimple.areaName}</div>
         <div>
@@ -41,28 +91,24 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
           {isOptions && (
             <Options>
               {isAccept ? (
-                <Option onMouseDown={() => {}}>수락취소</Option>
+                <Option onClick={el => onCancelAccept(el)}>수락취소</Option>
               ) : (
                 <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
               )}
-              <Option onMouseDown={() => console.log("퇴원")}>퇴원</Option>
+              <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
+                퇴원
+              </Option>
             </Options>
           )}
           {isEdit && (
-            <Options
-              tabIndex={0}
-              onBlur={() => {
-                setIsEdit(false);
-                setIsOptions(false);
-              }}
-            >
+            <Options tabIndex={0}>
               <span>담당직종 변경</span>
               <BoxWrapper>
                 <CComboBox
                   placeholder={"테스트"}
-                  options={["테스트1", "테스트2"]}
+                  options={["간호사", "의사", "조무사", "직원"]}
                   value={""}
-                  onChange={() => null}
+                  onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper>
             </Options>
@@ -72,19 +118,24 @@ function StaffPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProp
       <Bottom>
         <TxtBox>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>{data.createdAt}분전</TxtBoxRight>
+          <TxtBoxRight>{formatTimestamp(data.createdAt)}전</TxtBoxRight>
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={() => onWaitOrAccept(data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
         </Check>
       </Bottom>
-      {isAccept && isChatting && (
-        <ChatContainer>
-          <ChatBox leftorRight="right" />
-        </ChatContainer>
+      {isAccept && data.patientRequestId === roomId && (
+        <div>
+          <ChatContainer id="top">
+            {messages.map((el, idx) => (
+              <ChatBox key={idx} data={el} color={roleColorPick.normal} />
+            ))}
+          </ChatContainer>
+          <ChatInput roomId={roomId} Icon={roleColorPick.sendIcon} setRoomId={setRoomId!} />
+        </div>
       )}
     </InnerContainer>
   );
@@ -149,24 +200,27 @@ const Check = styled("div")<{ color: string }>`
   font-weight: 900;
   cursor: pointer;
 `;
-const SmallCheck = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  padding-top: 2px;
-  justify-content: center;
-  margin-right: 6px;
-  font-size: 13px;
-  color: ${({ theme }) => theme.palette.primary.contrastText};
-  font-weight: 900;
-  margin-bottom: 2px;
-`;
+// const SmallCheck = styled("div")<{ color: string }>`
+//   background-color: ${({ color }) => color};
+//   border-radius: 50%;
+//   width: 20px;
+//   height: 20px;
+//   display: flex;
+//   padding-top: 2px;
+//   justify-content: center;
+//   margin-right: 6px;
+//   font-size: 13px;
+//   color: ${({ theme }) => theme.palette.primary.contrastText};
+//   font-weight: 900;
+//   margin-bottom: 2px;
+// `;
 
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
+
+  max-height: 300px;
+  overflow: auto;
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};

@@ -19,7 +19,7 @@ function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={() => onWaitOrAccept(data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? (
             <CheckIcon style={{ cursor: "pointer" }} />

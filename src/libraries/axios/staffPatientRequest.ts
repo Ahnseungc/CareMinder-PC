@@ -1,10 +1,15 @@
-import { PatientStatus, isRoleType } from "@models/home";
+import { isRoleType } from "@models/home";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 type PendingType = {
   aiRole: isRoleType;
   myArea: boolean;
+};
+export type PatchRole = {
+  patientRequestId: number;
+  aiRole: Exclude<isRoleType, null>;
 };
 
 export type StaffPatientRequestApiType = {
@@ -14,6 +19,7 @@ export type StaffPatientRequestApiType = {
   postAccept(id: number): Promise<AxiosResponse>;
   patchComplete(id: number): Promise<AxiosResponse>;
   patchDecline(id: number): Promise<AxiosResponse>;
+  patchChangeRole(data: PatchRole): Promise<AxiosResponse>;
 };
 
 const PATH = "/staff-patient-requests";
@@ -41,12 +47,17 @@ const StaffPatientRequest: StaffPatientRequestApiType = {
 
   //환자 요청 상태 완료 처리
   patchComplete(id) {
-    return axiosInstance.patch(PATH + "/state", { patientRequestId: id });
+    return axiosInstance.patch(PATH + "/complete", { patientRequestId: id });
   },
 
   //환자 요청 상태 처리 취소
   patchDecline(id) {
-    return axiosInstance.patch(PATH + "/state", { patientRequestId: id });
+    return axiosInstance.patch(PATH + "/decline", { patientRequestId: id });
+  },
+
+  //환자 요청의 담당 직종 변경
+  patchChangeRole(data) {
+    return axiosInstance.patch(PATH + "/role", data);
   },
 };
 export default StaffPatientRequest;
