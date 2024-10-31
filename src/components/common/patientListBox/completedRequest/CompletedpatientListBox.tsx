@@ -2,10 +2,10 @@ import { Stack, styled } from "@mui/material";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { roleColor } from "@utils/homePage";
 import { useState } from "react";
-import { ChatBox } from "@components/home";
 import { ReactComponent as SendIcon } from "@/assets/completedRequests/send.svg";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { StaffListBoxProps } from "@models/home";
+import ChatBox from "@components/chat/chatBox";
 
 function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
   const roleColorPick = roleColor(data.role);
