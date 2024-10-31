@@ -3,16 +3,17 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-import { Checkbox, Typography } from "@mui/material";
+import { Box, Checkbox, Typography } from "@mui/material";
 
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
+import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState } from "@libraries/recoil";
-import { GetStaffListResponse } from "@hooks/queries/useGetStaffList";
-import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
+import { useGetStaffList } from "@hooks/queries/useGetStaffList";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useCreateArea from "@hooks/mutation/useCreateArea";
 
 const columns = [
@@ -27,24 +28,29 @@ const columns = [
   { field: "AccountManage", headerName: "계정관리" },
 ];
 
-const rows = [
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
-  { id: 2, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
-  { id: 3, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
-  { id: 4, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
-  { id: 5, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
-  { id: 6, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
-  { id: 7, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
-  { id: 8, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: true },
-  { id: 9, Section: "Snow", TableName: "Jon", PatientName: 35, isLock: false },
+const OPTIONS = [
+  {
+    role: "NURSE",
+    value: "간호사",
+  },
+  {
+    role: "DOCTOR",
+    value: "의사",
+  },
+  {
+    role: "NURSE_ASSISTANT",
+    value: "조무사",
+  },
+  {
+    role: "WORKER",
+    value: "직원",
+  },
 ];
 
 interface StaffAccountSettingsTableProps {
   onManage: (modalType: string) => void;
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
-  staffLists: GetStaffListResponse;
-  areaLists: GetAreaListResponse[];
 }
 
 /**계정 상태 테스트 변수 */
@@ -54,17 +60,18 @@ const StaffAccountSettingsTable = ({
   onManage,
   isClear,
   setIsClear,
-  staffLists,
-  areaLists,
 }: StaffAccountSettingsTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [option, setOption] = useState<string>();
-  const [options, setOptions] = useState<string[]>([]);
+  const [_, setOption] = useState<string>();
+  const [options, setOptions] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
 
   const { mutate: createArea } = useCreateArea();
+
+  const { data: staffList, isLoading: staffLoading } = useGetStaffList();
+  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
 
   useEffect(() => {
     if (selectIndex.length === 0) {
@@ -82,10 +89,10 @@ const StaffAccountSettingsTable = ({
   }, [isEditing, isClear, setIsClear]);
 
   useEffect(() => {
-    if (areaLists) {
-      setOptions(areaLists.map(item => item.name));
+    if (areaList) {
+      setOptions(areaList.map(item => item.name));
     }
-  }, [areaLists]);
+  }, [areaList]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -100,185 +107,201 @@ const StaffAccountSettingsTable = ({
     createArea(areaData);
   };
 
+  if (staffLoading && areaLoading) {
+    return <div>로딩 중..</div>;
+  }
+
   return (
-    <StTable>
-      <thead>
-        <tr>
-          {columns.map((column, index) => {
-            return <th key={index}>{column.headerName}</th>;
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, index) => {
-          return (
-            <tr
-              key={index}
-              style={{
-                backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                opacity: `${row.isLock ? 0.5 : 1}`,
-              }}
-            >
-              <td>
-                <Checkbox
-                  {...label}
-                  sx={{
-                    "&.MuiCheckbox-root": {
-                      color: "#ECECEC",
-                    },
-                    "& .MuiSvgIcon-root": {
-                      fontSize: 28,
-                    },
-                    "&.Mui-checked": {
-                      "& .MuiSvgIcon-root": {
-                        fill: "#B4C0FF",
-                      },
-                    },
-                  }}
-                  checked={selectIndex.includes(index)}
-                  onClick={() => {
-                    setSelectIndex(prevList => {
-                      if (prevList.includes(index)) {
-                        return prevList.filter(item => item !== index);
-                      } else {
-                        return [...prevList, index];
-                      }
-                    });
-                  }}
-                />
-              </td>
-              <td>
-                <ShortComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"스태프"}
-                    onChange={() => null}
-                    value={"홍길동"}
-                    disabled={row.isLock}
-                    id={""}
-                  ></CInput>
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <ShortComBoxLayout>
-                  <CComboBox
-                    placeholder={"간호사"}
-                    options={["간호사", "의사", "조무사", "직원"]}
-                    value={""}
-                    disabled={row.isLock}
-                    onChange={() => null}
-                  />
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <LongComBoxLayout>
-                  <CComboBox
-                    placeholder={"구역"}
-                    options={options}
-                    value={option as string}
-                    disabled={row.isLock}
-                    onChange={handleChange}
-                    allowCustomInput={true}
-                    onCustomInputAdd={handleCreateArea}
-                  />
-                </LongComBoxLayout>
-              </td>
-              <td>
-                <LongComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"아이디"}
-                    onChange={() => null}
-                    value={"User1234"}
-                    disabled={row.isLock}
-                    id={""}
-                  ></CInput>
-                </LongComBoxLayout>
-              </td>
-              <td>
-                <LongComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"전화번호"}
-                    onChange={() => null}
-                    value={"010-0000-0000"}
-                    disabled={row.isLock}
-                    id={""}
-                  ></CInput>
-                </LongComBoxLayout>
-              </td>
-              <td>
-                <LongComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"이메일"}
-                    onChange={() => null}
-                    value={"User1234@naver.com"}
-                    disabled={row.isLock}
-                    id={""}
-                  ></CInput>
-                </LongComBoxLayout>
-              </td>
-              <td>
-                <ShortComBoxLayout>
-                  {isConnecting ? (
-                    <>
-                      <div
-                        style={{
-                          width: "6px",
-                          height: "6px",
-                          backgroundColor: "#1ADE00",
-                          borderRadius: "50%",
-                          boxShadow: "0px 0px 2px rgba(26,222,0,0.5)",
-                          marginRight: "7px",
-                        }}
-                      ></div>
-                      <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
-                    </>
-                  ) : (
-                    <Typography>
-                      미접속
-                      <br />
-                      3시간전
-                    </Typography>
-                  )}
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <AccountMenuLayout>
-                  <Edit
-                    onClick={() => {
-                      row.isLock ? null : onManage("edit");
+    <>
+      {staffList?.data.length === 0 ? (
+        <EmptyStaffContainer>
+          <EmptyStaff />
+          <p>등록된 스태프가 없습니다.</p>
+        </EmptyStaffContainer>
+      ) : (
+        <StTable>
+          <thead>
+            <tr>
+              {columns.map((column, index) => {
+                return <th key={index}>{column.headerName}</th>;
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {staffList &&
+              staffList.data.map((row, index) => {
+                return (
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
+                      opacity: `${row.accountLocked ? 0.5 : 1}`,
                     }}
-                  />
-                  {row.isLock ? (
-                    <div style={{ color: "#73777D" }}>
-                      <Lock
+                  >
+                    <td>
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
+                            "& .MuiSvgIcon-root": {
+                              fill: "#B4C0FF",
+                            },
+                          },
+                        }}
+                        checked={selectIndex.includes(index)}
                         onClick={() => {
-                          onManage("lock");
+                          setSelectIndex(prevList => {
+                            if (prevList.includes(index)) {
+                              return prevList.filter(item => item !== index);
+                            } else {
+                              return [...prevList, index];
+                            }
+                          });
                         }}
                       />
-                    </div>
-                  ) : (
-                    <UnLock
-                      onClick={() => {
-                        row.isLock ? null : onManage("unlock");
-                      }}
-                    />
-                  )}
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"스태프"}
+                          onChange={() => null}
+                          value={row.name}
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                      </ShortComBoxLayout>
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        <CComboBox
+                          placeholder={"간호사"}
+                          options={OPTIONS.map(option => option.value)}
+                          value={
+                            OPTIONS.find(option => option.role === row.staffRole)?.value as string
+                          }
+                          disabled={row.accountLocked}
+                          onChange={() => null}
+                        />
+                      </ShortComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CComboBox
+                          placeholder={"구역"}
+                          options={options}
+                          value={row.areaName}
+                          disabled={row.accountLocked}
+                          onChange={handleChange}
+                          allowCustomInput={true}
+                          onCustomInputAdd={handleCreateArea}
+                        />
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"아이디"}
+                          onChange={() => null}
+                          value={row.loginId}
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"전화번호"}
+                          onChange={() => null}
+                          value={row.phoneNumber}
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"이메일"}
+                          onChange={() => null}
+                          value={row.email}
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        {isConnecting ? (
+                          <>
+                            <div
+                              style={{
+                                width: "6px",
+                                height: "6px",
+                                backgroundColor: "#1ADE00",
+                                borderRadius: "50%",
+                                boxShadow: "0px 0px 2px rgba(26,222,0,0.5)",
+                                marginRight: "7px",
+                              }}
+                            ></div>
+                            <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
+                          </>
+                        ) : (
+                          <Typography>
+                            미접속
+                            <br />
+                            3시간전
+                          </Typography>
+                        )}
+                      </ShortComBoxLayout>
+                    </td>
+                    <td>
+                      <AccountMenuLayout>
+                        <Edit
+                          onClick={() => {
+                            row.accountLocked ? null : onManage("edit");
+                          }}
+                        />
+                        {row.accountLocked ? (
+                          <div style={{ color: "#73777D" }}>
+                            <Lock
+                              onClick={() => {
+                                onManage("lock");
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <UnLock
+                            onClick={() => {
+                              row.accountLocked ? null : onManage("unlock");
+                            }}
+                          />
+                        )}
 
-                  <Delete
-                    onClick={() => {
-                      row.isLock ? null : onManage("delete");
-                    }}
-                  />
-                </AccountMenuLayout>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </StTable>
+                        <Delete
+                          onClick={() => {
+                            row.accountLocked ? null : onManage("delete");
+                          }}
+                        />
+                      </AccountMenuLayout>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </StTable>
+      )}
+    </>
   );
 };
 
@@ -327,3 +350,13 @@ const LongComBoxLayout = styled.div`
   height: 36px;
   margin: 0 auto;
 `;
+
+const EmptyStaffContainer = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+
+  minHeight: "600px",
+  marginBottom: "100px",
+});

@@ -8,7 +8,6 @@ import { useBooleanState } from "@toss/react";
 import { useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
-import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import { useRecoilState } from "recoil";
 import { editingState } from "@libraries/recoil";
@@ -20,8 +19,6 @@ import { ReactComponent as Lock } from "@/assets/completedRequests/Interface ess
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-import { GetStaffListResponse, useGetStaffList } from "@hooks/queries/useGetStaffList";
-import { GetAreaListResponse, useGetAreaList } from "@hooks/queries/useGetAreaList";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 
 export const StaffAccount = () => {
@@ -63,9 +60,6 @@ export const StaffAccount = () => {
     }
     openInfoModal();
   };
-
-  const { data: staffList } = useGetStaffList();
-  const { data: areaList } = useGetAreaList();
 
   return (
     <>
@@ -166,7 +160,7 @@ export const StaffAccount = () => {
             )}
           </BodyTitleContainer>
           {/* 스태프 리스트 실제 데이터 조건문으로 변경해야함 */}
-          {staffList?.data.length === 0 ? (
+          {/* {staffList?.data.length === 0 ? (
             <EmptyStaffContainer>
               <EmptyStaff />
               <p>등록된 스태프가 없습니다.</p>
@@ -179,6 +173,7 @@ export const StaffAccount = () => {
                 setIsClear={setIsClear}
                 staffLists={staffList as GetStaffListResponse}
                 areaLists={areaList as GetAreaListResponse[]}
+                isLoading={staffLoading && areaLoading}
               />
               <PaginationContainer>
                 <div>
@@ -186,7 +181,19 @@ export const StaffAccount = () => {
                 </div>
               </PaginationContainer>
             </>
-          )}
+          )} */}
+          <>
+            <StaffAccountSettingsTable
+              onManage={handleInfoModal}
+              isClear={isClear}
+              setIsClear={setIsClear}
+            />
+            <PaginationContainer>
+              <div>
+                <PaginationComponent totalPage={5} />
+              </div>
+            </PaginationContainer>
+          </>
         </>
       )}
     </>
@@ -219,16 +226,6 @@ const Title = styled(Typography)(({ theme }) => ({
   lineHeight: "24px",
   letterSpacing: "-3%",
 }));
-
-const EmptyStaffContainer = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-
-  minHeight: "600px",
-  marginBottom: "100px",
-});
 
 const EditContainer = styled(Box)(({ theme }) => ({
   display: "flex",

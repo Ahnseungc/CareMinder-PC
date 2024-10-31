@@ -16,6 +16,7 @@ export type NewStaffRequests = {
   nfc: string;
   fingerprint: string;
   staffRole: string;
+  areaId: number;
 };
 
 export type NewStaff = Staff & { confirmPassword: string };

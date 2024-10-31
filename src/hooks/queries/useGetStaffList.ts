@@ -3,12 +3,17 @@ import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 
 export type StaffList = {
+  staffId: number;
   name: string;
+  loginId: string;
   phoneNumber: string;
   email: string;
   nfc: string;
   fingerprint: string;
   staffRole: string;
+  accountLocked: boolean;
+  areaId: number;
+  areaName: string;
 };
 
 export type GetStaffListResponse = {
@@ -16,7 +21,7 @@ export type GetStaffListResponse = {
 };
 
 export const getStaffList = async () => {
-  const res = await axiosInstance.get("/staffs/list");
+  const res = await axiosInstance.get("/wards/staff-list");
   return res.data;
 };
 

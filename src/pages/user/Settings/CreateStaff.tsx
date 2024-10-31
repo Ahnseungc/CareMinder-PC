@@ -8,7 +8,6 @@ import { NewStaff, NewStaffField, QuickRegisterNewStaff } from "@models/staff";
 import { Box, Typography } from "@mui/material";
 import { Stack, styled } from "@mui/system";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 
@@ -33,7 +32,6 @@ interface CreateStaffProps {
 
 export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
   const [isDoubleChecked, setIsDoubleCheckd] = useRecoilState(doubleCheckState);
-  const navigate = useNavigate();
 
   const { mutate } = useCreateStaff();
 
@@ -45,7 +43,6 @@ export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
   const { handleSubmit } = form;
 
   const onSubmit: SubmitHandler<NewStaff> = data => {
-    // console.log(data);
     const newStaffRequesets = {
       name: data.name,
       loginId: data.username,
@@ -54,13 +51,14 @@ export const CreateStaff = ({ onCreate }: CreateStaffProps) => {
       email: data.email,
       nfc: "",
       fingerprint: "",
+      areaId: 1,
       staffRole: data.occupation,
     };
 
     mutate(newStaffRequesets, {
       onSuccess: () => {
         toast.success("스태프 계정 생성이 완료되었습니다.");
-        navigate("/");
+        onCreate(false);
         setIsDoubleCheckd(false);
       },
       onError: error => {

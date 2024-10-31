@@ -1,4 +1,4 @@
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { NewStaffRequests } from "@models/staff";
@@ -8,5 +8,11 @@ const createStaff = async (data: NewStaffRequests): Promise<void> => {
 };
 
 export default function useCreateStaff(): UseMutationResult<void, AxiosError, NewStaffRequests> {
-  return useMutation({ mutationFn: createStaff });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createStaff,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["staffList"] });
+    },
+  });
 }

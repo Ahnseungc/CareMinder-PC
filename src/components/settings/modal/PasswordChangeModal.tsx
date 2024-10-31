@@ -8,7 +8,6 @@ import { ReactComponent as Nothing } from "@/assets/frown.svg";
 import { SwitchCase, useBooleanState } from "@toss/react";
 import NewPasswordField from "../NewPasswordInputField";
 import { SubmitHandler, useForm } from "react-hook-form";
-import InfoModal from "./InfoModal";
 import ChangeModal from "./ChangeModal";
 
 interface TabContentProps {
