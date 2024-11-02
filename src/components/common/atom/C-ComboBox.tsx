@@ -28,6 +28,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   const handleCustomInputAdd = () => {
     setCustomInput("");
     setIsCreate(false);
+
     if (onCustomInputAdd) {
       if (customInput === "") {
         setIsCreate(prev => !prev);

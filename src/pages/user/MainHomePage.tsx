@@ -1,14 +1,13 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { waitPatientmockData } from "@components/home/wordMainMockData";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
+import { useGetWardPatientInProgress, useGetWardPatientPending } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import modalState from "@libraries/recoil/modal";
-import { CSwitchType } from "@models/home";
 import { Box, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
@@ -17,14 +16,9 @@ export default function MainHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
-  const [mainWaitIsMine, setMainWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
-  const [mainAcceptIsGroup, setMainAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
 
-  const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    if (userStatus?.type === "WARD") return setIsModal(true);
-  };
-
-  // const { data: getPatient, isLoading } = useGetPatientRequests();
+  const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);
+  const { data: getInprogressData } = useGetWardPatientInProgress(userStatus!.type);
 
   const onStaffLogIn = () => {
     if (userStatus?.type === "WARD") {
@@ -34,6 +28,10 @@ export default function MainHomePage() {
 
   const handleOnClose = () => {
     setIsModal(false);
+  };
+
+  const onWaitOrAccept = () => {
+    onStaffLogIn();
   };
 
   useEffect(() => {
@@ -59,23 +57,20 @@ export default function MainHomePage() {
             <SubTitleLeft>
               <span>내 환자만 보기</span>
               <span onClick={onStaffLogIn}>
-                <CSwitch
-                  onChange={(el: CSwitchType) => setMainWaitIsMine(el.target.checked)}
-                  disabled={userStatus?.type === "WARD"}
-                />
+                <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>
             </SubTitleLeft>
-            <SubTitleRight onClick={onStaffLogIn}>
+            <SubTitleRight onClick={onStaffLogIn} isDisable={userStatus?.type === "WARD"}>
               <span>직종</span>
               <CComboBox
                 placeholder={"전체"}
                 options={["테스트1", "테스트2"]}
                 value={""}
-                onChange={() => null}
+                onChange={() => onStaffLogIn}
               />
             </SubTitleRight>
           </SubTitle>
-          {waitPatientmockData.map(el => (
+          {getPendingData?.map(el => (
             <PatientBox
               key={el.patientRequestId}
               user="mainWait"
@@ -90,14 +85,11 @@ export default function MainHomePage() {
             <SubTitleLeft>
               <span>환자별로 묶기</span>
               <span onClick={onStaffLogIn}>
-                <CSwitch
-                  onChange={(el: CSwitchType) => setMainAcceptIsGroup(el.target.checked)}
-                  disabled={userStatus?.type === "WARD"}
-                />
+                <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>
             </SubTitleLeft>
           </SubTitle>
-          {waitPatientmockData.map(el => (
+          {getInprogressData?.map(el => (
             <PatientBox
               key={el.patientRequestId}
               user="mainAccept"
@@ -145,7 +137,7 @@ const SubTitleLeft = styled("div")`
     margin-right: 18px;
   }
 `;
-const SubTitleRight = styled("div")`
+const SubTitleRight = styled("div")<{ isDisable: boolean }>`
   display: flex;
   align-items: center;
   height: 35px;
@@ -155,5 +147,8 @@ const SubTitleRight = styled("div")`
   & > span {
     width: 40px;
     margin-right: 12px;
+  }
+  & > *:last-child {
+    pointer-events: ${({ isDisable }) => (isDisable ? "none" : "auto")};
   }
 `;
