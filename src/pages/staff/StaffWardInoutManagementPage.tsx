@@ -16,26 +16,31 @@ import Cookies from "js-cookie";
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
-  const [isMyarea, setIsMyarea] = useState<boolean>(false);
+  const [isMyArea, setIsMyArea] = useState<boolean>(false);
+
+  console.log(isMyArea);
 
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
     searchValue: searchValue,
-    myArea: isMyarea,
+    myArea: isMyArea,
   });
 
-  console.log(getTablet);
   //@ts-ignore
   const { mutate, isPending } = useDischargePatients();
-  const [selected, setSelected] = useState<Array<any>>([{}]);
+  const [selected, setSelected] = useState<Array<number>>([]);
 
-  const onChangeSelected = (index: any) => {
+  const onChangeMyArea = () => {
+    setIsMyArea(prev => !prev);
+  };
+
+  const onChangeSelected = (tabletId: number) => {
     setSelected(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(item => item !== index);
+      if (prev.some(item => item === tabletId)) {
+        return prev.filter(item => item !== tabletId);
       } else {
-        return [...prev, index];
+        return [...prev, tabletId];
       }
     });
   };
@@ -57,15 +62,18 @@ const StaffWardInoutManagementPage = () => {
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
-  const onDischarge: SubmitHandler<WardTabletType> = data => {
-    mutate(data.tabletId, {
-      onSuccess: () => {
-        toast.success("퇴원 처리가 완료 되었습니다.");
+  const onDischarge: SubmitHandler<WardTabletType> = () => {
+    mutate(
+      { tabletIds: selected },
+      {
+        onSuccess: () => {
+          toast.success("퇴원 처리가 완료 되었습니다.");
+        },
+        onError: error => {
+          toast.error(error.message);
+        },
       },
-      onError: error => {
-        toast.error(error.message);
-      },
-    });
+    );
   };
 
   return (
@@ -76,7 +84,7 @@ const StaffWardInoutManagementPage = () => {
           <AdminInoutSubTitleLeftContainer>
             <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
             <div>
-              <CSwitch />
+              <CSwitch onChange={onChangeMyArea} />
             </div>
             <SectionArrayLayout>
               <Arraytitle variant="h2">구역 정렬</Arraytitle>

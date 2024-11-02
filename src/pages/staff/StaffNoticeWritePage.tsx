@@ -6,40 +6,63 @@ import CButton from "@components/common/atom/C-Button";
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 // import { toast } from "react-toastify";
 import { NoticeType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
+import Cookies from "js-cookie";
+import CSwitch from "@components/common/atom/C-Switch";
 
 const StaffNoticeWritePage = () => {
+  const [searchValue, setSearchValue] = useState<string>("");
+  const token = Cookies.get("accessTokenStaff") as string;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isMyArea, setIsMyArea] = useState<boolean>(false);
   //@ts-ignore
-  const { data: getTablet, isLoading } = useGetWardTabletRequests();
-  const [selected, setSelected] = useState<Array<any>>([{}]);
+  const { data: getTablet, isLoading } = useGetWardTabletRequests({
+    token: token,
+    searchValue: searchValue,
+    myArea: isMyArea,
+  });
+
   //@ts-ignore
   const { mutate, isPending } = useCreateNotice();
 
-  const onChangeSelected = (index: any) => {
+  const [selected, setSelected] = useState<Array<number>>([]);
+
+  const handleFileUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onChangeSelected = (tabletId: number) => {
     setSelected(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(item => item !== index);
+      if (prev.some(item => item === tabletId)) {
+        return prev.filter(item => item !== tabletId);
       } else {
-        return [...prev, index];
+        return [...prev, tabletId];
       }
     });
   };
+  const onChangeMyArea = () => {
+    setIsMyArea(prev => !prev);
+  };
+
+  useEffect(() => {
+    formNotice.setValue("wardId", selected[0]);
+  }, [selected]);
 
   const defaultValuesUpdate: NoticeType = {
     id: 0,
     wardId: 0,
     title: "",
     content: "",
-    fileUrl: "",
+    fileUrl: [],
     createdAt: "",
     lastModifiedAt: "",
   };
 
-  const formDischarge = useForm<NoticeType>({
+  const formNotice = useForm<NoticeType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
@@ -62,10 +85,22 @@ const StaffNoticeWritePage = () => {
       <div>
         <Title variant="h1">공지</Title>
         <AdminInoutSubTitleContainer>
-          <AdminInoutSubTitleLeftContainer></AdminInoutSubTitleLeftContainer>
+          <AdminInoutSubTitleLeftContainer>
+            <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
+            <div>
+              <CSwitch onChange={onChangeMyArea} />
+            </div>
+          </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <ButtonLayout width={"148px"}>
-              <CButton buttontype={"primarySpaure"}>공지 작성</CButton>
+              <CButton
+                buttontype={"primarySpaure"}
+                onClick={() => {
+                  console.log(formNotice.getValues());
+                }}
+              >
+                공지 작성
+              </CButton>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
         </AdminInoutSubTitleContainer>
@@ -78,11 +113,13 @@ const StaffNoticeWritePage = () => {
             selected={selected}
           />
         </AdminNoticeListLayout>
-        <AdminNoticeWriteForm form={formDischarge} />
+        <AdminNoticeWriteForm
+          form={formNotice}
+          handleFileUploadClick={handleFileUploadClick}
+          fileRef={fileInputRef}
+        />
       </TableLayout>
-      <FooterLayout>
-        <PaginationComponent totalPage={5} />
-      </FooterLayout>
+      <FooterLayout>{/* <PaginationComponent totalPage={5} /> */}</FooterLayout>
     </Container>
   );
 };
@@ -93,6 +130,7 @@ export default StaffNoticeWritePage;
 
 const Container = styled(Stack)({
   height: "100%",
+  paddingBottom: "78px",
 });
 
 const AdminInoutSubTitleContainer = styled(Box)({
@@ -150,3 +188,16 @@ const Title = styled(Typography)(({ theme }) => ({
   lineHeight: "24px",
   letterSpacing: "-3%",
 }));
+
+const Subtitle = styled(Typography)(({ theme }) => ({
+  lineHeight: "26px",
+  fontSize: "18px",
+  fontWeight: 500,
+  color: theme.palette.primary.dark,
+}));
+
+const SectionArrayLayout = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "5px",
+});

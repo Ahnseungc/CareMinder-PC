@@ -19,8 +19,8 @@ const StaffNoticePage = () => {
   const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
-    const select = getNotices.filter((notice: NoticeType) => id === notice.id);
-    setSelected(select);
+    // const select = getNotices.filter((notice: NoticeType) => id === notice.id);
+    // setSelected(select);
   };
 
   return (

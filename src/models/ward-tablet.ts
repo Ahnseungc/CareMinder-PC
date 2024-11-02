@@ -13,3 +13,7 @@ export type reqWardParamsType = {
   searchValue: string;
   myArea: boolean;
 };
+
+export type selectedWardType = {
+  tabletIds: Array<number>;
+};

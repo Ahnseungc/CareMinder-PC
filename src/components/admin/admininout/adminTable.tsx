@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
 import { SvgIcon } from "@mui/material";
-import { WardTabletType } from "@models/ward-tablet";
+import { selectedWardType, WardTabletType } from "@models/ward-tablet";
 
 const columns = [
   { id: 0, field: "Section", headerName: "구역" },
@@ -17,7 +17,7 @@ const columns = [
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
   onChangeSelected: (index: any) => void;
-  selected: any;
+  selected: Array<number>;
 }
 
 const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {

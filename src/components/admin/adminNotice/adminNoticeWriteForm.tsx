@@ -1,5 +1,14 @@
-import { FC } from "react";
-import { Box, styled, Typography, FormControl, TextField, Button, SvgIcon } from "@mui/material";
+import { FC, InputHTMLAttributes, Ref } from "react";
+import {
+  Box,
+  styled,
+  Typography,
+  FormControl,
+  TextField,
+  Button,
+  SvgIcon,
+  Input,
+} from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
 import { Controller, UseFormReturn } from "react-hook-form";
@@ -7,9 +16,15 @@ import { NoticeType } from "@models/notice";
 
 interface AdminNoticeWriteFormProps {
   form: UseFormReturn<NoticeType>;
+  handleFileUploadClick: () => void;
+  fileRef: Ref<HTMLInputElement>;
 }
 
-const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
+const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
+  form,
+  handleFileUploadClick,
+  fileRef,
+}) => {
   const {
     control,
     formState: { errors },
@@ -29,8 +44,6 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
                   {...field}
                   variant={"outlined"}
                   placeholder={"수신자를 입력해주세요."}
-                  // onChange={() => null}
-                  // value={""}
                   disabled={false}
                   id={""}
                 />
@@ -44,12 +57,11 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
             <Controller
               control={control}
               name={"title"}
-              render={() => (
+              render={({ field }) => (
                 <CInput
+                  {...field}
                   variant={"outlined"}
                   placeholder={"제목을 입력해주세요."}
-                  onChange={() => null}
-                  value={""}
                   disabled={false}
                   id={""}
                 />
@@ -59,25 +71,39 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
         </InputForm>
         <InputForm>
           <InputForm>
-            <InputLayout>
+            <TextAreaLabel>
+              <p>내용</p>
+              <p className="blue">즐겨찾기 등록</p>
+            </TextAreaLabel>
+            <TextAreaLayout>
               <Controller
                 control={control}
                 name={"content"}
-                render={() => (
-                  <TextAreaLabel>
-                    <p>내용</p>
-                    <p className="blue">즐겨찾기 등록</p>
-                  </TextAreaLabel>
+                render={({ field }) => (
+                  <StyledTextArea placeholder="내용을 입력해주세요." multiline {...field} />
                 )}
               />
-            </InputLayout>
+            </TextAreaLayout>
           </InputForm>
-
-          <StyledTextArea />
         </InputForm>
         <InputForm>
           <p>사진 첨부</p>
-          <AddPhotoButton>
+          <Controller
+            control={control}
+            name="fileUrl"
+            render={({ field }) => (
+              <input
+                {...field}
+                type="file"
+                accept="image/*"
+                ref={fileRef}
+                // onChange={handleFileUpload}
+                style={{ display: "none" }} // input 요소 숨기기
+              />
+            )}
+          />
+
+          <AddPhotoButton onClick={handleFileUploadClick}>
             <SvgIcon component={PhotoIcon} inheritViewBox />
             사진 첨부
           </AddPhotoButton>
@@ -108,6 +134,13 @@ const InputLayout = styled(Box)({
   width: "100%",
   height: "40px",
   marginTop: "10px",
+});
+
+const TextAreaLayout = styled(Box)({
+  width: "100%",
+  height: "191px",
+
+  marginTop: "24px",
 });
 
 const InputForm = styled(Box)(({ theme }) => ({
@@ -141,12 +174,21 @@ const TextAreaLabel = styled(Box)({
 });
 
 const StyledTextArea = styled(TextField)(({ theme }) => ({
-  "marginTop": "24px",
   "border": `1px solid ${theme.palette.divider}`,
   "width": "100%",
-  "height": "191px",
+  "height": "100%",
+
   "& .MuiInputBase-root": {
-    height: "191px",
+    height: "100%",
+    alignItems: "flex-start", // 텍스트 상단 정렬
+  },
+
+  "& .MuiInputBase-inputMultiline": {
+    textAlign: "left",
+    height: "100%",
+    width: "100%",
+    lineHeight: "1.6",
+    boxSizing: "border-box",
   },
 }));
 

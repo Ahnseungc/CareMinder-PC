@@ -3,7 +3,7 @@ export type NoticeType = {
   wardId: number;
   title: string;
   content: string;
-  fileUrl: string;
+  fileUrl: Array<string>;
   createdAt: string;
   lastModifiedAt: string;
 };
