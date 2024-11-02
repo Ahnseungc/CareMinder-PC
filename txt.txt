@@ -46,3 +46,9 @@ STOPSIGNAL SIGTERM
 # Docker에서는 nginx가 daemon으로 실행되지 않도록 한다.
 # daemon으로 실행하지 않으면 container가 바로 종료된다.
 CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
+"electron": "^33.0.2",
+    "electron-builder": "25.1.8",
