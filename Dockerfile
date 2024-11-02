@@ -2,6 +2,9 @@
 # Build stage
 FROM node:16-alpine AS build
 
+# 필수 패키지 설치 (curl, bash)
+RUN apk add --no-cache curl bash
+
 # Bun 설치
 RUN curl -fsSL https://bun.sh/install | bash
 
