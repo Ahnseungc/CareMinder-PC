@@ -11,10 +11,21 @@ import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const StaffWardInoutManagementPage = () => {
+  const [searchValue, setSearchValue] = useState<string>("");
+  const token = Cookies.get("accessTokenStaff") as string;
+  const [isMyarea, setIsMyarea] = useState<boolean>(false);
+
   //@ts-ignore
-  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  const { data: getTablet, isLoading } = useGetWardTabletRequests({
+    token: token,
+    searchValue: searchValue,
+    myArea: isMyarea,
+  });
+
+  console.log(getTablet);
   //@ts-ignore
   const { mutate, isPending } = useDischargePatients();
   const [selected, setSelected] = useState<Array<any>>([{}]);
@@ -38,13 +49,6 @@ const StaffWardInoutManagementPage = () => {
     patientId: 0,
     patientName: "",
   };
-
-  // const formUpdate = useForm<WardTabletType>({
-  //   defaultValues: defaultValuesUpdate,
-  //   mode: "onChange",
-  // });
-
-  // const { handleSubmit } = formUpdate;
 
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
@@ -82,7 +86,7 @@ const StaffWardInoutManagementPage = () => {
           <AdminInoutSubTitleRightContainer>
             <SearchLayout>
               <CSearchBox
-                value={""}
+                value={searchValue}
                 onChange={() => null}
                 placeholder={"환자 이름을 검색해 주세요."}
               />
