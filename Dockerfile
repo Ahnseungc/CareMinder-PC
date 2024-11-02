@@ -14,7 +14,10 @@ ENV PATH="/root/.bun/bin:$PATH"
 WORKDIR /code
 
 COPY package*.json ./
-RUN bun install
+
+# bun 경로를 명시적으로 지정하여 패키지 설치
+RUN /root/.bun/bin/bun install
+
 
 COPY . .
 RUN bun run build
@@ -38,8 +41,6 @@ EXPOSE 5050
 #container 종료 될때 정상 종료 유도
 STOPSIGNAL SIGTERM
 
-# container가 종료될 때 정상종료를 유도한다.
-STOPSIGNAL SIGTERM
 
 # nginx를 global 설정
 # Docker에서는 nginx가 daemon으로 실행되지 않도록 한다.
