@@ -5,9 +5,14 @@ import MainPatientListBox from "./main/MainpatientListBox";
 import CompletedPatientListBox from "./completedRequest/CompletedpatientListBox";
 import { UserTypes } from "@models/home";
 
-export default function PatientBox({ user, data, onWaitOrAccept }: UserTypes) {
-  // props로 user 'mainWait' | 'mainAccept' | 'staffWait' | 'staffAccept' 로 분리
-
+export default function PatientBox({
+  user,
+  data,
+  onWaitOrAccept,
+  roomId,
+  setRoomId,
+  refetchProps,
+}: UserTypes) {
   return (
     <>
       <SwitchCase
@@ -20,10 +25,22 @@ export default function PatientBox({ user, data, onWaitOrAccept }: UserTypes) {
             <MainPatientListBox isAccept={true} data={data} onWaitOrAccept={onWaitOrAccept!} />
           ),
           staffWait: (
-            <StaffPatientListBox isAccept={false} data={data} onWaitOrAccept={onWaitOrAccept!} />
+            <StaffPatientListBox
+              isAccept={false}
+              data={data}
+              onWaitOrAccept={onWaitOrAccept!}
+              refetchProps={refetchProps}
+            />
           ),
           staffAccept: (
-            <StaffPatientListBox isAccept={true} data={data} onWaitOrAccept={onWaitOrAccept!} />
+            <StaffPatientListBox
+              isAccept={true}
+              data={data}
+              onWaitOrAccept={onWaitOrAccept!}
+              roomId={roomId}
+              setRoomId={setRoomId}
+              refetchProps={refetchProps}
+            />
           ),
           completedRequest: <CompletedPatientListBox isAccept={false} data={data} />,
           completedRequestFocus: <CompletedPatientListBox isAccept={true} data={data} />,
