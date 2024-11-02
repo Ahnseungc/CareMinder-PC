@@ -1,48 +1,54 @@
+# Bun의 공식 이미지를 사용하여 베이스를 설정합니다.
+# 최신 버전의 Bun을 사용하려면 해당 버전 정보를 확인합니다.
+FROM oven/bun:1 AS base
 
-# Build stage
-FROM node:16-alpine AS build
+# 작업 디렉토리를 설정
+WORKDIR /usr/src/app
 
-# 필수 패키지 설치 (curl, bash)
-RUN apk add --no-cache curl bash
+# ------------------------------------------
+# Install 단계 (개발 환경 의존성 포함 설치)
+# ------------------------------------------
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lockb /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Bun 설치
-RUN curl -fsSL https://bun.sh/install | bash
+# ------------------------------------------
+# Install 단계 (프로덕션 의존성만 설치)
+# ------------------------------------------
+RUN mkdir -p /temp/prod
+COPY package.json bun.lockb /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Bun 설치 후 환경 변수 설정 (기본 설치 경로가 /root/.bun)
-ENV PATH="/root/.bun/bin:$PATH"
-
-WORKDIR /code
-
-COPY package*.json ./
-
-# bun 경로를 명시적으로 지정하여 패키지 설치
-RUN /root/.bun/bin/bun install
-
-
+# ------------------------------------------
+# Prerelease 단계 (테스트와 빌드 실행)
+# ------------------------------------------
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
+
+# 환경 변수 설정
+ENV NODE_ENV=production
+
+# [선택 사항] 테스트 실행
+RUN bun test
+
+# 빌드 실행
 RUN bun run build
 
-# Production stage
-# base image는 node image로 시작한다. npm과 yarn이 모두 설치되어 있다.
-FROM nginx:stable-alpine
+# ------------------------------------------
+# Release 단계 (최종 이미지 빌드)
+# ------------------------------------------
+FROM base AS release
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/dist ./dist
+COPY --from=prerelease /usr/src/app/package.json .
 
-# nginx의 기본 service를 제거한다.
-RUN rm -rf /etc/nginx/sites-enabled/default.conf
- 
-# nginx에 serving할 html의 설정파일을 복사한다.
-COPY nginx.conf /etc/nginx/conf.d/
+# 컨테이너 보안을 위해 Bun 사용자로 실행
+USER bun
 
+# 포트 설정
+EXPOSE 3000/tcp
 
-COPY --from=build /code/dist /usr/share/nginx/html
-
-# frontend Port를 설정한다.
-EXPOSE 5050
-
-#container 종료 될때 정상 종료 유도
-STOPSIGNAL SIGTERM
-
-
-# nginx를 global 설정
-# Docker에서는 nginx가 daemon으로 실행되지 않도록 한다.
-# daemon으로 실행하지 않으면 container가 바로 종료된다.
-CMD ["nginx", "-g", "daemon off;"]
+# 애플리케이션 실행
+ENTRYPOINT ["bun", "run", "dist/index.js"]
