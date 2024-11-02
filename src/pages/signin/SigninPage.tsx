@@ -7,11 +7,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-const options = [
-  { label: "조무사", id: 1 },
-  { label: "의사", id: 1 },
-  { label: "직원", id: 1 },
-];
+// const options = [
+//   { label: "조무사", id: 1 },
+//   { label: "의사", id: 1 },
+//   { label: "직원", id: 1 },
+// ];
 
 export default function SigninPage() {
   const user = useRecoilValue(userState);

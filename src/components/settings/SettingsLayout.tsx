@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { Close } from "@mui/icons-material";
 import { SettingsHeader } from ".";
 import { useSetRecoilState } from "recoil";
-import settingsLoginState from "@libraries/recoil/settings";
+import settingsLoginState from "@libraries/recoil/settings/login";
 import { useNavigate } from "react-router-dom";
 import { userState } from "@libraries/recoil";
 import { useRecoilValue } from "recoil";
@@ -24,8 +24,8 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
-      onSuccess: data => {
-        console.log("로그인 성공:", data);
+      onSuccess: () => {
+        console.log("로그인 성공:");
         navigate("/settings");
         setSettingsLoginState(false);
       },

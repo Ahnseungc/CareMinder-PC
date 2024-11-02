@@ -36,9 +36,9 @@ const StaffManagementTable = () => {
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index) => {
+        {rows.map(() => {
           return (
-            <tr key={index}>
+            <tr>
               <td>
                 <ShortComBoxLayout>
                   <Typography>홍길동</Typography>

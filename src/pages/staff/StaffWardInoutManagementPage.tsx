@@ -5,8 +5,65 @@ import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
 import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
+import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
+import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
+import { WardTabletType } from "@models/ward-tablet";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 const StaffWardInoutManagementPage = () => {
+  //@ts-ignore
+  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  //@ts-ignore
+  const { mutate, isPending } = useDischargePatients();
+  const [selected, setSelected] = useState<Array<any>>([{}]);
+
+  const onChangeSelected = (index: any) => {
+    setSelected(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(item => item !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+
+  const defaultValuesUpdate: WardTabletType = {
+    areaId: 0,
+    tabletId: 0,
+    areaName: "",
+    tabletName: "",
+    serialNumber: "",
+    patientId: 0,
+    patientName: "",
+  };
+
+  // const formUpdate = useForm<WardTabletType>({
+  //   defaultValues: defaultValuesUpdate,
+  //   mode: "onChange",
+  // });
+
+  // const { handleSubmit } = formUpdate;
+
+  const formDischarge = useForm<WardTabletType>({
+    defaultValues: defaultValuesUpdate,
+    mode: "onChange",
+  });
+
+  const { handleSubmit: handleDischarge } = formDischarge;
+
+  const onDischarge: SubmitHandler<WardTabletType> = data => {
+    mutate(data.tabletId, {
+      onSuccess: () => {
+        toast.success("퇴원 처리가 완료 되었습니다.");
+      },
+      onError: error => {
+        toast.error(error.message);
+      },
+    });
+  };
+
   return (
     <Container>
       <div>
@@ -31,13 +88,15 @@ const StaffWardInoutManagementPage = () => {
               />
             </SearchLayout>
             <ButtonLayout>
-              <CButton buttontype={"primarySpaure"}>퇴원 처리</CButton>
+              <CButton buttontype={"primarySpaure"} onClick={handleDischarge(onDischarge)}>
+                퇴원 처리
+              </CButton>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminTable />
+        <AdminTable getTablet={getTablet} onChangeSelected={onChangeSelected} selected={selected} />
       </TableLayout>
       <FooterLayout>
         <div>

@@ -1,11 +1,11 @@
 import {
   HomeMenu,
-  RequestsMenu,
+  // RequestsMenu,
   PatientManagementMenu,
   CompletedRequestsMenu,
   NoticeMenu,
   SettingsMenu,
-  DietMenu,
+  // DietMenu,
 } from "@components/layout/sidebar/menu";
 
 export default function StaffSidebar() {

@@ -1,38 +1,69 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
-import { waitPatientmockData } from "@components/home/wordMainMockData";
+import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
+import {
+  useGetStaffPatientInprogress,
+  useGetStaffPatientInprogressGroup,
+  useGetStaffPatientPending,
+} from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
-import { CSwitchType } from "@models/home";
+import { CSwitchType, isRoleType } from "@models/home";
 import { Box, styled } from "@mui/material";
+import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
-export default function MainHomePage() {
+export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [userStatus] = useRecoilState(userState);
   const navigate = useNavigate();
+
   const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
   const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
+  const [isRole, setIsRole] = useState<isRoleType>(null);
+  const [roomId, setRoomId] = useState<number | null>(null);
 
-  const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-    //onCheckOrOkay fn은 check버튼인지 okay버튼인지와 그 게시글의 id를 가져온다.
+  const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(
+    isRole,
+    staffWaitIsMine,
+  );
+  const { data: getInprogress, refetch: inprogressRefetch } =
+    useGetStaffPatientInprogress(staffAcceptIsGroup);
+  //@ts-ignore
+  const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
+    useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
+
+  const refetchProps = {
+    pendingRefetch,
+    inprogressRefetch,
+    inprogressGroupRefetch,
+    staffAcceptIsGroup,
+  };
+
+  const { mutate: postAccept } = useStaffAccept(refetchProps);
+  const { mutate: patchComplete } = useStaffComplete(refetchProps);
+
+  const onWaitOrAccept = (e: React.MouseEvent, id: number, type: "wait" | "accept") => {
+    e.stopPropagation();
+    if (type === "wait") return postAccept(id);
+    if (type === "accept") return patchComplete(id);
   };
 
   useEffect(() => {
     setlayoutState("home");
 
     switch (userStatus?.type) {
-      case "main":
+      case "WARD":
         navigate("/");
         break;
-      case "staff":
+      case "STAFF":
         navigate("/staff");
         break;
     }
-  }, [setlayoutState]);
+  }, []);
 
   return (
     <>
@@ -46,15 +77,21 @@ export default function MainHomePage() {
           <SubTitleRight>
             <span>직종</span>
             <CComboBox
-              placeholder={"테스트"}
-              options={["테스트1", "테스트2"]}
+              placeholder={"전체"}
+              options={["전체", "간호사", "조무사", "직원", "의사"]}
               value={""}
-              onChange={() => null}
+              onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>
         </SubTitle>
-        {waitPatientmockData.staffWait.map(el => (
-          <PatientBox key={el.id} user="staffWait" data={el} onWaitOrAccept={onWaitOrAccept} />
+        {getPending?.map(el => (
+          <PatientBox
+            key={el.patientRequestId}
+            user="staffWait"
+            data={el}
+            onWaitOrAccept={onWaitOrAccept}
+            refetchProps={refetchProps}
+          />
         ))}
       </LeftSection>
       <RightSection>
@@ -65,9 +102,30 @@ export default function MainHomePage() {
             <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>
-        {waitPatientmockData.staffAccept.map(el => (
-          <PatientBox key={el.id} user="staffAccept" data={el} onWaitOrAccept={onWaitOrAccept} />
-        ))}
+        {!staffAcceptIsGroup &&
+          getInprogress?.map(el => (
+            <PatientBox
+              key={el.patientRequestId}
+              user="staffAccept"
+              data={el}
+              onWaitOrAccept={onWaitOrAccept}
+              roomId={roomId}
+              setRoomId={setRoomId}
+              refetchProps={refetchProps}
+            />
+          ))}
+        {/* 디자인 나오기 전이여서 주석 처리 */}
+        {staffAcceptIsGroup && (
+          // getInprogressGroup?.map(el => (
+          //   <PatientBox
+          //     key={el.patientRequestId}
+          //     user="staffAccept"
+          //     data={el}
+          //     onWaitOrAccept={onWaitOrAccept}
+          //   />
+          // ))
+          <></>
+        )}
       </RightSection>
     </>
   );

@@ -20,6 +20,7 @@ import StaffHomePage from "@pages/user/StaffHomePage";
 import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
 import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
 import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";
+import SuperAdminPage from "@pages/superAdmin/SuperAdminPage";
 
 const routes: RouteObject[] = [
   {
@@ -38,7 +39,7 @@ const routes: RouteObject[] = [
         path: RoutePath.StaffWardManagement,
         element: <AuthorizedRoute allowedRoles={["STAFF"]} />,
         children: [
-          { index: true, element: <MainHomePage /> },
+          { index: true, element: <StaffHomePage /> },
           { path: RoutePath.StaffCompletedRequests, element: <CompletedRequestsPage /> },
           { path: RoutePath.StaffWardInOut, element: <StaffWardInoutManagementPage /> },
           { path: RoutePath.StaffNotice, element: <StaffNoticePage /> },
@@ -56,6 +57,8 @@ const routes: RouteObject[] = [
       },
     ],
   },
+
+  { path: RoutePath.SuperAdmin, element: <SuperAdminPage /> },
 
   { path: RoutePath.Signin, element: <SigninPage /> },
   { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },

@@ -1,26 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import axiosInstance from "@/utils/axios/axiosInstance";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 
 const signOut = async (type: UserType) => {
-  let typeQuery = "";
-  switch (type) {
-    case "WARD":
-      typeQuery = "wards";
-      break;
-    case "STAFF":
-      typeQuery = "staff";
-      break;
-    case "ADMIN":
-      typeQuery = "admin";
-      break;
-  }
-
-  // const res = await axiosInstance.post(`/${typeQuery}/logout`);
-
   if (type === "WARD") {
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");

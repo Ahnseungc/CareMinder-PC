@@ -61,7 +61,7 @@ const SearchInput = styled(Input, {
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ListBox = styled(Box)(({ theme }) => ({
+const ListBox = styled(Box)(({}) => ({
   display: "flex",
   alignItems: "center",
   marginRight: "5px",

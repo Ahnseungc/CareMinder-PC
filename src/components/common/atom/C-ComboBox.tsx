@@ -1,21 +1,23 @@
 import { FormControl, MenuItem, Select, styled, TextField } from "@mui/material";
-import { ExpandMore as ArrowDropDownIcon, BorderRight } from "@mui/icons-material";
+import { ExpandMore as ArrowDropDownIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import CButton from "./C-Button";
 
-export type CComboBoxProps<T> = {
+export type CComboBoxProps = {
   placeholder: string;
   options: Array<string>;
   value: string;
+  disabled?: boolean;
   onChange: (event: any) => void;
   allowCustomInput?: boolean;
-  onCustomInputAdd?: (value: string) => void;
+  onCustomInputAdd?: (value: any) => void;
 };
 
-export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
+export const CComboBox: FC<CComboBoxProps> = ({
   placeholder,
   options,
   value,
+  disabled,
   onChange,
   allowCustomInput = false,
   onCustomInputAdd,
@@ -26,6 +28,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   const handleCustomInputAdd = () => {
     setCustomInput("");
     setIsCreate(false);
+
     if (onCustomInputAdd) {
       if (customInput === "") {
         setIsCreate(prev => !prev);
@@ -42,6 +45,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   return (
     <StyledFormControl fullWidth>
       <StyledSelect
+        disabled={disabled}
         value={value}
         onChange={onChange}
         displayEmpty

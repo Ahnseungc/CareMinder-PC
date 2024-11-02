@@ -1,4 +1,3 @@
-import { UserType } from "@models/user";
 import { DialogProps, styled } from "@mui/material";
 import { Dialog as Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { PropsWithChildren, ReactElement } from "react";

@@ -5,8 +5,58 @@ import CButton from "@components/common/atom/C-Button";
 
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
+import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+// import { toast } from "react-toastify";
+import { NoticeType } from "@models/notice";
+import useCreateNotice from "@hooks/mutation/useCreateNotice";
 
 const StaffNoticeWritePage = () => {
+  //@ts-ignore
+  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  const [selected, setSelected] = useState<Array<any>>([{}]);
+  //@ts-ignore
+  const { mutate, isPending } = useCreateNotice();
+
+  const onChangeSelected = (index: any) => {
+    setSelected(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(item => item !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+
+  const defaultValuesUpdate: NoticeType = {
+    id: 0,
+    wardId: 0,
+    title: "",
+    content: "",
+    fileUrl: "",
+    createdAt: "",
+    lastModifiedAt: "",
+  };
+
+  const formDischarge = useForm<NoticeType>({
+    defaultValues: defaultValuesUpdate,
+    mode: "onChange",
+  });
+
+  // const { handleSubmit: handleDischarge } = formDischarge;
+
+  // const onSubmit: SubmitHandler<NoticeType> = data => {
+  //   mutate(data, {
+  //     onSuccess: () => {
+  //       toast.success("퇴원 처리가 완료 되었습니다.");
+  //     },
+  //     onError: error => {
+  //       toast.error(error.message);
+  //     },
+  //   });
+  // };
+
   return (
     <Container>
       <div>
@@ -22,9 +72,13 @@ const StaffNoticeWritePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          <AdminTable />
+          <AdminTable
+            getTablet={getTablet}
+            onChangeSelected={onChangeSelected}
+            selected={selected}
+          />
         </AdminNoticeListLayout>
-        <AdminNoticeWriteForm />
+        <AdminNoticeWriteForm form={formDischarge} />
       </TableLayout>
       <FooterLayout>
         <PaginationComponent totalPage={5} />
@@ -49,6 +103,7 @@ const AdminInoutSubTitleContainer = styled(Box)({
 
 const AdminNoticeListLayout = styled(Box)({
   width: "50%",
+  height: "100%",
 });
 
 const AdminInoutSubTitleLeftContainer = styled(Box)({
@@ -68,14 +123,16 @@ const AdminInoutSubTitleRightContainer = styled(Box)({
 const ButtonLayout = styled(Box)(width => ({
   width: `${width}`,
 }));
-const ButtonListLayout = styled(Box)({
-  display: "flex",
-  gap: "10px",
-});
+// const ButtonListLayout = styled(Box)({
+//   display: "flex",
+//   gap: "10px",
+// });
 const TableLayout = styled(Box)({
   marginTop: "40px",
   display: "flex",
   gap: "24px",
+  height: "100%",
+  maxHeight: "647px",
 });
 
 const FooterLayout = styled(Box)({

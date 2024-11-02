@@ -1,7 +1,6 @@
-import { useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
+// import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { Typography } from "@mui/material";
 import { ReactComponent as DeleteButton } from "@/assets/x-circle-fill.svg";
 import { ReactComponent as EditButton } from "@/assets/Edit.svg";
@@ -38,7 +37,7 @@ interface WardManagementTableProps {
 }
 
 const WardManagementTable = ({ onEdit, onDelete }: WardManagementTableProps) => {
-  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  // const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
 
   const convertToAsterisks = (text: string) => {
     return "*".repeat(text.length);
@@ -53,12 +52,12 @@ const WardManagementTable = ({ onEdit, onDelete }: WardManagementTableProps) => 
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index) => {
+        {rows.map(() => {
           return (
-            <tr key={index}>
+            <tr>
               <td>
                 <LongComBoxLayout>
-                  <CComboBox
+                  {/* <CComboBox
                     placeholder={"구역"}
                     options={options}
                     value={""}
@@ -67,7 +66,7 @@ const WardManagementTable = ({ onEdit, onDelete }: WardManagementTableProps) => 
                     onCustomInputAdd={newValue => {
                       setOptions([...options, newValue]);
                     }}
-                  />
+                  /> */}
                 </LongComBoxLayout>
               </td>
               <td>

@@ -6,8 +6,8 @@ import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffManagementTable from "@components/admin/StaffManagementTable";
 
 export default function AdminStaffManagementPage() {
-  const [openEdit, openEditModal, closeEditModal] = useBooleanState(false);
-  const [openDelete, openDeleteModal, closeDeleteModal] = useBooleanState(false);
+  const [openEdit, closeEditModal] = useBooleanState(false);
+  const [openDelete, closeDeleteModal] = useBooleanState(false);
 
   return (
     <>

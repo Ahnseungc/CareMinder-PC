@@ -40,6 +40,7 @@ const palette = {
   text: {
     primary: CMColors.text,
     secondary: CMColors.primary.a60,
+    dark: CMColors.black,
   },
   background: {
     default: CMColors.background,
@@ -51,6 +52,7 @@ const palette = {
   success: {
     main: CMColors.primary.a95,
     light: CMColors.admin,
+    dark: CMColors.status.excute,
   },
   divider: CMColors.border,
 } as const;

@@ -2,13 +2,13 @@ import { Stack, styled } from "@mui/material";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { roleColor } from "@utils/homePage";
 import { useState } from "react";
-import { ChatBox } from "@components/home";
 import { ReactComponent as SendIcon } from "@/assets/completedRequests/send.svg";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { StaffListBoxProps } from "@models/home";
+// import ChatBox from "@components/chat/chatBox";
 
 function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
-  const roleColorPick = roleColor(data.role);
+  const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -57,8 +57,8 @@ function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
       </Bottom>
       {isAccept && (
         <ChatContainer>
-          <ChatBox leftorRight="right" />
-          <ChatBox leftorRight="left" />
+          {/* <ChatBox leftorRight="right" />
+          <ChatBox leftorRight="left" /> */}
           <ChatInputWrapper>
             <input placeholder="메세지를 입력해 주세요" />
             <CustomSendIcon />

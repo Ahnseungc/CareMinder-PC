@@ -4,12 +4,12 @@ import { useState } from "react";
 import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
 import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
 import PatientBox from "@components/common/patientListBox";
-import { waitPatientmockData } from "@components/home/wordMainMockData";
-import { PatientListBoxType } from "@models/home";
+import { RequestsData } from "@models/home";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
-  const [isFocusPatientData, setIsFocusPatientData] = useState<null | PatientListBoxType>();
+  //@ts-ignore
+  const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
 
   return (
     <Wrapper>
@@ -30,11 +30,11 @@ export default function CompletedRequestsPage() {
             <Empty />
           )}
           <PatientList>
-            {waitPatientmockData.map(el => (
+            {/* {waitPatientmockData.map(el => (
               <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
                 <PatientBox key={el.patientRequestId} user="completedRequest" data={el} />
               </div>
-            ))}
+            ))} */}
           </PatientList>
         </LeftWrapper>
         <RightWrapper>
@@ -89,10 +89,10 @@ const Person = styled("div")`
   }
 `;
 const PatientList = styled("div")``;
-const ChatContainer = styled("div")`
-  border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
-`;
+// const ChatContainer = styled("div")`
+//   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
+//   margin-top: 12px;
+// `;
 const Empty = styled("div")`
   margin-top: 81px;
 `;
