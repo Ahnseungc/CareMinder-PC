@@ -40,7 +40,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
     console.log(newWardRequesets);
     mutate(newWardRequesets, {
       onSuccess: () => {
-        toast.success("어드민 계정 생성이 완료되었습니다.");
+        toast.success("병동 계정 생성이 완료되었습니다.");
         onClose();
         openModal();
       },

@@ -30,8 +30,9 @@ export type NewAdminUserRequests = {
   adminSignUpRequest: {
     loginId: string;
     password: string;
-    phoneNumber: string;
-    email: string;
+    managerName: string;
+    managerPhoneNumber: string;
+    managerEmail: string;
     nfc: string;
     fingerprint: string;
   };

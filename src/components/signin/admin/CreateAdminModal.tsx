@@ -1,6 +1,7 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import InputField from "@components/signin/admin/InputField";
 import { useCreateAdmin } from "@hooks/mutation";
+import doubleCheckState from "@libraries/recoil/staff";
 import { AdminUserField, NewAdminUser } from "@models/user";
 import { Checkbox, Container, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
@@ -8,6 +9,7 @@ import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { toast } from "react-toastify";
+import { useRecoilState } from "recoil";
 type Step = "어드민 계정 생성 약관 동의서" | "어드민 계정 생성";
 
 const defaultValues: NewAdminUser = {
@@ -25,6 +27,7 @@ const defaultValues: NewAdminUser = {
 export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   const [step, setStep] = useState<Step>("어드민 계정 생성 약관 동의서");
   const [agreementChecked, setChecked] = useState<boolean>(false);
+  const [isDoubleChecked, setIsDoubleCheckd] = useRecoilState(doubleCheckState);
 
   const form = useForm<NewAdminUser>({
     defaultValues,
@@ -34,15 +37,16 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
 
   const toggle = () => setChecked(prev => !prev);
 
-  const { mutate, isPending } = useCreateAdmin();
+  const { mutate } = useCreateAdmin();
 
   const onSubmit: SubmitHandler<NewAdminUser> = data => {
     const defaultAdminRequest = {
       adminSignUpRequest: {
         loginId: data.username,
         password: data.password,
-        phoneNumber: data.phoneNumber,
-        email: data.email,
+        managerName: data.name,
+        managerPhoneNumber: data.phoneNumber,
+        managerEmail: data.email,
         nfc: "",
         fingerprint: "",
       },
@@ -58,6 +62,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
       onSuccess: () => {
         console.log("어드민 회원가입 성공");
         toast.success("어드민 계정 생성이 완료되었습니다.");
+        setIsDoubleCheckd(false);
         onClose();
       },
       onError: error => {
@@ -95,7 +100,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
                 >
                   취소
                 </ModalActionButton>
-                <ModalActionButton disabled={isPending} onClick={handleSubmit(onSubmit)}>
+                <ModalActionButton disabled={!isDoubleChecked} onClick={handleSubmit(onSubmit)}>
                   추가하기
                 </ModalActionButton>
               </>

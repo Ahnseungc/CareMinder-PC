@@ -2,26 +2,30 @@ import { Stack, styled } from "@mui/material";
 import { roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { MainListBoxProps } from "@models/home";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
-  const roleColorPick = roleColor(data.role);
+  const roleColorPick = roleColor(data.aiRole);
 
   return (
     <InnerContainer color={roleColorPick.light}>
-      <Title color={roleColorPick.dark}>{data.place}</Title>
+      <Title color={roleColorPick.dark}>{data.areaSimple.areaName}</Title>
       <Bottom>
         <TxtBox>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
           <TxtBoxRight>
-            {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
             <span>{data.createdAt}분전</span>
           </TxtBoxRight>
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={() => onWaitOrAccept(data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
-          {isAccept ? "OK" : <CheckIcon style={{ cursor: "pointer" }} />}
+          {isAccept ? (
+            <CheckIcon style={{ cursor: "pointer" }} />
+          ) : (
+            <ArrowForwardRoundedIcon style={{ cursor: "pointer", color: "white" }} />
+          )}
         </Check>
       </Bottom>
     </InnerContainer>
@@ -84,6 +88,8 @@ const Check = styled("div")<{ color: string }>`
   margin-left: 12px;
   font-weight: 900;
 `;
+
+//새로운 요청 표시 즉, N을 의미
 const SmallCheck = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
   border-radius: 50%;

@@ -43,6 +43,7 @@ const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
   gap: "14px",
   padding: "16px 0",
   backgroundColor: theme.palette.primary.main,
+  zIndex: "10",
 
   ...(adminType === "STAFF" && {
     backgroundColor: theme.palette.secondary.main,

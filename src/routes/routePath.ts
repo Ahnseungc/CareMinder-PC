@@ -21,6 +21,9 @@ const RoutePath = {
   AdminWardManagement: "/admin/ward-manage",
   AdminStaffManagement: "/admin/staff-manage",
 
+  //superAdmin
+  SuperAdmin: "/super-admin",
+
   Signin: "/sign-in",
   AdminSignin: "/sign-in/admin",
 } as const;

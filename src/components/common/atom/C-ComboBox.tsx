@@ -7,6 +7,7 @@ export type CComboBoxProps<T> = {
   placeholder: string;
   options: Array<string>;
   value: string;
+  disabled?: boolean;
   onChange: (event: any) => void;
   allowCustomInput?: boolean;
   onCustomInputAdd?: (value: string) => void;
@@ -16,6 +17,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   placeholder,
   options,
   value,
+  disabled,
   onChange,
   allowCustomInput = false,
   onCustomInputAdd,
@@ -26,6 +28,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   const handleCustomInputAdd = () => {
     setCustomInput("");
     setIsCreate(false);
+
     if (onCustomInputAdd) {
       if (customInput === "") {
         setIsCreate(prev => !prev);
@@ -42,6 +45,7 @@ export const CComboBox: FC<CComboBoxProps<{ label: string; id: number }>> = ({
   return (
     <StyledFormControl fullWidth>
       <StyledSelect
+        disabled={disabled}
         value={value}
         onChange={onChange}
         displayEmpty
