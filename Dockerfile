@@ -2,6 +2,12 @@
 # Build stage
 FROM node:16-alpine AS build
 
+# Bun 설치
+RUN curl -fsSL https://bun.sh/install | bash
+
+# Bun 설치 후 환경 변수 설정 (기본 설치 경로가 /root/.bun)
+ENV PATH="/root/.bun/bin:$PATH"
+
 WORKDIR /code
 
 COPY package*.json ./
