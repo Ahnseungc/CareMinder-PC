@@ -17,7 +17,7 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
+  const onWaitOrAccept = () => {
     if (userStatus?.type === "WARD") return setIsModal(true);
   };
 
@@ -32,10 +32,6 @@ export default function MainHomePage() {
 
   const handleOnClose = () => {
     setIsModal(false);
-  };
-
-  const onWaitOrAccept = () => {
-    onStaffLogIn();
   };
 
   useEffect(() => {
