@@ -37,9 +37,6 @@ const StaffNoticeWritePage = () => {
     lastModifiedAt: "",
   };
 
-  //To-do
-  //공지 작성 폼 완성
-  //데이터 잘 오는지 체크 달라하자
   const formDischarge = useForm<NoticeType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
