@@ -15,11 +15,15 @@ const MODAL_CONTEXTS = {
     controlAccount: false,
   },
   createSuccess: { title: "계정 생성 완료되었습니다.", controlAccount: false },
+  noResult: { title: "존재하지 않는 계정입니다.", controlAccount: false },
+  waiting: { title: "회사에서 검토 후 계정 생성될 예정입니다.", controlAccount: false },
   checkAddStaff: { title: "스태프를 정말로 추가하시겠습니까?", controlAccount: true },
   checkDeleteStaff: { title: "스태프를 정말로 제거하시겠습니까?", controlAccount: true },
+  checkLockStaff: { title: "해당 스태프 계정을 잠금하시겠습니까?", controlAccount: true },
+  checkUnLockStaff: { title: "해당 스태프 계정을 잠금 해제하시겠습니까?", controlAccount: true },
 };
 
-type ModalType = keyof typeof MODAL_CONTEXTS;
+export type ModalType = keyof typeof MODAL_CONTEXTS;
 
 interface InfoModalProps extends Omit<CMModalProps, "title"> {
   modalType: ModalType;

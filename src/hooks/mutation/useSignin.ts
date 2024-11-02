@@ -12,7 +12,7 @@ const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
 
   if (res.data.currentUser) {
-    let userType: UserType = res.data.currentUser.role;
+    const userType: UserType = res.data.currentUser.role;
     switch (userType) {
       case "ADMIN":
         Cookies.set("accessTokenAdmin", res.data.jwtResponse.accessToken);
@@ -48,7 +48,7 @@ export default function useSignin() {
       });
 
       if (res.currentUser) {
-        let userType: UserType = res.currentUser?.role;
+        const userType: UserType = res.currentUser?.role;
 
         switch (userType) {
           case "ADMIN":

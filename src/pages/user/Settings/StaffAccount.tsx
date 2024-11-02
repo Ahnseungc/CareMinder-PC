@@ -2,50 +2,46 @@ import { Box, styled } from "@mui/system";
 import CButton from "@components/common/atom/C-Button";
 import PaginationComponent from "@components/common/pagination";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
-import { Stack, Typography } from "@mui/material";
+import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { NewStaff, NewStaffField, QuickRegisterNewStaff } from "@models/staff";
-import NewStaffInputField from "@components/settings/NewStaffInputField";
-import InfoModal from "@components/settings/modal/InfoModal";
+import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
-import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 import ChangeModal from "@components/settings/modal/ChangeModal";
+import { useRecoilState } from "recoil";
+import { editingState } from "@libraries/recoil";
 
-// 스태프 계정 설정
-
-const defaultValues: NewStaff = {
-  name: "",
-  occupation: "",
-  username: "",
-  password: "",
-  phoneNumber: "",
-  email: "",
-};
-
-const quickRegisters: QuickRegisterNewStaff[] = [
-  { label: "NFC", value: "NFC 등록" },
-  { label: "지문 입력", value: "지문 등록" },
-];
+import { ReactComponent as X } from "@/assets/x-Icon.svg";
+import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
+import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
+import { CreateStaff } from "./CreateStaff";
+import { CComboBox } from "@components/common/atom/C-ComboBox";
+import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
+import useLockAccount from "@hooks/mutation/useLockAccount";
+import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 
 export const StaffAccount = () => {
-  const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
-  const [openDelete, openDeleteModal, closeDeleteModal] = useBooleanState(false);
-  const [openTOS, openTOSModal, closeTOSModal] = useBooleanState(false);
+  const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
+  const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
+  const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
+  const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
 
   const [isCreate, setIsCreate] = useState<boolean>(false);
+  const [isClear, setIsClear] = useState<boolean>(false);
+  const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
+  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
 
-  const form = useForm<NewStaff>({
-    defaultValues,
-    mode: "onChange",
-  });
+  const [isEditing, setIsEditing] = useRecoilState(editingState);
 
-  const { handleSubmit } = form;
+  const { mutate: lockAccount } = useLockAccount();
+  const { mutate: unLockAccount } = useUnLockAccount();
 
-  const onSubmit: SubmitHandler<NewStaff> = data => {
-    console.log(data);
+  const handleClear = () => {
+    setIsEditing([]);
+    setIsClear(true);
   };
 
   const handleTOS = () => {
@@ -53,139 +49,156 @@ export const StaffAccount = () => {
     closeTOSModal();
   };
 
+  const handleInfoModal = (modalType: string, staffId: number[]) => {
+    const lockData = {
+      userIds: staffId,
+    };
+    switch (modalType) {
+      case "edit":
+        return;
+      case "lock":
+        unLockAccount(lockData);
+        break;
+      case "unlock":
+        lockAccount(lockData);
+        break;
+      case "delete":
+        setIsModalType("checkDeleteStaff");
+        openInfoModal();
+        break;
+    }
+  };
+
   return (
     <>
       {isCreate ? (
-        <>
-          <BodyTitleContainer>
-            <Title variant="h1">스태프 계정 생성</Title>
-          </BodyTitleContainer>
-          <StaffInputLayout>
-            <Stack gap={"24px"} style={{ width: "343px" }}>
-              {fields.map(field => (
-                <NewStaffInputField key={field.name} field={field} form={form} />
-              ))}
-              <Stack gap={"24px"}>
-                {quickRegisters.map(quickReg => (
-                  <Stack gap={"3px"}>
-                    <Typography variant="h3">{quickReg.label}</Typography>
-                    <CButton buttontype="primarySpaureWhite" style={{ height: "50px" }}>
-                      {quickReg.value}
-                    </CButton>
-                  </Stack>
-                ))}
-              </Stack>
-              <ConfirmLayout>
-                <CButton
-                  buttontype="primaryWhite"
-                  onClick={() => setIsCreate(prev => !prev)}
-                  style={{ width: "134px", height: "45px" }}
-                >
-                  이전으로
-                </CButton>
-                <CButton
-                  buttontype="primary"
-                  onClick={handleSubmit(onSubmit)}
-                  style={{ width: "134px", height: "45px" }}
-                >
-                  다음
-                </CButton>
-              </ConfirmLayout>
-            </Stack>
-          </StaffInputLayout>
-        </>
+        <CreateStaff onCreate={setIsCreate} />
       ) : (
         <>
-          {" "}
+          {/* 약관 동의 모달 */}
+          <TOSModal open={isTOSModalOpen} onClose={closeTOSModal} onConfirm={handleTOS} />
+
+          {/* 스태프 추가 모달 */}
           <ChangeModal
-            open={open}
+            open={isOpen}
             onClose={closeCreateModal}
             onConfirm={() => null}
             modalTitle={"스태프 추가"}
             subTitle={"아이디/휴대폰 번호/이메일 중 택일"}
             rightText={"추가"}
           />
-          <TOSModal open={openTOS} onClose={closeTOSModal} onConfirm={handleTOS} />
+
+          {/* 계정 관리 등 정보 모달 */}
           <InfoModal
-            open={openDelete}
-            onClose={closeDeleteModal}
-            modalType={"checkDeleteStaff"}
+            open={isInfoModalOpen}
+            onClose={closeInfoModal}
+            modalType={isModalType}
             onConfirm={() => null}
-          ></InfoModal>
+          />
+
+          {/* 비밀번호 편집 모달 */}
+          <PasswordChangeModal open={isPWChangeModalOpen} onClose={closePWChangeModal} />
+
           <BodyTitleContainer>
-            <div>
-              <Title variant="h1">스태프 계정 수정</Title>
-            </div>
-            <StaffButtonContainer>
-              <CButton buttontype="primarySpaureWhite" onClick={openTOSModal}>
-                스태프 계정 생성
-              </CButton>
-              <CButton buttontype="primarySpaureWhite" onClick={openCreateModal}>
-                스태프 추가
-              </CButton>
-            </StaffButtonContainer>
-          </BodyTitleContainer>
-          {/* 스태프 리스트 실제 데이터 조건문으로 변경해야함 */}
-          {false ? (
-            <EmptyStaffContainer>
-              <EmptyStaff />
-              <p>등록된 스태프가 없습니다.</p>
-            </EmptyStaffContainer>
-          ) : (
-            <>
-              <StaffAccountSettingsTable onDelete={openDeleteModal} />
-              <PaginationContainer>
-                <div>
-                  <PaginationComponent totalPage={5} />
+            {isEditing.length !== 0 ? (
+              <EditContainer>
+                <X style={{ cursor: "pointer" }} onClick={handleClear} />
+                <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
+                  {isEditing.length}개 항목 선택됨
+                </EditMenu>
+                <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
+                  <CComboBox
+                    placeholder={"직업"}
+                    options={["간호사", "의사", "조무사", "직원"]}
+                    value={""}
+                    onChange={() => null}
+                  />
                 </div>
-              </PaginationContainer>
-            </>
-          )}
+                <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
+                  <CComboBox
+                    placeholder={"구역"}
+                    options={options}
+                    value={""}
+                    onChange={() => null}
+                    allowCustomInput={true}
+                    onCustomInputAdd={newValue => {
+                      setOptions([...options, newValue]);
+                    }}
+                  />
+                </div>
+                <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
+                <Lock />
+                <Delete />
+              </EditContainer>
+            ) : (
+              <>
+                <Paper
+                  component="form"
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: 400,
+                    border: "1px solid #ECECEC",
+                    borderRadius: "6px",
+                    boxShadow: "none",
+                  }}
+                >
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="검색할 내용을 입력해주세요."
+                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                  />
+                  <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                    <Search />
+                  </IconButton>
+                </Paper>
+                <div>
+                  <Title variant="h1">스태프 계정 수정</Title>
+                </div>
+                <StaffButtonContainer>
+                  <CButton buttontype="primarySpaureWhite" onClick={openTOSModal}>
+                    스태프 계정 생성
+                  </CButton>
+                  <CButton buttontype="primarySpaureWhite" onClick={openCreateModal}>
+                    스태프 추가
+                  </CButton>
+                </StaffButtonContainer>
+              </>
+            )}
+          </BodyTitleContainer>
+          <>
+            <StaffAccountSettingsTable
+              onManage={handleInfoModal}
+              isClear={isClear}
+              setIsClear={setIsClear}
+            />
+            <PaginationContainer>
+              <div>
+                <PaginationComponent totalPage={5} />
+              </div>
+            </PaginationContainer>
+          </>
         </>
       )}
     </>
   );
 };
 
-/** utils */
-
-const fields: NewStaffField[] = [
-  { name: "name", label: "이름", placeholder: "이름을 입력해주세요." },
-  { name: "occupation", label: "직군", placeholder: "의사" },
-  { name: "username", label: "아이디", placeholder: "아이디를 입력해주세요." },
-  { name: "password", label: "비밀번호", placeholder: "비밀번호를 입력해주세요." },
-  { name: "phoneNumber", label: "전화번호", placeholder: "010-0000-0000" },
-  { name: "email", label: "이메일", placeholder: "이메일을 입력해주세요." },
-];
-
 /** styles */
 
 const BodyTitleContainer = styled(Box)({
   position: "relative",
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "space-between",
   alignItems: "center",
   margin: "60px 0 40px 0",
 });
 
 const StaffButtonContainer = styled(Box)({
-  position: "absolute",
-  right: "0",
   display: "flex",
   gap: "20px",
-  width: "300px",
-});
-
-const StaffInputLayout = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-});
-
-const ConfirmLayout = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  gap: "40px",
-  marginTop: "20px",
+  width: "400px",
 });
 
 const PaginationContainer = styled(Box)({
@@ -199,12 +212,23 @@ const Title = styled(Typography)(({ theme }) => ({
   letterSpacing: "-3%",
 }));
 
-const EmptyStaffContainer = styled(Box)({
+const EditContainer = styled(Box)(({ theme }) => ({
   display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "start",
   alignItems: "center",
+  gap: "20px",
 
-  minHeight: "600px",
-  marginBottom: "100px",
+  width: "100%",
+  height: "60px",
+  padding: "15px 12px",
+
+  border: "2px solid #5D6DBE",
+  borderRadius: "100px",
+
+  opacity: "0.6",
+  color: theme.palette.text.dark,
+}));
+
+const EditMenu = styled(Typography)({
+  textDecoration: "underline",
 });
