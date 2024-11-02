@@ -45,6 +45,7 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
 
 /** utils */
 
+// @ts-ignore
 const getTypographyStyles = (isActive: boolean, userType: string): SxProps<Theme> => ({
   whiteSpace: "pre",
   textAlign: "center",

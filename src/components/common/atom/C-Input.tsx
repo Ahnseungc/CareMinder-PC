@@ -1,5 +1,5 @@
-import { TextField, styled, InputProps, TextFieldVariants } from "@mui/material";
-import { ChangeEvent, FC, KeyboardEventHandler } from "react";
+import { TextField, styled, TextFieldVariants } from "@mui/material";
+import { ChangeEvent, FC } from "react";
 
 export type CustomInputProps = {
   variant: TextFieldVariants;

@@ -1,6 +1,6 @@
 import {
   HomeMenu,
-  RequestsMenu,
+  // RequestsMenu,
   PatientManagementMenu,
   CompletedRequestsMenu,
   NoticeMenu,

@@ -90,18 +90,18 @@ const Check = styled("div")<{ color: string }>`
 `;
 
 //새로운 요청 표시 즉, N을 의미
-const SmallCheck = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-  padding-top: 1px;
-  margin-bottom: 2px;
-  margin-right: 6px;
-  font-size: 13px;
-  border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  font-weight: 900;
-  color: ${({ theme }) => theme.palette.primary.contrastText};
-`;
+// const SmallCheck = styled("div")<{ color: string }>`
+//   background-color: ${({ color }) => color};
+//   border-radius: 50%;
+//   width: 20px;
+//   height: 20px;
+//   display: flex;
+//   justify-content: center;
+//   padding-top: 1px;
+//   margin-bottom: 2px;
+//   margin-right: 6px;
+//   font-size: 13px;
+//   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
+//   font-weight: 900;
+//   color: ${({ theme }) => theme.palette.primary.contrastText};
+// `;

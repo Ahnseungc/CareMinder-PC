@@ -1,5 +1,5 @@
 import { Box, Input, styled, Typography } from "@mui/material";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { ReactComponent as Buger } from "@/assets/buger-icon.svg";
 import { ReactComponent as Search } from "@/assets/serachIcons/search.svg";
 import { ReactComponent as DownArrowMiddle } from "@/assets/downarrow-middle-icon.svg";
@@ -14,6 +14,7 @@ type CSearchBoxProps = {
 };
 
 const CSearchBox: FC<CSearchBoxProps> = ({ select, value, onChange, placeholder, borderColor }) => {
+  // @ts-ignore
   const [isOpen, setIsOpen] = useState(false);
   const showList = () => {
     setIsOpen(prev => !prev);
@@ -53,7 +54,7 @@ const SearchInputWrapper = styled(Box)({
 
 const SearchInput = styled(Input, {
   shouldForwardProp: prop => prop !== "isOpen",
-})<CSearchBoxProps>(({ theme, borderColor, select }) => ({
+})<CSearchBoxProps>(({ theme, borderColor }) => ({
   width: "100%",
   maxHeight: "36px",
   borderRadius: "20px",
@@ -63,18 +64,18 @@ const SearchInput = styled(Input, {
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ListBox = styled(Box)(({ theme }) => ({
+const ListBox = styled(Box)(({}) => ({
   display: "flex",
   alignItems: "center",
   marginRight: "14px",
 }));
 
-const ListPImageBox = styled(Box)(({ theme }) => ({
+const ListPImageBox = styled(Box)(({}) => ({
   display: "flex",
   alignItems: "center",
 }));
 
-const ListP = styled(Typography)(({ theme }) => ({
+const ListP = styled(Typography)(({}) => ({
   lineHeight: "20px",
   fontSize: "13px",
   fontWeight: 500,

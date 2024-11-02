@@ -3,9 +3,8 @@ import { styled } from "@mui/material";
 import { UseFormReturn } from "react-hook-form";
 import TextField from "./TextField";
 import CButton from "@components/common/atom/C-Button";
-import { UserType } from "@models/user";
 import { userState } from "@libraries/recoil";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 
 type SigninFormProps = {
   form: UseFormReturn<SigninFormData>;

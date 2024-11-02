@@ -1,7 +1,6 @@
 import { isRoleType } from "@models/home";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
-import Cookies from "js-cookie";
 
 type PendingType = {
   aiRole: isRoleType;

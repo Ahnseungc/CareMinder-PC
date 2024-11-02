@@ -19,6 +19,7 @@ const iconMap = {
 };
 
 export default function TextField({ label, name, form, type }: TextFieldProps) {
+  //@ts-ignore
   const Icon = iconMap[name];
 
   return (

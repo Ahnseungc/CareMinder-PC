@@ -73,6 +73,10 @@ export type RequestsData = {
   createdAt: string;
   aiRole: Exclude<isRoleType, null>;
   patientRequestId: number;
+
+  //임시
+  place?: string;
+  isNew?: boolean;
 };
 
 type NewRequestsData = Omit<RequestsData, "tabletSimple" | "patientSimple">;

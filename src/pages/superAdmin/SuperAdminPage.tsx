@@ -6,7 +6,7 @@ import AdminListTable from "./AdminListTable";
 export default function SuperAdminPage() {
   return (
     <Container>
-      <Layout adminType="admin">
+      <Layout adminType="ADMIN">
         <Typography variant="h1" sx={{ color: "white" }}>
           SuperAdmin
         </Typography>
@@ -17,7 +17,7 @@ export default function SuperAdminPage() {
         </Typography>
       </Layout>
       <Body>
-        <SideLayout adminType="admin"></SideLayout>
+        <SideLayout adminType="ADMIN"></SideLayout>
         <OuterContainer>
           <InnerOtherContainer>
             <SubContainer>
@@ -49,7 +49,7 @@ const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
   padding: "14px 28px",
   zIndex: "10",
 
-  ...(adminType === "admin" && {
+  ...(adminType === "ADMIN" && {
     backgroundColor: theme.palette.success.dark,
   }),
 }));
@@ -66,7 +66,7 @@ const SideLayout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
   gap: "14px",
   padding: "16px 0",
 
-  ...(adminType === "admin" && {
+  ...(adminType === "ADMIN" && {
     backgroundColor: theme.palette.success.dark,
   }),
 }));

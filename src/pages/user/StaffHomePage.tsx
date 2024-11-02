@@ -32,6 +32,7 @@ export default function StaffHomePage() {
   );
   const { data: getInprogress, refetch: inprogressRefetch } =
     useGetStaffPatientInprogress(staffAcceptIsGroup);
+  //@ts-ignore
   const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
     useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
 
@@ -55,10 +56,10 @@ export default function StaffHomePage() {
     setlayoutState("home");
 
     switch (userStatus?.type) {
-      case "main":
+      case "WARD":
         navigate("/");
         break;
-      case "staff":
+      case "STAFF":
         navigate("/staff");
         break;
     }

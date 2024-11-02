@@ -107,7 +107,7 @@ const RecipientLayout = styled(Box)({
   gap: "10px",
 });
 
-const Title = styled(Typography)(({ theme }) => ({
+const Title = styled(Typography)(({}) => ({
   lineHeight: "26px",
   fontSize: "20px",
   fontWeight: 500,

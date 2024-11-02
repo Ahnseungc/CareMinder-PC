@@ -2,14 +2,7 @@ import { FC } from "react";
 import { Box, styled, Typography, FormControl, TextField, Button, SvgIcon } from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
-import {
-  Controller,
-  ControllerFieldState,
-  ControllerRenderProps,
-  FieldValues,
-  UseFormReturn,
-  UseFormStateReturn,
-} from "react-hook-form";
+import { Controller, UseFormReturn } from "react-hook-form";
 import { NoticeType } from "@models/notice";
 
 interface AdminNoticeWriteFormProps {
@@ -94,7 +87,7 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
   );
 };
 
-const Title = styled(Typography)(({ theme }) => ({
+const Title = styled(Typography)(({}) => ({
   fontSize: "18px",
   fontWeight: "700",
   lineHeight: "26px",

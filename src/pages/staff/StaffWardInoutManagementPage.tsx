@@ -13,7 +13,9 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 
 const StaffWardInoutManagementPage = () => {
+  //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  //@ts-ignore
   const { mutate, isPending } = useDischargePatients();
   const [selected, setSelected] = useState<Array<any>>([{}]);
 

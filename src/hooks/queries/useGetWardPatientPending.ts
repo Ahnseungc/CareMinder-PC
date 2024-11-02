@@ -12,7 +12,7 @@ export default function useGetWardPatientPending(type: UserType) {
   const { data, isLoading } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetWardPatientPending"],
     queryFn: getWardPatientPending,
-    enabled: type === "main",
+    enabled: type === "WARD",
   });
   return { data, isLoading };
 }

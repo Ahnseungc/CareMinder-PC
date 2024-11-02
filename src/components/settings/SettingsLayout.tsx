@@ -24,7 +24,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
-      onSuccess: data => {
+      onSuccess: () => {
         console.log("로그인 성공:");
         navigate("/settings");
         setSettingsLoginState(false);

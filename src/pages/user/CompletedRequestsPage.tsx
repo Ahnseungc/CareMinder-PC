@@ -8,6 +8,7 @@ import { RequestsData } from "@models/home";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
+  //@ts-ignore
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
 
   return (
@@ -88,10 +89,10 @@ const Person = styled("div")`
   }
 `;
 const PatientList = styled("div")``;
-const ChatContainer = styled("div")`
-  border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
-`;
+// const ChatContainer = styled("div")`
+//   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
+//   margin-top: 12px;
+// `;
 const Empty = styled("div")`
   margin-top: 81px;
 `;

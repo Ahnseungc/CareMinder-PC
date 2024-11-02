@@ -24,10 +24,13 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   /* 어드민 계정 로그인 시 에러 핸들링*/
   useEffect(() => {
+    // @ts-ignore
     if (error?.response) {
+      // @ts-ignore
       if (error?.response.data.statusCode === "401") {
         /** 계정 잠김 에러 핸들링 */
         setIsModalType("waiting");
+        // @ts-ignore
       } else if (error?.response.data.statusCode === "404") {
         /** 존재하지 않는 계정 에러 핸들링 */
         setIsModalType("noResult");

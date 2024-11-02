@@ -14,7 +14,8 @@ import { useState } from "react";
 const StaffNoticePage = () => {
   const { data: getNotices, isLoading } = useGetNotice();
   const [selected, setSelected] = useState<NoticeType>();
-  const [totalCount, setTotalCount] = useState(0);
+  // const [totalCount, setTotalCount] = useState(0);
+  //@ts-ignore
   const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
@@ -144,9 +145,9 @@ const FooterLayout = styled(Box)({
   alignItems: "center",
 });
 
-const TableBody = styled(Box)({
-  display: "flex",
-});
+// const TableBody = styled(Box)({
+//   display: "flex",
+// });
 
 const Title = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,

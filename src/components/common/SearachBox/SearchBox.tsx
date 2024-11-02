@@ -12,11 +12,9 @@ import { ReactComponent as UpArrow } from "@/assets/serachIcons/UpArrow.svg";
 //staff
 import { ReactComponent as UserStaff } from "@/assets/serachIcons/user-staff.svg";
 import { ReactComponent as UserSearch } from "@/assets/serachIcons/search-staff.svg";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
-import modalState from "@libraries/recoil/modal";
-import { useNavigate } from "react-router-dom";
 import { useBooleanState } from "@toss/react";
 
 export default function SearchBox() {
@@ -28,8 +26,6 @@ export default function SearchBox() {
   const [selectedNurse, setSelectedNurse] = useState<string>("");
   const user = useRecoilValue(userState);
   const [openStaff, openStaffMoadl, closeStaffModal] = useBooleanState();
-
-  const navigate = useNavigate();
 
   const inputRef = useRef<HTMLInputElement>(null);
 

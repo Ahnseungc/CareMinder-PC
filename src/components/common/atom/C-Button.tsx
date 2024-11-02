@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, ButtonProps, colors, styled } from "@mui/material";
+import { Button, ButtonProps, styled } from "@mui/material";
 
 export type CustomButtonProps = {
   buttontype:

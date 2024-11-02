@@ -55,7 +55,7 @@ const Contact = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
   color: theme.palette.text.primary,
 }));
-const Title = styled(Typography)(({ theme }) => ({
+const Title = styled(Typography)(({}) => ({
   lineHeight: "24px",
   fontSize: "16px",
   fontWeight: 500,

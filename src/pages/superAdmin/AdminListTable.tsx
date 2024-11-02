@@ -28,77 +28,80 @@ const AdminListTable = () => {
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index) => {
-          return (
-            <tr key={index}>
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>병원명</Typography>
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>주소</Typography>
-                </ShortComBoxLayout>
-              </td>{" "}
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>이름</Typography>
-                </ShortComBoxLayout>
-              </td>{" "}
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>사업자등록번호</Typography>
-                </ShortComBoxLayout>
-              </td>{" "}
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>아이디</Typography>
-                </ShortComBoxLayout>
-              </td>{" "}
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>비밀번호</Typography>
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <ShortComBoxLayout>
-                  <Typography>이메일</Typography>
-                </ShortComBoxLayout>
-              </td>
-              <td>
-                <LockingLayout>
-                  <CButton
-                    buttontype="primary"
-                    sx={{
-                      "backgroundColor": "#31D35F",
-                      "&:hover": {
-                        backgroundColor: "#28b851", // hover 시 더 진한 녹색으로
-                      },
-                    }}
-                  >
-                    수락
-                  </CButton>
-                </LockingLayout>
-              </td>
-              <td>
-                <LockingLayout>
-                  <CButton
-                    buttontype="primary"
-                    sx={{
-                      "backgroundColor": "#F52C51",
-                      "&:hover": {
-                        backgroundColor: "#d41b3f", // hover 시 더 진한 빨간색
-                      },
-                    }}
-                  >
-                    거절
-                  </CButton>
-                </LockingLayout>
-              </td>
-            </tr>
-          );
-        })}
+        {
+          //@ts-ignore
+          rows.map((row, index) => {
+            return (
+              <tr key={index}>
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>병원명</Typography>
+                  </ShortComBoxLayout>
+                </td>
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>주소</Typography>
+                  </ShortComBoxLayout>
+                </td>{" "}
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>이름</Typography>
+                  </ShortComBoxLayout>
+                </td>{" "}
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>사업자등록번호</Typography>
+                  </ShortComBoxLayout>
+                </td>{" "}
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>아이디</Typography>
+                  </ShortComBoxLayout>
+                </td>{" "}
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>비밀번호</Typography>
+                  </ShortComBoxLayout>
+                </td>
+                <td>
+                  <ShortComBoxLayout>
+                    <Typography>이메일</Typography>
+                  </ShortComBoxLayout>
+                </td>
+                <td>
+                  <LockingLayout>
+                    <CButton
+                      buttontype="primary"
+                      sx={{
+                        "backgroundColor": "#31D35F",
+                        "&:hover": {
+                          backgroundColor: "#28b851", // hover 시 더 진한 녹색으로
+                        },
+                      }}
+                    >
+                      수락
+                    </CButton>
+                  </LockingLayout>
+                </td>
+                <td>
+                  <LockingLayout>
+                    <CButton
+                      buttontype="primary"
+                      sx={{
+                        "backgroundColor": "#F52C51",
+                        "&:hover": {
+                          backgroundColor: "#d41b3f", // hover 시 더 진한 빨간색
+                        },
+                      }}
+                    >
+                      거절
+                    </CButton>
+                  </LockingLayout>
+                </td>
+              </tr>
+            );
+          })
+        }
       </tbody>
     </StTable>
   );

@@ -12,7 +12,7 @@ export default function useGetWardPatientInProgress(type: UserType) {
   const { data, isLoading } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetWardPatientInProgress"],
     queryFn: getWardPatientInProgress,
-    enabled: type === "main",
+    enabled: type === "WARD",
   });
   return { data, isLoading };
 }
