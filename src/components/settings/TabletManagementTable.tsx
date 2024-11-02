@@ -76,7 +76,7 @@ const TabletManagementTable: FC = () => {
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index) => {
+        {rows.map((_, index) => {
           return (
             <tr
               key={index}
