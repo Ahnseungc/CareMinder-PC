@@ -2,75 +2,121 @@ import { FC } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
+import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
+import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
+import { FormControl, SvgIcon } from "@mui/material";
+import { WardTabletType } from "@models/ward-tablet";
+
 const columns = [
-  { field: "Section", headerName: "구역" },
-  { field: "TableName", headerName: "태블릿 이름" },
-  { field: "PatientName", headerName: "환자 이름" },
+  { id: 0, field: "Section", headerName: "구역" },
+  { id: 1, field: "TableName", headerName: "태블릿 이름" },
+  { id: 2, field: "PatientName", headerName: "환자 이름" },
 ];
 
-const rows = [
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-];
+interface AdminTableProps {
+  getTablet: Array<WardTabletType>;
+  onChangeSelected: (index: any) => void;
+  selected: any;
+}
 
-const AdminTable: FC = () => {
+const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {
+  // const { control } = form;
   return (
     <StTable>
       <thead>
         {columns.map(column => {
-          return <th>{column.headerName}</th>;
+          return <th key={column.id}>{column.headerName}</th>;
         })}
       </thead>
       <tbody>
-        {rows.map(row => {
-          return (
-            <tr>
-              <td>
-                <ComBoxLayout>
-                  <CComboBox
-                    placeholder={"구역"}
-                    options={["테스트1", "테스트2"]}
-                    value={""}
-                    onChange={() => null}
-                  />
-                </ComBoxLayout>
-              </td>
-              <td>
-                <ComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"이름"}
-                    onChange={() => null}
-                    value={""}
-                    disabled={false}
-                    id={""}
-                  ></CInput>
-                </ComBoxLayout>
-              </td>
-              <td>
-                <ComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"태블릿 이름"}
-                    onChange={() => null}
-                    value={""}
-                    disabled={false}
-                    id={""}
-                  ></CInput>
-                </ComBoxLayout>
-              </td>
-            </tr>
-          );
-        })}
+        <FormControl>
+          {getTablet?.map(tablet => {
+            return (
+              <tr>
+                <td>
+                  <ComBoxLayout>
+                    <CComboBox
+                      placeholder={"구역"}
+                      options={[tablet.areaName]}
+                      value={tablet.areaName}
+                      onChange={() => null}
+                    />
+                  </ComBoxLayout>
+                </td>
+                <td>
+                  <ComBoxLayout>
+                    <Checkbox
+                      checked={selected.includes(tablet.tabletId)}
+                      onChange={() => onChangeSelected(tablet.tabletId)}
+                      icon={
+                        <div
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            border: `1px solid ${palette.divider}`,
+                            borderRadius: "4px",
+                          }}
+                        />
+                      }
+                      checkedIcon={
+                        <div
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            backgroundColor: `${palette.primary.main}`,
+                            borderRadius: "4px",
+                            position: "relative",
+                          }}
+                        >
+                          <SvgIcon
+                            component={CheckedIcon}
+                            inheritViewBox
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              width: "15px",
+                              height: "12px",
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                            }}
+                          />
+                        </div>
+                      }
+                      sx={{
+                        padding: 0, // 기본 패딩 제거
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    />
+                    <CInput
+                      variant={"outlined"}
+                      placeholder={"태블릿 이름"}
+                      onChange={() => null}
+                      value={tablet.tabletName}
+                      disabled={true}
+                      id={""}
+                    ></CInput>
+                  </ComBoxLayout>
+                </td>
+                <td>
+                  <ComBoxLayout>
+                    <CInput
+                      variant={"outlined"}
+                      placeholder={"환자 이름"}
+                      onChange={() => null}
+                      value={tablet.patientName}
+                      disabled={true}
+                      id={""}
+                    ></CInput>
+                  </ComBoxLayout>
+                </td>
+              </tr>
+            );
+          })}
+        </FormControl>
       </tbody>
     </StTable>
   );
@@ -109,4 +155,7 @@ const ComBoxLayout = styled.div`
   width: 224px;
   height: 36px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 13px;
 `;

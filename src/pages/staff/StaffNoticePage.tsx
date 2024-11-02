@@ -7,10 +7,21 @@ import CButton from "@components/common/atom/C-Button";
 
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCardDetail";
-
-const mock = [1, 2, 3, 4, 5, 6, 7];
+import useGetNotice from "@hooks/queries/useGetNotice";
+import { NoticeType } from "@models/notice";
+import { useState } from "react";
 
 const StaffNoticePage = () => {
+  const { data: getNotices, isLoading } = useGetNotice();
+  const [selected, setSelected] = useState<NoticeType>();
+  const [totalCount, setTotalCount] = useState(0);
+  const [size, setSize] = useState(7);
+
+  const onChangeSelected = (id: number) => {
+    const select = getNotices.filter((notice: NoticeType) => id === notice.id);
+    setSelected(select);
+  };
+
   return (
     <Container>
       <div>
@@ -27,10 +38,10 @@ const StaffNoticePage = () => {
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <ButtonListLayout>
-              <ButtonLayout width={"124px"}>
+              <ButtonLayout width={"125px"}>
                 <CButton buttontype={"primaryBlack"}>내 환자 대상 공지</CButton>
               </ButtonLayout>
-              <ButtonLayout width={"121px"}>
+              <ButtonLayout width={"125px"}>
                 <CButton buttontype={"primaryBlack"}>내가 작성한 공지</CButton>
               </ButtonLayout>
               <ButtonLayout width={"150px"}>
@@ -47,14 +58,26 @@ const StaffNoticePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          {mock.map(item => {
-            return <AdminNoticeCard key={item} />;
-          })}
+          {isLoading ? (
+            <div>로딩중</div>
+          ) : (
+            <>
+              {getNotices?.map((notice: NoticeType) => {
+                return (
+                  <AdminNoticeCard
+                    key={notice.id}
+                    notice={notice}
+                    onChangeSelected={onChangeSelected}
+                  />
+                );
+              })}
+            </>
+          )}
         </AdminNoticeListLayout>
-        <AdminNoticeCardDeatil />
+        <AdminNoticeCardDeatil notice={selected as NoticeType} />
       </TableLayout>
       <FooterLayout>
-        <PaginationComponent totalPage={5} />
+        {size <= getNotices?.length && <PaginationComponent totalPage={5} />}
       </FooterLayout>
     </Container>
   );
@@ -79,14 +102,13 @@ const AdminInoutSubTitleContainer = styled(Box)({
 const AdminNoticeListLayout = styled(Box)(({ theme }) => ({
   width: "50%",
   height: "100%",
-  maxHeight: "647px",
+  minHeight: "648px",
   borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
 const AdminInoutSubTitleLeftContainer = styled(Box)({
   display: "flex",
   width: "50%",
-  // gap: "20px",
   alignItems: "center",
 });
 const AdminInoutSubTitleRightContainer = styled(Box)({
@@ -110,6 +132,7 @@ const TableLayout = styled(Box)({
   gap: "24px",
   display: "flex",
   height: "100%",
+  minHeight: "648px",
 });
 
 const FooterLayout = styled(Box)({
