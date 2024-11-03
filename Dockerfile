@@ -4,6 +4,16 @@ FROM node:16-alpine AS build
 
 WORKDIR /code
 
+# Bun 설치
+RUN curl -fsSL https://bun.sh/install | bash && \
+    export BUN_INSTALL="/root/.bun" && \
+    export PATH="$BUN_INSTALL/bin:$PATH" && \
+    bun --version
+
+# 환경 변수 추가 (컨테이너 내에서 Bun을 사용 가능하도록)
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
+
 COPY package*.json ./
 RUN bun install
 
