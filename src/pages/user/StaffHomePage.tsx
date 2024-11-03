@@ -101,7 +101,7 @@ export default function StaffHomePage() {
           <SubTitleLeft>
             <span>환자별로 묶기</span>
             {/* <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} /> */}
-            <CSwitch />
+            <CSwitch onChange={() => setStaffAcceptIsGroup(false)} />
           </SubTitleLeft>
         </SubTitle>
         {!staffAcceptIsGroup &&
