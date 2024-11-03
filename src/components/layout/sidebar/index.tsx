@@ -9,14 +9,14 @@ import { SwitchCase } from "@toss/react";
 import { useRecoilValue } from "recoil";
 
 export type LayoutType = {
-  adminType: UserType;
+  admintype: UserType;
 };
 
 export default function Sidebar() {
   const user = useRecoilValue(userState);
 
   return (
-    <Layout adminType={user?.type as UserType}>
+    <Layout admintype={user?.type as UserType}>
       <SwitchCase
         value={user?.type as UserType}
         caseBy={{
@@ -31,7 +31,7 @@ export default function Sidebar() {
 
 /** styles */
 
-const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
+const Layout = styled(Stack)<LayoutType>(({ admintype, theme }) => ({
   position: "fixed",
   left: 0,
   top: "64px",
@@ -45,10 +45,10 @@ const Layout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
   backgroundColor: theme.palette.primary.main,
   zIndex: "10",
 
-  ...(adminType === "STAFF" && {
+  ...(admintype === "STAFF" && {
     backgroundColor: theme.palette.secondary.main,
   }),
-  ...(adminType === "ADMIN" && {
+  ...(admintype === "ADMIN" && {
     backgroundColor: theme.palette.success.light,
   }),
 }));

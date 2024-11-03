@@ -5,7 +5,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
-import { FormControl, SvgIcon } from "@mui/material";
+import { SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 
 const columns = [
@@ -16,12 +16,14 @@ const columns = [
 
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
-  onChangeSelected: (index: any) => void;
-  selected: any;
+  onChangeSelected: (tabletId: number, patientName: string) => void;
+  selected: Array<{
+    name: string;
+    id: number;
+  }>;
 }
 
 const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {
-  // const { control } = form;
   return (
     <StTable>
       <thead>
@@ -30,93 +32,91 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
         })}
       </thead>
       <tbody>
-        <FormControl>
-          {getTablet?.map(tablet => {
-            return (
-              <tr>
-                <td>
-                  <ComBoxLayout>
-                    <CComboBox
-                      placeholder={"구역"}
-                      options={[tablet.areaName]}
-                      value={tablet.areaName}
-                      onChange={() => null}
-                    />
-                  </ComBoxLayout>
-                </td>
-                <td>
-                  <ComBoxLayout>
-                    <Checkbox
-                      checked={selected.includes(tablet.tabletId)}
-                      onChange={() => onChangeSelected(tablet.tabletId)}
-                      icon={
-                        <div
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            border: `1px solid ${palette.divider}`,
-                            borderRadius: "4px",
+        {getTablet?.map(tablet => {
+          return (
+            <tr key={tablet.areaId}>
+              <td>
+                <ComBoxLayout>
+                  <CComboBox
+                    placeholder={"구역"}
+                    options={[tablet.areaName]}
+                    value={tablet.areaName}
+                    onChange={() => null}
+                  />
+                </ComBoxLayout>
+              </td>
+              <td>
+                <ComBoxLayout>
+                  <Checkbox
+                    checked={selected.some(item => item.id === tablet.areaId)}
+                    onChange={() => onChangeSelected(tablet.areaId, tablet.patientName)}
+                    icon={
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          border: `1px solid ${palette.divider}`,
+                          borderRadius: "4px",
+                        }}
+                      />
+                    }
+                    checkedIcon={
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          backgroundColor: `${palette.primary.main}`,
+                          borderRadius: "4px",
+                          position: "relative",
+                        }}
+                      >
+                        <SvgIcon
+                          component={CheckedIcon}
+                          inheritViewBox
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "15px",
+                            height: "12px",
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
                           }}
                         />
-                      }
-                      checkedIcon={
-                        <div
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            backgroundColor: `${palette.primary.main}`,
-                            borderRadius: "4px",
-                            position: "relative",
-                          }}
-                        >
-                          <SvgIcon
-                            component={CheckedIcon}
-                            inheritViewBox
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              width: "15px",
-                              height: "12px",
-                              position: "absolute",
-                              top: "50%",
-                              left: "50%",
-                              transform: "translate(-50%, -50%)",
-                            }}
-                          />
-                        </div>
-                      }
-                      sx={{
-                        padding: 0, // 기본 패딩 제거
-                        width: "20px",
-                        height: "20px",
-                      }}
-                    />
-                    <CInput
-                      variant={"outlined"}
-                      placeholder={"태블릿 이름"}
-                      onChange={() => null}
-                      value={tablet.tabletName}
-                      disabled={true}
-                      id={""}
-                    ></CInput>
-                  </ComBoxLayout>
-                </td>
-                <td>
-                  <ComBoxLayout>
-                    <CInput
-                      variant={"outlined"}
-                      placeholder={"환자 이름"}
-                      onChange={() => null}
-                      value={tablet.patientName}
-                      disabled={true}
-                      id={""}
-                    ></CInput>
-                  </ComBoxLayout>
-                </td>
-              </tr>
-            );
-          })}
-        </FormControl>
+                      </div>
+                    }
+                    sx={{
+                      padding: 0, // 기본 패딩 제거
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  />
+                  <CInput
+                    variant={"outlined"}
+                    placeholder={"태블릿 이름"}
+                    onChange={() => null}
+                    value={tablet.tabletName}
+                    disabled={true}
+                    id={""}
+                  ></CInput>
+                </ComBoxLayout>
+              </td>
+              <td>
+                <ComBoxLayout>
+                  <CInput
+                    variant={"outlined"}
+                    placeholder={"환자 이름"}
+                    onChange={() => null}
+                    value={tablet.patientName}
+                    disabled={true}
+                    id={""}
+                  ></CInput>
+                </ComBoxLayout>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </StTable>
   );

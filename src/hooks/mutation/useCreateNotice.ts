@@ -4,7 +4,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 import { NoticeType } from "@models/notice";
 
 const createNotice = async (notice: NoticeType): Promise<void> => {
-  return (await axiosInstance.post("/patients/discharge-by-web", notice)).data;
+  return (await axiosInstance.post("/notices", notice)).data;
 };
 
 export default function useCreateNotice(): UseMutationResult<void, AxiosError, NoticeType> {

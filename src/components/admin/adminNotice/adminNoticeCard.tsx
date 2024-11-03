@@ -9,13 +9,13 @@ interface AdminNoticeCardProps {
 
 const AdminNoticeCard: FC<AdminNoticeCardProps> = ({ notice, onChangeSelected }) => {
   return (
-    <StyledBox onClick={() => onChangeSelected(notice?.id)}>
-      <Title>{notice?.title}</Title>
+    <StyledBox onClick={() => onChangeSelected(notice.wardId)}>
+      <Title>{notice.title}</Title>
       <StyledBottomBox>
         <StyledNameBox>
           <Name>홍길동 간호사</Name>|<Contact>010.0000.0000</Contact>
         </StyledNameBox>
-        <Contact>{notice?.lastModifiedAt}</Contact>
+        <Contact>{notice.lastModifiedAt}</Contact>
       </StyledBottomBox>
     </StyledBox>
   );

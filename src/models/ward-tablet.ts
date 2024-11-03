@@ -7,3 +7,13 @@ export type WardTabletType = {
   patientId: number;
   patientName: string;
 };
+
+export type reqWardParamsType = {
+  token: string;
+  patientName: string;
+  myArea: boolean;
+};
+
+export type selectedWardType = {
+  tabletIds: Array<number>;
+};

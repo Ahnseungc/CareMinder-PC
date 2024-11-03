@@ -1,15 +1,35 @@
-import { FC } from "react";
-import { Box, styled, Typography, FormControl, TextField, Button, SvgIcon } from "@mui/material";
+import { ChangeEvent, FC, Ref } from "react";
+import { Box, styled, Typography, SvgIcon, FormControl, TextField, Button } from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { NoticeType } from "@models/notice";
+import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 
 interface AdminNoticeWriteFormProps {
   form: UseFormReturn<NoticeType>;
+  handleFileUploadClick: () => void;
+  fileRef: Ref<HTMLInputElement>;
+  handleFileUploadUrl: (e: ChangeEvent<HTMLInputElement>) => void;
+  fileUrl: Array<{ name: string; url: string }>;
+  handleFileUploadUrlDelete: (index: number) => void;
+  selected: Array<{
+    id: number;
+    name: string;
+  }>;
+  handleRecipientDelete: (index: number) => void;
 }
 
-const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
+const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
+  form,
+  handleFileUploadClick,
+  fileRef,
+  handleFileUploadUrl,
+  handleFileUploadUrlDelete,
+  fileUrl,
+  selected,
+  handleRecipientDelete,
+}) => {
   const {
     control,
     formState: { errors },
@@ -21,21 +41,20 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
         <InputForm>
           <label htmlFor="">수신자</label>
           <InputLayout>
-            <Controller
-              control={control}
-              name={"title"}
-              render={({ field }) => (
-                <CInput
-                  {...field}
-                  variant={"outlined"}
-                  placeholder={"수신자를 입력해주세요."}
-                  // onChange={() => null}
-                  // value={""}
-                  disabled={false}
-                  id={""}
-                />
-              )}
-            />
+            <RecipientBox>
+              {selected.map((res, index) => {
+                return (
+                  <RecipientCard key={res.id}>
+                    <p>{res.name}</p>
+                    <SvgIcon
+                      component={XIcon}
+                      inheritViewBox
+                      onClick={() => handleRecipientDelete(index)}
+                    />
+                  </RecipientCard>
+                );
+              })}
+            </RecipientBox>
           </InputLayout>
         </InputForm>
         <InputForm>
@@ -44,12 +63,11 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
             <Controller
               control={control}
               name={"title"}
-              render={() => (
+              render={({ field }) => (
                 <CInput
+                  {...field}
                   variant={"outlined"}
                   placeholder={"제목을 입력해주세요."}
-                  onChange={() => null}
-                  value={""}
                   disabled={false}
                   id={""}
                 />
@@ -59,33 +77,92 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({ form }) => {
         </InputForm>
         <InputForm>
           <InputForm>
-            <InputLayout>
+            <TextAreaLabel>
+              <p>내용</p>
+              <p className="blue">즐겨찾기 등록</p>
+            </TextAreaLabel>
+            <TextAreaLayout>
               <Controller
                 control={control}
                 name={"content"}
-                render={() => (
-                  <TextAreaLabel>
-                    <p>내용</p>
-                    <p className="blue">즐겨찾기 등록</p>
-                  </TextAreaLabel>
+                render={({ field }) => (
+                  <StyledTextArea placeholder="내용을 입력해주세요." multiline {...field} />
                 )}
               />
-            </InputLayout>
+            </TextAreaLayout>
           </InputForm>
-
-          <StyledTextArea />
         </InputForm>
+
         <InputForm>
           <p>사진 첨부</p>
-          <AddPhotoButton>
-            <SvgIcon component={PhotoIcon} inheritViewBox />
-            사진 첨부
-          </AddPhotoButton>
+          <FileUrlLayout>
+            <AddPhotoButton onClick={handleFileUploadClick}>
+              <SvgIcon component={PhotoIcon} inheritViewBox />
+              사진 첨부
+            </AddPhotoButton>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileRef}
+              onChange={handleFileUploadUrl}
+              style={{ display: "none" }} // input 요소 숨기기
+            />
+            <FileListLayout>
+              {fileUrl.length !== 0 &&
+                fileUrl?.map((file, index) => {
+                  return (
+                    <FileUrlBox key={file.name}>
+                      <p>{file.name}</p>
+                      <SvgIcon
+                        component={XIcon}
+                        inheritViewBox
+                        onClick={() => handleFileUploadUrlDelete(index)}
+                      />
+                    </FileUrlBox>
+                  );
+                })}
+            </FileListLayout>
+          </FileUrlLayout>
         </InputForm>
       </FormControl>
     </StyledBox>
   );
 };
+
+const RecipientBox = styled(Box)(() => ({
+  width: "100%",
+  height: "40px",
+  display: "flex",
+  border: `1px solid lightgray`,
+  borderRadius: "6px",
+  alignItems: "center",
+  padding: "6px",
+  gap: "8px",
+}));
+const RecipientCard = styled(Box)(({ theme }) => ({
+  "width": "82px",
+  "height": "26px",
+  "display": "flex",
+  "justifyContent": "center",
+  "alignItems": "center",
+  "backgroundColor": theme.palette.success.main,
+  "borderRadius": "100px",
+  "gap": "10px",
+  "& svg": {
+    width: "16px",
+    height: "16px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+  },
+
+  "& p": {
+    height: "16px",
+    display: "flex",
+    alignItems: "center",
+    color: `${theme.palette.text.disabled}`,
+  },
+}));
 
 const Title = styled(Typography)(({}) => ({
   fontSize: "18px",
@@ -108,6 +185,13 @@ const InputLayout = styled(Box)({
   width: "100%",
   height: "40px",
   marginTop: "10px",
+});
+
+const TextAreaLayout = styled(Box)({
+  width: "100%",
+  height: "191px",
+
+  marginTop: "24px",
 });
 
 const InputForm = styled(Box)(({ theme }) => ({
@@ -141,17 +225,25 @@ const TextAreaLabel = styled(Box)({
 });
 
 const StyledTextArea = styled(TextField)(({ theme }) => ({
-  "marginTop": "24px",
   "border": `1px solid ${theme.palette.divider}`,
   "width": "100%",
-  "height": "191px",
+  "height": "100%",
+
   "& .MuiInputBase-root": {
-    height: "191px",
+    height: "100%",
+    alignItems: "flex-start", // 텍스트 상단 정렬
+  },
+
+  "& .MuiInputBase-inputMultiline": {
+    textAlign: "left",
+    height: "100%",
+    width: "100%",
+    lineHeight: "1.6",
+    boxSizing: "border-box",
   },
 }));
 
 const AddPhotoButton = styled(Button)(({ theme }) => ({
-  marginTop: "10px",
   border: `1px solid ${theme.palette.divider}`,
   color: `${theme.palette.text.primary}`,
   width: "112px",
@@ -159,6 +251,37 @@ const AddPhotoButton = styled(Button)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: "4px",
+}));
+
+const FileUrlLayout = styled(Box)(() => ({
+  width: "100%",
+  alignItems: "center",
+  height: "100%",
+  display: "flex",
+  gap: "15.71px",
+}));
+
+const FileUrlBox = styled(Box)(({ theme }) => ({
+  "display": "flex",
+  "alignItems": "center",
+  "gap": "2px",
+  "height": "20px",
+  "& p": {
+    color: `${theme.palette.text.primary}`,
+  },
+  "& svg": {
+    width: "16px",
+    height: "16px",
+    cursor: "pointer",
+  },
+}));
+const FileListLayout = styled(Box)(() => ({
+  width: "590px",
+  height: "54px",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: "6px",
 }));
 
 export default AdminNoticeWriteForm;

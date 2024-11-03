@@ -11,24 +11,42 @@ import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const StaffWardInoutManagementPage = () => {
+  const [searchValue, setSearchValue] = useState<string>("");
+  const token = Cookies.get("accessTokenStaff") as string;
+  const [isMyArea, setIsMyArea] = useState<boolean>(false);
+
   //@ts-ignore
-  const { data: getTablet, isLoading } = useGetWardTabletRequests();
+  const { data: getTablet, isLoading } = useGetWardTabletRequests({
+    token: token,
+    patientName: searchValue,
+    myArea: isMyArea,
+  });
+
   //@ts-ignore
   const { mutate, isPending } = useDischargePatients();
-  const [selected, setSelected] = useState<Array<any>>([{}]);
+  const [selected, setSelected] = useState<
+    Array<{
+      name: string;
+      id: number;
+    }>
+  >([]);
 
-  const onChangeSelected = (index: any) => {
+  const onChangeMyArea = () => {
+    setIsMyArea(prev => !prev);
+  };
+
+  const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(item => item !== index);
+      if (prev.some(item => item.id === tabletId)) {
+        return prev.filter(item => item.id !== tabletId);
       } else {
-        return [...prev, index];
+        return [...prev, { name: patientName, id: tabletId }];
       }
     });
   };
-
   const defaultValuesUpdate: WardTabletType = {
     areaId: 0,
     tabletId: 0,
@@ -39,13 +57,6 @@ const StaffWardInoutManagementPage = () => {
     patientName: "",
   };
 
-  // const formUpdate = useForm<WardTabletType>({
-  //   defaultValues: defaultValuesUpdate,
-  //   mode: "onChange",
-  // });
-
-  // const { handleSubmit } = formUpdate;
-
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
@@ -53,15 +64,23 @@ const StaffWardInoutManagementPage = () => {
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
-  const onDischarge: SubmitHandler<WardTabletType> = data => {
-    mutate(data.tabletId, {
-      onSuccess: () => {
-        toast.success("퇴원 처리가 완료 되었습니다.");
+  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setSearchValue(value);
+  };
+
+  const onDischarge: SubmitHandler<WardTabletType> = () => {
+    mutate(
+      { tabletIds: selected.map(item => item.id) },
+      {
+        onSuccess: () => {
+          toast.success("퇴원 처리가 완료 되었습니다.");
+        },
+        onError: error => {
+          toast.error(error.message);
+        },
       },
-      onError: error => {
-        toast.error(error.message);
-      },
-    });
+    );
   };
 
   return (
@@ -72,7 +91,7 @@ const StaffWardInoutManagementPage = () => {
           <AdminInoutSubTitleLeftContainer>
             <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
             <div>
-              <CSwitch />
+              <CSwitch onChange={onChangeMyArea} />
             </div>
             <SectionArrayLayout>
               <Arraytitle variant="h2">구역 정렬</Arraytitle>
@@ -82,8 +101,8 @@ const StaffWardInoutManagementPage = () => {
           <AdminInoutSubTitleRightContainer>
             <SearchLayout>
               <CSearchBox
-                value={""}
-                onChange={() => null}
+                value={searchValue}
+                onChange={onChangeSearchValue}
                 placeholder={"환자 이름을 검색해 주세요."}
               />
             </SearchLayout>

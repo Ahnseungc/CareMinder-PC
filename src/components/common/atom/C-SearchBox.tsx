@@ -6,7 +6,7 @@ import { ReactComponent as DownArrowMiddle } from "@/assets/downarrow-middle-ico
 
 type CSearchBoxProps = {
   value: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   borderColor?: string;
   select?: any;
@@ -54,11 +54,11 @@ const SearchInputWrapper = styled(Box)({
 
 const SearchInput = styled(Input, {
   shouldForwardProp: prop => prop !== "isOpen",
-})<CSearchBoxProps>(({ theme, borderColor }) => ({
+})<any>(({ theme, bordercolor }) => ({
   width: "100%",
   maxHeight: "36px",
   borderRadius: "20px",
-  border: `1px solid ${borderColor ? borderColor : "theme.palette.divider"}`,
+  border: `1px solid ${bordercolor ? bordercolor : "theme.palette.divider"}`,
   transition: "padding 0.3s ease-in-out",
   padding: "7.9px 15px",
   backgroundColor: theme.palette.background.paper,

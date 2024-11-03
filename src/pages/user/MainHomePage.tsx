@@ -17,9 +17,9 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  // const onWaitOrAccept = (id: number, type: "wait" | "accept") => {
-  //   if (userStatus?.type === "WARD") return setIsModal(true);
-  // };
+  const onWaitOrAccept = () => {
+    if (userStatus?.type === "WARD") return setIsModal(true);
+  };
 
   const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);
   const { data: getInprogressData } = useGetWardPatientInProgress(userStatus!.type);
@@ -32,10 +32,6 @@ export default function MainHomePage() {
 
   const handleOnClose = () => {
     setIsModal(false);
-  };
-
-  const onWaitOrAccept = () => {
-    onStaffLogIn();
   };
 
   useEffect(() => {

@@ -37,7 +37,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
       managerPhoneNumber: data.managerPhoneNumber,
       managerEmail: data.managerEmail,
     };
-    console.log(newWardRequesets);
+
     mutate(newWardRequesets, {
       onSuccess: () => {
         toast.success("병동 계정 생성이 완료되었습니다.");
