@@ -1,7 +1,7 @@
 import { Stack, styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import { bottomScroll, formatTimestamp, roleColor } from "@utils/homePage";
+import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
