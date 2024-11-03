@@ -4,16 +4,16 @@
 FROM oven/bun:latest
 
 
-# curl과 bash 설치
-RUN apk add --no-cache curl bash
+# # curl과 bash 설치
+# RUN apk add --no-cache curl bash
 
-# Bun 설치
-# bun 설치 및 버전 확인
-RUN curl -fsSL https://bun.sh/install | bash
+# # Bun 설치
+# # bun 설치 및 버전 확인
+# RUN curl -fsSL https://bun.sh/install | bash
 
-# bun 경로를 환경 변수로 설정하고 bun 버전 확인
-ENV BUN_INSTALL="/root/.bun"
-ENV PATH="$BUN_INSTALL/bin:$PATH"
+# # bun 경로를 환경 변수로 설정하고 bun 버전 확인
+# ENV BUN_INSTALL="/root/.bun"
+# ENV PATH="$BUN_INSTALL/bin:$PATH"
 
 # bun 버전 확인
 RUN bun --version
