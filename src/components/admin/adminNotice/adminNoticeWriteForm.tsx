@@ -1,29 +1,43 @@
-import { FC, InputHTMLAttributes, Ref } from "react";
+import { ChangeEvent, FC, Ref } from "react";
 import {
   Box,
   styled,
   Typography,
+  SvgIcon,
   FormControl,
   TextField,
   Button,
-  SvgIcon,
   Input,
 } from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { NoticeType } from "@models/notice";
+import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 
 interface AdminNoticeWriteFormProps {
   form: UseFormReturn<NoticeType>;
   handleFileUploadClick: () => void;
   fileRef: Ref<HTMLInputElement>;
+  handleFileUploadUrl: (e: ChangeEvent<HTMLInputElement>) => void;
+  fileUrl: Array<{ name: string; url: string }>;
+  handleFileUploadUrlDelete: (index: number) => void;
+  selected: Array<{
+    id: number;
+    name: string;
+  }>;
+  handleRecipientDelete: (index: number) => void;
 }
 
 const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
   form,
   handleFileUploadClick,
   fileRef,
+  handleFileUploadUrl,
+  handleFileUploadUrlDelete,
+  fileUrl,
+  selected,
+  handleRecipientDelete,
 }) => {
   const {
     control,
@@ -36,19 +50,20 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
         <InputForm>
           <label htmlFor="">수신자</label>
           <InputLayout>
-            <Controller
-              control={control}
-              name={"title"}
-              render={({ field }) => (
-                <CInput
-                  {...field}
-                  variant={"outlined"}
-                  placeholder={"수신자를 입력해주세요."}
-                  disabled={false}
-                  id={""}
-                />
-              )}
-            />
+            <RecipientBox>
+              {selected.map((res, index) => {
+                return (
+                  <RecipientCard>
+                    <p>{res.name}</p>
+                    <SvgIcon
+                      component={XIcon}
+                      inheritViewBox
+                      onClick={() => handleRecipientDelete(index)}
+                    />
+                  </RecipientCard>
+                );
+              })}
+            </RecipientBox>
           </InputLayout>
         </InputForm>
         <InputForm>
@@ -86,32 +101,77 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
             </TextAreaLayout>
           </InputForm>
         </InputForm>
+
         <InputForm>
           <p>사진 첨부</p>
-          <Controller
-            control={control}
-            name="fileUrl"
-            render={({ field }) => (
-              <input
-                {...field}
-                type="file"
-                accept="image/*"
-                ref={fileRef}
-                // onChange={handleFileUpload}
-                style={{ display: "none" }} // input 요소 숨기기
-              />
-            )}
-          />
-
-          <AddPhotoButton onClick={handleFileUploadClick}>
-            <SvgIcon component={PhotoIcon} inheritViewBox />
-            사진 첨부
-          </AddPhotoButton>
+          <FileUrlLayout>
+            <AddPhotoButton onClick={handleFileUploadClick}>
+              <SvgIcon component={PhotoIcon} inheritViewBox />
+              사진 첨부
+            </AddPhotoButton>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileRef}
+              onChange={handleFileUploadUrl}
+              style={{ display: "none" }} // input 요소 숨기기
+            />
+            <FileListLayout>
+              {fileUrl.length !== 0 &&
+                fileUrl?.map((file, index) => {
+                  return (
+                    <FileUrlBox>
+                      <p>{file.name}</p>
+                      <SvgIcon
+                        component={XIcon}
+                        inheritViewBox
+                        onClick={() => handleFileUploadUrlDelete(index)}
+                      />
+                    </FileUrlBox>
+                  );
+                })}
+            </FileListLayout>
+          </FileUrlLayout>
         </InputForm>
       </FormControl>
     </StyledBox>
   );
 };
+
+const RecipientBox = styled(Box)(({ theme }) => ({
+  width: "100%",
+  height: "40px",
+  display: "flex",
+  border: `1px solid lightgray`,
+  borderRadius: "6px",
+  alignItems: "center",
+  padding: "6px",
+  gap: "8px",
+}));
+const RecipientCard = styled(Box)(({ theme }) => ({
+  "width": "82px",
+  "height": "26px",
+  "display": "flex",
+  "justifyContent": "center",
+  "alignItems": "center",
+  "backgroundColor": theme.palette.success.main,
+  "borderRadius": "100px",
+  "gap": "10px",
+  "& svg": {
+    width: "16px",
+    height: "16px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+  },
+
+  "& p": {
+    height: "16px",
+    display: "flex",
+    alignItems: "center",
+    color: `${theme.palette.text.disabled}`,
+  },
+}));
 
 const Title = styled(Typography)(({}) => ({
   fontSize: "18px",
@@ -193,7 +253,6 @@ const StyledTextArea = styled(TextField)(({ theme }) => ({
 }));
 
 const AddPhotoButton = styled(Button)(({ theme }) => ({
-  marginTop: "10px",
   border: `1px solid ${theme.palette.divider}`,
   color: `${theme.palette.text.primary}`,
   width: "112px",
@@ -201,6 +260,37 @@ const AddPhotoButton = styled(Button)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: "4px",
+}));
+
+const FileUrlLayout = styled(Box)(({ theme }) => ({
+  width: "100%",
+  alignItems: "center",
+  height: "100%",
+  display: "flex",
+  gap: "15.71px",
+}));
+
+const FileUrlBox = styled(Box)(({ theme }) => ({
+  "display": "flex",
+  "alignItems": "center",
+  "gap": "2px",
+  "height": "20px",
+  "& p": {
+    color: `${theme.palette.text.primary}`,
+  },
+  "& svg": {
+    width: "16px",
+    height: "16px",
+    cursor: "pointer",
+  },
+}));
+const FileListLayout = styled(Box)(() => ({
+  width: "590px",
+  height: "54px",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: "6px",
 }));
 
 export default AdminNoticeWriteForm;

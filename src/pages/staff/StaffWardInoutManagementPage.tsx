@@ -29,22 +29,26 @@ const StaffWardInoutManagementPage = () => {
 
   //@ts-ignore
   const { mutate, isPending } = useDischargePatients();
-  const [selected, setSelected] = useState<Array<number>>([]);
+  const [selected, setSelected] = useState<
+    Array<{
+      name: string;
+      id: number;
+    }>
+  >([]);
 
   const onChangeMyArea = () => {
     setIsMyArea(prev => !prev);
   };
 
-  const onChangeSelected = (tabletId: number) => {
+  const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
-      if (prev.some(item => item === tabletId)) {
-        return prev.filter(item => item !== tabletId);
+      if (prev.some(item => item.id === tabletId)) {
+        return prev.filter(item => item.id !== tabletId);
       } else {
-        return [...prev, tabletId];
+        return [...prev, { name: patientName, id: tabletId }];
       }
     });
   };
-
   const defaultValuesUpdate: WardTabletType = {
     areaId: 0,
     tabletId: 0,
@@ -64,7 +68,7 @@ const StaffWardInoutManagementPage = () => {
 
   const onDischarge: SubmitHandler<WardTabletType> = () => {
     mutate(
-      { tabletIds: selected },
+      { tabletIds: selected.map(item => item.id) },
       {
         onSuccess: () => {
           toast.success("퇴원 처리가 완료 되었습니다.");

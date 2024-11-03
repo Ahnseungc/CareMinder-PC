@@ -16,8 +16,11 @@ const columns = [
 
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
-  onChangeSelected: (index: any) => void;
-  selected: Array<number>;
+  onChangeSelected: (tabletId: number, patientName: string) => void;
+  selected: Array<{
+    name: string;
+    id: number;
+  }>;
 }
 
 const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {
@@ -45,8 +48,8 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
               <td>
                 <ComBoxLayout>
                   <Checkbox
-                    checked={selected.includes(tablet.tabletId)}
-                    onChange={() => onChangeSelected(tablet.tabletId)}
+                    checked={selected.some(item => item.id === tablet.tabletId)}
+                    onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
                     icon={
                       <div
                         style={{

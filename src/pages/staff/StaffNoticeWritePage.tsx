@@ -6,13 +6,14 @@ import CButton from "@components/common/atom/C-Button";
 import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 // import { toast } from "react-toastify";
 import { NoticeType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
 import Cookies from "js-cookie";
 import CSwitch from "@components/common/atom/C-Switch";
+import { toast } from "react-toastify";
 
 const StaffNoticeWritePage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -29,18 +30,44 @@ const StaffNoticeWritePage = () => {
   //@ts-ignore
   const { mutate, isPending } = useCreateNotice();
 
-  const [selected, setSelected] = useState<Array<number>>([]);
+  const [selected, setSelected] = useState<
+    Array<{
+      name: string;
+      id: number;
+    }>
+  >([]);
+  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
+
+  const handleFileUploadUrl = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFileUrl(prev => [...prev, { name: file.name, url: reader.result as string }]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileUploadUrlDelete = (index: number) => {
+    setFileUrl(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRecipientDelete = (index: number) => {
+    setSelected(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleFileUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const onChangeSelected = (tabletId: number) => {
+  const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
-      if (prev.some(item => item === tabletId)) {
-        return prev.filter(item => item !== tabletId);
+      if (prev.some(item => item.id === tabletId)) {
+        return prev.filter(item => item.id !== tabletId);
       } else {
-        return [...prev, tabletId];
+        return [...prev, { name: patientName, id: tabletId }];
       }
     });
   };
@@ -49,7 +76,11 @@ const StaffNoticeWritePage = () => {
   };
 
   useEffect(() => {
-    formNotice.setValue("wardId", selected[0]);
+    setSelected([]);
+  }, [isMyArea]);
+
+  useEffect(() => {
+    // formNotice.setValue("wardId", selected[0].id);
   }, [selected]);
 
   const defaultValuesUpdate: NoticeType = {
@@ -57,9 +88,10 @@ const StaffNoticeWritePage = () => {
     wardId: 0,
     title: "",
     content: "",
-    fileUrl: [],
+    fileUrl: "",
     createdAt: "",
     lastModifiedAt: "",
+    recipient: "",
   };
 
   const formNotice = useForm<NoticeType>({
@@ -67,18 +99,25 @@ const StaffNoticeWritePage = () => {
     mode: "onChange",
   });
 
-  // const { handleSubmit: handleDischarge } = formDischarge;
+  const { handleSubmit: handleFormNotice } = formNotice;
 
-  // const onSubmit: SubmitHandler<NoticeType> = data => {
-  //   mutate(data, {
-  //     onSuccess: () => {
-  //       toast.success("퇴원 처리가 완료 되었습니다.");
-  //     },
-  //     onError: error => {
-  //       toast.error(error.message);
-  //     },
-  //   });
-  // };
+  const onSubmit: SubmitHandler<NoticeType> = data => {
+    console.log(data);
+    const updatedData = {
+      ...data,
+      fileUrl: fileUrl[0].url,
+      createdAt: new Date().toISOString(),
+    };
+    // console.log(updatedData);
+    mutate(updatedData, {
+      onSuccess: () => {
+        toast.success("공지 전송이 완료 되었습니다.");
+      },
+      onError: error => {
+        toast.error(error.message);
+      },
+    });
+  };
 
   return (
     <Container>
@@ -93,12 +132,7 @@ const StaffNoticeWritePage = () => {
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <ButtonLayout width={"148px"}>
-              <CButton
-                buttontype={"primarySpaure"}
-                onClick={() => {
-                  console.log(formNotice.getValues());
-                }}
-              >
+              <CButton buttontype={"primarySpaure"} onClick={handleFormNotice(onSubmit)}>
                 공지 작성
               </CButton>
             </ButtonLayout>
@@ -114,9 +148,14 @@ const StaffNoticeWritePage = () => {
           />
         </AdminNoticeListLayout>
         <AdminNoticeWriteForm
+          handleRecipientDelete={handleRecipientDelete}
           form={formNotice}
+          fileUrl={fileUrl}
+          selected={selected}
           handleFileUploadClick={handleFileUploadClick}
           fileRef={fileInputRef}
+          handleFileUploadUrl={handleFileUploadUrl}
+          handleFileUploadUrlDelete={handleFileUploadUrlDelete}
         />
       </TableLayout>
       <FooterLayout>{/* <PaginationComponent totalPage={5} /> */}</FooterLayout>
