@@ -14,6 +14,7 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
+import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 
 function StaffPatientListBox({
   isAccept,
@@ -107,7 +108,7 @@ function StaffPatientListBox({
                 <CComboBox
                   placeholder={"직종 선택"}
                   options={["간호사", "의사", "조무사", "직원"]}
-                  value={""}
+                  value={OPTIONS.find(el => el.role === data.aiRole)?.value || "정의되지 않음"}
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper>
