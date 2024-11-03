@@ -12,10 +12,16 @@ function ChatInput({
   setRoomId: React.Dispatch<React.SetStateAction<number | null>>;
 }) {
   const [chat, setChat] = useState("");
-  const onSend = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onSend = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (chat.trim().length === 0) return;
     SendChat(chat, setChat, roomId, setRoomId);
+  };
+  const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (e.nativeEvent.isComposing) return;
+      onSend(e);
+    }
   };
 
   return (
@@ -26,6 +32,7 @@ function ChatInput({
         onClick={e => e.stopPropagation()}
         onChange={e => setChat(e.target.value)}
         value={chat}
+        onKeyDown={onEnter}
       />
       <SendButton onClick={onSend}>
         <Icon />
