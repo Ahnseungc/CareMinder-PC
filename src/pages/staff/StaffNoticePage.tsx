@@ -19,8 +19,9 @@ const StaffNoticePage = () => {
   const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
-    // const select = getNotices.filter((notice: NoticeType) => id === notice.id);
-    // setSelected(select);
+    console.log(id);
+    const select = getNotices.filter((notice: NoticeType) => id === notice.wardId);
+    setSelected(select);
   };
 
   return (
@@ -66,7 +67,7 @@ const StaffNoticePage = () => {
               {getNotices?.map((notice: NoticeType) => {
                 return (
                   <AdminNoticeCard
-                    key={notice.id}
+                    key={notice.wardId}
                     notice={notice}
                     onChangeSelected={onChangeSelected}
                   />

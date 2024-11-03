@@ -18,12 +18,10 @@ const StaffWardInoutManagementPage = () => {
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
 
-  console.log(isMyArea);
-
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
-    searchValue: searchValue,
+    patientName: searchValue,
     myArea: isMyArea,
   });
 
@@ -66,6 +64,11 @@ const StaffWardInoutManagementPage = () => {
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
+  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setSearchValue(value);
+  };
+
   const onDischarge: SubmitHandler<WardTabletType> = () => {
     mutate(
       { tabletIds: selected.map(item => item.id) },
@@ -99,7 +102,7 @@ const StaffWardInoutManagementPage = () => {
             <SearchLayout>
               <CSearchBox
                 value={searchValue}
-                onChange={() => null}
+                onChange={onChangeSearchValue}
                 placeholder={"환자 이름을 검색해 주세요."}
               />
             </SearchLayout>

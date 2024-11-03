@@ -1,14 +1,11 @@
 import { Box, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
-
 import CButton from "@components/common/atom/C-Button";
-
-import PaginationComponent from "@components/common/pagination";
+// import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-// import { toast } from "react-toastify";
 import { NoticeType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
 import Cookies from "js-cookie";
@@ -16,6 +13,7 @@ import CSwitch from "@components/common/atom/C-Switch";
 import { toast } from "react-toastify";
 
 const StaffNoticeWritePage = () => {
+  //@ts-ignore
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -23,7 +21,7 @@ const StaffNoticeWritePage = () => {
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
-    searchValue: searchValue,
+    patientName: searchValue,
     myArea: isMyArea,
   });
 
@@ -79,19 +77,12 @@ const StaffNoticeWritePage = () => {
     setSelected([]);
   }, [isMyArea]);
 
-  useEffect(() => {
-    // formNotice.setValue("wardId", selected[0].id);
-  }, [selected]);
-
   const defaultValuesUpdate: NoticeType = {
-    id: 0,
     wardId: 0,
     title: "",
     content: "",
     fileUrl: "",
-    createdAt: "",
-    lastModifiedAt: "",
-    recipient: "",
+    // recipient: "",
   };
 
   const formNotice = useForm<NoticeType>({
@@ -102,13 +93,14 @@ const StaffNoticeWritePage = () => {
   const { handleSubmit: handleFormNotice } = formNotice;
 
   const onSubmit: SubmitHandler<NoticeType> = data => {
-    console.log(data);
     const updatedData = {
       ...data,
-      fileUrl: fileUrl[0].url,
-      createdAt: new Date().toISOString(),
+      wardId: selected[0].id,
+      // recipient: selected[0].name,
+      // fileUrl: fileUrl[0].url,
+      fileUrl: "테스트중이라 임시",
     };
-    // console.log(updatedData);
+
     mutate(updatedData, {
       onSuccess: () => {
         toast.success("공지 전송이 완료 되었습니다.");
@@ -235,8 +227,8 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
-const SectionArrayLayout = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "5px",
-});
+// const SectionArrayLayout = styled(Box)({
+//   display: "flex",
+//   alignItems: "center",
+//   gap: "5px",
+// });

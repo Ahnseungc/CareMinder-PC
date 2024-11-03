@@ -10,7 +10,7 @@ export type WardTabletType = {
 
 export type reqWardParamsType = {
   token: string;
-  searchValue: string;
+  patientName: string;
   myArea: boolean;
 };
 

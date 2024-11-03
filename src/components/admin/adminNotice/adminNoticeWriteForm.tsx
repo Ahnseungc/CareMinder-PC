@@ -1,14 +1,5 @@
 import { ChangeEvent, FC, Ref } from "react";
-import {
-  Box,
-  styled,
-  Typography,
-  SvgIcon,
-  FormControl,
-  TextField,
-  Button,
-  Input,
-} from "@mui/material";
+import { Box, styled, Typography, SvgIcon, FormControl, TextField, Button } from "@mui/material";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
 import { Controller, UseFormReturn } from "react-hook-form";
@@ -53,7 +44,7 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
             <RecipientBox>
               {selected.map((res, index) => {
                 return (
-                  <RecipientCard>
+                  <RecipientCard key={res.id}>
                     <p>{res.name}</p>
                     <SvgIcon
                       component={XIcon}
@@ -120,7 +111,7 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
               {fileUrl.length !== 0 &&
                 fileUrl?.map((file, index) => {
                   return (
-                    <FileUrlBox>
+                    <FileUrlBox key={file.name}>
                       <p>{file.name}</p>
                       <SvgIcon
                         component={XIcon}
@@ -138,7 +129,7 @@ const AdminNoticeWriteForm: FC<AdminNoticeWriteFormProps> = ({
   );
 };
 
-const RecipientBox = styled(Box)(({ theme }) => ({
+const RecipientBox = styled(Box)(() => ({
   width: "100%",
   height: "40px",
   display: "flex",
@@ -262,7 +253,7 @@ const AddPhotoButton = styled(Button)(({ theme }) => ({
   gap: "4px",
 }));
 
-const FileUrlLayout = styled(Box)(({ theme }) => ({
+const FileUrlLayout = styled(Box)(() => ({
   width: "100%",
   alignItems: "center",
   height: "100%",

@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
 import { SvgIcon } from "@mui/material";
-import { selectedWardType, WardTabletType } from "@models/ward-tablet";
+import { WardTabletType } from "@models/ward-tablet";
 
 const columns = [
   { id: 0, field: "Section", headerName: "구역" },
@@ -34,7 +34,7 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
       <tbody>
         {getTablet?.map(tablet => {
           return (
-            <tr>
+            <tr key={tablet.areaId}>
               <td>
                 <ComBoxLayout>
                   <CComboBox
@@ -48,8 +48,8 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
               <td>
                 <ComBoxLayout>
                   <Checkbox
-                    checked={selected.some(item => item.id === tablet.tabletId)}
-                    onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
+                    checked={selected.some(item => item.id === tablet.areaId)}
+                    onChange={() => onChangeSelected(tablet.areaId, tablet.patientName)}
                     icon={
                       <div
                         style={{

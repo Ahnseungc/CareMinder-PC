@@ -2,10 +2,10 @@ import StaffTabletRequest from "@libraries/axios/staffTabletRequest";
 import { reqWardParamsType } from "@models/ward-tablet";
 import { useQuery } from "@tanstack/react-query";
 
-const getStaffsTabletRequests = async ({ token, searchValue, myArea }: reqWardParamsType) => {
+const getStaffsTabletRequests = async ({ token, patientName, myArea }: reqWardParamsType) => {
   const res = await StaffTabletRequest.getStaffTabletRequests({
     token,
-    searchValue,
+    patientName,
     myArea,
   });
   return res.data.data;
@@ -13,12 +13,12 @@ const getStaffsTabletRequests = async ({ token, searchValue, myArea }: reqWardPa
 
 export default function useGetWardTabletRequests({
   token,
-  searchValue,
+  patientName,
   myArea,
 }: reqWardParamsType) {
   const { data, isLoading } = useQuery({
-    queryKey: ["useGetStaffTabletRequests", token, searchValue, myArea],
-    queryFn: () => getStaffsTabletRequests({ token, searchValue, myArea }),
+    queryKey: ["useGetStaffTabletRequests", token, patientName, myArea],
+    queryFn: () => getStaffsTabletRequests({ token, patientName, myArea }),
   });
   return { data, isLoading };
 }

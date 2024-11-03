@@ -11,11 +11,11 @@ const PATH = "/staffs/tablet-list";
 
 const StaffTabletRequest: StaffsRequestApiType = {
   //모든 환자 요청 조회
-  getStaffTabletRequests({ token, searchValue, myArea }) {
+  getStaffTabletRequests({ token, patientName, myArea }) {
     return axiosInstance.get(PATH, {
       params: {
         token,
-        searchValue,
+        patientName,
         myArea,
       },
     });

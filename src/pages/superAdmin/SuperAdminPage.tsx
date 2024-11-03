@@ -6,7 +6,7 @@ import AdminListTable from "./AdminListTable";
 export default function SuperAdminPage() {
   return (
     <Container>
-      <Layout adminType="ADMIN">
+      <Layout admintype="ADMIN">
         <Typography variant="h1" sx={{ color: "white" }}>
           SuperAdmin
         </Typography>
@@ -17,7 +17,7 @@ export default function SuperAdminPage() {
         </Typography>
       </Layout>
       <Body>
-        <SideLayout adminType="ADMIN"></SideLayout>
+        <SideLayout admintype="ADMIN"></SideLayout>
         <OuterContainer>
           <InnerOtherContainer>
             <SubContainer>
@@ -37,7 +37,7 @@ export default function SuperAdminPage() {
     </Container>
   );
 }
-const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
+const Layout = styled(Box)<LayoutType>(({ theme, admintype }) => ({
   position: "fixed",
   top: 0,
   left: 0,
@@ -49,12 +49,12 @@ const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
   padding: "14px 28px",
   zIndex: "10",
 
-  ...(adminType === "ADMIN" && {
+  ...(admintype === "ADMIN" && {
     backgroundColor: theme.palette.success.dark,
   }),
 }));
 
-const SideLayout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
+const SideLayout = styled(Stack)<LayoutType>(({ admintype, theme }) => ({
   position: "fixed",
   left: 0,
   top: "64px",
@@ -66,7 +66,7 @@ const SideLayout = styled(Stack)<LayoutType>(({ adminType, theme }) => ({
   gap: "14px",
   padding: "16px 0",
 
-  ...(adminType === "ADMIN" && {
+  ...(admintype === "ADMIN" && {
     backgroundColor: theme.palette.success.dark,
   }),
 }));

@@ -11,7 +11,7 @@ export default function Header() {
   const user = useRecoilValue(userState);
 
   return (
-    <Layout adminType={user?.type as UserType}>
+    <Layout admintype={user?.type as UserType}>
       <SwitchCase
         value={user?.type as UserType}
         caseBy={{
@@ -24,7 +24,7 @@ export default function Header() {
   );
 }
 
-const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
+const Layout = styled(Box)<LayoutType>(({ theme, admintype }) => ({
   position: "fixed",
   top: 0,
   left: 0,
@@ -37,10 +37,10 @@ const Layout = styled(Box)<LayoutType>(({ theme, adminType }) => ({
   zIndex: "10",
 
   backgroundColor: theme.palette.primary.main,
-  ...(adminType === "STAFF" && {
+  ...(admintype === "STAFF" && {
     backgroundColor: theme.palette.secondary.main,
   }),
-  ...(adminType === "ADMIN" && {
+  ...(admintype === "ADMIN" && {
     backgroundColor: theme.palette.success.light,
   }),
 }));
