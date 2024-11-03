@@ -1,5 +1,6 @@
 
 # Build stage
+# FROM node:16-alpine AS build
 FROM oven/bun:latest
 
 
