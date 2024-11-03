@@ -14,7 +14,7 @@ type ChatBoxProps = {
 
 function ChatBox({ data, color }: ChatBoxProps) {
   formatTimestamp(data.createdAt);
-  const leftOrRight = data.role === "STAFF" ? "right" : "left";
+  const leftOrRight = data.role === "TABLET" ? "left" : "right";
   return (
     <>
       <Wrapper leftOrRight={leftOrRight}>
