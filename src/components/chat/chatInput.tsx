@@ -14,6 +14,7 @@ function ChatInput({
   const [chat, setChat] = useState("");
   const onSend = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
+    if (chat.trim().length === 0) return;
     SendChat(chat, setChat, roomId, setRoomId);
   };
 
