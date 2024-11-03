@@ -15,6 +15,7 @@ import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
+import getPrevTimes from "@utils/getPrevTimes";
 
 function StaffPatientListBox({
   isAccept,
@@ -119,7 +120,7 @@ function StaffPatientListBox({
       <Bottom>
         <TxtBox>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>{formatTimestamp(data.createdAt)}전</TxtBoxRight>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
         </TxtBox>
         <Check
           color={roleColorPick.dark}
