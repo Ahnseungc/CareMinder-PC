@@ -2,13 +2,19 @@
 # Build stage
 FROM node:16-alpine AS build
 
-WORKDIR /code
+
+
+# curl과 bash 설치
+RUN apk add --no-cache curl bash
 
 # Bun 설치
 RUN curl -fsSL https://bun.sh/install | bash && \
     export BUN_INSTALL="/root/.bun" && \
     export PATH="$BUN_INSTALL/bin:$PATH" && \
     bun --version
+
+
+WORKDIR /code
 
 # 환경 변수 추가 (컨테이너 내에서 Bun을 사용 가능하도록)
 ENV BUN_INSTALL="/root/.bun"
