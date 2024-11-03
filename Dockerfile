@@ -1,7 +1,7 @@
 
 # Build stage
 # FROM node:16-alpine AS build
-FROM oven/bun:latest
+FROM oven/bun:latest AS build
 
 
 # # curl과 bash 설치
