@@ -1,14 +1,33 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Box, styled, SvgIcon, Typography } from "@mui/material";
 import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/warning-icon.svg";
 import { NoticeType } from "@models/notice";
+import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
 
 interface AdminNoticeCardDeatilProps {
   notice: NoticeType;
 }
 
 const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice }) => {
+  console.log(notice);
+
+  // if (notice) {
+  //   const { data: getNoticesDetail, isLoading: getNoticeDetailLoading } = useGetNoticeDetail(
+  //     notice.id,
+  //   );
+  //   console.log(getNoticesDetail);
+  // }
+
+  // useEffect(() => {
+  if (notice) {
+    const { data: getNoticesDetail, isLoading: getNoticeDetailLoading } = useGetNoticeDetail(
+      notice.id,
+    );
+    console.log(getNoticesDetail);
+  }
+  // }, [notice]);
+
   return (
     <StyledBox>
       <NoticeTitleLayout>
