@@ -1,5 +1,4 @@
 import { styled } from "@mui/material";
-import { formatTimestamp } from "@utils/homePage";
 
 type ChatData = {
   content: string;
@@ -13,25 +12,36 @@ type ChatBoxProps = {
 };
 
 function ChatBox({ data, color }: ChatBoxProps) {
-  formatTimestamp(data.createdAt);
-  const leftOrRight = data.role === "STAFF" ? "right" : "left";
+  const leftOrRight = data.role === "TABLET" ? "left" : "right";
+
+  const makeTwoDigits = (time: number) => {
+    return time >= 10 ? time : "0" + time;
+  };
+
+  const getTime = (createdAt: string) => {
+    const time = new Date(createdAt);
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    if (hours === 12) return "오후 " + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
+    if (hours > 12) return "오후 " + makeTwoDigits(hours - 12) + ":" + makeTwoDigits(minutes);
+    if (hours < 12) return "오전 " + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
+  };
+
   return (
     <>
       <Wrapper leftOrRight={leftOrRight}>
         {leftOrRight === "left" ? (
           <>
             <Title color={"white"}>{data.content}</Title>
-            <Time>오전 06:30</Time>
+            <Time>{getTime(data.createdAt)}</Time>
           </>
         ) : (
           <>
-            <Time>오전 06:30</Time>
+            <Time>{getTime(data.createdAt)}</Time>
             <Title color={color}>{data.content}</Title>
           </>
         )}
       </Wrapper>
-      {/* <input type="text" value={chatInput} />
-      <button onClick={sendMessage}>제출</button> */}
     </>
   );
 }
