@@ -8,7 +8,7 @@ const usePatientDischargeByWeb = (refetchProps: RefetchProps) => {
 
   return useMutation({
     mutationFn: (tabletId: number) => {
-      return axiosInstance.post("/patients/discharge-by-web?tabletId=" + tabletId);
+      return axiosInstance.post("/patients/discharge-by-web", { tabletIds: [tabletId] });
     },
     onSuccess: () => {
       pendingRefetch();

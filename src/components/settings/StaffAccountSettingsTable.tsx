@@ -28,7 +28,7 @@ const columns = [
   { field: "AccountManage", headerName: "계정관리" },
 ];
 
-const OPTIONS = [
+export const OPTIONS = [
   {
     role: "NURSE",
     value: "간호사",

@@ -1,6 +1,7 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
+import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
   useGetStaffPatientInprogress,
@@ -79,7 +80,7 @@ export default function StaffHomePage() {
             <CComboBox
               placeholder={"전체"}
               options={["전체", "간호사", "조무사", "직원", "의사"]}
-              value={""}
+              value={OPTIONS.find(el => el.role === isRole)?.value || "전체"}
               onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>
@@ -99,7 +100,8 @@ export default function StaffHomePage() {
         <SubTitle>
           <SubTitleLeft>
             <span>환자별로 묶기</span>
-            <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
+            {/* <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} /> */}
+            <CSwitch onChange={() => setStaffAcceptIsGroup(false)} />
           </SubTitleLeft>
         </SubTitle>
         {!staffAcceptIsGroup &&
