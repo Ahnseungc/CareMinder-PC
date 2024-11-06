@@ -10,17 +10,20 @@ import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCard
 import useGetNotice from "@hooks/queries/useGetNotice";
 import { NoticeType } from "@models/notice";
 import { useState } from "react";
+import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
 
 const StaffNoticePage = () => {
-  const { data: getNotices, isLoading } = useGetNotice();
+  const { data: getNotices, isLoading: getNoticeLoading } = useGetNotice();
+
   const [selected, setSelected] = useState<NoticeType>();
+
   // const [totalCount, setTotalCount] = useState(0);
+
   //@ts-ignore
   const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
-    console.log(id);
-    const select = getNotices.filter((notice: NoticeType) => id === notice.wardId);
+    const select = getNotices.filter((notice: NoticeType) => id === notice.id);
     setSelected(select);
   };
 
@@ -60,14 +63,14 @@ const StaffNoticePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          {isLoading ? (
+          {getNoticeLoading ? (
             <div>로딩중</div>
           ) : (
             <>
               {getNotices?.map((notice: NoticeType) => {
                 return (
                   <AdminNoticeCard
-                    key={notice.wardId}
+                    key={notice.id}
                     notice={notice}
                     onChangeSelected={onChangeSelected}
                   />

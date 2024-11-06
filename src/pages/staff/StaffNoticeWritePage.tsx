@@ -6,7 +6,7 @@ import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWrite
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { NoticeType } from "@models/notice";
+import { NoticeReqType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
 import Cookies from "js-cookie";
 import CSwitch from "@components/common/atom/C-Switch";
@@ -73,30 +73,32 @@ const StaffNoticeWritePage = () => {
     setIsMyArea(prev => !prev);
   };
 
+  console.log(selected);
+
   useEffect(() => {
     setSelected([]);
   }, [isMyArea]);
 
-  const defaultValuesUpdate: NoticeType = {
+  const defaultValuesUpdate: NoticeReqType = {
     wardId: 0,
     title: "",
     content: "",
     fileUrl: "",
-    // recipient: "",
+    recipientIds: [],
   };
 
-  const formNotice = useForm<NoticeType>({
+  const formNotice = useForm<NoticeReqType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
 
   const { handleSubmit: handleFormNotice } = formNotice;
 
-  const onSubmit: SubmitHandler<NoticeType> = data => {
+  const onSubmit: SubmitHandler<NoticeReqType> = data => {
     const updatedData = {
       ...data,
       wardId: selected[0].id,
-      // recipient: selected[0].name,
+      recipientIds: selected.map(item => item.id),
       // fileUrl: fileUrl[0].url,
       fileUrl: "테스트중이라 임시",
     };
