@@ -10,7 +10,7 @@ import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCard
 import useGetNotice from "@hooks/queries/useGetNotice";
 import { NoticeType } from "@models/notice";
 import { useState } from "react";
-import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
+// import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
 
 const StaffNoticePage = () => {
   const { data: getNotices, isLoading: getNoticeLoading } = useGetNotice();

@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Box, styled, SvgIcon, Typography } from "@mui/material";
 import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/warning-icon.svg";
@@ -21,9 +21,7 @@ const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice }) => {
 
   // useEffect(() => {
   if (notice) {
-    const { data: getNoticesDetail, isLoading: getNoticeDetailLoading } = useGetNoticeDetail(
-      notice.id,
-    );
+    const { data: getNoticesDetail } = useGetNoticeDetail(notice.id);
     console.log(getNoticesDetail);
   }
   // }, [notice]);
