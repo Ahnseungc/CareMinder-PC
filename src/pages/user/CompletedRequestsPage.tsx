@@ -5,42 +5,47 @@ import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.
 import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
+import useGetCompleted from "@hooks/queries/useGetCompleted";
+import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
   //@ts-ignore
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
+  const [myArea, setMyArea] = useState(false);
+  const { data: getCompleted } = useGetCompleted(myArea);
+  const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
 
   return (
     <Wrapper>
       <Title>완료 요청 히스토리</Title>
       <SubTitle>
-        <span>완료된 내 구역 요청 리스트</span> <CSwitch />
+        <span>완료된 내 구역 요청 리스트</span>{" "}
+        <CSwitch onChange={() => setMyArea(prev => !prev)} />
         <span>환자별로 보기</span> <CSwitch onChange={() => setIsPatient(prev => !prev)} />
       </SubTitle>
       <Container>
         <LeftWrapper>
-          {/* isPatient 환자별로 보기 ON 상황 */}
-          {isPatient ? (
+          {isPatient && (
             <Person>
               <PersonIcon /> <div>홍길동</div>
               <HamburgerIcon />
             </Person>
-          ) : (
-            <Empty />
           )}
           <PatientList>
-            {/* {waitPatientmockData.map(el => (
+            {getCompleted?.map(el => (
               <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
                 <PatientBox key={el.patientRequestId} user="completedRequest" data={el} />
               </div>
-            ))} */}
+            ))}
           </PatientList>
         </LeftWrapper>
         <RightWrapper>
-          <Empty />
           {isFocusPatientData && (
-            <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
+            <>
+              {isPatient && <Empty />}
+              <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
+            </>
           )}
         </RightWrapper>
       </Container>
