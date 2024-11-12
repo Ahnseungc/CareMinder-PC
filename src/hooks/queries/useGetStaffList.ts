@@ -12,6 +12,8 @@ export type StaffList = {
   fingerprint: string;
   staffRole: string;
   accountLocked: boolean;
+  isLogin: boolean;
+  timeSinceLogout: string | null;
   areaId: number;
   areaName: string;
 };
@@ -22,6 +24,7 @@ export type GetStaffListResponse = {
 
 export const getStaffList = async () => {
   const res = await axiosInstance.get("/wards/staff-list");
+  console.log(res.data);
   return res.data;
 };
 

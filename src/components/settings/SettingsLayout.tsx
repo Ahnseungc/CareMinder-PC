@@ -10,6 +10,9 @@ import settingsLoginState from "@libraries/recoil/settings/login";
 import { useNavigate } from "react-router-dom";
 import { userState } from "@libraries/recoil";
 import { useRecoilValue } from "recoil";
+import InfoModal, { ModalType } from "./modal/InfoModal";
+import { useBooleanState } from "@toss/react";
+import { useState } from "react";
 
 type SettingsLayoutProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -21,6 +24,8 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
   const setSettingsLoginState = useSetRecoilState(settingsLoginState);
   const navigate = useNavigate();
   const user = useRecoilValue(userState);
+  const [isAccountModalOpen, openAccountModal, closeAccountModal] = useBooleanState();
+  const [error, setError] = useState<ModalType>("valueError");
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
@@ -31,23 +36,40 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
       },
       onError: error => {
         console.error("로그인 실패:", error);
+        // @ts-ignore
+        const errorRes = error.response.data;
+        if (errorRes.statusCode === "401") {
+          if (errorRes.message === "비밀번호를 5번 틀려서 계정이 잠겼습니다.") {
+            setError("accountLock");
+          } else {
+            setError("valueError");
+          }
+          openAccountModal();
+        }
       },
     });
   };
 
   return (
-    <Container item xs>
-      <Content>
-        <CloseButton onClick={onClose} />
-        <SettingsHeader />
-        <SigninForm form={form} onSubmit={handleLogin} type={user?.type} />
-      </Content>
-      <Footer divider={<Divider orientation="vertical" />}>
-        <Link href="#" variant="h3">
-          ID / PW 찾기
-        </Link>
-      </Footer>
-    </Container>
+    <>
+      <InfoModal
+        open={isAccountModalOpen}
+        onClose={closeAccountModal}
+        modalType={error}
+      ></InfoModal>
+      <Container item xs>
+        <Content>
+          <CloseButton onClick={onClose} />
+          <SettingsHeader />
+          <SigninForm form={form} onSubmit={handleLogin} type={user?.type} />
+        </Content>
+        <Footer divider={<Divider orientation="vertical" />}>
+          <Link href="#" variant="h3">
+            ID / PW 찾기
+          </Link>
+        </Footer>
+      </Container>
+    </>
   );
 }
 

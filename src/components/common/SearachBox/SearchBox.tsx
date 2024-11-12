@@ -30,8 +30,21 @@ export default function SearchBox() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsOpen(true);
     setQuery(e.target.value);
+  };
+
+  const toggleList = () => {
+    if (!isOpen) {
+      setNurses(NurseList);
+    }
+    setIsOpen(prev => !prev);
+  };
+
+  const selectNurse = (nurseName: string) => {
+    setSelectedNurse(nurseName);
+    setIsOpen(false);
+    setQuery("");
+    openStaffMoadl();
   };
 
   useEffect(() => {
@@ -45,17 +58,6 @@ export default function SearchBox() {
     searchNurses();
   }, [debouncedQuery]);
 
-  const handleList = () => {
-    setIsOpen(prev => !prev);
-    setNurses(NurseList);
-  };
-
-  const selectNurse = (nurseName: string) => {
-    setSelectedNurse(nurseName);
-    setIsOpen(false);
-    setQuery("");
-  };
-
   return (
     <>
       <StaffSigninModal open={openStaff} onClose={closeStaffModal} />
@@ -66,11 +68,15 @@ export default function SearchBox() {
           value={query}
           onChange={searchHandler}
           onFocus={() => setIsOpen(true)}
-          onBlur={() => setIsOpen(false)}
+          onBlur={() => {
+            setTimeout(() => {
+              setIsOpen(false);
+            }, 200);
+          }}
           placeholder="스태프 선택"
           disableUnderline={true}
           startAdornment={
-            <ListBox onClick={handleList} isEmpty={selectedNurse}>
+            <ListBox onClick={toggleList} isEmpty={selectedNurse}>
               {user?.type === "WARD" ? (
                 <User style={{ marginBottom: "2px" }} />
               ) : (
