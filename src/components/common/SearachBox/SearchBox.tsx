@@ -1,6 +1,5 @@
 import { Box, Input, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { fetchNurses, Nurse, NurseList } from "./const/NurseList";
 import { useDebounce } from "./const/useDebounce";
 import { ListBoxProps, SearchInputProps } from "@models/search";
 
@@ -16,26 +15,53 @@ import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
 import { useBooleanState } from "@toss/react";
+import { StaffListType, useGetStaffList } from "@hooks/queries/useGetStaffList";
 
 export default function SearchBox() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>("");
-  const debouncedQuery = useDebounce(query, 500);
-  const [nurses, setNurses] = useState<Nurse[]>([]);
   const [searching, setSearching] = useState<boolean>(false);
+
+  const [nurses, setNurses] = useState<StaffListType[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const debouncedQuery = useDebounce(query, 1000);
+
   const [selectedNurse, setSelectedNurse] = useState<string>("");
   const user = useRecoilValue(userState);
+
   const [openStaff, openStaffMoadl, closeStaffModal] = useBooleanState();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const { data: staffList } = useGetStaffList();
+
+  useEffect(() => {
+    if (staffList?.data) {
+      setNurses(staffList.data);
+    }
+  }, [staffList]);
+
   const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    const searchQuery = e.target.value;
+    setQuery(searchQuery);
+
+    if (!staffList?.data) {
+      return;
+    }
+
+    if (searchQuery === "") {
+      setNurses(staffList.data);
+      return;
+    }
+
+    const filteredNurses = staffList.data.filter(nurse =>
+      nurse.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+    setNurses(filteredNurses);
   };
 
   const toggleList = () => {
-    if (!isOpen) {
-      setNurses(NurseList);
+    if (!isOpen && staffList?.data) {
+      setNurses(staffList.data);
     }
     setIsOpen(prev => !prev);
   };
@@ -47,16 +73,29 @@ export default function SearchBox() {
     openStaffMoadl();
   };
 
+  const fetchNurses = async (query: string): Promise<StaffListType[]> => {
+    return nurses.filter(nurse => nurse.name.includes(query));
+  };
+
   useEffect(() => {
     const searchNurses = async () => {
+      if (!staffList?.data) {
+        return;
+      }
+
       setSearching(true);
-      const fetchedNurses = await fetchNurses(debouncedQuery);
-      setNurses(fetchedNurses);
+      if (debouncedQuery) {
+        console.log(debouncedQuery);
+        const fetchedNurses = await fetchNurses(debouncedQuery);
+        setNurses(fetchedNurses);
+      } else {
+        setNurses(staffList.data);
+      }
       setSearching(false);
     };
 
     searchNurses();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, staffList]);
 
   return (
     <>

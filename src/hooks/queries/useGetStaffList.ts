@@ -2,7 +2,7 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 
-export type StaffList = {
+export type StaffListType = {
   staffId: number;
   name: string;
   loginId: string;
@@ -19,7 +19,7 @@ export type StaffList = {
 };
 
 export type GetStaffListResponse = {
-  data: StaffList[];
+  data: StaffListType[];
 };
 
 export const getStaffList = async () => {
