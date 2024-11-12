@@ -16,6 +16,7 @@ import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
+import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -137,6 +138,22 @@ export const StaffAccount = () => {
     );
   };
 
+  const handleAllLock = () => {
+    const lockData = {
+      userIds: selectStaffList[0],
+    };
+    lockAccount(lockData);
+    setIsClear(true);
+  };
+
+  const handleAllUnLock = () => {
+    const lockData = {
+      userIds: selectStaffList[0],
+    };
+    unLockAccount(lockData);
+    setIsClear(true);
+  };
+
   return (
     <>
       {isCreate ? (
@@ -192,9 +209,12 @@ export const StaffAccount = () => {
                     onCustomInputAdd={handleCreateArea}
                   />
                 </div>
-                <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
-                <Lock />
-                <Delete />
+                <div style={{ color: "#21262B", display: "flex", gap: "20px" }}>
+                  <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
+                  <Lock onClick={handleAllLock} />
+                  <UnLock onClick={handleAllUnLock} />
+                  <Delete />
+                </div>
               </EditContainer>
             ) : (
               <>
