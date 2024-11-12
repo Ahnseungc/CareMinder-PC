@@ -3,13 +3,15 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Checkbox, Divider, Typography } from "@mui/material";
 
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
+import { ReactComponent as Filter } from "@/assets/filter.svg";
+import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 import { useGetStaffList } from "@hooks/queries/useGetStaffList";
@@ -35,6 +37,11 @@ interface StaffAccountSettingsTableProps {
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface FilterState {
+  menu: string;
+  state: boolean;
+}
+
 const StaffAccountSettingsTable = ({
   onManage,
   isClear,
@@ -43,6 +50,10 @@ const StaffAccountSettingsTable = ({
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState<FilterState>({
+    menu: "",
+    state: false,
+  });
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
   const setSelectStaffList = useSetRecoilState(staffListState);
@@ -81,6 +92,13 @@ const StaffAccountSettingsTable = ({
     createArea(areaData);
   };
 
+  const handleFilterBox = (menu: string) => {
+    setIsFilterOpen(prev => ({
+      menu: menu,
+      state: prev.menu === menu ? !prev.state : true,
+    }));
+  };
+
   useEffect(() => {
     const index = selectIndex.map(item => staffList?.data[item].staffId) as number[];
     setSelectStaffList(index);
@@ -102,7 +120,42 @@ const StaffAccountSettingsTable = ({
           <thead>
             <tr>
               {columns.map((column, index) => {
-                return <th key={index}>{column.headerName}</th>;
+                const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
+
+                return (
+                  <th key={index}>
+                    <>{column.headerName}</>
+                    {shouldShowFilter && (
+                      <>
+                        <span>
+                          <Filter onClick={() => handleFilterBox(column.headerName)} />
+                        </span>
+                        {isFilterOpen.state && isFilterOpen.menu === column.headerName ? (
+                          <FilterBox>
+                            <SelectArea>선택된 항목이 없습니다.</SelectArea>
+                            <FilterList>
+                              <li>구역1</li>
+                              <li>구역2</li>
+                              <li>구역3</li>
+                              <li>구역4</li>
+                            </FilterList>
+                            <Divider sx={{ border: "1px solid #C4C5CC" }} />
+                            <FilterList>
+                              <div>
+                                <li>오름차순</li>
+                                <X />
+                              </div>
+                              <div>
+                                <li>내림차순</li>
+                                <X />
+                              </div>
+                            </FilterList>
+                          </FilterBox>
+                        ) : null}
+                      </>
+                    )}
+                  </th>
+                );
               })}
             </tr>
           </thead>
@@ -301,9 +354,19 @@ const StTable = styled.table`
     width: 100%;
     height: 20%;
     & th {
+      position: relative;
       padding-bottom: 11.52px;
       color: ${palette.text.primary};
       border-bottom: 1px solid ${palette.divider};
+
+      & span {
+        position: absolute;
+        top: -2px;
+        cursor: pointer;
+        &:hover {
+          color: #5d6dbe;
+        }
+      }
     }
   }
   & tbody {
@@ -314,6 +377,46 @@ const StTable = styled.table`
       text-align: center;
       border-bottom: 1px solid ${palette.divider};
     }
+  }
+`;
+
+const FilterBox = styled.div`
+  z-index: 10;
+  position: absolute;
+  top: 30px;
+  padding: 8px;
+  width: 240px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+  background-color: #ffffff;
+`;
+
+const SelectArea = styled.div`
+  background-color: #eff1f9;
+  padding: 4px;
+  border-radius: 4px;
+  color: #878787;
+  text-align: left;
+  font-weight: 400;
+`;
+
+const FilterList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 7px;
+
+  padding: 0;
+  width: 100%;
+  list-style: none;
+
+  font-size: 14px;
+
+  & div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 `;
 

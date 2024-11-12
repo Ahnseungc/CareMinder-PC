@@ -82,7 +82,6 @@ export default function SearchBox() {
       if (!staffList?.data) {
         return;
       }
-
       setSearching(true);
       if (debouncedQuery) {
         console.log(debouncedQuery);

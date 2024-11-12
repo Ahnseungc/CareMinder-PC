@@ -182,7 +182,13 @@ export const StaffAccount = () => {
           />
 
           {/* 비밀번호 편집 모달 */}
-          <PasswordChangeModal open={isPWChangeModalOpen} onClose={closePWChangeModal} />
+          <PasswordChangeModal
+            open={isPWChangeModalOpen}
+            onClose={() => {
+              closePWChangeModal();
+              setIsClear(true);
+            }}
+          />
 
           <BodyTitleContainer>
             {isEditing.length !== 0 ? (
@@ -209,7 +215,7 @@ export const StaffAccount = () => {
                     onCustomInputAdd={handleCreateArea}
                   />
                 </div>
-                <div style={{ color: "#21262B", display: "flex", gap: "20px" }}>
+                <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
                   <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
                   <Lock onClick={handleAllLock} />
                   <UnLock onClick={handleAllUnLock} />
