@@ -9,11 +9,19 @@ export type NoticeReqType = {
 };
 
 export type NoticeType = {
-  id: number;
+  receivers: Array<ReceiversType>;
+  noticeId: number;
   staffId: number;
   title: string;
   content: string;
   fileUrl: string;
+  staffName: string;
+  staffPhoneNumber: string;
   createdAt: string;
   lastModifiedAt: string;
+};
+
+type ReceiversType = {
+  patientId: string;
+  patientName: string;
 };

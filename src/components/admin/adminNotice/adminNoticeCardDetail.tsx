@@ -1,65 +1,49 @@
 import { FC } from "react";
-import { Box, styled, SvgIcon, Typography } from "@mui/material";
+import { Box, CircularProgress, styled, SvgIcon, Typography } from "@mui/material";
 import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/warning-icon.svg";
 import { NoticeType } from "@models/notice";
-import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
+import { formatDate } from "@utils/getDateform";
 
 interface AdminNoticeCardDeatilProps {
   notice: NoticeType;
+  isLoading: boolean;
 }
 
-const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice }) => {
-  console.log(notice);
-
-  // if (notice) {
-  //   const { data: getNoticesDetail, isLoading: getNoticeDetailLoading } = useGetNoticeDetail(
-  //     notice.id,
-  //   );
-  //   console.log(getNoticesDetail);
-  // }
-
-  // useEffect(() => {
-  if (notice) {
-    const { data: getNoticesDetail } = useGetNoticeDetail(notice.id);
-    console.log(getNoticesDetail);
-  }
-  // }, [notice]);
-
+const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice, isLoading }) => {
   return (
     <StyledBox>
       <NoticeTitleLayout>
         <SvgIcon component={WarningIcon} inheritViewBox />
         <Notice>공지</Notice>
       </NoticeTitleLayout>
-
       {notice ? (
         <>
           <div style={{ display: "flex", gap: "8px" }}>
-            <RecipientLayout>
-              <p>수신자</p>
-              <SvgIcon component={XIcon} inheritViewBox />
-            </RecipientLayout>
-            <RecipientLayout>
-              <p>수신자</p>
-              <SvgIcon component={XIcon} inheritViewBox />
-            </RecipientLayout>
-            <RecipientLayout>
-              <p>수신자</p>
-              <SvgIcon component={XIcon} inheritViewBox />
-            </RecipientLayout>
+            {notice.receivers?.map((receivers, index) => {
+              return (
+                <RecipientLayout key={index}>
+                  <p>{receivers.patientName}</p>
+                  <SvgIcon component={XIcon} inheritViewBox />
+                </RecipientLayout>
+              );
+            })}
           </div>
           <TitleLayout>
             <Title>{notice?.title}</Title>
             <StyledBottomBox>
               <StyledNameBox>
-                <Name>홍길동 간호사</Name>|<Contact>010.0000.0000</Contact>
+                <Name>{notice.staffName}</Name>|<Contact>{notice.staffPhoneNumber}</Contact>
               </StyledNameBox>
-              <Contact>{notice?.lastModifiedAt}</Contact>
+              <Contact>{formatDate(new Date(notice?.lastModifiedAt))}</Contact>
             </StyledBottomBox>
           </TitleLayout>
           <TextArea>{notice?.content}</TextArea>
         </>
+      ) : isLoading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
+          <CircularProgress />
+        </Box>
       ) : (
         <p>공지를 선택해 주세요.</p>
       )}

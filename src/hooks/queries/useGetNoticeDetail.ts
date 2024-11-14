@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 
 const getNoticeDetailRequests = async (id: number) => {
   const res = await NoticeDetailRequest.getNoticeDetailRequests(id);
-  return res.data.data;
+
+  return res.data || {};
 };
 
-export default function useGetNoticeDetail(id: number) {
+export default function useGetNoticeDetail(id?: number) {
   const { data, isLoading } = useQuery({
-    queryKey: ["getNoticeDetailRequests"],
-    queryFn: () => getNoticeDetailRequests(id),
+    queryKey: ["getNoticeDetailRequests", id],
+    queryFn: () => getNoticeDetailRequests(id as number),
     enabled: !!id,
   });
   return { data, isLoading };

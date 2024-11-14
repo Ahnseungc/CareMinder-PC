@@ -3,11 +3,11 @@ import { Box, styled, Typography, SvgIcon, FormControl, TextField, Button } from
 import CInput from "@components/common/atom/C-Input";
 import { ReactComponent as PhotoIcon } from "@assets/photo-icon.svg";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { NoticeType } from "@models/notice";
+import { NoticeReqType } from "@models/notice";
 import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 
 interface AdminNoticeWriteFormProps {
-  form: UseFormReturn<NoticeType>;
+  form: UseFormReturn<NoticeReqType>;
   handleFileUploadClick: () => void;
   fileRef: Ref<HTMLInputElement>;
   handleFileUploadUrl: (e: ChangeEvent<HTMLInputElement>) => void;
