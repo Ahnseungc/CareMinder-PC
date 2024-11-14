@@ -13,23 +13,25 @@ import { ReactComponent as UserStaff } from "@/assets/serachIcons/user-staff.svg
 import { ReactComponent as UserSearch } from "@/assets/serachIcons/search-staff.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { modalState, userState } from "@libraries/recoil";
-import { StaffListType, useGetStaffList } from "@hooks/queries/useGetStaffList";
+import { StaffSimpleListType, useGetStaffSimpleList } from "@hooks/queries/useGetStaffSimpleList";
+import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 
 export default function SearchBox() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
 
-  const [nurses, setNurses] = useState<StaffListType[]>([]);
+  const [nurses, setNurses] = useState<StaffSimpleListType[]>([]);
   const [query, setQuery] = useState<string>("");
   const debouncedQuery = useDebounce(query, 1000);
 
   const [selectedNurse, setSelectedNurse] = useState<string>("");
   const user = useRecoilValue(userState);
   const setIsModalOpen = useSetRecoilState(modalState);
+  const setAutoCompleteId = useSetRecoilState(autoCompleteIdState);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: staffList } = useGetStaffList();
+  const { data: staffList } = useGetStaffSimpleList();
 
   useEffect(() => {
     if (staffList?.data) {
@@ -68,9 +70,10 @@ export default function SearchBox() {
     setIsOpen(false);
     setQuery("");
     setIsModalOpen(true);
+    setAutoCompleteId(nurses.find(nurse => nurse.name === nurseName)?.loginId as string);
   };
 
-  const fetchNurses = async (query: string): Promise<StaffListType[]> => {
+  const fetchNurses = async (query: string): Promise<StaffSimpleListType[]> => {
     return nurses.filter(nurse => nurse.name.includes(query));
   };
 

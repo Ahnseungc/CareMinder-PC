@@ -11,6 +11,7 @@ type TextFieldProps = {
   name: keyof SigninFormData;
   form: UseFormReturn<SigninFormData>;
   type?: string;
+  value?: string;
 };
 
 const iconMap = {
@@ -18,13 +19,14 @@ const iconMap = {
   password: LockOutlinedIcon,
 };
 
-export default function TextField({ label, name, form, type }: TextFieldProps) {
+export default function TextField({ label, name, form, type, value }: TextFieldProps) {
   //@ts-ignore
   const Icon = iconMap[name];
 
   return (
     <MuiTextField
       placeholder={label}
+      value={value}
       variant="outlined"
       type={type}
       {...form.register(name)}

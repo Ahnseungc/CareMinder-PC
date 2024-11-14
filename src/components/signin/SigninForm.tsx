@@ -5,6 +5,7 @@ import TextField from "./TextField";
 import CButton from "@components/common/atom/C-Button";
 import { userState } from "@libraries/recoil";
 import { useRecoilValue } from "recoil";
+import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 
 type SigninFormProps = {
   form: UseFormReturn<SigninFormData>;
@@ -15,6 +16,7 @@ type SigninFormProps = {
 export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const { handleSubmit } = form;
   const user = useRecoilValue(userState);
+  const autoCompleteId = useRecoilValue(autoCompleteIdState);
 
   const userType = type === user?.type ? user?.type : type;
 
@@ -28,7 +30,7 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
 
   return (
     <Container>
-      <TextField label="ID" name="loginId" form={form} />
+      <TextField label="ID" name="loginId" form={form} value={autoCompleteId} />
       <TextField label="PW" name="password" form={form} type="password" />
       <CButton
         buttontype="login"
