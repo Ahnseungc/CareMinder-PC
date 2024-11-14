@@ -7,6 +7,7 @@ import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
 import { UserType } from "@models/user";
 import { SEVER_URL } from "@constants/baseUrl";
+import reqChangePWState from "@libraries/recoil/reqChangePW";
 
 const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
@@ -34,6 +35,7 @@ const signin = async (useInfo: SigninFormData) => {
 export default function useSignin() {
   const navigate = useNavigate();
   const setUserState = useSetRecoilState(userState);
+  const setReqChangePWState = useSetRecoilState(reqChangePWState);
 
   return useMutation({
     mutationFn: signin,
@@ -55,6 +57,7 @@ export default function useSignin() {
             navigate("/admin");
             break;
           case "STAFF":
+            setReqChangePWState(res.currentUser?.passwordChangeRequested);
             navigate("/staff");
             break;
           case "WARD":

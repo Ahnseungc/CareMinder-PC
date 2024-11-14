@@ -132,7 +132,6 @@ export default function PasswordChangeModal(props: CMModalProps) {
           </Typography>
         }
         rightText={"요청하기"}
-        isPasswordChange={true}
       />
       <CMModal
         {...props}

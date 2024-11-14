@@ -26,6 +26,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
   const user = useRecoilValue(userState);
   const [isAccountModalOpen, openAccountModal, closeAccountModal] = useBooleanState();
   const [error, setError] = useState<ModalType>("valueError");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleLogin = (formData: SigninFormData) => {
     signin(formData, {
@@ -41,8 +42,10 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
         if (errorRes.statusCode === "401") {
           if (errorRes.message === "비밀번호를 5번 틀려서 계정이 잠겼습니다.") {
             setError("accountLock");
+            setErrorMessage(errorRes.message as string);
           } else {
             setError("valueError");
+            setErrorMessage(errorRes.message as string);
           }
           openAccountModal();
         }
@@ -56,6 +59,7 @@ export default function SettingsLayout({ onClose }: SettingsLayoutProps) {
         open={isAccountModalOpen}
         onClose={closeAccountModal}
         modalType={error}
+        message={errorMessage}
       ></InfoModal>
       <Container item xs>
         <Content>
