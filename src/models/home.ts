@@ -1,4 +1,4 @@
-import { RefetchProps } from "./staff";
+import { RefetchProps, staffGroup } from "./staff";
 
 export type UserTypes = {
   user:
@@ -35,6 +35,17 @@ export type MainListBoxProps = {
 export type StaffListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
+};
+
+export type StaffGroupListBoxProps = {
+  data: staffGroup;
+  onWaitOrAccept: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    id: number,
+    type: "accept",
+  ) => void;
+  roomId?: number | null;
+  setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 export type CSwitchType = React.ChangeEvent<HTMLInputElement>;

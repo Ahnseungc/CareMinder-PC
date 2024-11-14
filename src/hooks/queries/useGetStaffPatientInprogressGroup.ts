@@ -1,5 +1,5 @@
 import { StaffPatientRequest } from "@libraries/axios";
-import { RequestsGroupData } from "@models/home";
+import { staffGroup } from "@models/staff";
 import { useQuery } from "@tanstack/react-query";
 
 const getStaffPatientInprogressGroup = async () => {
@@ -8,7 +8,7 @@ const getStaffPatientInprogressGroup = async () => {
 };
 
 export default function useGetStaffPatientInprogressGroup(staffAcceptIsGroup: boolean) {
-  const { data, isLoading, refetch } = useQuery<RequestsGroupData[], boolean>({
+  const { data, isLoading, refetch } = useQuery<staffGroup[], boolean>({
     queryKey: ["useGetStaffPatientInprogressGroup"],
     queryFn: getStaffPatientInprogressGroup,
     enabled: staffAcceptIsGroup,
