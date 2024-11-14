@@ -9,11 +9,14 @@ export type NoticeReqType = {
 };
 
 export type NoticeType = {
-  id: number;
+  receivers: Array<string>;
+  noticeId: number;
   staffId: number;
   title: string;
   content: string;
   fileUrl: string;
+  staffName: string;
+  staffPhoneNumber: string;
   createdAt: string;
   lastModifiedAt: string;
 };

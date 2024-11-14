@@ -1,22 +1,22 @@
 import { Box, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CButton from "@components/common/atom/C-Button";
-// import PaginationComponent from "@components/common/pagination";
-// import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
+import PaginationComponent from "@components/common/pagination";
+import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { NoticeReqType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
 import Cookies from "js-cookie";
 import CSwitch from "@components/common/atom/C-Switch";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const StaffNoticeWritePage = () => {
   //@ts-ignore
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
-  // const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
@@ -34,31 +34,33 @@ const StaffNoticeWritePage = () => {
       id: number;
     }>
   >([]);
-  // const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
+  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
 
-  // const handleFileUploadUrl = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
+  const handleFileUploadUrl = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setFileUrl(prev => [...prev, { name: file.name, url: reader.result as string }]);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFileUrl(prev => [...prev, { name: file.name, url: reader.result as string }]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-  // const handleFileUploadUrlDelete = (index: number) => {
-  //   setFileUrl(prev => prev.filter((_, i) => i !== index));
-  // };
+  const handleFileUploadUrlDelete = (index: number) => {
+    setFileUrl(prev => prev.filter((_, i) => i !== index));
+  };
 
-  // const handleRecipientDelete = (index: number) => {
-  //   setSelected(prev => prev.filter((_, i) => i !== index));
-  // };
+  const handleRecipientDelete = (index: number) => {
+    setSelected(prev => prev.filter((_, i) => i !== index));
+  };
 
-  // const handleFileUploadClick = () => {
-  //   fileInputRef.current?.click();
-  // };
+  const handleFileUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  console.log(selected);
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
@@ -72,8 +74,6 @@ const StaffNoticeWritePage = () => {
   const onChangeMyArea = () => {
     setIsMyArea(prev => !prev);
   };
-
-  console.log(selected);
 
   useEffect(() => {
     setSelected([]);
@@ -94,22 +94,22 @@ const StaffNoticeWritePage = () => {
 
   const { handleSubmit: handleFormNotice } = formNotice;
 
-  const onSubmit: SubmitHandler<NoticeReqType> = () => {
-    // const updatedData = {
-    //   ...data,
-    //   wardId: selected[0].id,
-    //   recipientIds: selected.map(item => item.id),
-    //   // fileUrl: fileUrl[0].url,
-    //   fileUrl: "테스트중이라 임시",
-    // };
-    // mutate(updatedData, {
-    //   onSuccess: () => {
-    //     toast.success("공지 전송이 완료 되었습니다.");
-    //   },
-    //   onError: error => {
-    //     toast.error(error.message);
-    //   },
-    // });
+  const onSubmit: SubmitHandler<NoticeReqType> = data => {
+    const updatedData = {
+      ...data,
+      wardId: selected[0].id,
+      recipientIds: selected.map(item => item.id),
+      // fileUrl: fileUrl[0].url,
+      fileUrl: "테스트중이라 임시",
+    };
+    mutate(updatedData, {
+      onSuccess: () => {
+        toast.success("공지 전송이 완료 되었습니다.");
+      },
+      onError: error => {
+        toast.error(error.message);
+      },
+    });
   };
 
   return (
@@ -140,7 +140,7 @@ const StaffNoticeWritePage = () => {
             selected={selected}
           />
         </AdminNoticeListLayout>
-        {/* <AdminNoticeWriteForm
+        <AdminNoticeWriteForm
           handleRecipientDelete={handleRecipientDelete}
           form={formNotice}
           fileUrl={fileUrl}
@@ -149,7 +149,7 @@ const StaffNoticeWritePage = () => {
           fileRef={fileInputRef}
           handleFileUploadUrl={handleFileUploadUrl}
           handleFileUploadUrlDelete={handleFileUploadUrlDelete}
-        /> */}
+        />
       </TableLayout>
       <FooterLayout>{/* <PaginationComponent totalPage={5} /> */}</FooterLayout>
     </Container>

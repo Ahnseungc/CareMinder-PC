@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Box, styled, Typography } from "@mui/material";
 import { NoticeType } from "@models/notice";
+import { formatDate } from "@utils/getDateform";
 
 interface AdminNoticeCardProps {
   notice: NoticeType;
@@ -9,13 +10,13 @@ interface AdminNoticeCardProps {
 
 const AdminNoticeCard: FC<AdminNoticeCardProps> = ({ notice, onChangeSelected }) => {
   return (
-    <StyledBox onClick={() => onChangeSelected(notice.id)}>
+    <StyledBox onClick={() => onChangeSelected(notice.noticeId)}>
       <Title>{notice.title}</Title>
       <StyledBottomBox>
         <StyledNameBox>
-          <Name>홍길동 간호사</Name>|<Contact>010.0000.0000</Contact>
+          <Name>{notice.staffName}</Name>|<Contact>{notice.staffPhoneNumber}</Contact>
         </StyledNameBox>
-        <Contact>{notice.lastModifiedAt}</Contact>
+        <Contact>{formatDate(new Date(notice.lastModifiedAt))}</Contact>
       </StyledBottomBox>
     </StyledBox>
   );
