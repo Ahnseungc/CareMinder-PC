@@ -26,7 +26,7 @@ export default function TextField({ label, name, form, type, value }: TextFieldP
   return (
     <MuiTextField
       placeholder={label}
-      value={value}
+      defaultValue={value}
       variant="outlined"
       type={type}
       {...form.register(name)}

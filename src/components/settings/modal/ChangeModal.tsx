@@ -48,6 +48,7 @@ export default function ChangeModal({
     changePassword(newPasswordRequest, {
       onSuccess: () => {
         toast.success("비밀번호 변경이 완료되었습니다.");
+        onClose();
       },
       onError: error => {
         toast.error(error.message);
