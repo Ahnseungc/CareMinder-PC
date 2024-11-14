@@ -63,7 +63,6 @@ const StaffPatientRequest: StaffPatientRequestApiType = {
 
   //완료 요청 히스토리 환자 요청 조회
   getCompleted(myArea) {
-    console.log(myArea);
     return axiosInstance.get(PATH + "/completed", { params: { myArea } });
   },
 

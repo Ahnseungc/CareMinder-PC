@@ -1,41 +1,46 @@
-import CSwitch from "@components/common/atom/C-Switch";
+// import CSwitch from "@components/common/atom/C-Switch";
 import { styled } from "@mui/material";
 import { useState } from "react";
-import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
-import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
+// import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
+// import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
-import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+// import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
 
 export default function CompletedRequestsPage() {
-  const [isPatient, setIsPatient] = useState<boolean>(false);
+  // const [isPatient, setIsPatient] = useState<boolean>(false);
   //@ts-ignore
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
-  const [myArea, setMyArea] = useState(false);
-  const { data: getCompleted } = useGetCompleted(myArea);
-  const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
+  // const [myArea, setMyArea] = useState(false);
+  const { data: getCompleted } = useGetCompleted(false);
+  // const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
 
   return (
     <Wrapper>
       <Title>완료 요청 히스토리</Title>
       <SubTitle>
-        <span>완료된 내 구역 요청 리스트</span>{" "}
+        {/* <span>완료된 내 구역 요청 리스트</span>
         <CSwitch onChange={() => setMyArea(prev => !prev)} />
-        <span>환자별로 보기</span> <CSwitch onChange={() => setIsPatient(prev => !prev)} />
+        <span>환자별로 보기</span> <CSwitch onChange={() => setIsPatient(prev => !prev)} /> */}
       </SubTitle>
       <Container>
         <LeftWrapper>
-          {isPatient && (
+          {/* {isPatient && (
             <Person>
               <PersonIcon /> <div>홍길동</div>
               <HamburgerIcon />
             </Person>
-          )}
+          )} */}
           <PatientList>
             {getCompleted?.map(el => (
               <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
-                <PatientBox key={el.patientRequestId} user="completedRequest" data={el} />
+                <PatientBox
+                  key={el.patientRequestId}
+                  user="completedRequest"
+                  data={el}
+                  roomId={isFocusPatientData?.patientRequestId}
+                />
               </div>
             ))}
           </PatientList>
@@ -43,7 +48,7 @@ export default function CompletedRequestsPage() {
         <RightWrapper>
           {isFocusPatientData && (
             <>
-              {isPatient && <Empty />}
+              {/* {isPatient && <Empty />} */}
               <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
             </>
           )}
@@ -81,23 +86,19 @@ const SubTitle = styled("div")`
     margin-right: 17px;
   }
 `;
-const Person = styled("div")`
-  margin: 33px 0 15px 0;
-  display: flex;
-  align-items: center;
-  & > div {
-    font-size: 18px;
-    font-weight: 700;
-    color: #000000;
-    margin: 0 7px 0 17px;
-    margin-top: 5px;
-  }
-`;
-const PatientList = styled("div")``;
-// const ChatContainer = styled("div")`
-//   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-//   margin-top: 12px;
+// const Person = styled("div")`
+//   margin: 33px 0 15px 0;
+//   display: flex;
+//   align-items: center;
+//   & > div {
+//     font-size: 18px;
+//     font-weight: 700;
+//     color: #000000;
+//     margin: 0 7px 0 17px;
+//     margin-top: 5px;
+//   }
 // `;
-const Empty = styled("div")`
-  margin-top: 81px;
-`;
+const PatientList = styled("div")``;
+// const Empty = styled("div")`
+//   margin-top: 81px;
+// `;

@@ -42,7 +42,9 @@ export default function PatientBox({
               refetchProps={refetchProps}
             />
           ),
-          completedRequest: <CompletedPatientListBox isAccept={false} data={data} />,
+          completedRequest: (
+            <CompletedPatientListBox isAccept={false} data={data} roomId={roomId} />
+          ),
           completedRequestFocus: <CompletedPatientListBox isAccept={true} data={data} />,
         }}
       />
