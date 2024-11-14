@@ -1,6 +1,7 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
+import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
 import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
@@ -100,8 +101,7 @@ export default function StaffHomePage() {
         <SubTitle>
           <SubTitleLeft>
             <span>환자별로 묶기</span>
-            {/* <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} /> */}
-            <CSwitch onChange={() => setStaffAcceptIsGroup(false)} />
+            <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>
         {!staffAcceptIsGroup &&
@@ -117,17 +117,15 @@ export default function StaffHomePage() {
             />
           ))}
         {/* 디자인 나오기 전이여서 주석 처리 */}
-        {staffAcceptIsGroup && (
-          // getInprogressGroup?.map(el => (
-          //   <PatientBox
-          //     key={el.patientRequestId}
-          //     user="staffAccept"
-          //     data={el}
-          //     onWaitOrAccept={onWaitOrAccept}
-          //   />
-          // ))
-          <></>
-        )}
+        {staffAcceptIsGroup &&
+          getInprogressGroup?.map(el => (
+            <StaffGroupList
+              data={el}
+              onWaitOrAccept={onWaitOrAccept}
+              roomId={roomId}
+              setRoomId={setRoomId}
+            />
+          ))}
       </RightSection>
     </>
   );

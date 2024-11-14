@@ -4,26 +4,25 @@ import CSearchBox from "@components/common/atom/C-SearchBox";
 import { Link } from "react-router-dom";
 import RoutePath from "@routes/routePath";
 import CButton from "@components/common/atom/C-Button";
-
-import PaginationComponent from "@components/common/pagination";
+// import PaginationComponent from "@components/common/pagination";
 import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCardDetail";
 import useGetNotice from "@hooks/queries/useGetNotice";
 import { NoticeType } from "@models/notice";
 import { useState } from "react";
-// import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
+import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
 
 const StaffNoticePage = () => {
   const { data: getNotices, isLoading: getNoticeLoading } = useGetNotice();
 
   const [selected, setSelected] = useState<NoticeType>();
+  const { data: getNoticesDetail, isLoading: isDetailLoading } = useGetNoticeDetail(
+    selected?.noticeId ?? 0,
+  );
 
-  // const [totalCount, setTotalCount] = useState(0);
-
-  //@ts-ignore
-  const [size, setSize] = useState(7);
+  // const [size, setSize] = useState(7);
 
   const onChangeSelected = (id: number) => {
-    const select = getNotices.filter((notice: NoticeType) => id === notice.id);
+    const select = getNotices.find((notice: NoticeType) => id === notice.noticeId);
     setSelected(select);
   };
 
@@ -70,7 +69,7 @@ const StaffNoticePage = () => {
               {getNotices?.map((notice: NoticeType) => {
                 return (
                   <AdminNoticeCard
-                    key={notice.id}
+                    key={notice.noticeId}
                     notice={notice}
                     onChangeSelected={onChangeSelected}
                   />
@@ -79,10 +78,13 @@ const StaffNoticePage = () => {
             </>
           )}
         </AdminNoticeListLayout>
-        <AdminNoticeCardDeatil notice={selected as NoticeType} />
+        <AdminNoticeCardDeatil
+          notice={getNoticesDetail as NoticeType}
+          isLoading={isDetailLoading}
+        />
       </TableLayout>
       <FooterLayout>
-        {size <= getNotices?.length && <PaginationComponent totalPage={5} />}
+        {/* {size <= getNotices?.length && <PaginationComponent totalPage={5} />} */}
       </FooterLayout>
     </Container>
   );
