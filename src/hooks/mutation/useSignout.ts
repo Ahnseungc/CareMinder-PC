@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
+import { useNavigate } from "react-router-dom";
 
 const signOut = async (type: UserType) => {
   if (type === "WARD") {
@@ -23,6 +24,7 @@ const signOut = async (type: UserType) => {
 
 export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
+  const navigaet = useNavigate();
   return useMutation({
     mutationFn: () => signOut(type),
     onSuccess: () => {
@@ -32,7 +34,6 @@ export default function useSignOut(type: UserType) {
           if (!prev) {
             return { id: 0, name: "", type: "WARD" };
           }
-
           return {
             ...prev,
             type: "WARD",
@@ -40,8 +41,10 @@ export default function useSignOut(type: UserType) {
             name: prev.name,
           };
         });
+        navigaet("/");
       } else {
         setUserState(null);
+        navigaet("/sign-in");
       }
     },
     onError: error => {

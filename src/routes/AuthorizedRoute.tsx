@@ -30,12 +30,13 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
 
   useEffect(() => {
     //병동
-    if (!user && !accessTokenWard) {
+
+    if (!user && accessTokenWard === "") {
       navigate("/sign-in");
     }
 
     //스태프 페이지
-    if (pathname.includes("staff") && !accessTokenStaff) {
+    if (pathname.includes("staff") && accessTokenStaff === "") {
       if (user?.type === "STAFF") {
         navigate("/");
         setIsModalOpen(false);
@@ -63,7 +64,6 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
 
     if (user) {
       //병동 권한 충족
-      console.log(user.type, allowedRoles);
       if (pathname === "/") {
         switch (user.type) {
           case "WARD":
