@@ -1,7 +1,7 @@
-import { Box, Stack, Typography, styled } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CButton from "@components/common/atom/C-Button";
-import PaginationComponent from "@components/common/pagination";
+// import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
@@ -18,6 +18,7 @@ const StaffNoticeWritePage = () => {
   const token = Cookies.get("accessTokenStaff") as string;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
+  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
@@ -34,7 +35,6 @@ const StaffNoticeWritePage = () => {
       id: number;
     }>
   >([]);
-  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
 
   const handleFileUploadUrl = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,8 +59,6 @@ const StaffNoticeWritePage = () => {
   const handleFileUploadClick = () => {
     fileInputRef.current?.click();
   };
-
-  console.log(selected);
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
@@ -134,11 +132,17 @@ const StaffNoticeWritePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          <AdminTable
-            getTablet={getTablet}
-            onChangeSelected={onChangeSelected}
-            selected={selected}
-          />
+          {isLoading ? (
+            <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
+              <CircularProgress />
+            </Box>
+          ) : (
+            <AdminTable
+              getTablet={getTablet}
+              onChangeSelected={onChangeSelected}
+              selected={selected}
+            />
+          )}
         </AdminNoticeListLayout>
         <AdminNoticeWriteForm
           handleRecipientDelete={handleRecipientDelete}

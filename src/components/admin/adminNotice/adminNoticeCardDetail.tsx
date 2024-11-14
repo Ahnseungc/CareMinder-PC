@@ -1,5 +1,5 @@
-import { FC, useState } from "react";
-import { Box, styled, SvgIcon, Typography } from "@mui/material";
+import { FC } from "react";
+import { Box, CircularProgress, styled, SvgIcon, Typography } from "@mui/material";
 import { ReactComponent as XIcon } from "@assets/x-Icon.svg";
 import { ReactComponent as WarningIcon } from "@assets/warning-icon.svg";
 import { NoticeType } from "@models/notice";
@@ -17,14 +17,13 @@ const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice, isLoadi
         <SvgIcon component={WarningIcon} inheritViewBox />
         <Notice>공지</Notice>
       </NoticeTitleLayout>
-
       {notice ? (
         <>
           <div style={{ display: "flex", gap: "8px" }}>
             {notice.receivers?.map((receivers, index) => {
               return (
                 <RecipientLayout key={index}>
-                  <p>{receivers}</p>
+                  <p>{receivers.patientName}</p>
                   <SvgIcon component={XIcon} inheritViewBox />
                 </RecipientLayout>
               );
@@ -34,7 +33,7 @@ const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice, isLoadi
             <Title>{notice?.title}</Title>
             <StyledBottomBox>
               <StyledNameBox>
-                <Name>홍길동 간호사</Name>|<Contact>010.0000.0000</Contact>
+                <Name>{notice.staffName}</Name>|<Contact>{notice.staffPhoneNumber}</Contact>
               </StyledNameBox>
               <Contact>{formatDate(new Date(notice?.lastModifiedAt))}</Contact>
             </StyledBottomBox>
@@ -42,7 +41,9 @@ const AdminNoticeCardDeatil: FC<AdminNoticeCardDeatilProps> = ({ notice, isLoadi
           <TextArea>{notice?.content}</TextArea>
         </>
       ) : isLoading ? (
-        <p>로딩중</p>
+        <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
+          <CircularProgress />
+        </Box>
       ) : (
         <p>공지를 선택해 주세요.</p>
       )}

@@ -9,7 +9,7 @@ export type NoticeReqType = {
 };
 
 export type NoticeType = {
-  receivers: Array<string>;
+  receivers: Array<ReceiversType>;
   noticeId: number;
   staffId: number;
   title: string;
@@ -19,4 +19,9 @@ export type NoticeType = {
   staffPhoneNumber: string;
   createdAt: string;
   lastModifiedAt: string;
+};
+
+type ReceiversType = {
+  patientId: string;
+  patientName: string;
 };

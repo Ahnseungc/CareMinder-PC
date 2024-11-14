@@ -4,11 +4,11 @@ import CSearchBox from "@components/common/atom/C-SearchBox";
 import { Link } from "react-router-dom";
 import RoutePath from "@routes/routePath";
 import CButton from "@components/common/atom/C-Button";
-import PaginationComponent from "@components/common/pagination";
+// import PaginationComponent from "@components/common/pagination";
 import AdminNoticeCardDeatil from "@components/admin/adminNotice/adminNoticeCardDetail";
 import useGetNotice from "@hooks/queries/useGetNotice";
 import { NoticeType } from "@models/notice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useGetNoticeDetail from "@hooks/queries/useGetNoticeDetail";
 
 const StaffNoticePage = () => {
@@ -18,12 +18,6 @@ const StaffNoticePage = () => {
   const { data: getNoticesDetail, isLoading: isDetailLoading } = useGetNoticeDetail(
     selected?.noticeId ?? 0,
   );
-
-  useEffect(() => {
-    if (selected?.noticeId) {
-      console.log("Notice Detail:", getNoticesDetail);
-    }
-  }, [getNoticesDetail, selected]);
 
   // const [size, setSize] = useState(7);
 
