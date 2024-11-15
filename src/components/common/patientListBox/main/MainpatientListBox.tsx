@@ -3,6 +3,7 @@ import { roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { MainListBoxProps } from "@models/home";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import getPrevTimes from "@utils/getPrevTimes";
 
 function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
@@ -14,7 +15,7 @@ function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps
         <TxtBox>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
           <TxtBoxRight>
-            <span>{data.createdAt}분전</span>
+            <span>{getPrevTimes(data.createdAt)}</span>
           </TxtBoxRight>
         </TxtBox>
         <Check

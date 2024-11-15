@@ -1,7 +1,7 @@
 import { Stack, styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import { bottomScroll, formatTimestamp, roleColor } from "@utils/homePage";
+import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -14,6 +14,8 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
+import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
+import getPrevTimes from "@utils/getPrevTimes";
 
 function StaffPatientListBox({
   isAccept,
@@ -107,7 +109,7 @@ function StaffPatientListBox({
                 <CComboBox
                   placeholder={"직종 선택"}
                   options={["간호사", "의사", "조무사", "직원"]}
-                  value={""}
+                  value={OPTIONS.find(el => el.role === data.aiRole)?.value || "정의되지 않음"}
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper>
@@ -118,7 +120,7 @@ function StaffPatientListBox({
       <Bottom>
         <TxtBox>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>{formatTimestamp(data.createdAt)}전</TxtBoxRight>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
         </TxtBox>
         <Check
           color={roleColorPick.dark}

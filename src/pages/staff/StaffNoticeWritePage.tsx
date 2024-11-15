@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, styled } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CButton from "@components/common/atom/C-Button";
 // import PaginationComponent from "@components/common/pagination";
@@ -6,7 +6,7 @@ import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWrite
 import useGetWardTabletRequests from "@hooks/queries/useGetStaffsTablet";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { NoticeType } from "@models/notice";
+import { NoticeReqType } from "@models/notice";
 import useCreateNotice from "@hooks/mutation/useCreateNotice";
 import Cookies from "js-cookie";
 import CSwitch from "@components/common/atom/C-Switch";
@@ -18,6 +18,7 @@ const StaffNoticeWritePage = () => {
   const token = Cookies.get("accessTokenStaff") as string;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
+  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
@@ -34,7 +35,6 @@ const StaffNoticeWritePage = () => {
       id: number;
     }>
   >([]);
-  const [fileUrl, setFileUrl] = useState<Array<{ name: string; url: string }>>([]);
 
   const handleFileUploadUrl = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,30 +77,29 @@ const StaffNoticeWritePage = () => {
     setSelected([]);
   }, [isMyArea]);
 
-  const defaultValuesUpdate: NoticeType = {
+  const defaultValuesUpdate: NoticeReqType = {
     wardId: 0,
     title: "",
     content: "",
     fileUrl: "",
-    // recipient: "",
+    recipientIds: [],
   };
 
-  const formNotice = useForm<NoticeType>({
+  const formNotice = useForm<NoticeReqType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
 
   const { handleSubmit: handleFormNotice } = formNotice;
 
-  const onSubmit: SubmitHandler<NoticeType> = data => {
+  const onSubmit: SubmitHandler<NoticeReqType> = data => {
     const updatedData = {
       ...data,
       wardId: selected[0].id,
-      // recipient: selected[0].name,
+      recipientIds: selected.map(item => item.id),
       // fileUrl: fileUrl[0].url,
       fileUrl: "테스트중이라 임시",
     };
-
     mutate(updatedData, {
       onSuccess: () => {
         toast.success("공지 전송이 완료 되었습니다.");
@@ -133,11 +132,17 @@ const StaffNoticeWritePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          <AdminTable
-            getTablet={getTablet}
-            onChangeSelected={onChangeSelected}
-            selected={selected}
-          />
+          {isLoading ? (
+            <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
+              <CircularProgress />
+            </Box>
+          ) : (
+            <AdminTable
+              getTablet={getTablet}
+              onChangeSelected={onChangeSelected}
+              selected={selected}
+            />
+          )}
         </AdminNoticeListLayout>
         <AdminNoticeWriteForm
           handleRecipientDelete={handleRecipientDelete}

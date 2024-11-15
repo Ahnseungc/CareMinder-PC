@@ -35,7 +35,6 @@ export default function useSignOut(type: UserType) {
           if (!prev) {
             return { id: 0, name: "", type: "WARD" };
           }
-
           return {
             ...prev,
             type: "WARD",
@@ -43,9 +42,11 @@ export default function useSignOut(type: UserType) {
             name: prev.name,
           };
         });
+
         navigate("/");
       } else {
         setUserState(null);
+        navigaet("/sign-in");
       }
     },
     onError: error => {

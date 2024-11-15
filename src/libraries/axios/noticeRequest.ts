@@ -6,7 +6,7 @@ export type NoticeRequestApiType = {
   // getNoticeRequestsStatus(status: NoticeType): Promise<AxiosResponse>;
 };
 
-const PATH = "/notices";
+const PATH = "/notices/list-by-web";
 
 const NoticeRequest: NoticeRequestApiType = {
   //모든 환자 요청 조회

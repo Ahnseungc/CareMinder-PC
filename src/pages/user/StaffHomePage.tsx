@@ -2,6 +2,8 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import ChangeModal from "@components/settings/modal/ChangeModal";
+import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
+import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
   useGetStaffPatientInprogress,
@@ -109,7 +111,7 @@ export default function StaffHomePage() {
             <CComboBox
               placeholder={"전체"}
               options={["전체", "간호사", "조무사", "직원", "의사"]}
-              value={""}
+              value={OPTIONS.find(el => el.role === isRole)?.value || "전체"}
               onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>
@@ -145,17 +147,15 @@ export default function StaffHomePage() {
             />
           ))}
         {/* 디자인 나오기 전이여서 주석 처리 */}
-        {staffAcceptIsGroup && (
-          // getInprogressGroup?.map(el => (
-          //   <PatientBox
-          //     key={el.patientRequestId}
-          //     user="staffAccept"
-          //     data={el}
-          //     onWaitOrAccept={onWaitOrAccept}
-          //   />
-          // ))
-          <></>
-        )}
+        {staffAcceptIsGroup &&
+          getInprogressGroup?.map(el => (
+            <StaffGroupList
+              data={el}
+              onWaitOrAccept={onWaitOrAccept}
+              roomId={roomId}
+              setRoomId={setRoomId}
+            />
+          ))}
       </RightSection>
     </>
   );
