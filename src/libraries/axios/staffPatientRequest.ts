@@ -19,6 +19,8 @@ export type StaffPatientRequestApiType = {
   patchComplete(id: number): Promise<AxiosResponse>;
   patchDecline(id: number): Promise<AxiosResponse>;
   patchChangeRole(data: PatchRole): Promise<AxiosResponse>;
+  getCompleted(params: boolean): Promise<AxiosResponse>;
+  getCompletedGroup(params: boolean): Promise<AxiosResponse>;
 };
 
 const PATH = "/staff-patient-requests";
@@ -57,6 +59,16 @@ const StaffPatientRequest: StaffPatientRequestApiType = {
   //환자 요청의 담당 직종 변경
   patchChangeRole(data) {
     return axiosInstance.patch(PATH + "/role", data);
+  },
+
+  //완료 요청 히스토리 환자 요청 조회
+  getCompleted(myArea) {
+    return axiosInstance.get(PATH + "/completed", { params: { myArea } });
+  },
+
+  //완료 요청 히스토리 환자 요청 조회
+  getCompletedGroup(myArea) {
+    return axiosInstance.get(PATH + "/completed/patient-group", { params: { myArea } });
   },
 };
 export default StaffPatientRequest;

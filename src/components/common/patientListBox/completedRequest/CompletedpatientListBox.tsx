@@ -1,35 +1,58 @@
 import { Stack, styled } from "@mui/material";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import { roleColor } from "@utils/homePage";
-import { useState } from "react";
-import { ReactComponent as SendIcon } from "@/assets/completedRequests/send.svg";
+import { bottomScroll, roleColor } from "@utils/homePage";
+import { useEffect, useState } from "react";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { StaffListBoxProps } from "@models/home";
+import getPrevTimes from "@utils/getPrevTimes";
+import ChatBox from "@components/chat/chatBox";
+import { LoadChatHistory } from "@components/chat/chattingModel";
+import { Message } from "@models/staff";
 
-function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
+function CompletedPatientListBox({ isAccept, data, roomId }: StaffListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isOptions || isEdit) {
-      setIsEdit(false);
+    if (isOptions) {
       setIsOptions(false);
-    } else if (!isOptions && !isEdit) {
+    } else if (!isOptions) {
       setIsOptions(true);
     }
   };
 
+  const getHistoryChatting = async () => {
+    const history = await LoadChatHistory(data.patientRequestId);
+    setMessages(history);
+    bottomScroll();
+  };
+
+  useEffect(() => {
+    if (isAccept) {
+      getHistoryChatting();
+    }
+  }, [data]);
+
   return (
-    <InnerContainer color={roleColorPick.light}>
-      <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
-        <div>{data.place}</div>
+    <InnerContainer
+      color={data.patientRequestId === roomId ? roleColorPick.dark : roleColorPick.light}
+    >
+      <Title
+        color={data.patientRequestId === roomId ? "white" : roleColorPick.dark}
+        tabIndex={0}
+        onBlur={() => setIsOptions(false)}
+      >
+        <div>{data.areaSimple.areaName}</div>
         <div>
           <MoreHorizRoundedIcon
             onClick={onOptionOnOff}
-            sx={{ color: "#C4C5CC", cursor: "pointer" }}
+            sx={{
+              color: data.patientRequestId === roomId ? "white" : "#C4C5CC",
+              cursor: "pointer",
+            }}
           />
           {isOptions && (
             <Options>
@@ -46,7 +69,7 @@ function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
             {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
             {data.content}
           </TxtBoxLeft>
-          <TxtBoxRight>{data.createdAt}분전</TxtBoxRight>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
         </TxtBox>
         {isAccept && (
           <Check color={roleColorPick.dark}>
@@ -55,12 +78,21 @@ function CompletedPatientListBox({ isAccept, data }: StaffListBoxProps) {
         )}
       </Bottom>
       {isAccept && (
-        <ChatContainer>
-          <ChatInputWrapper>
-            <input placeholder="메세지를 입력해 주세요" />
-            <CustomSendIcon />
-          </ChatInputWrapper>
-        </ChatContainer>
+        <div>
+          <ChatContainer id="top">
+            {messages.map((el, idx) => (
+              <ChatBox key={idx} data={el} color={roleColorPick.normal} />
+            ))}
+            <InputWrapper>
+              <Input
+                type="text"
+                placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
+                disabled={true}
+              />
+              <SendButton></SendButton>
+            </InputWrapper>
+          </ChatContainer>
+        </div>
       )}
     </InnerContainer>
   );
@@ -133,7 +165,8 @@ const SmallCheck = styled("div")<{ color: string }>`
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
-  padding: 30px 0 12px 0;
+  max-height: 400px;
+  overflow: auto;
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
@@ -163,25 +196,7 @@ const Option = styled("div")`
     color: ${({ theme }) => theme.palette.primary.main};
   }
 `;
-const ChatInputWrapper = styled("div")`
-  position: relative;
-  padding-top: 16px;
-  border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 30px;
-  & > input {
-    width: 100%;
-    border-radius: 100px;
-    padding: 8px 45px 8px 16px;
-    border: none;
-    outline: none;
-    font-size: 14px;
-  }
-`;
-const CustomSendIcon = styled(SendIcon)`
-  position: absolute;
-  top: 21px;
-  right: 12px;
-`;
+
 const Check = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
   border-radius: 50%;
@@ -192,4 +207,24 @@ const Check = styled("div")<{ color: string }>`
   justify-content: center;
   margin-left: 12px;
   font-weight: 900;
+`;
+const InputWrapper = styled("div")`
+  margin-top: 41px;
+  width: 100%;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+`;
+const Input = styled("input")`
+  width: 100%;
+  border: none;
+  padding: 10px;
+  border-radius: 10px 0 0 10px;
+  background-color: transparent;
+`;
+const SendButton = styled("div")`
+  padding: 4px 10px 0 10px;
+  border-radius: 0 10px 10px 0;
+  cursor: pointer;
 `;
