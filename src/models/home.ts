@@ -35,6 +35,7 @@ export type MainListBoxProps = {
 export type StaffListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
+  roomId?: number | null;
 };
 
 export type StaffGroupListBoxProps = {
