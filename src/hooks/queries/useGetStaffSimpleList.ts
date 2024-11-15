@@ -15,13 +15,13 @@ export type GetStaffSimpleListResponse = {
 
 export const getStaffSimpleList = async () => {
   const res = await axiosInstance.get("/wards/staff-simple-list");
-  console.log(res.data);
+  // console.log(res.data);
   return res.data;
 };
 
 export const useGetStaffSimpleList = (): UseQueryResult<GetStaffSimpleListResponse, AxiosError> => {
   return useQuery<GetStaffSimpleListResponse, AxiosError>({
-    queryKey: ["staffList"],
+    queryKey: ["staffSimpleList"],
     queryFn: getStaffSimpleList,
   });
 };

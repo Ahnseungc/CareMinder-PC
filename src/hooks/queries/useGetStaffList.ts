@@ -12,7 +12,7 @@ export type StaffListType = {
   fingerprint: string;
   staffRole: string;
   accountLocked: boolean;
-  isLogin: boolean;
+  isLogIn: boolean;
   timeSinceLogout: string | null;
   areaId: number;
   areaName: string;

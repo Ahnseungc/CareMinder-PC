@@ -79,6 +79,7 @@ const StaffAccountSettingsTable = ({
   }, [isEditing, isClear, setIsClear]);
 
   useEffect(() => {
+    console.log(staffList);
     if (areaList) {
       setArea(areaList.map(item => item.name));
     }
@@ -274,7 +275,7 @@ const StaffAccountSettingsTable = ({
                     </td>
                     <td>
                       <ShortComBoxLayout>
-                        {row.isLogin ? (
+                        {row.isLogIn ? (
                           <>
                             <div
                               style={{
