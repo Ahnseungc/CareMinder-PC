@@ -47,18 +47,21 @@ function CompletedPatientListBox({ isAccept, data, roomId }: StaffListBoxProps) 
       >
         <div>{data.areaSimple.areaName}</div>
         <div>
-          <MoreHorizRoundedIcon
-            onClick={onOptionOnOff}
-            sx={{
-              color: data.patientRequestId === roomId ? "white" : "#C4C5CC",
-              cursor: "pointer",
-            }}
-          />
+          {!isAccept && (
+            <MoreHorizRoundedIcon
+              onClick={onOptionOnOff}
+              sx={{
+                color: data.patientRequestId === roomId ? "white" : "#C4C5CC",
+                cursor: "pointer",
+              }}
+            />
+          )}
+
           {isOptions && (
             <Options>
-              <Option>복원하기</Option>
+              <Option onClick={() => console.log("복원하기")}>복원하기</Option>
 
-              <Option>퇴원 처리하기</Option>
+              <Option onClick={() => console.log("퇴원하기")}>퇴원 처리하기</Option>
             </Options>
           )}
         </div>
@@ -79,19 +82,24 @@ function CompletedPatientListBox({ isAccept, data, roomId }: StaffListBoxProps) 
       </Bottom>
       {isAccept && (
         <div>
-          <ChatContainer id="top">
+          <ChatContainer id="top" color={roleColorPick.dark}>
             {messages.map((el, idx) => (
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
             ))}
-            <InputWrapper>
-              <Input
-                type="text"
-                placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
-                disabled={true}
-              />
-              <SendButton></SendButton>
-            </InputWrapper>
           </ChatContainer>
+          <RestoreWrapper>
+            <Restore color={roleColorPick.dark} onClick={() => console.log("요청 복원하기")}>
+              요청 복원하기
+            </Restore>
+          </RestoreWrapper>
+          <InputWrapper>
+            <Input
+              type="text"
+              placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
+              disabled={true}
+            />
+            <SendButton></SendButton>
+          </InputWrapper>
         </div>
       )}
     </InnerContainer>
@@ -162,11 +170,21 @@ const SmallCheck = styled("div")<{ color: string }>`
   margin-bottom: 2px;
 `;
 
-const ChatContainer = styled("div")`
+const ChatContainer = styled("div")<{ color: string }>`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
   max-height: 400px;
   overflow: auto;
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${({ color }) => color};
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(220, 20, 60, 0.1);
+  }
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
@@ -209,7 +227,7 @@ const Check = styled("div")<{ color: string }>`
   font-weight: 900;
 `;
 const InputWrapper = styled("div")`
-  margin-top: 41px;
+  margin-top: 26px;
   width: 100%;
   background-color: white;
   border-radius: 10px;
@@ -227,4 +245,17 @@ const SendButton = styled("div")`
   padding: 4px 10px 0 10px;
   border-radius: 0 10px 10px 0;
   cursor: pointer;
+`;
+const Restore = styled("div")<{ color: string }>`
+  background-color: ${({ color }) => color};
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  width: 98px;
+  font-weight: 600;
+`;
+const RestoreWrapper = styled("div")`
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
 `;

@@ -56,6 +56,9 @@ const Input = styled("input")`
   padding: 10px;
   border-radius: 10px 0 0 10px;
   background-color: transparent;
+  :focus {
+    outline: none;
+  }
 `;
 const SendButton = styled("div")`
   padding: 4px 10px 0 10px;
