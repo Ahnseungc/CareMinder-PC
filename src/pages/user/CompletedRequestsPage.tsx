@@ -57,7 +57,9 @@ export default function CompletedRequestsPage() {
     </Wrapper>
   );
 }
-const Wrapper = styled("div")``;
+const Wrapper = styled("div")`
+  min-height: 80vh;
+`;
 const Container = styled("div")`
   display: flex;
 `;

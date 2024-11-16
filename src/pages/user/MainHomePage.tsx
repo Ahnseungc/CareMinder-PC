@@ -108,6 +108,7 @@ const SectionBase = styled(Box)(({ theme }) => ({
   padding: "30px",
   borderRadius: "24px",
   backgroundColor: theme.palette.background.paper,
+  minHeight: "80vh",
 }));
 
 const LeftSection = styled(SectionBase)({
