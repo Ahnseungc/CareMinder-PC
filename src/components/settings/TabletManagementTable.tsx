@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -8,6 +8,7 @@ import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Sleep } from "@/assets/sleep.svg";
 import { Checkbox, Typography } from "@mui/material";
 import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -20,10 +21,12 @@ const columns = [
 
 const TabletManagementTable: FC = () => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
 
-  const { data: wardTabletList } = useGetWardTabletList();
+  const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList();
+  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
+
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
 
@@ -36,6 +39,16 @@ const TabletManagementTable: FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (areaList) {
+      setArea(areaList.map(item => item.name));
+    }
+  }, [areaList]);
+
+  if (wardTabletLoading && areaLoading) {
+    return <div>로딩 중..</div>;
+  }
 
   return (
     <>
@@ -118,13 +131,13 @@ const TabletManagementTable: FC = () => {
                     <ComBoxLayout>
                       <CComboBox
                         placeholder={"구역"}
-                        options={options}
-                        value={""}
+                        options={area}
+                        value={row.areaName}
                         onChange={() => null}
-                        allowCustomInput={true}
-                        onCustomInputAdd={newValue => {
-                          setOptions([...options, newValue]);
-                        }}
+                        // allowCustomInput={true}
+                        // onCustomInputAdd={newValue => {
+                        //   setOptions([...options, newValue]);
+                        // }}
                       />
                     </ComBoxLayout>
                   </td>
@@ -163,7 +176,7 @@ const TabletManagementTable: FC = () => {
                   </td>
                   <td>
                     <ComBoxLayout>
-                      <Typography>입원 일자</Typography>
+                      <Typography>{row.createdAt.substring(0, 10)}</Typography>
                     </ComBoxLayout>
                   </td>
                 </tr>
@@ -203,6 +216,10 @@ const StTable = styled.table`
 `;
 
 const ComBoxLayout = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   position: relative;
   width: 224px;
   height: 36px;

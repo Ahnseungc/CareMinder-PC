@@ -40,12 +40,11 @@ export const TabletManagement = () => {
       </BodyTitleContainer>
       <TabletManagementTable />
       <PaginationContainer>
-        <div style={{ width: "148px" }}></div>
+        <div style={{ width: "148px", position: "absolute", left: "60px" }}>
+          <CButton buttontype="primarySpaureWhite">삭제하기</CButton>
+        </div>
         <div>
           <PaginationComponent totalPage={5} />
-        </div>
-        <div style={{ width: "148px" }}>
-          <CButton buttontype="primarySpaureWhite">삭제하기</CButton>
         </div>
       </PaginationContainer>
     </>
@@ -60,8 +59,9 @@ const BodyTitleContainer = styled(Box)({
 });
 
 const PaginationContainer = styled(Box)({
+  position: "relative",
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
   marginTop: "60px",
 });
 
