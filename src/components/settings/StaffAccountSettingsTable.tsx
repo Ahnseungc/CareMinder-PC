@@ -21,6 +21,7 @@ import { OPTIONS } from "./const";
 import useChangeStaffRole from "@hooks/mutation/useChangeRole";
 import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 import { toast } from "react-toastify";
+import { TimeSince } from "./TimeSince";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -154,7 +155,6 @@ const StaffAccountSettingsTable = ({
   }, [isEditing, isClear, setIsClear]);
 
   useEffect(() => {
-    console.log(staffList);
     if (areaList) {
       setArea(areaList.map(item => item.name));
     }
@@ -347,7 +347,7 @@ const StaffAccountSettingsTable = ({
                               <Typography>
                                 미접속
                                 <br />
-                                3시간전
+                                <TimeSince time={row.timeSinceLogout} />
                               </Typography>
                             ) : (
                               // 계정 생성 후 로그인 기록이 없는 경우 처리
