@@ -68,11 +68,42 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.careminder.app",
-    "files": [
-      "build/**/*",
-      "src/electron.js"
-    ]
+    "build": {
+      "productName": "NB",
+      "appId": "com.nb.electron",
+      "asar": true,
+      "mac": {
+        "target": [
+          "default"
+        ],
+        "icon": "build/icons/icon.icns"
+      },
+      "dmg": {
+        "title": "NB",
+        "icon": "build/icons/icon.icns"
+      },
+      "win": {
+        "target": [
+          "nsis"
+        ],
+        "icon": "build/icons/icon.ico"
+      },
+      "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": false,
+        "createDesktopShortcut": true,
+        "perMachine": true,
+        "language": 1042,
+        "installerIcon": "build/icons/icon.ico",
+        "shortcutName": "NB",
+        "artifactName": "NB-${version}.${ext}",
+        "uninstallDisplayName": "NB"
+      },
+      "directories": {
+        "buildResources": "./build/",
+        "output": "./dist/"
+      }
+    }
   },
   "resolutions": {
     "rollup": "npm:@rollup/wasm-node"

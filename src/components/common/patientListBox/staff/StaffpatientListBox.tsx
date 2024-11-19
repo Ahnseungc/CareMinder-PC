@@ -14,7 +14,8 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
-import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
+import { OPTIONS } from "@components/settings/const/index";
+
 import getPrevTimes from "@utils/getPrevTimes";
 
 function StaffPatientListBox({

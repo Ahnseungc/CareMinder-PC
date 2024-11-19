@@ -23,7 +23,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
-import { OPTIONS } from "@components/settings/const";
+import { OPTIONS } from "@components/settings/const/index";
 import useChangeStaffRole from "@hooks/mutation/useChangeRole";
 import { toast } from "react-toastify";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";

@@ -3,7 +3,7 @@ import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
-import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
+import { OPTIONS } from "@components/settings/const/index";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
   useGetStaffPatientInprogress,
