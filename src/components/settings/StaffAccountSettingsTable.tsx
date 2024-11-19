@@ -3,18 +3,21 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-import { Box, Checkbox, Typography } from "@mui/material";
+import { Box, Checkbox, Divider, Typography } from "@mui/material";
 
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
+import { ReactComponent as Filter } from "@/assets/filter.svg";
+import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { editingState } from "@libraries/recoil";
+import { editingState, staffListState } from "@libraries/recoil";
 import { useGetStaffList } from "@hooks/queries/useGetStaffList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useCreateArea from "@hooks/mutation/useCreateArea";
+import { OPTIONS } from "./const";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -28,33 +31,16 @@ const columns = [
   { field: "AccountManage", headerName: "계정관리" },
 ];
 
-export const OPTIONS = [
-  {
-    role: "NURSE",
-    value: "간호사",
-  },
-  {
-    role: "DOCTOR",
-    value: "의사",
-  },
-  {
-    role: "NURSE_ASSISTANT",
-    value: "조무사",
-  },
-  {
-    role: "WORKER",
-    value: "직원",
-  },
-];
-
 interface StaffAccountSettingsTableProps {
   onManage: (modalType: string, staffId: number[]) => void;
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/**계정 상태 테스트 변수 */
-const isConnecting = true;
+interface FilterState {
+  menu: string;
+  state: boolean;
+}
 
 const StaffAccountSettingsTable = ({
   onManage,
@@ -62,11 +48,15 @@ const StaffAccountSettingsTable = ({
   setIsClear,
 }: StaffAccountSettingsTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [_, setOption] = useState<string>();
-  const [options, setOptions] = useState<string[]>([""]);
+  const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState<FilterState>({
+    menu: "",
+    state: false,
+  });
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
+  const setSelectStaffList = useSetRecoilState(staffListState);
 
   const { mutate: createArea } = useCreateArea();
 
@@ -89,15 +79,11 @@ const StaffAccountSettingsTable = ({
   }, [isEditing, isClear, setIsClear]);
 
   useEffect(() => {
+    console.log(staffList);
     if (areaList) {
-      setOptions(areaList.map(item => item.name));
+      setArea(areaList.map(item => item.name));
     }
   }, [areaList]);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setOption(value);
-  };
 
   const handleCreateArea = (newValue: string) => {
     const areaData = {
@@ -106,6 +92,18 @@ const StaffAccountSettingsTable = ({
     };
     createArea(areaData);
   };
+
+  const handleFilterBox = (menu: string) => {
+    setIsFilterOpen(prev => ({
+      menu: menu,
+      state: prev.menu === menu ? !prev.state : true,
+    }));
+  };
+
+  useEffect(() => {
+    const index = selectIndex.map(item => staffList?.data[item].staffId) as number[];
+    setSelectStaffList(index);
+  }, [setSelectStaffList, selectIndex, staffList]);
 
   if (staffLoading && areaLoading) {
     return <div>로딩 중..</div>;
@@ -123,7 +121,42 @@ const StaffAccountSettingsTable = ({
           <thead>
             <tr>
               {columns.map((column, index) => {
-                return <th key={index}>{column.headerName}</th>;
+                const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
+
+                return (
+                  <th key={index}>
+                    <>{column.headerName}</>
+                    {shouldShowFilter && (
+                      <>
+                        <span>
+                          <Filter onClick={() => handleFilterBox(column.headerName)} />
+                        </span>
+                        {isFilterOpen.state && isFilterOpen.menu === column.headerName ? (
+                          <FilterBox>
+                            <SelectArea>선택된 항목이 없습니다.</SelectArea>
+                            <FilterList>
+                              <li>구역1</li>
+                              <li>구역2</li>
+                              <li>구역3</li>
+                              <li>구역4</li>
+                            </FilterList>
+                            <Divider sx={{ border: "1px solid #C4C5CC" }} />
+                            <FilterList>
+                              <div>
+                                <li>오름차순</li>
+                                <X />
+                              </div>
+                              <div>
+                                <li>내림차순</li>
+                                <X />
+                              </div>
+                            </FilterList>
+                          </FilterBox>
+                        ) : null}
+                      </>
+                    )}
+                  </th>
+                );
               })}
             </tr>
           </thead>
@@ -195,10 +228,10 @@ const StaffAccountSettingsTable = ({
                       <LongComBoxLayout>
                         <CComboBox
                           placeholder={"구역"}
-                          options={options}
+                          options={area}
                           value={row.areaName}
                           disabled={row.accountLocked}
-                          onChange={handleChange}
+                          onChange={() => null}
                           allowCustomInput={true}
                           onCustomInputAdd={handleCreateArea}
                         />
@@ -242,7 +275,7 @@ const StaffAccountSettingsTable = ({
                     </td>
                     <td>
                       <ShortComBoxLayout>
-                        {isConnecting ? (
+                        {row.isLogIn ? (
                           <>
                             <div
                               style={{
@@ -257,11 +290,18 @@ const StaffAccountSettingsTable = ({
                             <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
                           </>
                         ) : (
-                          <Typography>
-                            미접속
-                            <br />
-                            3시간전
-                          </Typography>
+                          <>
+                            {row.timeSinceLogout ? (
+                              <Typography>
+                                미접속
+                                <br />
+                                3시간전
+                              </Typography>
+                            ) : (
+                              // 계정 생성 후 로그인 기록이 없는 경우 처리
+                              <Typography>로그인 기록 없음</Typography>
+                            )}
+                          </>
                         )}
                       </ShortComBoxLayout>
                     </td>
@@ -315,9 +355,19 @@ const StTable = styled.table`
     width: 100%;
     height: 20%;
     & th {
+      position: relative;
       padding-bottom: 11.52px;
       color: ${palette.text.primary};
       border-bottom: 1px solid ${palette.divider};
+
+      & span {
+        position: absolute;
+        top: -2px;
+        cursor: pointer;
+        &:hover {
+          color: #5d6dbe;
+        }
+      }
     }
   }
   & tbody {
@@ -328,6 +378,46 @@ const StTable = styled.table`
       text-align: center;
       border-bottom: 1px solid ${palette.divider};
     }
+  }
+`;
+
+const FilterBox = styled.div`
+  z-index: 10;
+  position: absolute;
+  top: 30px;
+  padding: 8px;
+  width: 240px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+  background-color: #ffffff;
+`;
+
+const SelectArea = styled.div`
+  background-color: #eff1f9;
+  padding: 4px;
+  border-radius: 4px;
+  color: #878787;
+  text-align: left;
+  font-weight: 400;
+`;
+
+const FilterList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 7px;
+
+  padding: 0;
+  width: 100%;
+  list-style: none;
+
+  font-size: 14px;
+
+  & div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 `;
 

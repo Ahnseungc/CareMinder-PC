@@ -9,6 +9,11 @@ import { SwitchCase, useBooleanState } from "@toss/react";
 import NewPasswordField from "../NewPasswordInputField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ChangeModal from "./ChangeModal";
+import { useRecoilState } from "recoil";
+import { staffListState } from "@libraries/recoil";
+import useChangePassword from "@hooks/mutation/useChangePassword";
+import { toast } from "react-toastify";
+import useReqChangePassword from "@hooks/mutation/useRequestPassword";
 
 interface TabContentProps {
   isActive?: boolean;
@@ -45,7 +50,12 @@ const defaultValues: NewPassword = {
 export default function PasswordChangeModal(props: CMModalProps) {
   const [activeMenu, setActiveMenu] = useState<string>(TAB_MENU[0]);
   const [isChange, setIsChange] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
+  const [selectStaffList, setSelectStaffList] = useRecoilState(staffListState);
+
+  const { mutate: changePassword } = useChangePassword();
+  const { mutate: reqChangePassword } = useReqChangePassword();
 
   const form = useForm<NewPassword>({
     defaultValues,
@@ -55,13 +65,43 @@ export default function PasswordChangeModal(props: CMModalProps) {
 
   const onSubmit: SubmitHandler<NewPassword> = data => {
     console.log(data);
+    console.log(selectStaffList);
+    const newPasswordRequest = {
+      userIds: selectStaffList,
+      newPassword: data.confirmPassword,
+    };
+    changePassword(newPasswordRequest, {
+      onSuccess: () => {
+        setSelectStaffList([]);
+        setIsSuccess(true);
+      },
+      onError: error => {
+        toast.error(error.message);
+      },
+    });
     /**비밀번호 강제 변경 api 로직 구현할 부분 */
+  };
+
+  const handleRequestChangePassword = () => {
+    reqChangePassword(
+      { userIds: selectStaffList },
+      {
+        onSuccess: () => {
+          setSelectStaffList([]);
+          closeRequestModal();
+        },
+        onError: error => {
+          toast.error(error.message);
+        },
+      },
+    );
   };
 
   const handleModalClose = () => {
     reset();
     setIsChange(false);
     props.onClose();
+    setIsSuccess(false);
   };
 
   const handleChangePW = (type: string) => {
@@ -81,7 +121,7 @@ export default function PasswordChangeModal(props: CMModalProps) {
       <ChangeModal
         open={isRequestModalOpen}
         onClose={closeRequestModal}
-        onConfirm={() => null}
+        onConfirm={handleRequestChangePassword}
         modalTitle={"비밀번호를 변경하도록 요청하시겠습니까?"}
         subTitle={
           <Typography variant="body1" sx={{ textAlign: "center", lineHeight: "1.8" }}>
@@ -92,22 +132,25 @@ export default function PasswordChangeModal(props: CMModalProps) {
           </Typography>
         }
         rightText={"요청하기"}
-        isPasswordChange={true}
       />
       <CMModal
         {...props}
         maxWidth="sm"
         title={"비밀번호 편집"}
         footer={
-          isChange ? (
+          !isChange ? (
+            <></>
+          ) : !isSuccess ? (
             <>
               <ModalActionButton color="secondary" onClick={handleModalClose}>
                 취소
               </ModalActionButton>
-              <ModalActionButton onClick={handleSubmit(onSubmit)}>추가하기</ModalActionButton>
+              <ModalActionButton onClick={handleSubmit(onSubmit)}>변경하기</ModalActionButton>
             </>
           ) : (
-            <></>
+            <>
+              <ModalActionButton onClick={handleModalClose}>닫기</ModalActionButton>
+            </>
           )
         }
       >
@@ -153,11 +196,34 @@ export default function PasswordChangeModal(props: CMModalProps) {
                             </PWOption>
                           ))}
                         </>
-                      ) : (
+                      ) : !isSuccess ? (
                         <Stack gap={"24px"}>
+                          <Typography
+                            variant="h2"
+                            sx={{ marginBottom: "9px", textAlign: "center" }}
+                          >
+                            새로운 비밀번호를 입력해주세요.
+                          </Typography>
                           {fields.map(field => (
                             <NewPasswordField key={field.name} field={field} form={form} />
                           ))}
+                          <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
+                            강제변경하기
+                          </Typography>
+                        </Stack>
+                      ) : (
+                        <Stack gap={"24px"}>
+                          <Typography
+                            variant="h2"
+                            sx={{ marginBottom: "9px", textAlign: "center" }}
+                          >
+                            비밀번호 변경 완료
+                          </Typography>
+                          <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
+                            새로운 비밀번호로 변경 완료되었습니다.
+                            <br />
+                            기존에 로그인 된 기기에서 로그아웃되었습니다.
+                          </Typography>
                           <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
                             강제변경하기
                           </Typography>

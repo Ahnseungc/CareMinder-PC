@@ -10,6 +10,7 @@ export type GetAreaListResponse = {
 
 export const getAreaList = async () => {
   const res = await axiosInstance.get("/areas");
+  console.log(res.data);
   return res.data;
 };
 

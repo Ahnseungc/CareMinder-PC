@@ -5,23 +5,30 @@ import StaffAccountSettingsTable from "@components/settings/StaffAccountSettings
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import { useRecoilState } from "recoil";
-import { editingState } from "@libraries/recoil";
+import { editingState, staffListState } from "@libraries/recoil";
 
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
+import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { CreateStaff } from "./CreateStaff";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
+import { OPTIONS } from "@components/settings/const";
+import useChangeStaffRole from "@hooks/mutation/useChangeRole";
+import { toast } from "react-toastify";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import useCreateArea from "@hooks/mutation/useCreateArea";
+import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 
 export const StaffAccount = () => {
   const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
@@ -32,12 +39,32 @@ export const StaffAccount = () => {
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
-  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  const [area, setArea] = useState<string[]>([""]);
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
+  const selectStaffList = useRecoilState(staffListState);
+
+  const { data: areaList } = useGetAreaList();
+  const { mutate: createArea } = useCreateArea();
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
+  const { mutate: changeStaffRole } = useChangeStaffRole();
+  const { mutate: changeStaffArea } = useChangeStaffArea();
+
+  const handleCreateArea = (newValue: string) => {
+    const areaData = {
+      name: newValue,
+      wardId: 1,
+    };
+    createArea(areaData);
+  };
+
+  useEffect(() => {
+    if (areaList) {
+      setArea(areaList.map(item => item.name));
+    }
+  }, [areaList]);
 
   const handleClear = () => {
     setIsEditing([]);
@@ -69,6 +96,64 @@ export const StaffAccount = () => {
     }
   };
 
+  const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
+
+    changeStaffRole(
+      {
+        userIds: selectStaffList[0],
+        staffRole: staffRole,
+      },
+      {
+        onSuccess: () => {
+          setIsClear(true);
+          toast.success("직업 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("직업 변경을 실패했습니다");
+        },
+      },
+    );
+  };
+
+  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    console.log(areaId);
+    changeStaffArea(
+      {
+        userIds: selectStaffList[0],
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          setIsClear(true);
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
+  };
+
+  const handleAllLock = () => {
+    const lockData = {
+      userIds: selectStaffList[0],
+    };
+    lockAccount(lockData);
+    setIsClear(true);
+  };
+
+  const handleAllUnLock = () => {
+    const lockData = {
+      userIds: selectStaffList[0],
+    };
+    unLockAccount(lockData);
+    setIsClear(true);
+  };
+
   return (
     <>
       {isCreate ? (
@@ -97,7 +182,13 @@ export const StaffAccount = () => {
           />
 
           {/* 비밀번호 편집 모달 */}
-          <PasswordChangeModal open={isPWChangeModalOpen} onClose={closePWChangeModal} />
+          <PasswordChangeModal
+            open={isPWChangeModalOpen}
+            onClose={() => {
+              closePWChangeModal();
+              setIsClear(true);
+            }}
+          />
 
           <BodyTitleContainer>
             {isEditing.length !== 0 ? (
@@ -109,26 +200,27 @@ export const StaffAccount = () => {
                 <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
                   <CComboBox
                     placeholder={"직업"}
-                    options={["간호사", "의사", "조무사", "직원"]}
+                    options={OPTIONS.map(option => option.value)}
                     value={""}
-                    onChange={() => null}
+                    onChange={handleChangeRole}
                   />
                 </div>
                 <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
                   <CComboBox
                     placeholder={"구역"}
-                    options={options}
+                    options={area}
                     value={""}
-                    onChange={() => null}
+                    onChange={handleChangeArea}
                     allowCustomInput={true}
-                    onCustomInputAdd={newValue => {
-                      setOptions([...options, newValue]);
-                    }}
+                    onCustomInputAdd={handleCreateArea}
                   />
                 </div>
-                <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
-                <Lock />
-                <Delete />
+                <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
+                  <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
+                  <Lock onClick={handleAllLock} />
+                  <UnLock onClick={handleAllUnLock} />
+                  <Delete />
+                </div>
               </EditContainer>
             ) : (
               <>

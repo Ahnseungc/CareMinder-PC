@@ -18,7 +18,9 @@ export default function MainHomePage() {
   const [userStatus] = useRecoilState(userState);
 
   const onWaitOrAccept = () => {
-    if (userStatus?.type === "WARD") return setIsModal(true);
+    if (userStatus?.type === "WARD") {
+      return setIsModal(true);
+    }
   };
 
   const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);

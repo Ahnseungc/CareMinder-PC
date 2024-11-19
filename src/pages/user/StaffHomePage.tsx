@@ -1,6 +1,7 @@
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
+import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
 import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
@@ -11,8 +12,10 @@ import {
 } from "@hooks/queries";
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
+import reqChangePWState from "@libraries/recoil/reqChangePW";
 import { CSwitchType, isRoleType } from "@models/home";
-import { Box, styled } from "@mui/material";
+import { Box, styled, Typography } from "@mui/material";
+import { useBooleanState } from "@toss/react";
 import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +24,8 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [userStatus] = useRecoilState(userState);
+  const [reqChangePWStatus] = useRecoilState(reqChangePWState);
+  const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
   const navigate = useNavigate();
 
   const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
@@ -50,12 +55,19 @@ export default function StaffHomePage() {
 
   const onWaitOrAccept = (e: React.MouseEvent, id: number, type: "wait" | "accept") => {
     e.stopPropagation();
-    if (type === "wait") return postAccept(id);
-    if (type === "accept") return patchComplete(id);
+    if (type === "wait") {
+      return postAccept(id);
+    }
+    if (type === "accept") {
+      return patchComplete(id);
+    }
   };
 
   useEffect(() => {
     setlayoutState("home");
+    if (reqChangePWStatus) {
+      openRequestModal();
+    }
 
     switch (userStatus?.type) {
       case "WARD":
@@ -67,8 +79,26 @@ export default function StaffHomePage() {
     }
   }, []);
 
+  const handleChangePW = () => {
+    console.log("비밀번호 변경");
+  };
+
   return (
     <>
+      <ChangeModal
+        open={isRequestModalOpen}
+        onClose={closeRequestModal}
+        onConfirm={handleChangePW}
+        modalTitle={"비밀번호 변경 요청"}
+        subTitle={
+          <Typography variant="body1" sx={{ textAlign: "center", lineHeight: "1.8" }}>
+            비밀번호 변경 요청이 왔습니다. 비밀번호를 변경해주세요.
+            <br /> 2024년 11월 30일까지 변경하지 않을 경우, 계정이 잠기게 됩니다.
+          </Typography>
+        }
+        rightText={"변경하기"}
+        isPasswordChange={true}
+      />
       <LeftSection>
         <Title>대기중인 환자</Title>
         <SubTitle>

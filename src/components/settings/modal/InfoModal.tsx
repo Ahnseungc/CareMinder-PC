@@ -28,9 +28,16 @@ export type ModalType = keyof typeof MODAL_CONTEXTS;
 interface InfoModalProps extends Omit<CMModalProps, "title"> {
   modalType: ModalType;
   onConfirm?: () => void;
+  message?: string;
 }
 
-export default function InfoModal({ onClose, modalType, onConfirm, ...props }: InfoModalProps) {
+export default function InfoModal({
+  onClose,
+  modalType,
+  onConfirm,
+  message,
+  ...props
+}: InfoModalProps) {
   const { title, controlAccount } = useMemo(
     () => MODAL_CONTEXTS[modalType] || { title: "", controlAccount: false },
     [modalType],
@@ -54,7 +61,9 @@ export default function InfoModal({ onClose, modalType, onConfirm, ...props }: I
       {...props}
     >
       <ContentLayout>
-        <Typography variant="h2">{title}</Typography>
+        <Typography variant="h2">
+          {modalType === "accountLock" || modalType === "valueError" ? message : title}
+        </Typography>
       </ContentLayout>
     </CMModal>
   );

@@ -24,7 +24,8 @@ const signOut = async (type: UserType) => {
 
 export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
-  const navigaet = useNavigate();
+  const navigate = useNavigate();
+
   return useMutation({
     mutationFn: () => signOut(type),
     onSuccess: () => {
@@ -41,7 +42,8 @@ export default function useSignOut(type: UserType) {
             name: prev.name,
           };
         });
-        navigaet("/");
+
+        navigate("/");
       } else {
         setUserState(null);
         navigaet("/sign-in");

@@ -2,7 +2,7 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 
-export type StaffList = {
+export type StaffListType = {
   staffId: number;
   name: string;
   loginId: string;
@@ -12,16 +12,19 @@ export type StaffList = {
   fingerprint: string;
   staffRole: string;
   accountLocked: boolean;
+  isLogIn: boolean;
+  timeSinceLogout: string | null;
   areaId: number;
   areaName: string;
 };
 
 export type GetStaffListResponse = {
-  data: StaffList[];
+  data: StaffListType[];
 };
 
 export const getStaffList = async () => {
   const res = await axiosInstance.get("/wards/staff-list");
+  console.log(res.data);
   return res.data;
 };
 

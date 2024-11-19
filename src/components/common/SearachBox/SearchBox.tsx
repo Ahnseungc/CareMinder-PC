@@ -1,6 +1,5 @@
 import { Box, Input, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { fetchNurses, Nurse, NurseList } from "./const/NurseList";
 import { useDebounce } from "./const/useDebounce";
 import { ListBoxProps, SearchInputProps } from "@models/search";
 
@@ -12,53 +11,93 @@ import { ReactComponent as UpArrow } from "@/assets/serachIcons/UpArrow.svg";
 //staff
 import { ReactComponent as UserStaff } from "@/assets/serachIcons/user-staff.svg";
 import { ReactComponent as UserSearch } from "@/assets/serachIcons/search-staff.svg";
-import { useRecoilValue } from "recoil";
-import { userState } from "@libraries/recoil";
-import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
-import { useBooleanState } from "@toss/react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { modalState, userState } from "@libraries/recoil";
+import { StaffSimpleListType, useGetStaffSimpleList } from "@hooks/queries/useGetStaffSimpleList";
+import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 
 export default function SearchBox() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>("");
-  const debouncedQuery = useDebounce(query, 500);
-  const [nurses, setNurses] = useState<Nurse[]>([]);
   const [searching, setSearching] = useState<boolean>(false);
+
+  const [nurses, setNurses] = useState<StaffSimpleListType[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const debouncedQuery = useDebounce(query, 1000);
+
   const [selectedNurse, setSelectedNurse] = useState<string>("");
   const user = useRecoilValue(userState);
-  const [openStaff, openStaffMoadl, closeStaffModal] = useBooleanState();
+  const setIsModalOpen = useSetRecoilState(modalState);
+  const setAutoCompleteId = useSetRecoilState(autoCompleteIdState);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsOpen(true);
-    setQuery(e.target.value);
-  };
+  const { data: staffList } = useGetStaffSimpleList();
 
   useEffect(() => {
-    const searchNurses = async () => {
-      setSearching(true);
-      const fetchedNurses = await fetchNurses(debouncedQuery);
-      setNurses(fetchedNurses);
-      setSearching(false);
-    };
+    if (staffList?.data) {
+      setNurses(staffList.data);
+    }
+  }, [staffList]);
 
-    searchNurses();
-  }, [debouncedQuery]);
+  const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = e.target.value;
+    setQuery(searchQuery);
 
-  const handleList = () => {
+    if (!staffList?.data) {
+      return;
+    }
+
+    if (searchQuery === "") {
+      setNurses(staffList.data);
+      return;
+    }
+
+    const filteredNurses = staffList.data.filter(nurse =>
+      nurse.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+    setNurses(filteredNurses);
+  };
+
+  const toggleList = () => {
+    if (!isOpen && staffList?.data) {
+      setNurses(staffList.data);
+    }
     setIsOpen(prev => !prev);
-    setNurses(NurseList);
   };
 
   const selectNurse = (nurseName: string) => {
     setSelectedNurse(nurseName);
     setIsOpen(false);
     setQuery("");
+    setIsModalOpen(true);
+    setAutoCompleteId(nurses.find(nurse => nurse.name === nurseName)?.loginId as string);
   };
+
+  const fetchNurses = async (query: string): Promise<StaffSimpleListType[]> => {
+    return nurses.filter(nurse => nurse.name.includes(query));
+  };
+
+  useEffect(() => {
+    const searchNurses = async () => {
+      if (!staffList?.data) {
+        return;
+      }
+      setSearching(true);
+      if (debouncedQuery) {
+        console.log(debouncedQuery);
+        const fetchedNurses = await fetchNurses(debouncedQuery);
+        setNurses(fetchedNurses);
+      } else {
+        setNurses(staffList.data);
+      }
+      setSearching(false);
+    };
+
+    searchNurses();
+  }, [debouncedQuery, staffList]);
 
   return (
     <>
-      <StaffSigninModal open={openStaff} onClose={closeStaffModal} />
       <SearchInputWrapper>
         <SearchInput
           ref={inputRef}
@@ -66,11 +105,15 @@ export default function SearchBox() {
           value={query}
           onChange={searchHandler}
           onFocus={() => setIsOpen(true)}
-          onBlur={() => setIsOpen(false)}
+          onBlur={() => {
+            setTimeout(() => {
+              setIsOpen(false);
+            }, 200);
+          }}
           placeholder="스태프 선택"
           disableUnderline={true}
           startAdornment={
-            <ListBox onClick={handleList} isEmpty={selectedNurse}>
+            <ListBox onClick={toggleList} isEmpty={selectedNurse}>
               {user?.type === "WARD" ? (
                 <User style={{ marginBottom: "2px" }} />
               ) : (
@@ -108,7 +151,7 @@ export default function SearchBox() {
                       key={index}
                       onMouseDown={() => {
                         selectNurse(nurse.name);
-                        openStaffMoadl();
+                        setIsModalOpen(true);
                       }}
                     >
                       {nurse.name}
