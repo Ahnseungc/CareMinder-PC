@@ -3,7 +3,6 @@ import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
-import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import { useStaffAccept, useStaffComplete } from "@hooks/mutation";
 import {
   useGetStaffPatientInprogress,
@@ -20,6 +19,25 @@ import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
+
+export const OPTIONS = [
+  {
+    role: "NURSE",
+    value: "간호사",
+  },
+  {
+    role: "DOCTOR",
+    value: "의사",
+  },
+  {
+    role: "NURSE_ASSISTANT",
+    value: "조무사",
+  },
+  {
+    role: "WORKER",
+    value: "직원",
+  },
+];
 
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);

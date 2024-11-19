@@ -14,8 +14,26 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
-import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import getPrevTimes from "@utils/getPrevTimes";
+
+export const OPTIONS = [
+  {
+    role: "NURSE",
+    value: "간호사",
+  },
+  {
+    role: "DOCTOR",
+    value: "의사",
+  },
+  {
+    role: "NURSE_ASSISTANT",
+    value: "조무사",
+  },
+  {
+    role: "WORKER",
+    value: "직원",
+  },
+];
 
 function StaffPatientListBox({
   isAccept,
@@ -48,7 +66,9 @@ function StaffPatientListBox({
   };
 
   const onOpenChatting = async (id: number) => {
-    if (!isAccept) return;
+    if (!isAccept) {
+      return;
+    }
 
     if (roomId !== id) {
       DisConnect(setRoomId!, roomId);
