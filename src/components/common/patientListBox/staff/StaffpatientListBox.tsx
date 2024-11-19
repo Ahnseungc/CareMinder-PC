@@ -15,25 +15,7 @@ import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
-
-export const OPTIONS = [
-  {
-    role: "NURSE",
-    value: "간호사",
-  },
-  {
-    role: "DOCTOR",
-    value: "의사",
-  },
-  {
-    role: "NURSE_ASSISTANT",
-    value: "조무사",
-  },
-  {
-    role: "WORKER",
-    value: "직원",
-  },
-];
+import { OPTIONS } from "@components/settings/const";
 
 function StaffPatientListBox({
   isAccept,

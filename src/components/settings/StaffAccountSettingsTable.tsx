@@ -18,6 +18,9 @@ import { useGetStaffList } from "@hooks/queries/useGetStaffList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useCreateArea from "@hooks/mutation/useCreateArea";
 import { OPTIONS } from "./const";
+import useChangeStaffRole from "@hooks/mutation/useChangeRole";
+import useChangeStaffArea from "@hooks/mutation/useChangeArea";
+import { toast } from "react-toastify";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -59,9 +62,81 @@ const StaffAccountSettingsTable = ({
   const setSelectStaffList = useSetRecoilState(staffListState);
 
   const { mutate: createArea } = useCreateArea();
+  const { mutate: changeStaffRole } = useChangeStaffRole();
+  const { mutate: changeStaffArea } = useChangeStaffArea();
 
   const { data: staffList, isLoading: staffLoading } = useGetStaffList();
   const { data: areaList, isLoading: areaLoading } = useGetAreaList();
+
+  const handleCreateArea = (newValue: string) => {
+    const areaData = {
+      name: newValue,
+      wardId: 1,
+    };
+    createArea(areaData);
+  };
+
+  const handleFilterBox = (menu: string) => {
+    setIsFilterOpen(prev => ({
+      menu: menu,
+      state: prev.menu === menu ? !prev.state : true,
+    }));
+  };
+
+  const handleCheckBox = (index: number) => {
+    setSelectIndex(prevList => {
+      if (prevList.includes(index)) {
+        return prevList.filter(item => item !== index);
+      } else {
+        return [...prevList, index];
+      }
+    });
+  };
+
+  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    // console.log(areaId);
+    // console.log(id);
+    changeStaffArea(
+      {
+        userIds: [id],
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          setIsClear(true);
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
+  };
+
+  const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const value = event.target.value;
+    const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
+    // console.log(staffRole);
+    // console.log(id);
+
+    changeStaffRole(
+      {
+        userIds: [id],
+        staffRole: staffRole,
+      },
+      {
+        onSuccess: () => {
+          setIsClear(true);
+          toast.success("직업 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("직업 변경을 실패했습니다");
+        },
+      },
+    );
+  };
 
   useEffect(() => {
     if (selectIndex.length === 0) {
@@ -84,21 +159,6 @@ const StaffAccountSettingsTable = ({
       setArea(areaList.map(item => item.name));
     }
   }, [areaList]);
-
-  const handleCreateArea = (newValue: string) => {
-    const areaData = {
-      name: newValue,
-      wardId: 1,
-    };
-    createArea(areaData);
-  };
-
-  const handleFilterBox = (menu: string) => {
-    setIsFilterOpen(prev => ({
-      menu: menu,
-      state: prev.menu === menu ? !prev.state : true,
-    }));
-  };
 
   useEffect(() => {
     const index = selectIndex.map(item => staffList?.data[item].staffId) as number[];
@@ -188,15 +248,7 @@ const StaffAccountSettingsTable = ({
                           },
                         }}
                         checked={selectIndex.includes(index)}
-                        onClick={() => {
-                          setSelectIndex(prevList => {
-                            if (prevList.includes(index)) {
-                              return prevList.filter(item => item !== index);
-                            } else {
-                              return [...prevList, index];
-                            }
-                          });
-                        }}
+                        onClick={() => handleCheckBox(index)}
                       />
                     </td>
                     <td>
@@ -220,7 +272,7 @@ const StaffAccountSettingsTable = ({
                             OPTIONS.find(option => option.role === row.staffRole)?.value as string
                           }
                           disabled={row.accountLocked}
-                          onChange={() => null}
+                          onChange={e => handleChangeRole(e, row.staffId)}
                         />
                       </ShortComBoxLayout>
                     </td>
@@ -231,7 +283,7 @@ const StaffAccountSettingsTable = ({
                           options={area}
                           value={row.areaName}
                           disabled={row.accountLocked}
-                          onChange={() => null}
+                          onChange={e => handleChangeArea(e, row.staffId)}
                           allowCustomInput={true}
                           onCustomInputAdd={handleCreateArea}
                         />
