@@ -148,6 +148,7 @@ const LeftSection = styled(SectionBase)({
 const RightSection = styled(SectionBase)({
   // 오른쪽 컨테이너에 스타일 적용
 });
+
 const Title = styled("div")`
   font-weight: 700;
   font-size: 24px;
