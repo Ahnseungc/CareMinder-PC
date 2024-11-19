@@ -9,6 +9,8 @@ import { ReactComponent as Sleep } from "@/assets/sleep.svg";
 import { Checkbox, Typography } from "@mui/material";
 import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
+import { toast } from "react-toastify";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -24,6 +26,8 @@ const TabletManagementTable: FC = () => {
   const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
 
+  const { mutate: changeTabletArea } = useChangeTabletArea();
+
   const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList();
   const { data: areaList, isLoading: areaLoading } = useGetAreaList();
 
@@ -38,6 +42,27 @@ const TabletManagementTable: FC = () => {
         setSelectIndex(wardTabletList.data.map((_, index) => index));
       }
     }
+  };
+
+  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    console.log(areaId);
+    console.log(id);
+    changeTabletArea(
+      {
+        userIds: [id],
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
   };
 
   useEffect(() => {
@@ -133,7 +158,7 @@ const TabletManagementTable: FC = () => {
                         placeholder={"구역"}
                         options={area}
                         value={row.areaName}
-                        onChange={() => null}
+                        onChange={e => handleChangeArea(e, row.tabletId)}
                         // allowCustomInput={true}
                         // onCustomInputAdd={newValue => {
                         //   setOptions([...options, newValue]);
