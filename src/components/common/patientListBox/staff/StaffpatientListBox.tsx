@@ -16,7 +16,6 @@ import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import getPrevTimes from "@utils/getPrevTimes";
-import { divide } from "lodash";
 
 function StaffPatientListBox({
   isAccept,

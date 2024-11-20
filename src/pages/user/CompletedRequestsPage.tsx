@@ -14,7 +14,7 @@ export default function CompletedRequestsPage() {
   const [myArea, setMyArea] = useState(false);
   const { data: getCompleted } = useGetCompleted(false);
   // const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
-
+  console.log(myArea);
   return (
     <Wrapper>
       <Title>완료 요청 히스토리</Title>

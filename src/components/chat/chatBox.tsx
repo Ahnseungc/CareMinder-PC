@@ -32,7 +32,9 @@ function ChatBox({ data, color }: ChatBoxProps) {
       <Wrapper leftOrRight={leftOrRight}>
         {leftOrRight === "left" ? (
           <>
-            <Title color={"white"}>{data.content}</Title>
+            <Title color={"white"} leftOrRight={leftOrRight}>
+              {data.content}
+            </Title>
             <Time>{getTime(data.createdAt)}</Time>
           </>
         ) : (
