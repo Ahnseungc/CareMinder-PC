@@ -6,15 +6,15 @@ import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamb
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
-// import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
   const [myArea, setMyArea] = useState(false);
-  const { data: getCompleted } = useGetCompleted(false);
-  // const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
-  console.log(myArea);
+  const { data: getCompleted } = useGetCompleted(myArea, isPatient);
+  const { data: getCompletedGroup } = useGetCompletedGroup(myArea, isPatient);
+
   return (
     <Wrapper>
       <Title>완료 요청 히스토리</Title>
@@ -25,23 +25,43 @@ export default function CompletedRequestsPage() {
       </SubTitle>
       <Container>
         <LeftWrapper>
-          {isPatient && (
-            <Person>
-              <PersonIcon /> <div>홍길동</div>
-              <HamburgerIcon />
-            </Person>
-          )}
-          <PatientList>
-            {getCompleted?.map(el => (
-              <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
-                <PatientBox
-                  key={el.patientRequestId}
-                  user="completedRequest"
-                  data={el}
-                  roomId={isFocusPatientData?.patientRequestId}
-                />
-              </div>
+          {isPatient &&
+            getCompletedGroup?.map(el => (
+              <>
+                <Person key={el.createdAt}>
+                  <PersonIcon /> <div>{el.patientSimple.patientName}</div>
+                  <HamburgerIcon />
+                </Person>
+
+                {el.patientRequests.map((element: any) => (
+                  <PatientList key={element.patientRequestId}>
+                    <div
+                      key={element.patientRequestId}
+                      onClick={() => setIsFocusPatientData(element)}
+                    >
+                      <PatientBox
+                        key={element.patientRequestId}
+                        user="completedRequest"
+                        data={element}
+                        roomId={isFocusPatientData?.patientRequestId}
+                      />
+                    </div>
+                  </PatientList>
+                ))}
+              </>
             ))}
+          <PatientList>
+            {!isPatient &&
+              getCompleted?.map(el => (
+                <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
+                  <PatientBox
+                    key={el.patientRequestId}
+                    user="completedRequest"
+                    data={el}
+                    roomId={isFocusPatientData?.patientRequestId}
+                  />
+                </div>
+              ))}
           </PatientList>
         </LeftWrapper>
         <RightWrapper>
