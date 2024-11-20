@@ -18,7 +18,7 @@ function ChatInput({
     "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다321321. ",
     "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsadsa ",
     "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.ewqwq ",
-    "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa ",
+    "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa ",
     "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다. ",
   ];
 
@@ -80,9 +80,10 @@ const WordView = styled("div")`
   width: 100%;
   padding: 10px;
   border-radius: 8px;
-  top: -70px;
+  bottom: 70px;
   left: 0;
   display: none;
+  white-space: normal;
 `;
 const Word = styled("div")<{ color: string }>`
   overflow: hidden;
