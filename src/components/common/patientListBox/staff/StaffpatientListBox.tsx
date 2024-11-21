@@ -137,7 +137,13 @@ function StaffPatientListBox({
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
             ))}
           </ChatContainer>
-          <ChatInput roomId={roomId} Icon={roleColorPick.sendIcon} setRoomId={setRoomId!} />
+
+          <ChatInput
+            roomId={roomId}
+            Icon={roleColorPick.sendIcon}
+            setRoomId={setRoomId!}
+            color={roleColorPick.dark}
+          />
         </div>
       )}
     </InnerContainer>
@@ -221,7 +227,7 @@ const Check = styled("div")<{ color: string }>`
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
-
+  width: 100%;
   max-height: 300px;
   overflow: auto;
 `;

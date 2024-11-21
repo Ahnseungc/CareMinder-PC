@@ -32,13 +32,17 @@ function ChatBox({ data, color }: ChatBoxProps) {
       <Wrapper leftOrRight={leftOrRight}>
         {leftOrRight === "left" ? (
           <>
-            <Title color={"white"}>{data.content}</Title>
+            <Title color={"white"} leftOrRight={leftOrRight}>
+              {data.content}
+            </Title>
             <Time>{getTime(data.createdAt)}</Time>
           </>
         ) : (
           <>
             <Time>{getTime(data.createdAt)}</Time>
-            <Title color={color}>{data.content}</Title>
+            <Title color={color} leftOrRight={leftOrRight}>
+              {data.content}
+            </Title>
           </>
         )}
       </Wrapper>
@@ -59,9 +63,10 @@ const Time = styled("div")`
   font-size: 13px;
   margin: 0 10px;
 `;
-const Title = styled("div")<{ color: string }>`
+const Title = styled("div")<{ color: string; leftOrRight: string }>`
   width: fit-content;
   background-color: ${({ color }) => color};
+  margin-right: ${({ leftOrRight }) => leftOrRight === "right" && "10px"};
   padding: 8px 15px;
   border-radius: 8px;
 `;
