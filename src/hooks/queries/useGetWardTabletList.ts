@@ -15,17 +15,37 @@ export type WardTabledListType = {
 
 export type GetWardTabletListResponse = {
   data: WardTabledListType[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 };
 
-export const getWardTabledList = async () => {
-  const res = await axiosInstance.get("/wards/tablet-list");
+export type GetWardTabletListProps = {
+  myArea: boolean;
+  page: number;
+  size: number;
+};
+
+export const getWardTabledList = async ({ myArea = false, page, size }: GetWardTabletListProps) => {
+  const res = await axiosInstance.get("/wards/tablet-list", {
+    params: {
+      myArea: myArea,
+      page: page,
+      size: size,
+    },
+  });
   // console.log(res.data);
   return res.data;
 };
 
-export const useGetWardTabletList = (): UseQueryResult<GetWardTabletListResponse, AxiosError> => {
+export const useGetWardTabletList = ({
+  myArea = false,
+  page,
+  size,
+}: GetWardTabletListProps): UseQueryResult<GetWardTabletListResponse, AxiosError> => {
   return useQuery<GetWardTabletListResponse, AxiosError>({
-    queryKey: ["ward-tablet-list"],
-    queryFn: getWardTabledList,
+    queryKey: ["ward-tablet-list", page],
+    queryFn: () => getWardTabledList({ myArea, page, size }),
   });
 };

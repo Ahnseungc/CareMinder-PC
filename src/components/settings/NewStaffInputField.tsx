@@ -30,6 +30,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
       message?: string;
     };
   }>({});
+  const [isAuthCheck, setIsAuthCheck] = useState<boolean>(false);
 
   const validationRules = {
     name: { required: "이름을 입력해주세요." },
@@ -63,6 +64,9 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     phoneNumber: {
       required: "전화번호를 입력해주세요.",
       pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
+    },
+    confirmPhoneNumber: {
+      required: "인증번호를 입력해주세요.",
     },
     email: {
       pattern: {
@@ -127,6 +131,10 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     }
   };
 
+  const handleAuthPhoneNumber = () => {
+    setIsAuthCheck(true);
+  };
+
   return (
     <FormControl key={name} error={Boolean(errors[name])} sx={{ gap: "3px" }}>
       <InputLabel htmlFor={name} required={name !== "email"}>
@@ -137,7 +145,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
         control={control}
         rules={validationRules[name]}
         render={({ field }) => (
-          <>
+          <div style={{ position: "relative" }}>
             {field.name === "occupation" ? (
               <div style={{ height: "56px" }}>
                 <CComboBox
@@ -147,6 +155,108 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                   onChange={handleChange}
                 />
               </div>
+            ) : field.name === "username" ? (
+              <>
+                <TextField
+                  {...field}
+                  id={name}
+                  placeholder={placeholder}
+                  type={inputTypes[name] || "text"}
+                  error={Boolean(errors[name])}
+                  onChange={e => {
+                    field.onChange(e);
+                    setDoubleCheck(false); // 값이 변경되면 doubleCheck 상태를 false로
+                    setValidState(prev => ({ ...prev, username: undefined })); // 성공 메시지도 제거
+                  }}
+                  sx={{ width: "65%" }}
+                />
+                <div
+                  style={{
+                    width: "110px",
+                    cursor: "pointer",
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                  }}
+                >
+                  <CButton
+                    buttontype="primarySpaureWhite"
+                    sx={{
+                      height: "56px",
+                    }}
+                    onClick={doubleCheck}
+                  >
+                    중복확인
+                  </CButton>
+                </div>
+              </>
+            ) : field.name === "phoneNumber" ? (
+              <>
+                <TextField
+                  {...field}
+                  id={name}
+                  placeholder={placeholder}
+                  type={inputTypes[name] || "text"}
+                  error={Boolean(errors[name])}
+                  onChange={e => {
+                    field.onChange(e);
+                  }}
+                  sx={{ width: "65%" }}
+                />
+                <div
+                  style={{
+                    width: "110px",
+                    cursor: "pointer",
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                  }}
+                >
+                  <CButton
+                    buttontype="primarySpaureWhite"
+                    sx={{
+                      height: "56px",
+                    }}
+                    onClick={handleAuthPhoneNumber}
+                  >
+                    인증번호 발송
+                  </CButton>
+                </div>
+                {isAuthCheck ? (
+                  <div style={{ marginTop: "24px", position: "relative" }}>
+                    <TextField
+                      {...field}
+                      id={name}
+                      placeholder={placeholder}
+                      type={inputTypes[name] || "text"}
+                      error={Boolean(errors[name])}
+                      onChange={e => {
+                        field.onChange(e);
+                      }}
+                      sx={{ width: "65%" }}
+                    />
+                    <div
+                      style={{
+                        width: "110px",
+                        cursor: "pointer",
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                      }}
+                    >
+                      <CButton
+                        buttontype="primarySpaureWhite"
+                        sx={{
+                          height: "56px",
+                        }}
+                        onClick={() => console.log("인증번호 확인 로직")}
+                      >
+                        인증번호 확인
+                      </CButton>
+                    </div>
+                  </div>
+                ) : null}
+              </>
             ) : (
               <TextField
                 {...field}
@@ -156,32 +266,10 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                 error={Boolean(errors[name])}
                 onChange={e => {
                   field.onChange(e);
-                  if (field.name === "username") {
-                    setDoubleCheck(false); // 값이 변경되면 doubleCheck 상태를 false로
-                    setValidState(prev => ({ ...prev, username: undefined })); // 성공 메시지도 제거
-                  }
-                }}
-                InputProps={{
-                  endAdornment:
-                    field.name === "username" ? (
-                      <div style={{ width: "150px", cursor: "pointer" }}>
-                        <CButton
-                          buttontype="primary"
-                          sx={{
-                            "&:hover": {
-                              backgroundColor: "#4759b2", // hover 시 더 진한 빨간색
-                            },
-                          }}
-                          onClick={doubleCheck}
-                        >
-                          중복확인
-                        </CButton>
-                      </div>
-                    ) : null,
                 }}
               />
             )}
-          </>
+          </div>
         )}
       />
       {errors[name] && <FormHelperText>{errors[name]?.message}</FormHelperText>}

@@ -11,6 +11,8 @@ import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { toast } from "react-toastify";
+import CButton from "@components/common/atom/C-Button";
+import PaginationComponent from "@components/common/pagination";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -25,11 +27,15 @@ const TabletManagementTable: FC = () => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const { mutate: changeTabletArea } = useChangeTabletArea();
-
-  const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList();
+  const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList({
+    myArea: false,
+    page: currentPage - 1,
+    size: 20,
+  });
   const { data: areaList, isLoading: areaLoading } = useGetAreaList();
+  const { mutate: changeTabletArea } = useChangeTabletArea();
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -63,6 +69,11 @@ const TabletManagementTable: FC = () => {
         },
       },
     );
+  };
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    console.log(page);
   };
 
   useEffect(() => {
@@ -201,7 +212,9 @@ const TabletManagementTable: FC = () => {
                   </td>
                   <td>
                     <ComBoxLayout>
-                      <Typography>{row.createdAt.substring(0, 10)}</Typography>
+                      <Typography>
+                        {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
+                      </Typography>
                     </ComBoxLayout>
                   </td>
                 </tr>
@@ -210,6 +223,17 @@ const TabletManagementTable: FC = () => {
           </tbody>
         </StTable>
       )}
+      <PaginationContainer>
+        <div style={{ width: "148px", position: "absolute", left: "60px" }}>
+          <CButton buttontype="primarySpaureWhite">삭제하기</CButton>
+        </div>
+        <div>
+          <PaginationComponent
+            totalPage={wardTabletList?.totalPages as number}
+            onChange={(e, page) => handleChangePage(e, page)}
+          />
+        </div>
+      </PaginationContainer>
     </>
   );
 };
@@ -258,4 +282,11 @@ const TabletButtonLayout = styled.div`
 
   display: flex;
   gap: 5px;
+`;
+
+const PaginationContainer = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
 `;
