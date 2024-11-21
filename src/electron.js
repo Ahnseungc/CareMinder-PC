@@ -1,3 +1,4 @@
+import { error } from "console";
 import { config } from "dotenv";
 import { app, BrowserWindow } from "electron";
 import { dirname, join } from "path";
@@ -17,15 +18,7 @@ function createWindow() {
     },
   });
 
-  win.loadURL(
-    isDev
-      ? "http://localhost:5173"
-      : format({
-          pathname: join(__dirname, "../build/index.html"),
-          protocol: "file:",
-          slashes: true,
-        }),
-  );
+  win.loadURL(isDev ? "http://localhost:5173" : "https://careminder.shop");
 }
 
 app.on("ready", createWindow);

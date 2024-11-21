@@ -166,6 +166,7 @@ const SectionBase = styled(Box)(({ theme }) => ({
   padding: "30px",
   borderRadius: "24px",
   backgroundColor: theme.palette.background.paper,
+  minHeight: "80vh",
 }));
 
 const LeftSection = styled(SectionBase)({
@@ -175,6 +176,7 @@ const LeftSection = styled(SectionBase)({
 const RightSection = styled(SectionBase)({
   // 오른쪽 컨테이너에 스타일 적용
 });
+
 const Title = styled("div")`
   font-weight: 700;
   font-size: 24px;
