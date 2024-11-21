@@ -6,6 +6,7 @@ import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 import { useNavigate } from "react-router-dom";
 import { SEVER_URL } from "@constants/baseUrl";
+import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 
 const signOut = async (type: UserType) => {
   let token;
@@ -44,6 +45,7 @@ const signOut = async (type: UserType) => {
 
 export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
+  const setAutoCompleteId = useSetRecoilState(autoCompleteIdState);
   const navigate = useNavigate();
 
   return useMutation({
@@ -68,6 +70,7 @@ export default function useSignOut(type: UserType) {
         setUserState(null);
         navigate("/sign-in");
       }
+      setAutoCompleteId("");
     },
     onError: error => {
       console.error("로그아웃 실패:", error);

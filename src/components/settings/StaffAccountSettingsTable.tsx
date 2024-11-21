@@ -50,6 +50,9 @@ const StaffAccountSettingsTable = ({
   isClear,
   setIsClear,
 }: StaffAccountSettingsTableProps) => {
+  const { data: staffList, isLoading: staffLoading } = useGetStaffList();
+  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
+
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
@@ -61,12 +64,12 @@ const StaffAccountSettingsTable = ({
   const isEditing = useRecoilValue(editingState);
   const setSelectStaffList = useSetRecoilState(staffListState);
 
+  const totalItems = staffList?.data?.length ?? 0;
+  const selectedItems = selectIndex.length;
+
   const { mutate: createArea } = useCreateArea();
   const { mutate: changeStaffRole } = useChangeStaffRole();
   const { mutate: changeStaffArea } = useChangeStaffArea();
-
-  const { data: staffList, isLoading: staffLoading } = useGetStaffList();
-  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
 
   const handleCreateArea = (newValue: string) => {
     const areaData = {
@@ -91,6 +94,16 @@ const StaffAccountSettingsTable = ({
         return [...prevList, index];
       }
     });
+  };
+
+  const handleSelectAll = () => {
+    if (staffList) {
+      if (selectIndex.length === staffList.data.length) {
+        setSelectIndex([]);
+      } else {
+        setSelectIndex(staffList.data.map((_, index) => index));
+      }
+    }
   };
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
@@ -181,15 +194,39 @@ const StaffAccountSettingsTable = ({
             <tr>
               {columns.map((column, index) => {
                 const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
-
+                if (column.field === "check") {
+                  return (
+                    <th key={index}>
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
+                            "& .MuiSvgIcon-root": {
+                              fill: "#B4C0FF",
+                            },
+                          },
+                        }}
+                        checked={selectIndex.length === staffList?.data.length}
+                        indeterminate={selectedItems > 0 && selectedItems < totalItems}
+                        onClick={handleSelectAll}
+                      />
+                    </th>
+                  );
+                }
                 return (
                   <th key={index}>
                     <>{column.headerName}</>
                     {shouldShowFilter && (
                       <>
-                        <span>
+                        <FilterLayout>
                           <Filter onClick={() => handleFilterBox(column.headerName)} />
-                        </span>
+                        </FilterLayout>
                         {isFilterOpen.state && isFilterOpen.menu === column.headerName ? (
                           <FilterBox>
                             <SelectArea>선택된 항목이 없습니다.</SelectArea>
@@ -410,15 +447,6 @@ const StTable = styled.table`
       padding-bottom: 11.52px;
       color: ${palette.text.primary};
       border-bottom: 1px solid ${palette.divider};
-
-      & span {
-        position: absolute;
-        top: -2px;
-        cursor: pointer;
-        &:hover {
-          color: #5d6dbe;
-        }
-      }
     }
   }
   & tbody {
@@ -429,6 +457,15 @@ const StTable = styled.table`
       text-align: center;
       border-bottom: 1px solid ${palette.divider};
     }
+  }
+`;
+
+const FilterLayout = styled.span`
+  position: absolute;
+  top: -2px;
+  cursor: pointer;
+  &:hover {
+    color: #5d6dbe;
   }
 `;
 
