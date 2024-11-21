@@ -20,8 +20,17 @@ export default function CompletedRequestsPage() {
       <Title>완료 요청 히스토리</Title>
       <SubTitle>
         <span>완료된 내 구역 요청 리스트</span>
-        <CSwitch onChange={() => setMyArea(prev => !prev)} />
-        <span>환자별로 보기</span> <CSwitch onChange={() => setIsPatient(prev => !prev)} />
+        <CSwitch
+          onChange={() => {
+            setMyArea(prev => !prev), setIsFocusPatientData(null);
+          }}
+        />
+        <span>환자별로 보기</span>
+        <CSwitch
+          onChange={() => {
+            setIsPatient(prev => !prev), setIsFocusPatientData(null);
+          }}
+        />
       </SubTitle>
       <Container>
         <LeftWrapper>
