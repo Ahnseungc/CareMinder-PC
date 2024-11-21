@@ -21,6 +21,7 @@ import useChangeStaffRole from "@hooks/mutation/useChangeRole";
 import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 import { toast } from "react-toastify";
 import { TimeSince } from "./TimeSince";
+import PaginationComponent from "@components/common/pagination";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -50,7 +51,12 @@ const StaffAccountSettingsTable = ({
   isClear,
   setIsClear,
 }: StaffAccountSettingsTableProps) => {
-  const { data: staffList, isLoading: staffLoading } = useGetStaffList();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const { data: staffList, isLoading: staffLoading } = useGetStaffList({
+    page: currentPage - 1,
+    size: 20,
+  });
   const { data: areaList, isLoading: areaLoading } = useGetAreaList();
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -149,6 +155,11 @@ const StaffAccountSettingsTable = ({
         },
       },
     );
+  };
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    console.log(page);
   };
 
   useEffect(() => {
@@ -429,6 +440,14 @@ const StaffAccountSettingsTable = ({
           </tbody>
         </StTable>
       )}
+      <PaginationContainer>
+        <div>
+          <PaginationComponent
+            totalPage={staffList?.totalPages as number}
+            onChange={(e, page) => handleChangePage(e, page)}
+          />
+        </div>
+      </PaginationContainer>
     </>
   );
 };
@@ -537,4 +556,8 @@ const EmptyStaffContainer = styled(Box)({
 
   minHeight: "600px",
   marginBottom: "100px",
+});
+
+const PaginationContainer = styled(Box)({
+  marginTop: "60px",
 });

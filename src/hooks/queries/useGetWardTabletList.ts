@@ -19,7 +19,7 @@ export type GetWardTabletListResponse = {
 
 export const getWardTabledList = async () => {
   const res = await axiosInstance.get("/wards/tablet-list");
-  console.log(res.data);
+  // console.log(res.data);
   return res.data;
 };
 
