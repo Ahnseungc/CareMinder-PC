@@ -46,7 +46,7 @@ export default function useSignOut(type: UserType) {
         navigate("/");
       } else {
         setUserState(null);
-        navigaet("/sign-in");
+        navigate("/sign-in");
       }
     },
     onError: error => {
