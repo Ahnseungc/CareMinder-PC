@@ -9,11 +9,7 @@ export type UserTypes = {
     | "completedRequest"
     | "completedRequestFocus";
   data: RequestsData;
-  onWaitOrAccept?: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    id: number,
-    type: "wait" | "accept",
-  ) => void;
+  onMutates?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number, type: string) => void;
   roomId?: number | null;
   setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
   refetchProps?: RefetchProps;
@@ -22,11 +18,7 @@ export type UserTypes = {
 export type MainListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
-  onWaitOrAccept: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    id: number,
-    type: "wait" | "accept",
-  ) => void;
+  onMutates: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number, type: string) => void;
   roomId?: number | null;
   setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
   refetchProps?: RefetchProps;
@@ -35,21 +27,13 @@ export type MainListBoxProps = {
 export type StaffListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
-  onWaitOrAccept: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    id: number,
-    type: "wait" | "accept",
-  ) => void;
+  onMutates: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number, type: string) => void;
   roomId?: number | null;
 };
 
 export type StaffGroupListBoxProps = {
   data: staffGroup;
-  onWaitOrAccept: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    id: number,
-    type: "wait" | "accept",
-  ) => void;
+  onMutates: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number, type: string) => void;
   roomId?: number | null;
   setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;
 };

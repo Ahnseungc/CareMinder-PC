@@ -25,7 +25,7 @@ export default function CompletedRequestsPage() {
   };
   const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
 
-  const onWaitOrAccept = (e: React.MouseEvent, id: number) => {
+  const onMutates = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
     mutateAccept(id);
     setIsFocusPatientData(null);
@@ -60,7 +60,7 @@ export default function CompletedRequestsPage() {
                         user="completedRequest"
                         data={element}
                         roomId={isFocusPatientData?.patientRequestId}
-                        onWaitOrAccept={onWaitOrAccept}
+                        onMutates={onMutates}
                       />
                     </div>
                   </PatientList>
@@ -76,7 +76,7 @@ export default function CompletedRequestsPage() {
                     user="completedRequest"
                     data={el}
                     roomId={isFocusPatientData?.patientRequestId}
-                    onWaitOrAccept={onWaitOrAccept}
+                    onMutates={onMutates}
                   />
                 </div>
               ))}
@@ -89,7 +89,7 @@ export default function CompletedRequestsPage() {
               <PatientBox
                 user="completedRequestFocus"
                 data={isFocusPatientData}
-                onWaitOrAccept={onWaitOrAccept}
+                onMutates={onMutates}
               />
             </>
           )}

@@ -9,7 +9,7 @@ import ChatBox from "@components/chat/chatBox";
 import { LoadChatHistory } from "@components/chat/chattingModel";
 import { Message } from "@models/staff";
 
-function CompletedPatientListBox({ isAccept, data, onWaitOrAccept, roomId }: StaffListBoxProps) {
+function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
@@ -59,9 +59,7 @@ function CompletedPatientListBox({ isAccept, data, onWaitOrAccept, roomId }: Sta
 
           {isOptions && (
             <Options>
-              <Option onClick={e => onWaitOrAccept(e, data.patientRequestId, "accept")}>
-                복원하기
-              </Option>
+              <Option onClick={e => onMutates(e, data.patientRequestId, "accept")}>복원하기</Option>
 
               <Option onClick={() => console.log("퇴원하기")}>퇴원 처리하기</Option>
             </Options>
@@ -92,7 +90,7 @@ function CompletedPatientListBox({ isAccept, data, onWaitOrAccept, roomId }: Sta
           <RestoreWrapper>
             <Restore
               color={roleColorPick.dark}
-              onClick={e => onWaitOrAccept(e, data.patientRequestId, "accept")}
+              onClick={e => onMutates(e, data.patientRequestId, "accept")}
             >
               요청 복원하기
             </Restore>

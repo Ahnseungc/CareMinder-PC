@@ -43,7 +43,7 @@ function ChatInput({
     <>
       <WordComplete id="word">
         {testData.map(el => (
-          <Word color={color} onClick={e => onWordComplete(e, el)}>
+          <Word key={el} color={color} onClick={e => onWordComplete(e, el)}>
             {el}
             <WordView>{el}</WordView>
           </Word>

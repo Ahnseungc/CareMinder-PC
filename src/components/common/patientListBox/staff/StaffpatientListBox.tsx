@@ -21,7 +21,7 @@ import getPrevTimes from "@utils/getPrevTimes";
 function StaffPatientListBox({
   isAccept,
   data,
-  onWaitOrAccept,
+  onMutates,
   roomId,
   setRoomId,
   refetchProps,
@@ -125,7 +125,7 @@ function StaffPatientListBox({
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
         </Check>
