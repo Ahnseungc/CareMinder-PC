@@ -35,6 +35,11 @@ export type MainListBoxProps = {
 export type StaffListBoxProps = {
   isAccept: boolean;
   data: RequestsData;
+  onWaitOrAccept: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    id: number,
+    type: "wait" | "accept",
+  ) => void;
   roomId?: number | null;
 };
 
@@ -43,7 +48,7 @@ export type StaffGroupListBoxProps = {
   onWaitOrAccept: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     id: number,
-    type: "accept",
+    type: "wait" | "accept",
   ) => void;
   roomId?: number | null;
   setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;

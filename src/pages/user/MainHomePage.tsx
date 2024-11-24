@@ -136,12 +136,14 @@ const SubTitle = styled("div")`
   justify-content: space-between;
 `;
 const SubTitleLeft = styled("div")`
+  cursor: pointer;
   & > span {
     margin-right: 18px;
   }
 `;
 const SubTitleRight = styled("div")<{ isDisable: boolean }>`
   display: flex;
+  cursor: pointer;
   align-items: center;
   height: 35px;
   & > * {

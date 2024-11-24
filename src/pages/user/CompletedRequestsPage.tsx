@@ -7,13 +7,29 @@ import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
 import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+import useCompleteAccept from "@hooks/mutation/useCompleteAccept";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
   const [myArea, setMyArea] = useState(false);
-  const { data: getCompleted } = useGetCompleted(myArea, isPatient);
-  const { data: getCompletedGroup } = useGetCompletedGroup(myArea, isPatient);
+  const { data: getCompleted, refetch: refetchComplete } = useGetCompleted(myArea, isPatient);
+  const { data: getCompletedGroup, refetch: refetchCompletedGroup } = useGetCompletedGroup(
+    myArea,
+    isPatient,
+  );
+  const refetchProps = {
+    refetchComplete,
+    refetchCompletedGroup,
+    isPatient,
+  };
+  const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
+
+  const onWaitOrAccept = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    mutateAccept(id);
+    setIsFocusPatientData(null);
+  };
 
   return (
     <Wrapper>
@@ -44,6 +60,7 @@ export default function CompletedRequestsPage() {
                         user="completedRequest"
                         data={element}
                         roomId={isFocusPatientData?.patientRequestId}
+                        onWaitOrAccept={onWaitOrAccept}
                       />
                     </div>
                   </PatientList>
@@ -59,6 +76,7 @@ export default function CompletedRequestsPage() {
                     user="completedRequest"
                     data={el}
                     roomId={isFocusPatientData?.patientRequestId}
+                    onWaitOrAccept={onWaitOrAccept}
                   />
                 </div>
               ))}
@@ -68,7 +86,11 @@ export default function CompletedRequestsPage() {
           {isFocusPatientData && (
             <>
               {isPatient && <Empty />}
-              <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
+              <PatientBox
+                user="completedRequestFocus"
+                data={isFocusPatientData}
+                onWaitOrAccept={onWaitOrAccept}
+              />
             </>
           )}
         </RightWrapper>

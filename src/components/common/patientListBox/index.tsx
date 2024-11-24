@@ -43,9 +43,16 @@ export default function PatientBox({
             />
           ),
           completedRequest: (
-            <CompletedPatientListBox isAccept={false} data={data} roomId={roomId} />
+            <CompletedPatientListBox
+              isAccept={false}
+              data={data}
+              onWaitOrAccept={onWaitOrAccept!}
+              roomId={roomId}
+            />
           ),
-          completedRequestFocus: <CompletedPatientListBox isAccept={true} data={data} />,
+          completedRequestFocus: (
+            <CompletedPatientListBox isAccept={true} data={data} onWaitOrAccept={onWaitOrAccept!} />
+          ),
         }}
       />
     </>

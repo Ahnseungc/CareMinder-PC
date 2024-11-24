@@ -41,6 +41,11 @@ export type RefetchProps = {
   inprogressGroupRefetch: VoidFn;
   staffAcceptIsGroup: boolean;
 };
+export type CompleteRefetchProps = {
+  refetchComplete: VoidFn;
+  refetchCompletedGroup: VoidFn;
+  isPatient: boolean;
+};
 
 export type Message = {
   content: string;
