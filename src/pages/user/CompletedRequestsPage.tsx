@@ -8,6 +8,7 @@ import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
 import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
 import useCompleteAccept from "@hooks/mutation/useCompleteAccept";
+import useCompleteDischargeByWeb from "@hooks/mutation/useCompleteDischargeByWeb";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
@@ -24,10 +25,16 @@ export default function CompletedRequestsPage() {
     isPatient,
   };
   const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
+  const { mutate: mutateDischarge } = useCompleteDischargeByWeb(refetchProps);
 
-  const onMutates = (e: React.MouseEvent, id: number) => {
+  const onMutates = (e: React.MouseEvent, id: number, type: string) => {
     e.stopPropagation();
-    mutateAccept(id);
+    if (type === "accept") {
+      mutateAccept(id);
+    }
+    if (type === "discharge") {
+      mutateDischarge(id);
+    }
     setIsFocusPatientData(null);
   };
 
