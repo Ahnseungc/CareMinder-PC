@@ -15,32 +15,60 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async error => {
-    if (error.response.status === 401) {
-      const isAccessToken =
-        Cookies.get("accessToken") !== undefined ||
-        Cookies.get("accessTokenStaff") !== undefined ||
-        Cookies.get("accessTokenAdmin") !== undefined;
+    if (error.response && error.response.status === 401) {
+      const userState = localStorage.getItem("recoil-persist");
+      let userType = "";
 
-      if (!isAccessToken) {
-        return Promise.reject(error);
+      if (userState) {
+        const userStateObj = JSON.parse(userState as string);
+        userType = userStateObj.userState.type;
       }
 
-      if (error.response.status === 401) {
-        const res = await axios.post(`${SEVER_URL}/users/refresh-token`, {
-          accessToekn: Cookies.get("accessToken"),
-          refreshToken: Cookies.get("refreshToken"),
+      let refreshEndpoint = "";
+      let accessTokenKey = "";
+      let refreshTokenKey = "";
+
+      switch (userType) {
+        case "WARD":
+          accessTokenKey = "accessTokenWard";
+          refreshTokenKey = "refreshTokenWard";
+          refreshEndpoint = `${SEVER_URL}/users/refresh-token`;
+          break;
+        case "STAFF":
+          accessTokenKey = "accessTokenStaff";
+          refreshTokenKey = "refreshTokenStaff";
+          refreshEndpoint = `${SEVER_URL}/users/refresh-token`;
+          break;
+        case "ADMIN":
+          accessTokenKey = "accessTokenAdmin";
+          refreshTokenKey = "refreshTokenAdmin";
+          refreshEndpoint = `${SEVER_URL}/users/refresh-token`;
+          break;
+        default:
+          return Promise.reject(error);
+      }
+
+      try {
+        const response = await axios.post(refreshEndpoint, {
+          accessToken: Cookies.get(accessTokenKey),
+          refreshToken: Cookies.get(refreshTokenKey),
         });
-        if (res.data === false) {
-          return false;
+
+        if (!response.data) {
+          return Promise.reject(new Error("토큰 리프레쉬 실패"));
         }
-        Cookies.set("accessToken", res.data.accessToken);
-        Cookies.set("refreshToken", res.data.refreshToken);
+
+        Cookies.set(accessTokenKey, response.data.accessToken);
+        Cookies.set(refreshTokenKey, response.data.refreshToken);
+
+        // 원래 요청 재시도
+        error.config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+        return axiosInstance.request(error.config);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
       }
-
-      // refresh
-
-      return Promise.reject(error);
     }
+
     return Promise.reject(error);
   },
 );

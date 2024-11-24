@@ -19,8 +19,6 @@ const StaffNoticePage = () => {
     selected?.noticeId ?? 0,
   );
 
-  // const [size, setSize] = useState(7);
-
   const onChangeSelected = (id: number) => {
     const select = getNotices.find((notice: NoticeType) => id === notice.noticeId);
     setSelected(select);
