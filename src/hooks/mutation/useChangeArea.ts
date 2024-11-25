@@ -20,7 +20,7 @@ export default function useChangeStaffArea() {
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
     },
     onError: error => {
-      console.error("직업 변경 실패", error);
+      console.error("구역 변경 실패", error);
     },
   });
 }

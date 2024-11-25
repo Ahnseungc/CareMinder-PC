@@ -20,17 +20,34 @@ export type StaffListType = {
 
 export type GetStaffListResponse = {
   data: StaffListType[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 };
 
-export const getStaffList = async () => {
-  const res = await axiosInstance.get("/wards/staff-list");
-  console.log(res.data);
+export type GetStaffListProps = {
+  page: number;
+  size: number;
+};
+
+export const getStaffList = async ({ page, size }: GetStaffListProps) => {
+  const res = await axiosInstance.get("/wards/staff-list", {
+    params: {
+      page: page,
+      size: size,
+    },
+  });
+  // console.log(res.data);
   return res.data;
 };
 
-export const useGetStaffList = (): UseQueryResult<GetStaffListResponse, AxiosError> => {
+export const useGetStaffList = ({
+  page,
+  size,
+}: GetStaffListProps): UseQueryResult<GetStaffListResponse, AxiosError> => {
   return useQuery<GetStaffListResponse, AxiosError>({
-    queryKey: ["staffList"],
-    queryFn: getStaffList,
+    queryKey: ["staffList", page],
+    queryFn: () => getStaffList({ page, size }),
   });
 };

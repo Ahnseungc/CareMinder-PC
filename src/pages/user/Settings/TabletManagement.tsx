@@ -1,8 +1,6 @@
 import { Box, styled } from "@mui/system";
-import PaginationComponent from "@components/common/pagination";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import TabletManagementTable from "@components/settings/TabletManagementTable";
-import CButton from "@components/common/atom/C-Button";
 
 import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 
@@ -39,15 +37,6 @@ export const TabletManagement = () => {
         <div style={{ width: "400px" }}></div>
       </BodyTitleContainer>
       <TabletManagementTable />
-      <PaginationContainer>
-        <div style={{ width: "148px" }}></div>
-        <div>
-          <PaginationComponent totalPage={5} />
-        </div>
-        <div style={{ width: "148px" }}>
-          <CButton buttontype="primarySpaureWhite">삭제하기</CButton>
-        </div>
-      </PaginationContainer>
     </>
   );
 };
@@ -57,12 +46,6 @@ const BodyTitleContainer = styled(Box)({
   justifyContent: "space-between",
   alignItems: "center",
   margin: "60px 0 40px 0",
-});
-
-const PaginationContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "60px",
 });
 
 const Title = styled(Typography)(({ theme }) => ({

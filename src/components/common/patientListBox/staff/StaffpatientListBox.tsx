@@ -14,9 +14,8 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
-import { OPTIONS } from "@components/settings/const/index";
-
 import getPrevTimes from "@utils/getPrevTimes";
+import { OPTIONS } from "@components/settings/const";
 
 function StaffPatientListBox({
   isAccept,
@@ -49,7 +48,9 @@ function StaffPatientListBox({
   };
 
   const onOpenChatting = async (id: number) => {
-    if (!isAccept) return;
+    if (!isAccept) {
+      return;
+    }
 
     if (roomId !== id) {
       DisConnect(setRoomId!, roomId);

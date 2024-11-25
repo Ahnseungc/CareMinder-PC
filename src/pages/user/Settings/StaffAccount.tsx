@@ -1,11 +1,9 @@
 import { Box, styled } from "@mui/system";
 import CButton from "@components/common/atom/C-Button";
-import PaginationComponent from "@components/common/pagination";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
 import ChangeModal from "@components/settings/modal/ChangeModal";
@@ -52,6 +50,24 @@ export const StaffAccount = () => {
   const { mutate: changeStaffRole } = useChangeStaffRole();
   const { mutate: changeStaffArea } = useChangeStaffArea();
 
+  const [isSticky, setIsSticky] = useState(false);
+  const editContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (editContainerRef.current) {
+        const rect = editContainerRef.current.getBoundingClientRect();
+        const initialPosition = editContainerRef.current.offsetTop;
+        setIsSticky(rect.top <= 70 && window.scrollY > initialPosition);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleCreateArea = (newValue: string) => {
     const areaData = {
       name: newValue,
@@ -69,6 +85,7 @@ export const StaffAccount = () => {
   const handleClear = () => {
     setIsEditing([]);
     setIsClear(true);
+    setIsSticky(false);
   };
 
   const handleTOS = () => {
@@ -192,7 +209,15 @@ export const StaffAccount = () => {
 
           <BodyTitleContainer>
             {isEditing.length !== 0 ? (
-              <EditContainer>
+              <EditContainer
+                ref={editContainerRef}
+                style={{
+                  position: isSticky ? "fixed" : "relative",
+                  top: isSticky ? "70px" : "auto",
+                  width: "calc(100% - 200px)",
+                  zIndex: isSticky ? 10 : "auto",
+                }}
+              >
                 <X style={{ cursor: "pointer" }} onClick={handleClear} />
                 <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
                   {isEditing.length}개 항목 선택됨
@@ -265,11 +290,6 @@ export const StaffAccount = () => {
               isClear={isClear}
               setIsClear={setIsClear}
             />
-            <PaginationContainer>
-              <div>
-                <PaginationComponent totalPage={5} />
-              </div>
-            </PaginationContainer>
           </>
         </>
       )}
@@ -293,10 +313,6 @@ const StaffButtonContainer = styled(Box)({
   width: "400px",
 });
 
-const PaginationContainer = styled(Box)({
-  marginTop: "60px",
-});
-
 const Title = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
   textTransform: "uppercase",
@@ -305,20 +321,24 @@ const Title = styled(Typography)(({ theme }) => ({
 }));
 
 const EditContainer = styled(Box)(({ theme }) => ({
+  position: "sticky",
+  minWidth: "827px",
+  width: "calc(100% - 200px)",
+
   display: "flex",
   justifyContent: "start",
   alignItems: "center",
   gap: "20px",
 
-  width: "100%",
   height: "60px",
   padding: "15px 12px",
 
   border: "2px solid #5D6DBE",
   borderRadius: "100px",
 
-  opacity: "0.6",
   color: theme.palette.text.dark,
+  backgroundColor: "#FFFFFF",
+  zIndex: 10,
 }));
 
 const EditMenu = styled(Typography)({

@@ -1,29 +1,51 @@
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 import { useNavigate } from "react-router-dom";
+import { SEVER_URL } from "@constants/baseUrl";
+import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 
 const signOut = async (type: UserType) => {
+  let token;
+
   if (type === "WARD") {
+    token = Cookies.get("accessTokenWard");
+    console.log("병동" + token);
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");
   }
   if (type === "STAFF") {
+    token = Cookies.get("accessTokenStaff");
+    console.log("스태프" + token);
     Cookies.set("accessTokenStaff", "");
     Cookies.set("refreshTokenStaff", "");
   }
   if (type === "ADMIN") {
+    token = Cookies.get("accessTokenAdmin");
+    console.log("어드민" + token);
     Cookies.set("accessTokenAdmin", "");
     Cookies.set("refreshTokenAdmin", "");
   }
+  const res = await axios.post(
+    `${SEVER_URL}/users/logout`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  console.log(res);
 
   return true;
 };
 
 export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
+  const setAutoCompleteId = useSetRecoilState(autoCompleteIdState);
   const navigate = useNavigate();
 
   return useMutation({
@@ -46,8 +68,9 @@ export default function useSignOut(type: UserType) {
         navigate("/");
       } else {
         setUserState(null);
-        navigaet("/sign-in");
+        navigate("/sign-in");
       }
+      setAutoCompleteId("");
     },
     onError: error => {
       console.error("로그아웃 실패:", error);
