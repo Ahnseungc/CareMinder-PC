@@ -53,7 +53,7 @@ export default function StaffHomePage() {
   const { mutate: postAccept } = useStaffAccept(refetchProps);
   const { mutate: patchComplete } = useStaffComplete(refetchProps);
 
-  const onWaitOrAccept = (e: React.MouseEvent, id: number, type: "wait" | "accept") => {
+  const onMutates = (e: React.MouseEvent, id: number, type: string) => {
     e.stopPropagation();
     if (type === "wait") {
       return postAccept(id);
@@ -121,7 +121,7 @@ export default function StaffHomePage() {
             key={el.patientRequestId}
             user="staffWait"
             data={el}
-            onWaitOrAccept={onWaitOrAccept}
+            onMutates={onMutates}
             refetchProps={refetchProps}
           />
         ))}
@@ -140,7 +140,7 @@ export default function StaffHomePage() {
               key={el.patientRequestId}
               user="staffAccept"
               data={el}
-              onWaitOrAccept={onWaitOrAccept}
+              onMutates={onMutates}
               roomId={roomId}
               setRoomId={setRoomId}
               refetchProps={refetchProps}
@@ -149,12 +149,7 @@ export default function StaffHomePage() {
         {/* 디자인 나오기 전이여서 주석 처리 */}
         {staffAcceptIsGroup &&
           getInprogressGroup?.map(el => (
-            <StaffGroupList
-              data={el}
-              onWaitOrAccept={onWaitOrAccept}
-              roomId={roomId}
-              setRoomId={setRoomId}
-            />
+            <StaffGroupList data={el} onMutates={onMutates} roomId={roomId} setRoomId={setRoomId} />
           ))}
       </RightSection>
     </>

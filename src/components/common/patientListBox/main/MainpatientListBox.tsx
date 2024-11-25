@@ -5,7 +5,7 @@ import { MainListBoxProps } from "@models/home";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import getPrevTimes from "@utils/getPrevTimes";
 
-function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps) {
+function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   return (
@@ -20,7 +20,7 @@ function MainPatientListBox({ isAccept, data, onWaitOrAccept }: MainListBoxProps
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? (
             <CheckIcon style={{ cursor: "pointer" }} />

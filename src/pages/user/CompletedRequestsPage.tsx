@@ -7,13 +7,36 @@ import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
 import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+import useCompleteAccept from "@hooks/mutation/useCompleteAccept";
+import useCompleteDischargeByWeb from "@hooks/mutation/useCompleteDischargeByWeb";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
   const [myArea, setMyArea] = useState(false);
-  const { data: getCompleted } = useGetCompleted(myArea, isPatient);
-  const { data: getCompletedGroup } = useGetCompletedGroup(myArea, isPatient);
+  const { data: getCompleted, refetch: refetchComplete } = useGetCompleted(myArea, isPatient);
+  const { data: getCompletedGroup, refetch: refetchCompletedGroup } = useGetCompletedGroup(
+    myArea,
+    isPatient,
+  );
+  const refetchProps = {
+    refetchComplete,
+    refetchCompletedGroup,
+    isPatient,
+  };
+  const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
+  const { mutate: mutateDischarge } = useCompleteDischargeByWeb(refetchProps);
+
+  const onMutates = (e: React.MouseEvent, id: number, type: string) => {
+    e.stopPropagation();
+    if (type === "accept") {
+      mutateAccept(id);
+    }
+    if (type === "discharge") {
+      mutateDischarge(id);
+    }
+    setIsFocusPatientData(null);
+  };
 
   return (
     <Wrapper>
@@ -53,6 +76,7 @@ export default function CompletedRequestsPage() {
                         user="completedRequest"
                         data={element}
                         roomId={isFocusPatientData?.patientRequestId}
+                        onMutates={onMutates}
                       />
                     </div>
                   </PatientList>
@@ -68,6 +92,7 @@ export default function CompletedRequestsPage() {
                     user="completedRequest"
                     data={el}
                     roomId={isFocusPatientData?.patientRequestId}
+                    onMutates={onMutates}
                   />
                 </div>
               ))}
@@ -77,7 +102,11 @@ export default function CompletedRequestsPage() {
           {isFocusPatientData && (
             <>
               {isPatient && <Empty />}
-              <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
+              <PatientBox
+                user="completedRequestFocus"
+                data={isFocusPatientData}
+                onMutates={onMutates}
+              />
             </>
           )}
         </RightWrapper>

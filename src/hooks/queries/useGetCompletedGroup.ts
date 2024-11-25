@@ -7,10 +7,10 @@ const getCompletedGroup = async (myArea: boolean) => {
 };
 
 export default function useGetCompletedGroup(myArea: boolean, isPatient: boolean) {
-  const { data, isLoading } = useQuery<any[], boolean>({
+  const { data, refetch } = useQuery<any[], boolean>({
     queryKey: ["useGetCompletedGroup", myArea, isPatient],
     queryFn: () => getCompletedGroup(myArea),
     enabled: isPatient,
   });
-  return { data, isLoading };
+  return { data, refetch };
 }

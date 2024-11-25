@@ -17,7 +17,7 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  const onWaitOrAccept = () => {
+  const onMutates = () => {
     if (userStatus?.type === "WARD") {
       return setIsModal(true);
     }
@@ -73,12 +73,7 @@ export default function MainHomePage() {
             </SubTitleRight>
           </SubTitle>
           {getPendingData?.map(el => (
-            <PatientBox
-              key={el.patientRequestId}
-              user="mainWait"
-              data={el}
-              onWaitOrAccept={onWaitOrAccept}
-            />
+            <PatientBox key={el.patientRequestId} user="mainWait" data={el} onMutates={onMutates} />
           ))}
         </LeftSection>
         <RightSection>
@@ -96,7 +91,7 @@ export default function MainHomePage() {
               key={el.patientRequestId}
               user="mainAccept"
               data={el}
-              onWaitOrAccept={onWaitOrAccept}
+              onMutates={onMutates}
             />
           ))}
         </RightSection>
@@ -136,12 +131,14 @@ const SubTitle = styled("div")`
   justify-content: space-between;
 `;
 const SubTitleLeft = styled("div")`
+  cursor: pointer;
   & > span {
     margin-right: 18px;
   }
 `;
 const SubTitleRight = styled("div")<{ isDisable: boolean }>`
   display: flex;
+  cursor: pointer;
   align-items: center;
   height: 35px;
   & > * {
