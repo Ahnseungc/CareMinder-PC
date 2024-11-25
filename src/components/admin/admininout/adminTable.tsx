@@ -27,10 +27,13 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
   return (
     <StTable>
       <thead>
-        {columns.map(column => {
-          return <th key={column.id}>{column.headerName}</th>;
-        })}
+        <tr>
+          {columns.map(column => {
+            return <th key={column.id}>{column.headerName}</th>;
+          })}
+        </tr>
       </thead>
+
       <tbody>
         {getTablet?.map(tablet => {
           return (
@@ -141,7 +144,6 @@ const StTable = styled.table`
 
   & tbody {
     width: 100%;
-
     & tr > td {
       padding-bottom: 11.52px;
       padding-top: 11.52px;
