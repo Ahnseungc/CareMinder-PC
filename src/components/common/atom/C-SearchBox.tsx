@@ -28,7 +28,7 @@ const CSearchBox: FC<CSearchBoxProps> = ({ select, value, onChange, placeholder,
         onChange={onChange}
         placeholder={placeholder}
         disableUnderline={true}
-        borderColor={borderColor}
+        bordercolor={borderColor}
         select={select}
         startAdornment={
           select && (
