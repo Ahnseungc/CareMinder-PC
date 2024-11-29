@@ -1,3 +1,4 @@
+import AccountActiveModal from "@components/settings/modal/AccountActive";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
@@ -20,6 +21,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const form = useForm<SigninFormData>();
   const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
+  const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState();
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
   /* 어드민 계정 로그인 시 에러 핸들링*/
@@ -30,6 +32,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
       if (error?.response.data.statusCode === "401") {
         /** 계정 잠김 에러 핸들링 */
         setIsModalType("waiting");
+        onOpenAccountModal();
         // @ts-ignore
       } else if (error?.response.data.statusCode === "404") {
         /** 존재하지 않는 계정 에러 핸들링 */
@@ -45,6 +48,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   return (
     <>
+      <AccountActiveModal open={isopenAccountModal} onClose={closeAccountModal} />
       <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
       <Container item xs>
         <Content>
