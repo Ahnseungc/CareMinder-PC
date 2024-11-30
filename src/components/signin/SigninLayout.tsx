@@ -1,5 +1,6 @@
 import AccountActiveModal from "@components/settings/modal/AccountActive";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
+import StopAccountActiveModal from "@components/settings/modal/StopAccountActive";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
@@ -21,7 +22,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const form = useForm<SigninFormData>();
   const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
-  const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState();
+
+  const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState(); // 계정 활성화 Modal
+  const [openStopModal, onOpenStopModal, closeStopModal] = useBooleanState(); // 계정 활성화 중단 Modal
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
   /* 어드민 계정 로그인 시 에러 핸들링*/
@@ -46,9 +49,27 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   const onSubmit = signin;
 
+  const onCloseAccountModal = (type: string) => {
+    if (type === "취소") return onOpenStopModal();
+
+    if (type === "중단하기") {
+      closeStopModal();
+      return closeAccountModal();
+    }
+  };
+
   return (
     <>
-      <AccountActiveModal open={isopenAccountModal} onClose={closeAccountModal} />
+      <AccountActiveModal
+        open={isopenAccountModal}
+        onClose={closeAccountModal}
+        onCloseAccountModal={onCloseAccountModal}
+      />
+      <StopAccountActiveModal
+        open={openStopModal}
+        onClose={closeStopModal}
+        onCloseAccountModal={onCloseAccountModal}
+      />
       <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
       <Container item xs>
         <Content>
