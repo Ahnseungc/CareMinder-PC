@@ -3,7 +3,7 @@ import CInput from "@components/common/atom/C-Input";
 import { Box, styled, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function AccountActiveModal({ onClose, ...props }: any) {
+export default function AccountActiveModal({ onClose, onCloseAccountModal, ...props }: any) {
   const MINUTES_MS = 3 * 60 * 1000;
   const INTERVAL = 1000;
   const [time, setTime] = useState<number>(MINUTES_MS);
@@ -14,7 +14,10 @@ export default function AccountActiveModal({ onClose, ...props }: any) {
 
   const minutes = String(Math.floor((time / (1000 * 60)) % 60)).padStart(2, "0");
   const second = String(Math.floor((time / 1000) % 60)).padStart(2, "0");
-  const error = true;
+
+  //error와 success 예시
+  const [error, isError] = useState(false);
+  const [success, isSuccess] = useState(false);
 
   const requestAuth = () => {
     if (phoneNumber.length !== 13) return;
@@ -23,7 +26,9 @@ export default function AccountActiveModal({ onClose, ...props }: any) {
   };
 
   const onSendAuthNumber = () => {
+    if (time <= 0) return;
     console.log(authNumber);
+    isSuccess(true);
   };
 
   useEffect(() => {
@@ -43,14 +48,13 @@ export default function AccountActiveModal({ onClose, ...props }: any) {
 
   return (
     <>
-      {" "}
       <CMModal
         maxWidth="sm"
         onClose={onClose}
         title={"계정 활성화"}
         footer={
           <>
-            <ModalActionButton color="secondary" onClick={onClose}>
+            <ModalActionButton color="secondary" onClick={() => onCloseAccountModal("취소")}>
               취소
             </ModalActionButton>
             <ModalActionButton color="success" onClick={onSendAuthNumber}>
@@ -83,7 +87,7 @@ export default function AccountActiveModal({ onClose, ...props }: any) {
               </Button>
             </InputWrapper>
             {isRequestAuth && (
-              <InputWrapper error={error ? true : false} success={true}>
+              <InputWrapper error={error} success={success}>
                 <CInput
                   variant={"outlined"}
                   placeholder={"인증번호를 입력해주세요."}
@@ -97,17 +101,18 @@ export default function AccountActiveModal({ onClose, ...props }: any) {
                 </Time>
               </InputWrapper>
             )}
-            {!error && isRequestAuth && (
+            {!success && !error && isRequestAuth && (
               <Error>
                 인증번호는 3분 이내 입력해야 합니다. <br />
                 제한시간이 지났을 경우 인증번호를 다시 받아 주세요.
               </Error>
             )}
+
             {error && isRequestAuth && <Error>인증번호가 올바르지 않습니다.</Error>}
+            {success && !error && <Success>인증이 완료되었습니다.</Success>}
           </FormLayout>
         </ContentLayout>
       </CMModal>
-      dd
     </>
   );
 }
@@ -134,8 +139,8 @@ const InputWrapper = styled("div")<{ error: boolean; success: boolean }>`
   display: flex;
   position: relative;
   border-radius: 6px;
-  border: ${({ error }) => error && "red 1px solid"};
   border: ${({ success }) => success && "#0FBC0C 1px solid"};
+  border: ${({ error }) => error && "red 1px solid"};
 `;
 const Button = styled("button")`
   font-weight: 600;
@@ -153,6 +158,13 @@ const Button = styled("button")`
 `;
 const Error = styled("div")`
   color: red;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px;
+  line-height: 20px;
+`;
+const Success = styled("div")`
+  color: #0fbc0c;
   font-size: 12px;
   font-weight: 500;
   padding: 5px;
