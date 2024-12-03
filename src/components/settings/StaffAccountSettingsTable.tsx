@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
 import { Box, Checkbox, Divider, Typography } from "@mui/material";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
@@ -13,15 +12,17 @@ import { ReactComponent as Filter } from "@/assets/filter.svg";
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
-import { useGetStaffList } from "@hooks/queries/useGetStaffList";
+import { StaffListType, useGetStaffList } from "@hooks/queries/useGetStaffList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
-import useCreateArea from "@hooks/mutation/useCreateArea";
+// import useCreateArea from "@hooks/mutation/useCreateArea";
+// import useChangeStaffRole from "@hooks/mutation/useChangeRole";
+// import useChangeStaffArea from "@hooks/mutation/useChangeArea";
+// import { toast } from "react-toastify";
 import { OPTIONS } from "./const";
-import useChangeStaffRole from "@hooks/mutation/useChangeRole";
-import useChangeStaffArea from "@hooks/mutation/useChangeArea";
-import { toast } from "react-toastify";
 import { TimeSince } from "./TimeSince";
 import PaginationComponent from "@components/common/pagination";
+import PasswordChangeModal from "./modal/PasswordChangeModal";
+import { useBooleanState } from "@toss/react";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -66,24 +67,27 @@ const StaffAccountSettingsTable = ({
     menu: "",
     state: false,
   });
+  const [selectedStaff, setSelectedStaff] = useState<StaffListType>();
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
   const setSelectStaffList = useSetRecoilState(staffListState);
 
+  const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
+
   const totalItems = staffList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
 
-  const { mutate: createArea } = useCreateArea();
-  const { mutate: changeStaffRole } = useChangeStaffRole();
-  const { mutate: changeStaffArea } = useChangeStaffArea();
+  // const { mutate: createArea } = useCreateArea();
+  // const { mutate: changeStaffRole } = useChangeStaffRole();
+  // const { mutate: changeStaffArea } = useChangeStaffArea();
 
-  const handleCreateArea = (newValue: string) => {
-    const areaData = {
-      name: newValue,
-      wardId: 1,
-    };
-    createArea(areaData);
-  };
+  // const handleCreateArea = (newValue: string) => {
+  //   const areaData = {
+  //     name: newValue,
+  //     wardId: 1,
+  //   };
+  //   createArea(areaData);
+  // };
 
   const handleFilterBox = (menu: string) => {
     setIsFilterOpen(prev => ({
@@ -112,54 +116,53 @@ const StaffAccountSettingsTable = ({
     }
   };
 
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = event.target.value;
-    const areaId = areaList?.find(item => item.name === value)?.id as number;
-    // console.log(areaId);
-    // console.log(id);
-    changeStaffArea(
-      {
-        userIds: [id],
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          setIsClear(true);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
+  // const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+  //   const value = event.target.value;
+  //   const areaId = areaList?.find(item => item.name === value)?.id as number;
+  //   // console.log(areaId);
+  //   // console.log(id);
+  //   changeStaffArea(
+  //     {
+  //       userIds: [id],
+  //       areaId: areaId,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setIsClear(true);
+  //         toast.success("구역 변경이 완료되었습니다");
+  //       },
+  //       onError: () => {
+  //         toast.error("구역 변경을 실패했습니다");
+  //       },
+  //     },
+  //   );
+  // };
 
-  const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = event.target.value;
-    const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
-    // console.log(staffRole);
-    // console.log(id);
+  // const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+  //   const value = event.target.value;
+  //   const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
+  //   // console.log(staffRole);
+  //   // console.log(id);
 
-    changeStaffRole(
-      {
-        userIds: [id],
-        staffRole: staffRole,
-      },
-      {
-        onSuccess: () => {
-          setIsClear(true);
-          toast.success("직업 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("직업 변경을 실패했습니다");
-        },
-      },
-    );
-  };
+  //   changeStaffRole(
+  //     {
+  //       userIds: [id],
+  //       staffRole: staffRole,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setIsClear(true);
+  //         toast.success("직업 변경이 완료되었습니다");
+  //       },
+  //       onError: () => {
+  //         toast.error("직업 변경을 실패했습니다");
+  //       },
+  //     },
+  //   );
+  // };
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
-    console.log(page);
   };
 
   useEffect(() => {
@@ -194,6 +197,15 @@ const StaffAccountSettingsTable = ({
 
   return (
     <>
+      {/* 비밀번호 편집 모달 */}
+      <PasswordChangeModal
+        open={isPWChangeModalOpen}
+        onClose={() => {
+          closePWChangeModal();
+          setIsClear(true);
+        }}
+        staffInfo={selectedStaff}
+      />
       {staffList?.data.length === 0 ? (
         <EmptyStaffContainer>
           <EmptyStaff />
@@ -312,7 +324,18 @@ const StaffAccountSettingsTable = ({
                     </td>
                     <td>
                       <ShortComBoxLayout>
-                        <CComboBox
+                        {/* input 디자인으로 변경됨 */}
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"간호사"}
+                          onChange={() => null}
+                          value={
+                            OPTIONS.find(option => option.role === row.staffRole)?.value as string
+                          }
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                        {/* <CComboBox
                           placeholder={"간호사"}
                           options={OPTIONS.map(option => option.value)}
                           value={
@@ -320,12 +343,20 @@ const StaffAccountSettingsTable = ({
                           }
                           disabled={row.accountLocked}
                           onChange={e => handleChangeRole(e, row.staffId)}
-                        />
+                        /> */}
                       </ShortComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <CComboBox
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"구역"}
+                          onChange={() => null}
+                          value={row.areaName}
+                          disabled={row.accountLocked}
+                          id={""}
+                        ></CInput>
+                        {/* <CComboBox
                           placeholder={"구역"}
                           options={area}
                           value={row.areaName}
@@ -333,7 +364,7 @@ const StaffAccountSettingsTable = ({
                           onChange={e => handleChangeArea(e, row.staffId)}
                           allowCustomInput={true}
                           onCustomInputAdd={handleCreateArea}
-                        />
+                        /> */}
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -408,7 +439,13 @@ const StaffAccountSettingsTable = ({
                       <AccountMenuLayout>
                         <Edit
                           onClick={() => {
-                            row.accountLocked ? null : onManage("edit", [row.staffId]);
+                            if (!row.accountLocked) {
+                              setSelectedStaff(row);
+                              openPWChangeModal();
+                              onManage("edit", [row.staffId]);
+                            } else {
+                              null;
+                            }
                           }}
                         />
                         {row.accountLocked ? (
@@ -538,6 +575,7 @@ const ShortComBoxLayout = styled.div`
 `;
 
 const AccountMenuLayout = styled(ShortComBoxLayout)`
+  cursor: pointer;
   color: #c4c5cc;
   gap: 28px;
 `;

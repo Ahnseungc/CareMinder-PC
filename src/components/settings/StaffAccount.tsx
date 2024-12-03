@@ -1,12 +1,10 @@
 import { Box, styled } from "@mui/system";
-import CButton from "@components/common/atom/C-Button";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 import { useEffect, useRef, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import TOSModal from "@components/settings/modal/TOSModal";
-import ChangeModal from "@components/settings/modal/ChangeModal";
 import { useRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 
@@ -16,7 +14,8 @@ import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
-import { CreateStaff } from "./CreateStaff";
+import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
+
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
@@ -27,17 +26,23 @@ import { toast } from "react-toastify";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useCreateArea from "@hooks/mutation/useCreateArea";
 import useChangeStaffArea from "@hooks/mutation/useChangeArea";
+import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
+
+interface SettingButtonProps {
+  isClick?: boolean;
+}
 
 export const StaffAccount = () => {
-  const [isOpen, openCreateModal, closeCreateModal] = useBooleanState(false);
-  const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
+  const [isCreateStaffModalOpen, openCreateStaffModal, closeCreateStaffModal] =
+    useBooleanState(false);
+  const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
 
-  const [isCreate, setIsCreate] = useState<boolean>(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
   const [area, setArea] = useState<string[]>([""]);
+  const [isSetting, setIsSetting] = useState<boolean>(false);
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
   const selectStaffList = useRecoilState(staffListState);
@@ -52,6 +57,20 @@ export const StaffAccount = () => {
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
+  const settingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
+        setIsSetting(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,8 +108,8 @@ export const StaffAccount = () => {
   };
 
   const handleTOS = () => {
-    setIsCreate(true);
     closeTOSModal();
+    openCreateStaffModal();
   };
 
   const handleInfoModal = (modalType: string, staffId: number[]) => {
@@ -173,126 +192,125 @@ export const StaffAccount = () => {
 
   return (
     <>
-      {isCreate ? (
-        <CreateStaff onCreate={setIsCreate} />
-      ) : (
-        <>
-          {/* 약관 동의 모달 */}
-          <TOSModal open={isTOSModalOpen} onClose={closeTOSModal} onConfirm={handleTOS} />
+      {/* 약관 동의 모달 */}
+      <TOSModal open={isTOSModalOpen} onClose={closeTOSModal} onConfirm={handleTOS} />
 
-          {/* 스태프 추가 모달 */}
-          <ChangeModal
-            open={isOpen}
-            onClose={closeCreateModal}
-            onConfirm={() => null}
-            modalTitle={"스태프 추가"}
-            subTitle={"아이디/휴대폰 번호/이메일 중 택일"}
-            rightText={"추가"}
-          />
+      {/* 스태프 계정 생성 모달 */}
+      <CreateStaffModal open={isCreateStaffModalOpen} onClose={closeCreateStaffModal} />
 
-          {/* 계정 관리 등 정보 모달 */}
-          <InfoModal
-            open={isInfoModalOpen}
-            onClose={closeInfoModal}
-            modalType={isModalType}
-            onConfirm={() => null}
-          />
+      {/* 계정 관리 등 정보 모달 */}
+      <InfoModal
+        open={isInfoModalOpen}
+        onClose={closeInfoModal}
+        modalType={isModalType}
+        onConfirm={() => null}
+      />
 
-          {/* 비밀번호 편집 모달 */}
-          <PasswordChangeModal
-            open={isPWChangeModalOpen}
-            onClose={() => {
-              closePWChangeModal();
-              setIsClear(true);
+      {/* 비밀번호 편집 모달 */}
+      <PasswordChangeModal
+        open={isPWChangeModalOpen}
+        onClose={() => {
+          closePWChangeModal();
+          setIsClear(true);
+        }}
+      />
+
+      <BodyTitleContainer>
+        {isEditing.length !== 0 ? (
+          <EditContainer
+            ref={editContainerRef}
+            style={{
+              position: isSticky ? "fixed" : "relative",
+              top: isSticky ? "70px" : "auto",
+              zIndex: isSticky ? 10 : "auto",
+              width: isSticky ? "calc(100% - 200px)" : "100%",
             }}
-          />
-
-          <BodyTitleContainer>
-            {isEditing.length !== 0 ? (
-              <EditContainer
-                ref={editContainerRef}
-                style={{
-                  position: isSticky ? "fixed" : "relative",
-                  top: isSticky ? "70px" : "auto",
-                  width: "calc(100% - 200px)",
-                  zIndex: isSticky ? 10 : "auto",
-                }}
-              >
-                <X style={{ cursor: "pointer" }} onClick={handleClear} />
-                <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
-                  {isEditing.length}개 항목 선택됨
-                </EditMenu>
-                <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
-                  <CComboBox
-                    placeholder={"직업"}
-                    options={OPTIONS.map(option => option.value)}
-                    value={""}
-                    onChange={handleChangeRole}
-                  />
-                </div>
-                <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
-                  <CComboBox
-                    placeholder={"구역"}
-                    options={area}
-                    value={""}
-                    onChange={handleChangeArea}
-                    allowCustomInput={true}
-                    onCustomInputAdd={handleCreateArea}
-                  />
-                </div>
-                <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
-                  <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
-                  <Lock onClick={handleAllLock} />
-                  <UnLock onClick={handleAllUnLock} />
-                  <Delete />
-                </div>
-              </EditContainer>
-            ) : (
-              <>
-                <Paper
-                  component="form"
-                  sx={{
-                    p: "2px 4px",
-                    display: "flex",
-                    alignItems: "center",
-                    width: 400,
-                    border: "1px solid #ECECEC",
-                    borderRadius: "6px",
-                    boxShadow: "none",
-                  }}
-                >
-                  <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder="검색할 내용을 입력해주세요."
-                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
-                  />
-                  <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                    <Search />
-                  </IconButton>
-                </Paper>
-                <div>
-                  <Title variant="h1">스태프 계정 수정</Title>
-                </div>
-                <StaffButtonContainer>
-                  <CButton buttontype="primarySpaureWhite" onClick={openTOSModal}>
-                    스태프 계정 생성
-                  </CButton>
-                  <CButton buttontype="primarySpaureWhite" onClick={openCreateModal}>
-                    스태프 추가
-                  </CButton>
-                </StaffButtonContainer>
-              </>
-            )}
-          </BodyTitleContainer>
+          >
+            <X style={{ cursor: "pointer" }} onClick={handleClear} />
+            <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
+              {isEditing.length}개 항목 선택됨
+            </EditMenu>
+            <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
+              <CComboBox
+                placeholder={"직업"}
+                options={OPTIONS.map(option => option.value)}
+                value={""}
+                onChange={handleChangeRole}
+              />
+            </div>
+            <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
+              <CComboBox
+                placeholder={"구역"}
+                options={area}
+                value={""}
+                onChange={handleChangeArea}
+                allowCustomInput={true}
+                onCustomInputAdd={handleCreateArea}
+              />
+            </div>
+            <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
+              <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
+              <Lock onClick={handleAllLock} />
+              <UnLock onClick={handleAllUnLock} />
+              <Delete />
+            </div>
+          </EditContainer>
+        ) : (
           <>
-            <StaffAccountSettingsTable
-              onManage={handleInfoModal}
-              isClear={isClear}
-              setIsClear={setIsClear}
-            />
+            <Paper
+              component="form"
+              sx={{
+                position: "absolute",
+                left: 0,
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: 400,
+                border: "1px solid #ECECEC",
+                borderRadius: "6px",
+                boxShadow: "none",
+              }}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="검색할 내용을 입력해주세요."
+                inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+              />
+              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
+            <div>
+              <Title variant="h1">스태프 계정 수정</Title>
+            </div>
+            <StaffButtonContainer>
+              <div ref={settingRef} style={{ position: "relative" }}>
+                <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
+                  <span>설정</span>
+                  <span style={{ position: "absolute", right: "10px" }}>
+                    <DownArrow style={{ transform: isSetting ? "rotate(180deg)" : "none" }} />
+                  </span>
+                </SettingButton>
+                {isSetting && (
+                  <SettingDropdown>
+                    <div style={{ padding: "10px", textAlign: "center" }}>구역 관리하기</div>
+                    <div style={{ padding: "10px", textAlign: "center" }} onClick={openTOSModal}>
+                      스태프 계정 생성하기
+                    </div>
+                  </SettingDropdown>
+                )}
+              </div>
+            </StaffButtonContainer>
           </>
-        </>
-      )}
+        )}
+      </BodyTitleContainer>
+      <>
+        <StaffAccountSettingsTable
+          onManage={handleInfoModal}
+          isClear={isClear}
+          setIsClear={setIsClear}
+        />
+      </>
     </>
   );
 };
@@ -302,15 +320,18 @@ export const StaffAccount = () => {
 const BodyTitleContainer = styled(Box)({
   position: "relative",
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
   alignItems: "center",
   margin: "60px 0 40px 0",
 });
 
 const StaffButtonContainer = styled(Box)({
+  position: "absolute",
+  right: 0,
   display: "flex",
   gap: "20px",
-  width: "400px",
+  width: "146px",
+  zIndex: 10,
 });
 
 const Title = styled(Typography)(({ theme }) => ({
@@ -323,7 +344,7 @@ const Title = styled(Typography)(({ theme }) => ({
 const EditContainer = styled(Box)(({ theme }) => ({
   position: "sticky",
   minWidth: "827px",
-  width: "calc(100% - 200px)",
+  width: "100%",
 
   display: "flex",
   justifyContent: "start",
@@ -343,4 +364,42 @@ const EditContainer = styled(Box)(({ theme }) => ({
 
 const EditMenu = styled(Typography)({
   textDecoration: "underline",
+});
+
+const SettingButton = styled(Box, {
+  shouldForwardProp: prop => prop !== "isClick",
+})<SettingButtonProps>(({ isClick }) => ({
+  position: "relative",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  cursor: "pointer",
+  width: "148px",
+  height: "36px",
+  border: "1px solid #5D6DBE",
+  borderRadius: isClick ? "5px 5px 0 0" : "5px",
+  color: "#5D6DBE",
+  fontWeight: 700,
+  fontSize: "16px",
+  backgroundColor: "#FFFFFF",
+  zIndex: 21,
+}));
+
+const SettingDropdown = styled(Box)({
+  "position": "absolute",
+  "top": "100%",
+  "right": 0,
+  "width": "148px",
+  "backgroundColor": "#FFFFFF",
+  "border": "1px solid #5D6DBE",
+  "borderTop": "none",
+  "borderBottomLeftRadius": "5px",
+  "borderBottomRightRadius": "5px",
+  "boxShadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
+  "& > div": {
+    "cursor": "pointer",
+    "&:hover": {
+      backgroundColor: "#F5F6FF",
+    },
+  },
 });

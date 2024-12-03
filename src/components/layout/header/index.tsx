@@ -34,7 +34,7 @@ const Layout = styled(Box)<LayoutType>(({ theme, admintype }) => ({
   justifyContent: "space-between",
   alignItems: "center",
   padding: "14px 28px",
-  zIndex: "10",
+  zIndex: "20",
 
   backgroundColor: theme.palette.primary.main,
   ...(admintype === "STAFF" && {

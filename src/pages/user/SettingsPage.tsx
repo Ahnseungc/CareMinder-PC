@@ -2,8 +2,8 @@ import { SettingsModal } from "@components/settings";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { StaffAccount } from "./StaffAccount";
-import { TabletManagement } from "./TabletManagement";
+import { StaffAccount } from "../../components/settings/StaffAccount";
+import { TabletManagement } from "../../components/settings/TabletManagement";
 import { useNavigate } from "react-router-dom";
 import settingsLoginState from "@libraries/recoil/settings/login";
 

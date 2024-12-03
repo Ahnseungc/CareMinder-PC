@@ -5,20 +5,16 @@ export type Staff = {
   occupation: string;
   username: string;
   password: string;
-  phoneNumber: string;
   email: string;
 };
 
 export type NewStaffRequests = {
   name: string;
-  loginId: string;
-  password: string;
-  phoneNumber: string;
-  email: string;
-  nfc: string;
-  fingerprint: string;
   staffRole: string;
   areaId: number;
+  loginId: string;
+  password: string;
+  email: string;
 };
 
 export type NewStaff = Staff & { confirmPassword: string };
@@ -29,10 +25,6 @@ export type NewStaffField = {
   placeholder: string;
 };
 
-export type QuickRegisterNewStaff = {
-  label: string;
-  value: string;
-};
 export type VoidFn = () => void;
 
 export type RefetchProps = {
