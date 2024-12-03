@@ -61,7 +61,7 @@ export default function SettingsPage() {
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
-              스태프 계정 수정
+              스태프 계정 관리
             </TabButton>
             <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
