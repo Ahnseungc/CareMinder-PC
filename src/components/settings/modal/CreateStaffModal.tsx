@@ -13,6 +13,7 @@ import { useBooleanState } from "@toss/react";
 const defaultValues: NewStaff = {
   name: "",
   occupation: "DOCTOR",
+  areaName: "",
   username: "",
   password: "",
   confirmPassword: "",
@@ -103,13 +104,14 @@ export default function CreateStaffModal({ onClose, ...props }: CMModalProps) {
 
 const fields: NewStaffField[] = [
   { name: "name", label: "이름", placeholder: "이름을 입력해주세요." },
-  { name: "occupation", label: "직종 선택", placeholder: "의사" },
+  { name: "occupation", label: "직종 선택", placeholder: "직종을 선택해주세요." },
+  { name: "areaName", label: "구역명", placeholder: "구역을 선택해주세요." },
   { name: "username", label: "아이디", placeholder: "아이디를 입력해주세요." },
   { name: "password", label: "비밀번호", placeholder: "비밀번호를 입력해주세요." },
   {
     name: "confirmPassword",
     label: "비밀번호 확인",
-    placeholder: "비밀번호를 다시 한번 입력해주세요.",
+    placeholder: "비밀번호를 재입력해주세요.",
   },
 
   { name: "email", label: "이메일", placeholder: "이메일을 입력해주세요." },

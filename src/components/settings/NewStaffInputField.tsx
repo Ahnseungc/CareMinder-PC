@@ -3,6 +3,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import doubleCheckState from "@libraries/recoil/staff";
 import { NewStaff, NewStaffField } from "@models/staff";
 import {
+  Autocomplete,
   FormControl,
   FormHelperText,
   IconButton,
@@ -16,6 +17,7 @@ import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 type InputFieldProps = { form: UseFormReturn<NewStaff>; field: NewStaffField };
 const options = [
@@ -26,9 +28,11 @@ const options = [
 ];
 
 export default function NewStaffInputField({ field, form }: InputFieldProps) {
+  const { data: areaList } = useGetAreaList();
+
   const setDoubleCheck = useSetRecoilState(doubleCheckState);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [option, setOption] = useState<string>(options[0].value);
+  const [option, setOption] = useState<string>("");
   const [validState, setValidState] = useState<{
     username?: {
       isValid: boolean;
@@ -43,6 +47,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
   const validationRules = {
     name: { required: "이름을 입력해주세요." },
     occupation: {},
+    areaName: {},
     username: { required: "아이디를 입력해주세요." },
     password: {
       required: "비밀번호를 입력해주세요.",
@@ -148,7 +153,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
       sx={{
         "gap": "3px",
         "& .MuiInputLabel-asterisk": {
-          color: "#FF7253",
+          color: "#FF7253 !important",
         },
       }}
     >
@@ -167,11 +172,26 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
             {field.name === "occupation" ? (
               <div style={{ height: "56px" }}>
                 <CComboBox
-                  placeholder={"의사"}
+                  placeholder={"직종을 선택해주세요."}
                   options={options.map(option => option.value)}
                   value={option}
                   onChange={handleChange}
                 />
+              </div>
+            ) : field.name === "areaName" ? (
+              <div style={{ height: "56px" }}>
+                {areaList && (
+                  <Autocomplete
+                    multiple
+                    limitTags={2}
+                    id="multiple-limit-tags"
+                    options={areaList}
+                    getOptionLabel={option => option.name}
+                    renderInput={params => (
+                      <TextField {...params} placeholder="구역을 선택해주세요." />
+                    )}
+                  />
+                )}
               </div>
             ) : field.name === "username" ? (
               <>
@@ -255,6 +275,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
 const inputTypes: { [key in keyof NewStaff]: string } = {
   name: "text",
   occupation: "text",
+  areaName: "text",
   username: "text",
   password: "password",
   confirmPassword: "password",

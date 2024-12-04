@@ -3,6 +3,7 @@ import { PatientStatus, isRoleType } from ".";
 export type Staff = {
   name: string;
   occupation: string;
+  areaName: string;
   username: string;
   password: string;
   email: string;

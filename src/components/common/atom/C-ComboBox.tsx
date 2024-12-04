@@ -49,7 +49,15 @@ export const CComboBox: FC<CComboBoxProps> = ({
         value={value}
         onChange={onChange}
         displayEmpty
-        renderValue={(v: any) => <StyledPlaceholder>{v ? v : placeholder}</StyledPlaceholder>}
+        renderValue={(v: any) => (
+          <StyledPlaceholder
+            style={{
+              opacity: `${v ? "1" : "0.4"}`,
+            }}
+          >
+            {v ? v : placeholder}
+          </StyledPlaceholder>
+        )}
         IconComponent={ArrowDropDownIcon}
       >
         {options.map((option, index) => (
@@ -110,13 +118,13 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   },
 }));
 
-const StyledPlaceholder = styled(MenuItem)(({ theme }) => ({
-  color: theme.palette.primary.dark,
+const StyledPlaceholder = styled(MenuItem)({
+  color: "rgb(94, 95, 101)",
   fontWeight: "400px",
-  fontSize: "14px",
+  fontSize: "16px",
   lineHeight: "20px",
-  padding: "16px 8px",
-}));
+  padding: "16px 8px 16px 0",
+});
 
 // EX)
 // <div style={{ width: "224px", height: "36px" }}> // 상위 요소에서 width와 hegith 를 정해주세요
