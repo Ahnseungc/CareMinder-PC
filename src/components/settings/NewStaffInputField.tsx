@@ -179,7 +179,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                 />
               </div>
             ) : field.name === "areaName" ? (
-              <div style={{ height: "56px" }}>
+              <div>
                 {areaList && (
                   <Autocomplete
                     multiple

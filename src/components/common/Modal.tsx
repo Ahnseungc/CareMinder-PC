@@ -28,7 +28,7 @@ export default function Modal({
         },
       }}
     >
-      {title && <DialogTitle>{title}</DialogTitle>}
+      {title && <DialogTitle sx={{ fontSize: "20px" }}>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
       {footer && <DialogActions>{footer}</DialogActions>}
     </StyledDialog>
@@ -43,11 +43,14 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     minWidth: "300px",
     width: "100%",
     maxHeight: "900px",
-    [theme.breakpoints.up("xs")]: {
-      maxWidth: "444px",
+    [`&.MuiDialog-paperWidthXs`]: {
+      maxWidth: "444px !important",
     },
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "680px",
+    [`&.MuiDialog-paperWidthMd`]: {
+      maxWidth: "680px !important",
+    },
+    [`&.MuiDialog-paperWidthXl`]: {
+      maxWidth: "1080px !important",
     },
   },
   "& .MuiDialogTitle-root": {

@@ -27,6 +27,7 @@ import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useCreateArea from "@hooks/mutation/useCreateArea";
 import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
+import AreaManageModal from "./modal/AreaManageModal";
 
 interface SettingButtonProps {
   isClick?: boolean;
@@ -38,6 +39,7 @@ export const StaffAccount = () => {
     useBooleanState(false);
   const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
+  const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
 
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
@@ -91,6 +93,7 @@ export const StaffAccount = () => {
     const areaData = {
       name: newValue,
       wardId: 1,
+      memo: "",
     };
     createArea(areaData);
   };
@@ -198,6 +201,9 @@ export const StaffAccount = () => {
       {/* 스태프 계정 생성 모달 */}
       <CreateStaffModal open={isCreateStaffModalOpen} onClose={closeCreateStaffModal} />
 
+      {/* 구역 관리 하기 모달 */}
+      <AreaManageModal open={isAreaManageModalOpen} onClose={closeAreaManageModal} />
+
       {/* 계정 관리 등 정보 모달 */}
       <InfoModal
         open={isInfoModalOpen}
@@ -293,7 +299,12 @@ export const StaffAccount = () => {
                 </SettingButton>
                 {isSetting && (
                   <SettingDropdown>
-                    <div style={{ padding: "10px", textAlign: "center" }}>구역 관리하기</div>
+                    <div
+                      style={{ padding: "10px", textAlign: "center" }}
+                      onClick={openAreaManageModal}
+                    >
+                      구역 관리하기
+                    </div>
                     <div style={{ padding: "10px", textAlign: "center" }} onClick={openTOSModal}>
                       스태프 계정 생성하기
                     </div>

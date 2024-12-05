@@ -187,25 +187,6 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
               </ModalActionButton>
             </>
           )
-
-          // !isChange ? (
-          //   <>
-          //     <ModalActionButton color="secondary" onClick={() => props.onClose()}>
-          //       취소
-          //     </ModalActionButton>
-          //   </>
-          // ) : !isSuccess ? (
-          //   <>
-          //     <ModalActionButton color="secondary" onClick={handleModalClose}>
-          //       취소
-          //     </ModalActionButton>
-          //     <ModalActionButton onClick={handleSubmit(onSubmit)}>변경하기</ModalActionButton>
-          //   </>
-          // ) : (
-          //   <>
-          //     <ModalActionButton onClick={handleModalClose}>닫기</ModalActionButton>
-          //   </>
-          // )
         }
       >
         <X

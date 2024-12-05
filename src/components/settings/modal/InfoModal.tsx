@@ -45,6 +45,7 @@ export default function InfoModal({
 
   return (
     <CMModal
+      maxWidth="xs"
       onClose={onClose}
       footer={
         controlAccount ? (

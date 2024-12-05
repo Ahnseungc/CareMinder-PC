@@ -2,6 +2,7 @@ import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/materia
 import { Controller, UseFormReturn } from "react-hook-form";
 import { EditStaff, EditStaffField } from "./modal/PasswordChangeModal";
 import { StaffListType } from "@hooks/queries/useGetStaffList";
+import { SwitchCase } from "@toss/react";
 
 type InputFieldProps = {
   form: UseFormReturn<EditStaff>;
@@ -50,16 +51,19 @@ export default function NewPasswordField({ field, form, staffInfo }: InputFieldP
         control={control}
         rules={validationRules[name]}
         render={({ field }) => (
-          <TextField
-            {...field}
-            id={name}
-            value={
-              field.name === "name"
-                ? staffInfo.name + " (기존 이름은 수정 불가)"
-                : field.name === "staffRole"
-                  ? staffInfo.staffRole
-                  : field.name === "area"
-                    ? staffInfo.areaName
+          <SwitchCase
+            value={field.name}
+            caseBy={{
+              staffRole: <div>직업 드롭다운</div>,
+              area: <div>구역 드롭다운</div>,
+            }}
+            defaultComponent={
+              <TextField
+                {...field}
+                id={name}
+                value={
+                  field.name === "name"
+                    ? staffInfo.name + " (기존 이름은 수정 불가)"
                     : field.name === "id"
                       ? staffInfo.loginId + " (기존 아이디는 수정 불가)"
                       : field.name === "phoneNumber"
@@ -67,11 +71,15 @@ export default function NewPasswordField({ field, form, staffInfo }: InputFieldP
                         : field.name === "email"
                           ? staffInfo.email
                           : ""
+                }
+                placeholder={placeholder}
+                type={"text"}
+                error={Boolean(errors[name])}
+                disabled={
+                  field.name === "name" || field.name === "id" || field.name === "phoneNumber"
+                }
+              />
             }
-            placeholder={placeholder}
-            type={"text"}
-            error={Boolean(errors[name])}
-            disabled={field.name === "name" || field.name === "id" || field.name === "phoneNumber"}
           />
         )}
       />
