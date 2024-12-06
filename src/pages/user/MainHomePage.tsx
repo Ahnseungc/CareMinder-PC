@@ -7,21 +7,15 @@ import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import modalState from "@libraries/recoil/modal";
 import { Box, styled } from "@mui/material";
-import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
-import { SEVER_URL } from "@constants/baseUrl";
 
 export default function MainHomePage() {
   const navigate = useNavigate();
   const setlayoutState = useSetRecoilState(layoutState);
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
-
-  const accessTokenWard = Cookies.get("accessTokenWard");
-
   const onMutates = () => {
     if (userStatus?.type === "WARD") {
       return setIsModal(true);
@@ -52,23 +46,6 @@ export default function MainHomePage() {
         navigate("/staff");
         break;
     }
-  }, []);
-
-  useEffect(() => {
-    if (!accessTokenWard) return;
-    const EventSource = EventSourcePolyfill || NativeEventSource;
-
-    const eventSource = new EventSource(`${SEVER_URL}/sse/open`, {
-      headers: {
-        Authorization: `Bearer ${accessTokenWard}`,
-      },
-      withCredentials: true,
-      heartbeatTimeout: 174e432,
-    });
-    eventSource.onerror = function (err) {
-      console.error("EventSource failed:", err);
-      eventSource.close();
-    };
   }, []);
 
   return (
