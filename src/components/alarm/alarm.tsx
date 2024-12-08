@@ -1,5 +1,5 @@
 import { SEVER_URL } from "@constants/baseUrl";
-import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import Cookies from "js-cookie";
 import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ type MessageType = {
 export default function Alarm() {
   const [message, setMessage] = useState<MessageType | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
+  const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
 
   const NURSE = {
     dark: "#04B300",
@@ -25,9 +26,7 @@ export default function Alarm() {
   };
 
   useEffect(() => {
-    const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
-
-    const EventSource = EventSourcePolyfill || NativeEventSource;
+    const EventSource = EventSourcePolyfill;
 
     const eventSource = new EventSource(`${SEVER_URL}/sse/open`, {
       headers: {
@@ -59,9 +58,10 @@ export default function Alarm() {
     });
 
     eventSource.onerror = function () {
+      console.log("에러");
       eventSource.close();
     };
-  }, []);
+  }, [userType]);
 
   return (
     <Wrapper isOpen={isOpen}>
