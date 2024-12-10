@@ -2,22 +2,77 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import AddAreaList from "./AddAreaList";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import { useGetWardInfo } from "@hooks/queries";
+import InfoModal from "../modal/InfoModal";
+import { useBooleanState } from "@toss/react";
+import DeleteWarning from "./DeleteWarning";
+import useDeleteArea from "@hooks/mutation/useDeleteArea";
+import { toast } from "react-toastify";
 
 export default function AreaManageTable() {
   const { data: areaList, isLoading } = useGetAreaList();
   const { data: wardInfo, isLoading: isGetWardInfoLoading } = useGetWardInfo();
 
+  const { mutate: deleteArea } = useDeleteArea();
+
   const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null);
+  const [isDeleteIndex, setIsDeleteIndex] = useState<number>();
+  const [isOpenCheckDeleteModal, openCheckDeleteModal, closeCheckDeleteModal] = useBooleanState();
+  const [isOpenDeleteModal, openDeleteModal, closeDeleteModal] = useBooleanState();
+  const nameFieldRef = useRef<HTMLDivElement>(null);
+  const memoFieldRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        !nameFieldRef.current?.contains(event.target as Node) &&
+        !memoFieldRef.current?.contains(event.target as Node)
+      ) {
+        setIsEditingIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleDeleteArea = () => {
+    if (!isDeleteIndex) {
+      return;
+    }
+    deleteArea(isDeleteIndex, {
+      onSuccess: () => {
+        toast.success("구역을 삭제했습니다.");
+      },
+      onError: error => {
+        console.error(error);
+        toast.error("구역 삭제에 실패했습니다.");
+      },
+    });
+    closeCheckDeleteModal();
+    openDeleteModal();
+  };
 
   if (areaList && isLoading && wardInfo && isGetWardInfoLoading) {
     return <div>로딩 중..</div>;
   }
   return (
     <>
+      <InfoModal
+        open={isOpenCheckDeleteModal}
+        onClose={closeCheckDeleteModal}
+        modalType="checkDelete"
+        leftText="취소하기"
+        rightText="삭제하기"
+        onConfirm={() => handleDeleteArea()}
+        message={<DeleteWarning />}
+      />
+      <InfoModal open={isOpenDeleteModal} onClose={closeDeleteModal} modalType="delete" />
       <TableHeader>{wardInfo && wardInfo.wardName}</TableHeader>
       <TableWrapper>
         <Table>
@@ -33,19 +88,43 @@ export default function AreaManageTable() {
                   >
                     <td onDoubleClick={() => setIsEditingIndex(index)}>
                       {isEditingIndex === index ? (
-                        <StyledTextField
-                          size="small"
-                          variant="filled"
-                          InputProps={{ disableUnderline: true }}
-                          backgroundColor="#FFFFFF"
-                          value={row.name}
-                        />
+                        <div ref={nameFieldRef}>
+                          <StyledTextField
+                            size="small"
+                            variant="filled"
+                            InputProps={{ disableUnderline: true }}
+                            backgroundColor="#FFFFFF"
+                            value={row.name}
+                          />
+                        </div>
                       ) : (
                         <AreaName>{row.name}</AreaName>
                       )}
                     </td>
-                    <td>{row.memo ? row.memo : "메모 없음"}</td>
-                    <td style={{ cursor: "pointer" }}>
+                    <td onDoubleClick={() => setIsEditingIndex(index)}>
+                      {isEditingIndex === index ? (
+                        <div ref={memoFieldRef}>
+                          <StyledTextMemoField
+                            size="small"
+                            variant="filled"
+                            InputProps={{
+                              disableUnderline: true,
+                            }}
+                            backgroundColor="#FFFFFF"
+                            value={row.memo}
+                          />
+                        </div>
+                      ) : (
+                        <MemoName>{row.memo ? row.memo : "메모 없음"}</MemoName>
+                      )}
+                    </td>
+                    <td
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setIsDeleteIndex(row.id);
+                        openCheckDeleteModal();
+                      }}
+                    >
                       <Delete />
                     </td>
                   </tr>
@@ -104,22 +183,22 @@ const Table = styled.table`
     height: 240px;
     overflow: scroll;
     & tr > td {
-      height: 60px;
-      padding-bottom: 11.52px;
-      padding-top: 11.52px;
+      cursor: pointer;
       text-align: center;
       color: ${palette.text.dark};
       border-bottom: 1px solid ${palette.divider};
 
       &:nth-of-type(1) {
         width: 181px;
-        cursor: pointer;
         padding: 19px 12px;
       }
 
       &:nth-of-type(2) {
         width: 780px;
+        height: 44px;
+        padding: 0;
         text-align: start;
+        vertical-align: middle;
       }
 
       &:nth-of-type(3) {
@@ -130,11 +209,27 @@ const Table = styled.table`
   }
 `;
 
+const MemoName = styled.span`
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+
+  width: 100%;
+  max-height: 44px;
+  line-height: 22px;
+  padding: 0 8px;
+  text-align: start;
+`;
+
 const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
+  width: 100%;
   padding: 0 12px;
 
   .MuiInputBase-root {
-    height: 21px;
+    height: 20px;
     border-radius: 1px;
     background-color: ${({ backgroundColor }) => backgroundColor || "transparent"};
   }
@@ -144,5 +239,20 @@ const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
     font-size: 14px;
     padding: 8px;
     text-align: center;
+  }
+`;
+
+const StyledTextMemoField = styled(StyledTextField)`
+  padding: 0;
+
+  .MuiInputBase-root {
+    padding: 0 9px;
+    max-width: 774px;
+    min-height: 20px;
+  }
+
+  .MuiInputBase-input {
+    text-align: start;
+    padding: 0;
   }
 `;
