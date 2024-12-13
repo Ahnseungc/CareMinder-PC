@@ -3,7 +3,7 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { CSwitchProps, MainListBoxProps } from "@models/home";
 import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
@@ -16,6 +16,7 @@ import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
+import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
   isAccept,
@@ -37,6 +38,7 @@ function StaffPatientListBox({
 
   const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
+  const { mutate: mutateReadMs } = useReadMessage(roomId!);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -79,6 +81,14 @@ function StaffPatientListBox({
     e.stopPropagation();
     mutateDecline(data.patientRequestId);
   };
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const filterMessages = messages.filter(el => el.role === "STAFF");
+    if (filterMessages.length === 0) return;
+    const userInfo = filterMessages[filterMessages.length - 1];
+    // mutateReadMs(userInfo.messageId);
+  }, [messages]);
 
   return (
     <InnerContainer
