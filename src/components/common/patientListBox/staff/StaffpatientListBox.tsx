@@ -135,7 +135,12 @@ function StaffPatientListBox({
         <div>
           <ChatContainer id="top">
             {messages.map((el, idx) => (
-              <ChatBox key={idx} data={el} color={roleColorPick.normal} />
+              <ChatBox
+                key={idx}
+                data={el}
+                color={roleColorPick.normal}
+                darkColor={roleColorPick.dark}
+              />
             ))}
           </ChatContainer>
 
