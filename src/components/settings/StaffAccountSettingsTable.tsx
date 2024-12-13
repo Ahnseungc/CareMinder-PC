@@ -2,22 +2,18 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import CInput from "@components/common/atom/C-Input";
-import { Box, Checkbox, Divider, Typography } from "@mui/material";
+import { Box, Checkbox, Typography } from "@mui/material";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
-import { ReactComponent as Filter } from "@/assets/filter.svg";
-import { ReactComponent as X } from "@/assets/x-Icon.svg";
+// import { ReactComponent as Filter } from "@/assets/filter.svg";
+// import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 import { StaffListType, useGetStaffList } from "@hooks/queries/useGetStaffList";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
-// import useCreateArea from "@hooks/mutation/useCreateArea";
-// import useChangeStaffRole from "@hooks/mutation/useChangeRole";
-// import useChangeStaffArea from "@hooks/mutation/useChangeArea";
-// import { toast } from "react-toastify";
+
 import { OPTIONS } from "./const";
 import { TimeSince } from "./TimeSince";
 import PaginationComponent from "@components/common/pagination";
@@ -42,10 +38,10 @@ interface StaffAccountSettingsTableProps {
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface FilterState {
-  menu: string;
-  state: boolean;
-}
+// interface FilterState {
+//   menu: string;
+//   state: boolean;
+// }
 
 const StaffAccountSettingsTable = ({
   onManage,
@@ -58,16 +54,16 @@ const StaffAccountSettingsTable = ({
     page: currentPage - 1,
     size: 20,
   });
-  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [area, setArea] = useState<string[]>([""]);
+
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
-  const [isFilterOpen, setIsFilterOpen] = useState<FilterState>({
-    menu: "",
-    state: false,
-  });
+  // const [isFilterOpen, setIsFilterOpen] = useState<FilterState>({
+  //   menu: "",
+  //   state: false,
+  // });
   const [selectedStaff, setSelectedStaff] = useState<StaffListType>();
+
   const setIsEditing = useSetRecoilState(editingState);
   const isEditing = useRecoilValue(editingState);
   const setSelectStaffList = useSetRecoilState(staffListState);
@@ -77,24 +73,12 @@ const StaffAccountSettingsTable = ({
   const totalItems = staffList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
 
-  // const { mutate: createArea } = useCreateArea();
-  // const { mutate: changeStaffRole } = useChangeStaffRole();
-  // const { mutate: changeStaffArea } = useChangeStaffArea();
-
-  // const handleCreateArea = (newValue: string) => {
-  //   const areaData = {
-  //     name: newValue,
-  //     wardId: 1,
-  //   };
-  //   createArea(areaData);
+  // const handleFilterBox = (menu: string) => {
+  //   setIsFilterOpen(prev => ({
+  //     menu: menu,
+  //     state: prev.menu === menu ? !prev.state : true,
+  //   }));
   // };
-
-  const handleFilterBox = (menu: string) => {
-    setIsFilterOpen(prev => ({
-      menu: menu,
-      state: prev.menu === menu ? !prev.state : true,
-    }));
-  };
 
   const handleCheckBox = (index: number) => {
     setSelectIndex(prevList => {
@@ -116,52 +100,7 @@ const StaffAccountSettingsTable = ({
     }
   };
 
-  // const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-  //   const value = event.target.value;
-  //   const areaId = areaList?.find(item => item.name === value)?.id as number;
-  //   // console.log(areaId);
-  //   // console.log(id);
-  //   changeStaffArea(
-  //     {
-  //       userIds: [id],
-  //       areaId: areaId,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setIsClear(true);
-  //         toast.success("구역 변경이 완료되었습니다");
-  //       },
-  //       onError: () => {
-  //         toast.error("구역 변경을 실패했습니다");
-  //       },
-  //     },
-  //   );
-  // };
-
-  // const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-  //   const value = event.target.value;
-  //   const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
-  //   // console.log(staffRole);
-  //   // console.log(id);
-
-  //   changeStaffRole(
-  //     {
-  //       userIds: [id],
-  //       staffRole: staffRole,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setIsClear(true);
-  //         toast.success("직업 변경이 완료되었습니다");
-  //       },
-  //       onError: () => {
-  //         toast.error("직업 변경을 실패했습니다");
-  //       },
-  //     },
-  //   );
-  // };
-
-  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   };
 
@@ -181,17 +120,11 @@ const StaffAccountSettingsTable = ({
   }, [isEditing, isClear, setIsClear]);
 
   useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map(item => item.name));
-    }
-  }, [areaList]);
-
-  useEffect(() => {
     const index = selectIndex.map(item => staffList?.data[item].staffId) as number[];
     setSelectStaffList(index);
   }, [setSelectStaffList, selectIndex, staffList]);
 
-  if (staffLoading && areaLoading) {
+  if (staffLoading) {
     return <div>로딩 중..</div>;
   }
 
@@ -205,6 +138,7 @@ const StaffAccountSettingsTable = ({
           setIsClear(true);
         }}
         staffInfo={selectedStaff}
+        isMultiEdit={false}
       />
       {staffList?.data.length === 0 ? (
         <EmptyStaffContainer>
@@ -216,7 +150,7 @@ const StaffAccountSettingsTable = ({
           <thead>
             <tr>
               {columns.map((column, index) => {
-                const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
+                // const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
                 if (column.field === "check") {
                   return (
                     <th key={index}>
@@ -245,7 +179,7 @@ const StaffAccountSettingsTable = ({
                 return (
                   <th key={index}>
                     <>{column.headerName}</>
-                    {shouldShowFilter && (
+                    {/* {shouldShowFilter && (
                       <>
                         <FilterLayout>
                           <Filter onClick={() => handleFilterBox(column.headerName)} />
@@ -273,7 +207,7 @@ const StaffAccountSettingsTable = ({
                           </FilterBox>
                         ) : null}
                       </>
-                    )}
+                    )} */}
                   </th>
                 );
               })}
@@ -335,15 +269,6 @@ const StaffAccountSettingsTable = ({
                           disabled={row.accountLocked}
                           id={""}
                         ></CInput>
-                        {/* <CComboBox
-                          placeholder={"간호사"}
-                          options={OPTIONS.map(option => option.value)}
-                          value={
-                            OPTIONS.find(option => option.role === row.staffRole)?.value as string
-                          }
-                          disabled={row.accountLocked}
-                          onChange={e => handleChangeRole(e, row.staffId)}
-                        /> */}
                       </ShortComBoxLayout>
                     </td>
                     <td>
@@ -352,19 +277,14 @@ const StaffAccountSettingsTable = ({
                           variant={"outlined"}
                           placeholder={"구역"}
                           onChange={() => null}
-                          value={row.areaName}
+                          value={
+                            row.areas.length === 0
+                              ? "미지정"
+                              : row.areas.map(area => area.areaName).join(",")
+                          }
                           disabled={row.accountLocked}
                           id={""}
                         ></CInput>
-                        {/* <CComboBox
-                          placeholder={"구역"}
-                          options={area}
-                          value={row.areaName}
-                          disabled={row.accountLocked}
-                          onChange={e => handleChangeArea(e, row.staffId)}
-                          allowCustomInput={true}
-                          onCustomInputAdd={handleCreateArea}
-                        /> */}
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -516,54 +436,54 @@ const StTable = styled.table`
   }
 `;
 
-const FilterLayout = styled.span`
-  position: absolute;
-  top: -2px;
-  cursor: pointer;
-  &:hover {
-    color: #5d6dbe;
-  }
-`;
+// const FilterLayout = styled.span`
+//   position: absolute;
+//   top: -2px;
+//   cursor: pointer;
+//   &:hover {
+//     color: #5d6dbe;
+//   }
+// `;
 
-const FilterBox = styled.div`
-  z-index: 10;
-  position: absolute;
-  top: 30px;
-  padding: 8px;
-  width: 240px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
-  background-color: #ffffff;
-`;
+// const FilterBox = styled.div`
+//   z-index: 10;
+//   position: absolute;
+//   top: 30px;
+//   padding: 8px;
+//   width: 240px;
+//   border-radius: 12px;
+//   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+//   background-color: #ffffff;
+// `;
 
-const SelectArea = styled.div`
-  background-color: #eff1f9;
-  padding: 4px;
-  border-radius: 4px;
-  color: #878787;
-  text-align: left;
-  font-weight: 400;
-`;
+// const SelectArea = styled.div`
+//   background-color: #eff1f9;
+//   padding: 4px;
+//   border-radius: 4px;
+//   color: #878787;
+//   text-align: left;
+//   font-weight: 400;
+// `;
 
-const FilterList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: start;
-  gap: 7px;
+// const FilterList = styled.ul`
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: start;
+//   gap: 7px;
 
-  padding: 0;
-  width: 100%;
-  list-style: none;
+//   padding: 0;
+//   width: 100%;
+//   list-style: none;
 
-  font-size: 14px;
+//   font-size: 14px;
 
-  & div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-`;
+//   & div {
+//     width: 100%;
+//     display: flex;
+//     justify-content: space-between;
+//   }
+// `;
 
 const ShortComBoxLayout = styled.div`
   display: flex;
@@ -574,16 +494,16 @@ const ShortComBoxLayout = styled.div`
   margin: 0 auto;
 `;
 
-const AccountMenuLayout = styled(ShortComBoxLayout)`
-  cursor: pointer;
-  color: #c4c5cc;
-  gap: 28px;
-`;
-
 const LongComBoxLayout = styled.div`
   width: 224px;
   height: 36px;
   margin: 0 auto;
+`;
+
+const AccountMenuLayout = styled(ShortComBoxLayout)`
+  cursor: pointer;
+  color: #c4c5cc;
+  gap: 28px;
 `;
 
 const EmptyStaffContainer = styled(Box)({

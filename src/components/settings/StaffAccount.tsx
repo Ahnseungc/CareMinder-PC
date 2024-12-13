@@ -1,6 +1,6 @@
 import { Box, styled } from "@mui/system";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
-import { IconButton, InputBase, Paper, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 import { useEffect, useRef, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
@@ -9,25 +9,25 @@ import { useRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
-import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
+// import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
 
-import { CComboBox } from "@components/common/atom/C-ComboBox";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
-import { OPTIONS } from "@components/settings/const/index";
-import useChangeStaffRole from "@hooks/mutation/useChangeRole";
-import { toast } from "react-toastify";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
-import useCreateArea from "@hooks/mutation/useCreateArea";
-import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
+
+// import { CComboBox } from "@components/common/atom/C-ComboBox";
+// import { OPTIONS } from "@components/settings/const/index";
+// import { toast } from "react-toastify";
+// import useChangeStaffRole from "@hooks/mutation/useChangeRole";
+// import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 
 interface SettingButtonProps {
   isClick?: boolean;
@@ -43,19 +43,18 @@ export const StaffAccount = () => {
 
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
-  const [area, setArea] = useState<string[]>([""]);
+  const [_, setArea] = useState<string[]>([""]);
   const [isSetting, setIsSetting] = useState<boolean>(false);
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
   const selectStaffList = useRecoilState(staffListState);
 
   const { data: areaList } = useGetAreaList();
-  const { mutate: createArea } = useCreateArea();
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
-  const { mutate: changeStaffRole } = useChangeStaffRole();
-  const { mutate: changeStaffArea } = useChangeStaffArea();
+  // const { mutate: changeStaffRole } = useChangeStaffRole();
+  // const { mutate: changeStaffArea } = useChangeStaffArea();
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
@@ -88,15 +87,6 @@ export const StaffAccount = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const handleCreateArea = (newValue: string) => {
-    const areaData = {
-      name: newValue,
-      wardId: 1,
-      memo: "",
-    };
-    createArea(areaData);
-  };
 
   useEffect(() => {
     if (areaList) {
@@ -135,47 +125,47 @@ export const StaffAccount = () => {
     }
   };
 
-  const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
+  // const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = event.target.value;
+  //   const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
 
-    changeStaffRole(
-      {
-        userIds: selectStaffList[0],
-        staffRole: staffRole,
-      },
-      {
-        onSuccess: () => {
-          setIsClear(true);
-          toast.success("직업 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("직업 변경을 실패했습니다");
-        },
-      },
-    );
-  };
+  //   changeStaffRole(
+  //     {
+  //       userIds: selectStaffList[0],
+  //       staffRole: staffRole,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setIsClear(true);
+  //         toast.success("직업 변경이 완료되었습니다");
+  //       },
+  //       onError: () => {
+  //         toast.error("직업 변경을 실패했습니다");
+  //       },
+  //     },
+  //   );
+  // };
 
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const areaId = areaList?.find(item => item.name === value)?.id as number;
-    console.log(areaId);
-    changeStaffArea(
-      {
-        userIds: selectStaffList[0],
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          setIsClear(true);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
+  // const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = event.target.value;
+  //   const areaId = areaList?.find(item => item.name === value)?.id as number;
+  //   console.log(areaId);
+  //   changeStaffArea(
+  //     {
+  //       userIds: selectStaffList[0],
+  //       areaId: areaId,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setIsClear(true);
+  //         toast.success("구역 변경이 완료되었습니다");
+  //       },
+  //       onError: () => {
+  //         toast.error("구역 변경을 실패했습니다");
+  //       },
+  //     },
+  //   );
+  // };
 
   const handleAllLock = () => {
     const lockData = {
@@ -219,6 +209,7 @@ export const StaffAccount = () => {
           closePWChangeModal();
           setIsClear(true);
         }}
+        isMultiEdit={selectStaffList[0].length === 1 ? false : true}
       />
 
       <BodyTitleContainer>
@@ -236,7 +227,7 @@ export const StaffAccount = () => {
             <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
               {isEditing.length}개 항목 선택됨
             </EditMenu>
-            <div style={{ width: "138px", height: "36px", backgroundColor: "#EFF0F8" }}>
+            {/* <div style={{ width: "138px", height: "36px" }}>
               <CComboBox
                 placeholder={"직업"}
                 options={OPTIONS.map(option => option.value)}
@@ -244,18 +235,32 @@ export const StaffAccount = () => {
                 onChange={handleChangeRole}
               />
             </div>
-            <div style={{ width: "224px", height: "36px", backgroundColor: "#EFF0F8" }}>
+            <div style={{ width: "224px", height: "36px" }}>
               <CComboBox
                 placeholder={"구역"}
                 options={area}
                 value={""}
                 onChange={handleChangeArea}
-                allowCustomInput={true}
-                onCustomInputAdd={handleCreateArea}
               />
-            </div>
+            </div> */}
             <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
-              <Edit onClick={openPWChangeModal} style={{ cursor: "pointer" }} />
+              <span
+                style={
+                  {
+                    // color: selectStaffList[0].length === 1 ? "#C4C5CC" : "",
+                    // cursor: selectStaffList[0].length === 1 ? "not-allowed" : "pointer",
+                  }
+                }
+              >
+                <Edit
+                  onClick={() => {
+                    openPWChangeModal();
+                    // if (selectStaffList[0].length !== 1) {
+                    //   openPWChangeModal();
+                    // }
+                  }}
+                />
+              </span>
               <Lock onClick={handleAllLock} />
               <UnLock onClick={handleAllUnLock} />
               <Delete />
@@ -263,7 +268,7 @@ export const StaffAccount = () => {
           </EditContainer>
         ) : (
           <>
-            <Paper
+            {/* <Paper
               component="form"
               sx={{
                 position: "absolute",
@@ -285,7 +290,7 @@ export const StaffAccount = () => {
               <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
                 <Search />
               </IconButton>
-            </Paper>
+            </Paper> */}
             <div>
               <Title variant="h1">스태프 계정 수정</Title>
             </div>

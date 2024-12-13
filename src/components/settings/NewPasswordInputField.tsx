@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { NewPassword, NewPassWordField } from "./modal/PasswordChangeModal";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { NewPassword, NewPassWordField } from "@models/ward";
 
 type InputFieldProps = { form: UseFormReturn<NewPassword>; field: NewPassWordField };
 

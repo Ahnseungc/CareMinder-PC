@@ -20,6 +20,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 type InputFieldProps = { form: UseFormReturn<NewStaff>; field: NewStaffField };
+
 const options = [
   { label: "DOCTOR", value: "의사" },
   { label: "NURSE", value: "간호사" },
@@ -59,7 +60,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     },
     confirmPassword: {
       required: "비밀번호를 재입력해주세요.",
-      validate: (value: string, { password }: NewStaff) => {
+      validate: (value: string | string[], { password }: NewStaff) => {
         if (value === password) {
           setValidState(prev => ({
             ...prev,
@@ -98,10 +99,21 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     getValues,
   } = form;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleRoleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value;
     setOption(value);
     setValue("occupation", options.filter(option => option.value === value)[0].label);
+  };
+
+  const handleAreaChange = (event: React.SyntheticEvent, newValue: typeof areaList) => {
+    console.log("Selected areas:", newValue);
+    if (!newValue) {
+      return;
+    }
+    setValue(
+      "areaName",
+      newValue?.map(value => value.name),
+    );
   };
 
   const doubleCheck = async () => {
@@ -175,7 +187,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                   placeholder={"직종을 선택해주세요."}
                   options={options.map(option => option.value)}
                   value={option}
-                  onChange={handleChange}
+                  onChange={handleRoleChange}
                 />
               </div>
             ) : field.name === "areaName" ? (
@@ -186,9 +198,14 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                     limitTags={2}
                     id="multiple-limit-tags"
                     options={areaList}
+                    onChange={handleAreaChange}
                     getOptionLabel={option => option.name}
                     renderInput={params => (
-                      <TextField {...params} placeholder="구역을 선택해주세요." />
+                      <TextField
+                        {...params}
+                        placeholder="구역을 선택해주세요."
+                        error={Boolean(errors[name])}
+                      />
                     )}
                   />
                 )}
