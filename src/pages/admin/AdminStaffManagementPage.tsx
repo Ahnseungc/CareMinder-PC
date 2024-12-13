@@ -4,10 +4,15 @@ import { useBooleanState } from "@toss/react";
 import ChangeWardMoadl from "@components/admin/adminModal/ChangeWardModal";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffManagementTable from "@components/admin/StaffManagementTable";
+import { useState } from "react";
 
 export default function AdminStaffManagementPage() {
   const [openEdit, closeEditModal] = useBooleanState(false);
   const [openDelete, closeDeleteModal] = useBooleanState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
@@ -31,7 +36,10 @@ export default function AdminStaffManagementPage() {
           <StaffManagementTable />
           <PaginationContainer>
             <div>
-              <PaginationComponent totalPage={5} />
+              <PaginationComponent
+                totalPage={5}
+                onChange={(e, page) => handleChangePage(e, page)}
+              />
             </div>
           </PaginationContainer>
         </BodyContainer>

@@ -1,17 +1,28 @@
-import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
+import {
+  FormControl,
+  FormHelperText,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  TextField,
+} from "@mui/material";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { NewPassword, NewPassWordField } from "./modal/PasswordChangeModal";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { NewPassword, NewPassWordField } from "@models/ward";
 
 type InputFieldProps = { form: UseFormReturn<NewPassword>; field: NewPassWordField };
 
 export default function NewPasswordField({ field, form }: InputFieldProps) {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [validState, setValidState] = useState<{
     confirmPassword?: {
       isValid: boolean;
       message?: string;
     };
   }>({});
+
+  const handleClickShowPassword = () => setShowPassword(show => !show);
 
   const validationRules = {
     password: {
@@ -48,7 +59,16 @@ export default function NewPasswordField({ field, form }: InputFieldProps) {
   } = form;
 
   return (
-    <FormControl key={name} error={Boolean(errors[name])} sx={{ gap: "3px" }}>
+    <FormControl
+      key={name}
+      error={Boolean(errors[name])}
+      sx={{
+        "gap": "3px",
+        "& .MuiInputLabel-asterisk": {
+          color: "#FF7253 !important",
+        },
+      }}
+    >
       <InputLabel htmlFor={name} required>
         {label}
       </InputLabel>
@@ -61,8 +81,21 @@ export default function NewPasswordField({ field, form }: InputFieldProps) {
             {...field}
             id={name}
             placeholder={placeholder}
-            type={inputTypes[name] || "text"}
+            type={showPassword ? "text" : inputTypes[name]}
             error={Boolean(errors[name])}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         )}
       />

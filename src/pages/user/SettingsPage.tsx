@@ -2,8 +2,8 @@ import { SettingsModal } from "@components/settings";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { StaffAccount } from "./StaffAccount";
-import { TabletManagement } from "./TabletManagement";
+import { StaffAccount } from "../../components/settings/StaffAccount";
+import { TabletManagement } from "../../components/settings/TabletManagement";
 import { useNavigate } from "react-router-dom";
 import settingsLoginState from "@libraries/recoil/settings/login";
 
@@ -61,7 +61,7 @@ export default function SettingsPage() {
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
-              스태프 계정 수정
+              스태프 계정 관리
             </TabButton>
             <TabButton
               isActive={activeTab === "태블릿 병상 관리"}

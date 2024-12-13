@@ -84,7 +84,7 @@ export default function SearchBox() {
       }
       setSearching(true);
       if (debouncedQuery) {
-        console.log(debouncedQuery);
+        // console.log(debouncedQuery);
         const fetchedNurses = await fetchNurses(debouncedQuery);
         setNurses(fetchedNurses);
       } else {
@@ -95,6 +95,10 @@ export default function SearchBox() {
 
     searchNurses();
   }, [debouncedQuery, staffList]);
+
+  useEffect(() => {
+    console.log(isOpen);
+  }, [isOpen]);
 
   return (
     <>

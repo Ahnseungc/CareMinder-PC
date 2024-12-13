@@ -4,6 +4,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 export type AreaData = {
   name: string;
   wardId: number;
+  memo: string;
 };
 
 const createArea = async (areaData: AreaData) => {
