@@ -10,14 +10,25 @@ type MessageType = {
     patientName: string;
     patientRequestId: number;
     requestContent: string;
+    message?: string;
   };
   notificationId: string;
   type: string;
 };
 
 export default function Alarm() {
-  const [message, setMessage] = useState<MessageType | undefined>(undefined);
-  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState<MessageType | undefined>({
+    notificationId: "patientRequest:20241206_012035",
+    content: {
+      patientRequestId: 17,
+      requestContent: "test3-3",
+      patientName: "aa",
+      areaName: "구역",
+    },
+    type: "patientRequest",
+  });
+
+  const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
   const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
 
   const NURSE = {
@@ -43,6 +54,7 @@ export default function Alarm() {
       const parsedData = JSON.parse(res);
       setMessage(parsedData);
       setIsOpen(true);
+      console.log(res);
 
       const slideOutTimer = setTimeout(() => {
         setIsOpen(false);
@@ -63,16 +75,32 @@ export default function Alarm() {
     };
   }, [userType]);
 
-  return (
-    <Wrapper isOpen={isOpen}>
-      <Title>{message?.content?.requestContent}</Title>
-      <Place>
-        <Ball color={NURSE.dark}></Ball>
-        {message?.content?.areaName} | {message?.content?.patientName}
-      </Place>
-      <Contents color={NURSE.light}>{message?.content?.requestContent}</Contents>
-    </Wrapper>
-  );
+  if (isOpen === undefined) return;
+
+  if (message?.content.message)
+    return (
+      <Wrapper isOpen={isOpen!}>
+        <Title>{message?.content?.requestContent}</Title>
+        <Place>
+          <Ball color={NURSE.dark}></Ball>
+          {message?.content?.areaName} | {message?.content?.patientName}
+        </Place>
+        <Contents color={NURSE.light}>{message?.content?.message}</Contents>
+      </Wrapper>
+    );
+
+  if (!message?.content.message)
+    return (
+      <Wrapper isOpen={isOpen!}>
+        <Title>
+          <Place>
+            <Ball color={NURSE.dark}></Ball>
+            {message?.content?.areaName} | {message?.content?.patientName}
+          </Place>
+        </Title>
+        <ContentsWhite>{message?.content?.requestContent}</ContentsWhite>
+      </Wrapper>
+    );
 }
 const Wrapper = styled("div")<{ isOpen: boolean }>`
   position: absolute;
@@ -113,18 +141,19 @@ const Wrapper = styled("div")<{ isOpen: boolean }>`
 `;
 
 const Title = styled("div")`
-  font-weight: 600;
+  font-weight: 700;
   border-bottom: 1px solid rgba(196, 197, 204, 1);
   margin-bottom: 12px;
-  padding: 1px 16px;
+  padding: 1px 10px 3px 10px;
   overflow: hidden;
   white-space: nowrap;
 `;
 const Place = styled("div")`
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
+  font-size: 16px;
 `;
 const Contents = styled("div")<{ color: string }>`
   font-weight: 500;
@@ -136,6 +165,12 @@ const Contents = styled("div")<{ color: string }>`
   text-overflow: ellipsis;
   background-color: ${({ color }) => color};
 `;
+const ContentsWhite = styled("div")`
+  font-weight: 600;
+  padding: 8px 8px 8px 16px;
+  height: 100%;
+`;
+
 const Ball = styled("div")<{ color: string }>`
   width: 16px;
   height: 16px;
