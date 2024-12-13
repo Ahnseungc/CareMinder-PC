@@ -19,6 +19,11 @@ const StaffWardInoutManagementPage = () => {
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
+
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
@@ -121,7 +126,7 @@ const StaffWardInoutManagementPage = () => {
       </TableLayout>
       <FooterLayout>
         <div>
-          <PaginationComponent totalPage={5} />
+          <PaginationComponent totalPage={5} onChange={(e, page) => handleChangePage(e, page)} />
         </div>
       </FooterLayout>
     </Container>
