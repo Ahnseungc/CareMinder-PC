@@ -104,7 +104,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     setOption(value);
     setValue("occupation", options.filter(option => option.value === value)[0].label);
   };
-
+  //@ts-ignore
   const handleAreaChange = (event: React.SyntheticEvent, newValue: typeof areaList) => {
     console.log("Selected areas:", newValue);
     if (!newValue) {
