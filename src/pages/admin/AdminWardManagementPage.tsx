@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function AdminWardManagementPage() {
   const [openEdit, openEditModal, closeEditModal] = useBooleanState(false);
   const [openDelete, openDeleteModal, closeDeleteModal] = useBooleanState(false);
-
+  //@ts-ignore
   const [currentPage, setCurrentPage] = useState<number>(1);
   const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);

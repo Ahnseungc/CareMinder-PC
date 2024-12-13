@@ -16,23 +16,30 @@ export default function AccountActiveModal({ onClose, onCloseAccountModal, ...pr
   const second = String(Math.floor((time / 1000) % 60)).padStart(2, "0");
 
   //error와 success 예시
+  //@ts-ignore
   const [error, isError] = useState(false);
   const [success, isSuccess] = useState(false);
 
   const requestAuth = () => {
-    if (phoneNumber.length !== 13) return;
+    if (phoneNumber.length !== 13) {
+      return;
+    }
     setIsRequestAuth(true);
     setTime(MINUTES_MS);
   };
 
   const onSendAuthNumber = () => {
-    if (time <= 0) return;
+    if (time <= 0) {
+      return;
+    }
     console.log(authNumber);
     isSuccess(true);
   };
 
   useEffect(() => {
-    if (!isRequestAuth) return;
+    if (!isRequestAuth) {
+      return;
+    }
     const timer = setInterval(() => {
       setTime(prevTime => prevTime - INTERVAL);
     }, INTERVAL);

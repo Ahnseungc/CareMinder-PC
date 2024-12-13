@@ -9,6 +9,7 @@ import { useState } from "react";
 export default function AdminStaffManagementPage() {
   const [openEdit, closeEditModal] = useBooleanState(false);
   const [openDelete, closeDeleteModal] = useBooleanState(false);
+  //@ts-ignore
   const [currentPage, setCurrentPage] = useState<number>(1);
   const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);

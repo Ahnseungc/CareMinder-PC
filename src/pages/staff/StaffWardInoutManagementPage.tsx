@@ -18,7 +18,7 @@ const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
-
+  //@ts-ignore
   const [currentPage, setCurrentPage] = useState<number>(1);
   const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
