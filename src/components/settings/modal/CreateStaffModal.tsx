@@ -9,11 +9,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import InfoModal from "./InfoModal";
 import { useBooleanState } from "@toss/react";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 const defaultValues: NewStaff = {
   name: "",
   occupation: "DOCTOR",
-  areaName: "",
+  areaName: [""],
   username: "",
   password: "",
   confirmPassword: "",
@@ -24,6 +25,7 @@ export default function CreateStaffModal({ onClose, ...props }: CMModalProps) {
   const [isDoubleChecked, setIsDoubleCheckd] = useRecoilState(doubleCheckState);
   const [isSuccessModalOpen, openSuccessModal, closeSuccessModal] = useBooleanState();
 
+  const { data: areaList } = useGetAreaList();
   const { mutate } = useCreateStaff();
 
   const form = useForm<NewStaff>({
@@ -34,14 +36,21 @@ export default function CreateStaffModal({ onClose, ...props }: CMModalProps) {
   const { handleSubmit, reset } = form;
 
   const onSubmit: SubmitHandler<NewStaff> = data => {
+    if (!areaList) {
+      return;
+    }
+    const areaIds = data.areaName.map(
+      areaName => areaList.find(area => area.name === areaName)!.id,
+    );
     const newStaffRequesets = {
       name: data.name,
       staffRole: data.occupation,
-      areaId: 1,
+      areaIds: areaIds,
       loginId: data.username,
       password: data.password,
       email: data.email,
     };
+    // console.log(newStaffRequesets);
 
     mutate(newStaffRequesets, {
       onSuccess: () => {

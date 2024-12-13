@@ -8,19 +8,38 @@ import { SwitchCase, useBooleanState } from "@toss/react";
 import NewPasswordField from "../NewPasswordInputField";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ChangeModal from "./ChangeModal";
-import { useRecoilState } from "recoil";
-import { staffListState } from "@libraries/recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { selectAreaState, staffListState } from "@libraries/recoil";
 import useChangePassword from "@hooks/mutation/useChangePassword";
 import { toast } from "react-toastify";
 import useReqChangePassword from "@hooks/mutation/useRequestPassword";
 import EditStaffInputField from "../EditStaffInputField";
 import { StaffListType } from "@hooks/queries/useGetStaffList";
+import InfoModal from "./InfoModal";
+import { OPTIONS } from "../const";
+import {
+  EditMultiStaff,
+  EditMultiStaffField,
+  EditStaff,
+  EditStaffField,
+  NewPassword,
+  NewPassWordField,
+} from "@models/ward";
+import EditStaffMultiField from "../EditStaffMultiInputField";
+import useChangeStaffInfo from "@hooks/mutation/usePutChangeStaffInfo";
 
 interface TabContentProps {
   isActive?: boolean;
 }
+
+interface PWChangeModalProps extends CMModalProps {
+  staffInfo?: StaffListType;
+  isMultiEdit?: boolean;
+}
+
 const TAB_MENU = ["계정 정보 수정", "비밀번호 편집"];
-const OPTIONS = [
+
+const MENU_OPTIONS = [
   {
     type: "강제 변경하기",
     description: (
@@ -50,59 +69,113 @@ const defaultValuesPW: NewPassword = {
   confirmPassword: "",
 };
 
-const defaultValuesEditStaff: EditStaff = {
-  name: "",
-  staffRole: "DOCTOR",
-  area: "",
-  id: "",
-  phoneNumber: "",
-  email: "",
-};
-
-interface PWChangeModalProps extends CMModalProps {
-  staffInfo?: StaffListType;
-}
-
-export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeModalProps) {
+export default function PasswordChangeModal({
+  staffInfo,
+  isMultiEdit,
+  ...props
+}: PWChangeModalProps) {
   const [activeMenu, setActiveMenu] = useState<string>(TAB_MENU[0]);
   const [isChange, setIsChange] = useState<boolean>(true);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
+  const [isSaveModalOpen, openSaveModal, closeSaveModal] = useBooleanState(false);
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
+
   const [selectStaffList, setSelectStaffList] = useRecoilState(staffListState);
+  const selectAreaList = useRecoilValue(selectAreaState);
 
   const { mutate: changePassword } = useChangePassword();
   const { mutate: reqChangePassword } = useReqChangePassword();
+  const { mutate: changeStaffInfo } = useChangeStaffInfo();
 
+  // useEffect(() => {
+  //   if (isMultiEdit) {
+  //     setActiveMenu(TAB_MENU[1]);
+  //   } else {
+  //     setActiveMenu(TAB_MENU[0]);
+  //   }
+  // }, [isMultiEdit, setActiveMenu]);
+
+  /** 스태프 단일 계정 정보 수정 useForm 객체 */
+  const editForm = useForm<EditStaff>({
+    defaultValues: {
+      name: staffInfo?.name || "",
+      staffRole: staffInfo?.staffRole || "DOCTOR",
+      area: staffInfo?.areas?.[0]?.areaId.toString() || "",
+      id: staffInfo?.loginId || "",
+      phoneNumber: staffInfo?.phoneNumber || "",
+      email: staffInfo?.email || "",
+    },
+    mode: "onChange",
+  });
+  const { handleSubmit: handleEditSubmit } = editForm;
+
+  /** 스태프 단일 계정 정보 수정 로직 */
+  const editonSubmit: SubmitHandler<EditStaff> = data => {
+    const newStaffRole = OPTIONS.find(option => option.value === data.staffRole)?.role as string;
+    const newStaffInfo = {
+      staffId: staffInfo ? staffInfo?.staffId : selectStaffList[0],
+      staffRole: newStaffRole,
+      areaIds: selectAreaList,
+      email: data.email,
+    };
+
+    changeStaffInfo(newStaffInfo, {
+      onSuccess: () => {
+        toast.success("변경 내용이 저장되었습니다.");
+        props.onClose();
+        openSaveModal();
+      },
+      onError: error => {
+        toast.error("계정 정보 변경에 실패했습니다.");
+        console.error(error);
+      },
+    });
+  };
+
+  /** 스태프 다중 계정 정보 수정 useForm 객체 */
+  const editMultiForm = useForm<EditMultiStaff>({
+    defaultValues: {
+      staffRole: staffInfo?.staffRole || "DOCTOR",
+      area: staffInfo?.areas?.[0]?.areaId.toString() || "",
+    },
+    mode: "onChange",
+  });
+  const { handleSubmit: handleEditMultiSubmit } = editMultiForm;
+
+  /** 스태프 다중 계정 정보 수정 로직 */
+  const editMultionSubmit: SubmitHandler<EditMultiStaff> = data => {
+    console.log("계정 다중 수정", data);
+  };
+
+  /** 비밀번호 로직 변경 useForm 객체 */
   const form = useForm<NewPassword>({
     defaultValues: defaultValuesPW,
     mode: "onChange",
   });
   const { handleSubmit, reset } = form;
 
-  const editForm = useForm<EditStaff>({
-    defaultValues: defaultValuesEditStaff,
-    mode: "onChange",
-  });
-
+  /** 비밀번호 강제 변경 로직 */
   const onSubmit: SubmitHandler<NewPassword> = data => {
-    console.log(data);
-    console.log(selectStaffList);
     const newPasswordRequest = {
       userIds: selectStaffList,
       newPassword: data.confirmPassword,
     };
+    props.onClose();
     changePassword(newPasswordRequest, {
       onSuccess: () => {
+        setActiveMenu("계정 정보 수정");
+        reset();
         setSelectStaffList([]);
-        setIsSuccess(true);
+        openInfoModal();
       },
       onError: error => {
         toast.error(error.message);
       },
     });
-    /**비밀번호 강제 변경 api 로직 구현할 부분 */
   };
 
+  /** 비밀번호 변경 요청 로직 */
   const handleRequestChangePassword = () => {
     reqChangePassword(
       { userIds: selectStaffList },
@@ -124,7 +197,6 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
     setTimeout(() => {
       setActiveMenu("계정 정보 수정");
       setIsChange(true);
-      setIsSuccess(false);
     }, 100);
   };
 
@@ -142,6 +214,12 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
 
   return (
     <>
+      {/* 바말번호 변경 완료 안내 모달 */}
+      <InfoModal modalType="successChangePW" open={isInfoModalOpen} onClose={closeInfoModal} />
+
+      {/* 바말번호 변경 완료 안내 모달 */}
+      <InfoModal modalType="successChangeInfo" open={isSaveModalOpen} onClose={closeSaveModal} />
+
       {/* 비밀번호 변경 요청하기 모달 */}
       <ChangeModal
         open={isRequestModalOpen}
@@ -169,7 +247,17 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
               <ModalActionButton color="secondary" onClick={handleModalClose}>
                 취소
               </ModalActionButton>
-              <ModalActionButton onClick={handleSubmit(onSubmit)}>변경하기</ModalActionButton>
+              <ModalActionButton
+                onClick={
+                  activeMenu === "계정 정보 수정"
+                    ? !isMultiEdit
+                      ? handleEditSubmit(editonSubmit)
+                      : handleEditMultiSubmit(editMultionSubmit)
+                    : handleSubmit(onSubmit)
+                }
+              >
+                변경하기
+              </ModalActionButton>
             </>
           ) : (
             <>
@@ -197,14 +285,28 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
           <TabContainer>
             {TAB_MENU.map((tab, index) => (
               <TabContent
+                // sx={{
+                //   cursor: `${tab === "계정 정보 수정" && isMultiEdit ? "not-allowed" : "pointer"}`,
+                // }}
                 key={index}
                 onClick={() => {
-                  setIsChange(prev => !prev);
+                  // if (!isMultiEdit) {
+                  //   setIsChange(prev => !prev);
+                  //   setActiveMenu(tab);
+                  // }
+                  tab === "계정 정보 수정" ? setIsChange(true) : setIsChange(false);
                   setActiveMenu(tab);
                 }}
                 isActive={tab === activeMenu}
               >
-                <Typography variant="h3">{tab}</Typography>
+                <Typography
+                  variant="h3"
+                  // sx={{
+                  //   opacity: `${tab === "계정 정보 수정" && isMultiEdit ? "0.3" : "1"}`,
+                  // }}
+                >
+                  {tab}
+                </Typography>
               </TabContent>
             ))}
           </TabContainer>
@@ -217,7 +319,7 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
                     <>
                       {!isChange ? (
                         <>
-                          {OPTIONS.map(option => (
+                          {MENU_OPTIONS.map(option => (
                             <PWOption onClick={() => handleChangePW(option.type)}>
                               <Typography variant="h3" sx={{ marginBottom: "9px" }}>
                                 {option.type}
@@ -233,7 +335,7 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
                             </PWOption>
                           ))}
                         </>
-                      ) : !isSuccess ? (
+                      ) : (
                         <Stack gap={"24px"} sx={{ padding: "0 100px" }}>
                           <Typography
                             variant="h2"
@@ -251,43 +353,34 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
                             강제변경하기
                           </Typography>
                         </Stack>
-                      ) : (
-                        <Stack gap={"24px"}>
-                          <Typography
-                            variant="h2"
-                            sx={{ marginBottom: "9px", textAlign: "center" }}
-                          >
-                            비밀번호 변경 완료
-                          </Typography>
-                          <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
-                            새로운 비밀번호로 변경 완료되었습니다.
-                            <br />
-                            기존에 로그인 된 기기에서 로그아웃되었습니다.
-                          </Typography>
-                          <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
-                            강제변경하기
-                          </Typography>
-                        </Stack>
                       )}
                     </>
                   ),
                   "계정 정보 수정": (
-                    <div>
-                      <Stack gap={"24px"}>
-                        {staffInfo && (
-                          <>
-                            {editStaffFields.map(field => (
-                              <EditStaffInputField
-                                key={field.name}
-                                field={field}
-                                form={editForm}
-                                staffInfo={staffInfo}
-                              />
-                            ))}
-                          </>
-                        )}
-                      </Stack>
-                    </div>
+                    <Stack gap={"24px"}>
+                      {isMultiEdit ? (
+                        <>
+                          {editMultiStaffFields.map(field => (
+                            <EditStaffMultiField
+                              key={field.name}
+                              field={field}
+                              form={editMultiForm}
+                            />
+                          ))}
+                        </>
+                      ) : (
+                        <>
+                          {editStaffFields.map(field => (
+                            <EditStaffInputField
+                              key={field.name}
+                              field={field}
+                              form={editForm}
+                              staffInfo={staffInfo}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </Stack>
                   ),
                 }}
               />
@@ -301,17 +394,6 @@ export default function PasswordChangeModal({ staffInfo, ...props }: PWChangeMod
 
 /**utils */
 
-export type NewPassword = {
-  password: string;
-  confirmPassword: string;
-};
-
-export type NewPassWordField = {
-  name: keyof NewPassword;
-  label: string;
-  placeholder: string;
-};
-
 const fields: NewPassWordField[] = [
   { name: "password", label: "신규 비밀번호", placeholder: "비밀번호를 입력해주세요." },
   {
@@ -321,35 +403,18 @@ const fields: NewPassWordField[] = [
   },
 ];
 
-export type EditStaffRequest = {
-  staffId: number;
-  staffRole: string;
-  areaId: number;
-  email: string;
-};
-
-export type EditStaff = {
-  name: string;
-  staffRole: string;
-  area: string;
-  id: string;
-  phoneNumber: string;
-  email: string;
-};
-
-export type EditStaffField = {
-  name: keyof EditStaff;
-  label: string;
-  placeholder: string;
-};
-
 const editStaffFields: EditStaffField[] = [
   { name: "name", label: "이름", placeholder: "" },
   { name: "staffRole", label: "직업", placeholder: "" },
   { name: "area", label: "구역", placeholder: "" },
   { name: "id", label: "아이디", placeholder: "" },
   { name: "phoneNumber", label: "전화번호", placeholder: "" },
-  { name: "email", label: "이메일", placeholder: "" },
+  { name: "email", label: "이메일", placeholder: "이메일을 입력해주세요." },
+];
+
+const editMultiStaffFields: EditMultiStaffField[] = [
+  { name: "staffRole", label: "직업" },
+  { name: "area", label: "구역" },
 ];
 
 /** styles */

@@ -10,6 +10,8 @@ const MODAL_CONTEXTS = {
   accountLock: { title: "계정이 잠겼습니다.", controlAccount: false },
   valueError: { title: "ID/PW 오류입니다.", controlAccount: false },
   checkTOS: { title: "필수 약관 체크 누락되었습니다.", controlAccount: false },
+  successChangePW: { title: "비밀번호가 변경되었습니다.", controlAccount: false },
+  successChangeInfo: { title: "변경 내용이 저장되었습니다.", controlAccount: false },
   confirmFail: { title: "인증실패되었습니다.", controlAccount: false },
   adminPopup: {
     title: "본 페이지는 관리자를 위한 페이지로, 관리자 외에 접근을 금합니다.",

@@ -3,8 +3,26 @@ import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { Typography } from "@mui/material";
 import styled from "@emotion/styled";
 import AreaManageTable from "../areaManage/AreaManageTable";
+import { useState } from "react";
+import useUpdateAreaInfo, { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
+import { toast } from "react-toastify";
 
 export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
+  const [areaData, setAreaData] = useState<AreaInfo[]>([]);
+  const { mutate: updateAreaInfo } = useUpdateAreaInfo();
+
+  const handleUpdateArea = () => {
+    updateAreaInfo(areaData, {
+      onSuccess: () => {
+        toast.success("구역 정보를 변경했습니다");
+      },
+      onError: error => {
+        toast.error("구역 정보 변경에 실패했습니다.");
+        console.error(error);
+      },
+    });
+  };
+
   return (
     <CMModal
       maxWidth="xl"
@@ -15,7 +33,7 @@ export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
           <ModalActionButton color="secondary" onClick={onClose}>
             취소
           </ModalActionButton>
-          <ModalActionButton onClick={() => null}>변경하기</ModalActionButton>
+          <ModalActionButton onClick={handleUpdateArea}>변경하기</ModalActionButton>
         </>
       }
       {...props}
@@ -35,7 +53,7 @@ export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
           <br />
           해당 메모는 현 팝업(구역 관리하기)에서만 확인이 가능합니다.
         </Typography>
-        <AreaManageTable />
+        <AreaManageTable onUpdate={setAreaData} />
       </ContentWrapper>
     </CMModal>
   );
