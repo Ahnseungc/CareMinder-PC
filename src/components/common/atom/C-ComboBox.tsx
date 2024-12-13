@@ -49,6 +49,27 @@ export const CComboBox: FC<CComboBoxProps> = ({
         value={value}
         onChange={onChange}
         displayEmpty
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              "maxHeight": 140,
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#f1f1f1",
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#5d6dbe",
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                background: "#555",
+              },
+            },
+          },
+        }}
         renderValue={(v: any) => (
           <StyledPlaceholder
             style={{
