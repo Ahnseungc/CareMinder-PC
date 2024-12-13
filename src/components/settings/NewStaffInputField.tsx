@@ -255,6 +255,7 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                 onChange={e => {
                   field.onChange(e);
                 }}
+                sx={{ width: "100%" }}
                 InputProps={{
                   endAdornment:
                     name === "password" || name === "confirmPassword" ? (
