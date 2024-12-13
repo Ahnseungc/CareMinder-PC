@@ -3,22 +3,19 @@ import { PatientStatus, isRoleType } from ".";
 export type Staff = {
   name: string;
   occupation: string;
+  areaName: string[];
   username: string;
   password: string;
-  phoneNumber: string;
   email: string;
 };
 
 export type NewStaffRequests = {
   name: string;
+  staffRole: string;
+  areaIds: number[];
   loginId: string;
   password: string;
-  phoneNumber: string;
   email: string;
-  nfc: string;
-  fingerprint: string;
-  staffRole: string;
-  areaId: number;
 };
 
 export type NewStaff = Staff & { confirmPassword: string };
@@ -29,10 +26,6 @@ export type NewStaffField = {
   placeholder: string;
 };
 
-export type QuickRegisterNewStaff = {
-  label: string;
-  value: string;
-};
 export type VoidFn = () => void;
 
 export type RefetchProps = {
@@ -52,6 +45,8 @@ export type Message = {
   createdAt: string;
   role: string;
   senderName: string; //문의 후 수정 필요
+  isRead: null | boolean;
+  messageId: number;
 };
 
 export type patientMapType = {

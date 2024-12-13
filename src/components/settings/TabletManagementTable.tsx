@@ -1,18 +1,19 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
 
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
-import { ReactComponent as Sleep } from "@/assets/sleep.svg";
+import { ReactComponent as Alert } from "@/assets/alert.svg";
 import { Checkbox, Typography } from "@mui/material";
 import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { toast } from "react-toastify";
-import CButton from "@components/common/atom/C-Button";
 import PaginationComponent from "@components/common/pagination";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -21,13 +22,22 @@ const columns = [
   { field: "identificationNum", headerName: "식별번호" },
   { field: "PatientName", headerName: "환자이름" },
   { field: "AdmissionDate", headerName: "입원 일자" },
+  { field: "Logout", headerName: "환자 로그아웃" },
 ];
 
-const TabletManagementTable: FC = () => {
+interface TabletManagementTableProps {
+  isClear: boolean;
+  setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const setIsEditing = useSetRecoilState(tabletEditingState);
+  const isEditing = useRecoilValue(tabletEditingState);
 
   const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList({
     myArea: false,
@@ -70,11 +80,26 @@ const TabletManagementTable: FC = () => {
       },
     );
   };
-
+  //@ts-ignore
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
     console.log(page);
   };
+
+  useEffect(() => {
+    if (isClear) {
+      setIsClear(false);
+      setSelectIndex([]);
+    }
+  }, [isEditing, isClear, setIsClear]);
+
+  useEffect(() => {
+    if (selectIndex.length === 0) {
+      setIsEditing([]);
+    } else {
+      setIsEditing(selectIndex);
+    }
+  }, [selectIndex, setIsEditing]);
 
   useEffect(() => {
     if (areaList) {
@@ -134,7 +159,7 @@ const TabletManagementTable: FC = () => {
                   }}
                 >
                   <td>
-                    <ComBoxLayout>
+                    <ShortComBoxLayout>
                       <Checkbox
                         {...label}
                         sx={{
@@ -161,10 +186,10 @@ const TabletManagementTable: FC = () => {
                           });
                         }}
                       />
-                    </ComBoxLayout>
+                    </ShortComBoxLayout>
                   </td>
                   <td>
-                    <ComBoxLayout>
+                    <LongComBoxLayout>
                       <CComboBox
                         placeholder={"구역"}
                         options={area}
@@ -175,10 +200,10 @@ const TabletManagementTable: FC = () => {
                         //   setOptions([...options, newValue]);
                         // }}
                       />
-                    </ComBoxLayout>
+                    </LongComBoxLayout>
                   </td>
                   <td>
-                    <ComBoxLayout>
+                    <LongComBoxLayout>
                       <CInput
                         variant={"outlined"}
                         placeholder={"태블릿이름"}
@@ -188,18 +213,17 @@ const TabletManagementTable: FC = () => {
                         id={""}
                       ></CInput>
                       <TabletButtonLayout>
-                        <Leave />
-                        <Sleep />
+                        <Alert />
                       </TabletButtonLayout>
-                    </ComBoxLayout>
+                    </LongComBoxLayout>
                   </td>
                   <td>
-                    <ComBoxLayout>
+                    <LongComBoxLayout>
                       <Typography>{row.serialNumber}</Typography>
-                    </ComBoxLayout>
+                    </LongComBoxLayout>
                   </td>
                   <td>
-                    <ComBoxLayout>
+                    <LongComBoxLayout>
                       <CInput
                         variant={"outlined"}
                         placeholder={"환자 이름"}
@@ -208,14 +232,19 @@ const TabletManagementTable: FC = () => {
                         disabled={false}
                         id={""}
                       ></CInput>
-                    </ComBoxLayout>
+                    </LongComBoxLayout>
                   </td>
                   <td>
-                    <ComBoxLayout>
+                    <LongComBoxLayout>
                       <Typography>
                         {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
                       </Typography>
-                    </ComBoxLayout>
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <ShortComBoxLayout>
+                      <Leave />
+                    </ShortComBoxLayout>
                   </td>
                 </tr>
               );
@@ -224,9 +253,6 @@ const TabletManagementTable: FC = () => {
         </StTable>
       )}
       <PaginationContainer>
-        <div style={{ width: "148px", position: "absolute", left: "60px" }}>
-          <CButton buttontype="primarySpaureWhite">삭제하기</CButton>
-        </div>
         <div>
           <PaginationComponent
             totalPage={wardTabletList?.totalPages as number}
@@ -264,11 +290,16 @@ const StTable = styled.table`
   }
 `;
 
-const ComBoxLayout = styled.div`
+const ShortComBoxLayout = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 138px;
+  height: 36px;
+  margin: 0 auto;
+`;
 
+const LongComBoxLayout = styled.div`
   position: relative;
   width: 224px;
   height: 36px;
@@ -277,9 +308,8 @@ const ComBoxLayout = styled.div`
 
 const TabletButtonLayout = styled.div`
   position: absolute;
-  top: 4px;
-  right: -90px;
-
+  top: 7px;
+  right: -35px;
   display: flex;
   gap: 5px;
 `;
