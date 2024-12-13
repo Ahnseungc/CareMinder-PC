@@ -80,7 +80,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
       },
     );
   };
-
+  //@ts-ignore
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
     console.log(page);
