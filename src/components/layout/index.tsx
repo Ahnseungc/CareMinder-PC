@@ -72,6 +72,8 @@ const OuterContainer = styled(Box)(({ theme }) => ({
   marginTop: "64px", // header
   marginLeft: "72px", // sidebar
   backgroundColor: theme.palette.background.default,
+  // width: "100%",
+  width: "calc(100% - 72px)",
 }));
 
 // const InnerContainer = styled(Stack)(({ theme }) => ({

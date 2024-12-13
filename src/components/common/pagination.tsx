@@ -4,8 +4,9 @@ import Stack from "@mui/material/Stack";
 
 type PaginationProps = {
   totalPage: number;
+  onChange: (event: React.ChangeEvent<unknown>, page: number) => void;
 };
-function PaginationComponent({ totalPage }: PaginationProps) {
+function PaginationComponent({ totalPage, onChange }: PaginationProps) {
   return (
     <Wrapper>
       <Stack spacing={2}>
@@ -17,6 +18,7 @@ function PaginationComponent({ totalPage }: PaginationProps) {
           defaultPage={1}
           shape="rounded"
           defaultValue={1}
+          onChange={onChange}
         />
       </Stack>
     </Wrapper>

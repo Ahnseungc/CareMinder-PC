@@ -17,8 +17,10 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  const onWaitOrAccept = () => {
-    if (userStatus?.type === "WARD") return setIsModal(true);
+  const onMutates = () => {
+    if (userStatus?.type === "WARD") {
+      return setIsModal(true);
+    }
   };
 
   const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);
@@ -71,12 +73,7 @@ export default function MainHomePage() {
             </SubTitleRight>
           </SubTitle>
           {getPendingData?.map(el => (
-            <PatientBox
-              key={el.patientRequestId}
-              user="mainWait"
-              data={el}
-              onWaitOrAccept={onWaitOrAccept}
-            />
+            <PatientBox key={el.patientRequestId} user="mainWait" data={el} onMutates={onMutates} />
           ))}
         </LeftSection>
         <RightSection>
@@ -94,7 +91,7 @@ export default function MainHomePage() {
               key={el.patientRequestId}
               user="mainAccept"
               data={el}
-              onWaitOrAccept={onWaitOrAccept}
+              onMutates={onMutates}
             />
           ))}
         </RightSection>
@@ -108,6 +105,7 @@ const SectionBase = styled(Box)(({ theme }) => ({
   padding: "30px",
   borderRadius: "24px",
   backgroundColor: theme.palette.background.paper,
+  minHeight: "80vh",
 }));
 
 const LeftSection = styled(SectionBase)({
@@ -133,12 +131,14 @@ const SubTitle = styled("div")`
   justify-content: space-between;
 `;
 const SubTitleLeft = styled("div")`
+  cursor: pointer;
   & > span {
     margin-right: 18px;
   }
 `;
 const SubTitleRight = styled("div")<{ isDisable: boolean }>`
   display: flex;
+  cursor: pointer;
   align-items: center;
   height: 35px;
   & > * {

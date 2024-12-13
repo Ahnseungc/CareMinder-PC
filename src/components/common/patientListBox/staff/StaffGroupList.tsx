@@ -9,7 +9,7 @@ import ChatInput from "@components/chat/chatInput";
 import getPrevTimes from "@utils/getPrevTimes";
 import { StaffGroupListBoxProps } from "@models/index";
 
-function StaffGroupList({ data, onWaitOrAccept, roomId, setRoomId }: StaffGroupListBoxProps) {
+function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
   const roleColorPick = roleColor("NURSE");
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -44,7 +44,7 @@ function StaffGroupList({ data, onWaitOrAccept, roomId, setRoomId }: StaffGroupL
             </TxtBox>
             <Check
               color={roleColorPick.dark}
-              onClick={e => onWaitOrAccept(e, el.patientRequestId, "accept")}
+              onClick={e => onMutates(e, el.patientRequestId, "accept")}
             >
               <CheckIcon />
             </Check>
@@ -61,7 +61,12 @@ function StaffGroupList({ data, onWaitOrAccept, roomId, setRoomId }: StaffGroupL
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
             ))}
           </ChatContainer>
-          <ChatInput roomId={roomId!} Icon={roleColorPick.sendIcon} setRoomId={setRoomId!} />
+          <ChatInput
+            roomId={roomId!}
+            Icon={roleColorPick.sendIcon}
+            setRoomId={setRoomId!}
+            color={roleColorPick.normal}
+          />
         </div>
       )}
     </InnerContainer>

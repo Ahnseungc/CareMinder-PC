@@ -4,3 +4,4 @@ export { default as useGetStaffPatientInprogress } from "./useGetStaffPatientInp
 export { default as useGetStaffPatientPending } from "./useGetStaffPatientPending";
 export { default as useGetWardPatientPending } from "./useGetWardPatientPending";
 export { default as useGetWardPatientInProgress } from "./useGetWardPatientInprogress";
+export { default as useGetWardInfo } from "./useGetWardInfo";

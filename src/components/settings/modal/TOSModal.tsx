@@ -26,16 +26,21 @@ export default function TOSModal({ onClose, onConfirm, ...props }: TOSModalProps
     }
   };
 
+  const closeModal = () => {
+    onClose();
+    setIsChecked(false);
+  };
+
   return (
     <>
       <InfoModal open={open} onClose={closeCreateModal} modalType={"checkTOS"}></InfoModal>
       <CMModal
         maxWidth="sm"
-        onClose={onClose}
+        onClose={closeModal}
         title={"스태프 계정 생성 약관 동의서"}
         footer={
           <>
-            <ModalActionButton color="secondary" onClick={onClose}>
+            <ModalActionButton color="secondary" onClick={closeModal}>
               취소
             </ModalActionButton>
             <ModalActionButton onClick={handleConfirm}>동의합니다</ModalActionButton>

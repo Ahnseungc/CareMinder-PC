@@ -2,8 +2,8 @@ import { SettingsModal } from "@components/settings";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { StaffAccount } from "./StaffAccount";
-import { TabletManagement } from "./TabletManagement";
+import { StaffAccount } from "../../components/settings/StaffAccount";
+import { TabletManagement } from "../../components/settings/TabletManagement";
 import { useNavigate } from "react-router-dom";
 import settingsLoginState from "@libraries/recoil/settings/login";
 
@@ -49,19 +49,19 @@ export default function SettingsPage() {
             <Title variant="h1">병동 계정 설정</Title>
           </div>
           <TabContainer>
-            <TabButton
+            {/* <TabButton
               isActive={activeTab === "태블릿 컨텐츠 수정"}
               value={"태블릿 컨텐츠 수정"}
               onClick={() => handleTabClick("태블릿 컨텐츠 수정")}
             >
               태블릿 컨텐츠 수정
-            </TabButton>
+            </TabButton> */}
             <TabButton
               isActive={activeTab === "스태프 계정 수정"}
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
-              스태프 계정 수정
+              스태프 계정 관리
             </TabButton>
             <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
@@ -80,6 +80,7 @@ export default function SettingsPage() {
 }
 
 const Container = styled(Stack)({
+  minWidth: "1900px",
   height: "100%",
   padding: "31.6px 0",
 });
@@ -95,7 +96,7 @@ const TabContainer = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   alignItems: "center",
   backgroundColor: theme.palette.success.main,
-  width: "602px",
+  width: "402px",
   height: "44px",
   borderRadius: "100px",
   padding: "4px",
@@ -108,7 +109,7 @@ const BodyContainer = styled(Box)({
 const TabButton = styled(Button, {
   shouldForwardProp: prop => prop !== "isActive",
 })<TabButtonProps>(({ theme, isActive }) => ({
-  "width": "33%",
+  "width": "50%",
   "backgroundColor": isActive ? theme.palette.primary.contrastText : theme.palette.success.main,
   "color": isActive ? theme.palette.text.primary : theme.palette.text.disabled,
   "borderRadius": "100px",

@@ -2,7 +2,12 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 
-export type StaffList = {
+export type Areas = {
+  areaId: number;
+  areaName: string;
+};
+
+export type StaffListType = {
   staffId: number;
   name: string;
   loginId: string;
@@ -11,23 +16,42 @@ export type StaffList = {
   nfc: string;
   fingerprint: string;
   staffRole: string;
+  areas: Areas[];
+  timeSinceLogout: string | null;
   accountLocked: boolean;
-  areaId: number;
-  areaName: string;
+  isLogIn: boolean;
 };
 
 export type GetStaffListResponse = {
-  data: StaffList[];
+  data: StaffListType[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 };
 
-export const getStaffList = async () => {
-  const res = await axiosInstance.get("/wards/staff-list");
+export type GetStaffListProps = {
+  page: number;
+  size: number;
+};
+
+export const getStaffList = async ({ page, size }: GetStaffListProps) => {
+  const res = await axiosInstance.get("/wards/staff-list", {
+    params: {
+      page: page,
+      size: size,
+    },
+  });
+  // console.log(res.data);
   return res.data;
 };
 
-export const useGetStaffList = (): UseQueryResult<GetStaffListResponse, AxiosError> => {
+export const useGetStaffList = ({
+  page,
+  size,
+}: GetStaffListProps): UseQueryResult<GetStaffListResponse, AxiosError> => {
   return useQuery<GetStaffListResponse, AxiosError>({
-    queryKey: ["staffList"],
-    queryFn: getStaffList,
+    queryKey: ["staffList", page],
+    queryFn: () => getStaffList({ page, size }),
   });
 };

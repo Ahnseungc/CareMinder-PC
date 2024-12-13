@@ -3,7 +3,7 @@ import SettingsLayout from "../SettingsLayout";
 
 export default function SettingsModal(props: CMModalProps) {
   return (
-    <CMModal {...props} maxWidth="sm">
+    <CMModal {...props} maxWidth="md">
       <SettingsLayout {...props} />
     </CMModal>
   );

@@ -1,9 +1,10 @@
-import { Box, Stack, SvgIcon, Typography, styled } from "@mui/material";
+import { Box, Stack, Typography, styled } from "@mui/material";
+// import {SvgIcon } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CSwitch from "@components/common/atom/C-Switch";
 import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
-import { ReactComponent as ArrayIcon } from "@assets/array.svg";
+// import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
 import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
@@ -17,6 +18,11 @@ const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
 
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
@@ -93,10 +99,10 @@ const StaffWardInoutManagementPage = () => {
             <div>
               <CSwitch onChange={onChangeMyArea} />
             </div>
-            <SectionArrayLayout>
+            {/* <SectionArrayLayout>
               <Arraytitle variant="h2">구역 정렬</Arraytitle>
               <SvgIcon component={ArrayIcon} inheritViewBox />
-            </SectionArrayLayout>
+            </SectionArrayLayout> */}
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <SearchLayout>
@@ -104,6 +110,7 @@ const StaffWardInoutManagementPage = () => {
                 value={searchValue}
                 onChange={onChangeSearchValue}
                 placeholder={"환자 이름을 검색해 주세요."}
+                borderColor={"#ECECEC"}
               />
             </SearchLayout>
             <ButtonLayout>
@@ -119,7 +126,7 @@ const StaffWardInoutManagementPage = () => {
       </TableLayout>
       <FooterLayout>
         <div>
-          <PaginationComponent totalPage={5} />
+          <PaginationComponent totalPage={5} onChange={(e, page) => handleChangePage(e, page)} />
         </div>
       </FooterLayout>
     </Container>
@@ -179,18 +186,18 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   fontWeight: 500,
   color: theme.palette.primary.dark,
 }));
-const Arraytitle = styled(Typography)(({ theme }) => ({
-  lineHeight: "26px",
-  fontSize: "18px",
-  fontWeight: 500,
-  color: theme.palette.primary.main,
-}));
+// const Arraytitle = styled(Typography)(({ theme }) => ({
+//   lineHeight: "26px",
+//   fontSize: "18px",
+//   fontWeight: 500,
+//   color: theme.palette.primary.main,
+// }));
 
-const SectionArrayLayout = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "5px",
-});
+// const SectionArrayLayout = styled(Box)({
+//   display: "flex",
+//   alignItems: "center",
+//   gap: "5px",
+// });
 
 const SearchLayout = styled(Box)({
   width: "373px",

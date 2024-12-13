@@ -1,55 +1,112 @@
-// import CSwitch from "@components/common/atom/C-Switch";
+import CSwitch from "@components/common/atom/C-Switch";
 import { styled } from "@mui/material";
 import { useState } from "react";
-// import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
-// import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
+import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
+import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
-// import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
+import useCompleteAccept from "@hooks/mutation/useCompleteAccept";
+import useCompleteDischargeByWeb from "@hooks/mutation/useCompleteDischargeByWeb";
 
 export default function CompletedRequestsPage() {
-  // const [isPatient, setIsPatient] = useState<boolean>(false);
-  //@ts-ignore
+  const [isPatient, setIsPatient] = useState<boolean>(false);
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
-  // const [myArea, setMyArea] = useState(false);
-  const { data: getCompleted } = useGetCompleted(false);
-  // const { data: getCompletedGroup } = useGetCompletedGroup(myArea);
+  const [myArea, setMyArea] = useState(false);
+  const { data: getCompleted, refetch: refetchComplete } = useGetCompleted(myArea, isPatient);
+  const { data: getCompletedGroup, refetch: refetchCompletedGroup } = useGetCompletedGroup(
+    myArea,
+    isPatient,
+  );
+  const refetchProps = {
+    refetchComplete,
+    refetchCompletedGroup,
+    isPatient,
+  };
+  const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
+  const { mutate: mutateDischarge } = useCompleteDischargeByWeb(refetchProps);
+
+  const onMutates = (e: React.MouseEvent, id: number, type: string) => {
+    e.stopPropagation();
+    if (type === "accept") {
+      mutateAccept(id);
+    }
+    if (type === "discharge") {
+      mutateDischarge(id);
+    }
+    setIsFocusPatientData(null);
+  };
 
   return (
     <Wrapper>
       <Title>완료 요청 히스토리</Title>
       <SubTitle>
-        {/* <span>완료된 내 구역 요청 리스트</span>
-        <CSwitch onChange={() => setMyArea(prev => !prev)} />
-        <span>환자별로 보기</span> <CSwitch onChange={() => setIsPatient(prev => !prev)} /> */}
+        <span>완료된 내 구역 요청 리스트</span>
+        <CSwitch
+          onChange={() => {
+            setMyArea(prev => !prev), setIsFocusPatientData(null);
+          }}
+        />
+        <span>환자별로 보기</span>
+        <CSwitch
+          onChange={() => {
+            setIsPatient(prev => !prev), setIsFocusPatientData(null);
+          }}
+        />
       </SubTitle>
       <Container>
         <LeftWrapper>
-          {/* {isPatient && (
-            <Person>
-              <PersonIcon /> <div>홍길동</div>
-              <HamburgerIcon />
-            </Person>
-          )} */}
-          <PatientList>
-            {getCompleted?.map(el => (
-              <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
-                <PatientBox
-                  key={el.patientRequestId}
-                  user="completedRequest"
-                  data={el}
-                  roomId={isFocusPatientData?.patientRequestId}
-                />
-              </div>
+          {isPatient &&
+            getCompletedGroup?.map(el => (
+              <>
+                <Person key={el.createdAt}>
+                  <PersonIcon /> <div>{el.patientSimple.patientName}</div>
+                  <HamburgerIcon />
+                </Person>
+
+                {el.patientRequests.map((element: any) => (
+                  <PatientList key={element.patientRequestId}>
+                    <div
+                      key={element.patientRequestId}
+                      onClick={() => setIsFocusPatientData(element)}
+                    >
+                      <PatientBox
+                        key={element.patientRequestId}
+                        user="completedRequest"
+                        data={element}
+                        roomId={isFocusPatientData?.patientRequestId}
+                        onMutates={onMutates}
+                      />
+                    </div>
+                  </PatientList>
+                ))}
+              </>
             ))}
+          <PatientList>
+            {!isPatient &&
+              getCompleted?.map(el => (
+                <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
+                  <PatientBox
+                    key={el.patientRequestId}
+                    user="completedRequest"
+                    data={el}
+                    roomId={isFocusPatientData?.patientRequestId}
+                    onMutates={onMutates}
+                  />
+                </div>
+              ))}
           </PatientList>
         </LeftWrapper>
         <RightWrapper>
           {isFocusPatientData && (
             <>
-              {/* {isPatient && <Empty />} */}
-              <PatientBox user="completedRequestFocus" data={isFocusPatientData} />
+              {isPatient && <Empty />}
+              <PatientBox
+                user="completedRequestFocus"
+                data={isFocusPatientData}
+                onMutates={onMutates}
+              />
             </>
           )}
         </RightWrapper>
@@ -57,7 +114,9 @@ export default function CompletedRequestsPage() {
     </Wrapper>
   );
 }
-const Wrapper = styled("div")``;
+const Wrapper = styled("div")`
+  min-height: 80vh;
+`;
 const Container = styled("div")`
   display: flex;
 `;
@@ -86,19 +145,19 @@ const SubTitle = styled("div")`
     margin-right: 17px;
   }
 `;
-// const Person = styled("div")`
-//   margin: 33px 0 15px 0;
-//   display: flex;
-//   align-items: center;
-//   & > div {
-//     font-size: 18px;
-//     font-weight: 700;
-//     color: #000000;
-//     margin: 0 7px 0 17px;
-//     margin-top: 5px;
-//   }
-// `;
+const Person = styled("div")`
+  margin: 33px 0 15px 0;
+  display: flex;
+  align-items: center;
+  & > div {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 7px 0 17px;
+    margin-top: 5px;
+  }
+`;
 const PatientList = styled("div")``;
-// const Empty = styled("div")`
-//   margin-top: 81px;
-// `;
+const Empty = styled("div")`
+  margin-top: 81px;
+`;

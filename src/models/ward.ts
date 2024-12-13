@@ -24,3 +24,46 @@ export type NewWardField = {
   label: string;
   placeholder: string;
 };
+
+export type NewPassword = {
+  password: string;
+  confirmPassword: string;
+};
+
+export type NewPassWordField = {
+  name: keyof NewPassword;
+  label: string;
+  placeholder: string;
+};
+
+export type EditStaffRequest = {
+  staffId: number;
+  staffRole: string;
+  areaId: number;
+  email: string;
+};
+
+export type EditStaff = {
+  name: string;
+  staffRole: string;
+  area: string;
+  id: string;
+  phoneNumber: string;
+  email: string;
+};
+
+export type EditStaffField = {
+  name: keyof EditStaff;
+  label: string;
+  placeholder: string;
+};
+
+export type EditMultiStaff = {
+  staffRole: string;
+  area: string;
+};
+
+export type EditMultiStaffField = {
+  name: keyof EditMultiStaff;
+  label: string;
+};

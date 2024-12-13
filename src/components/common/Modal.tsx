@@ -17,8 +17,18 @@ export default function Modal({
   ...props
 }: PropsWithChildren<ModalProps>) {
   return (
-    <StyledDialog maxWidth="xs" open={open} onClose={onClose} {...props}>
-      {title && <DialogTitle>{title}</DialogTitle>}
+    <StyledDialog
+      maxWidth="xs"
+      open={open}
+      onClose={onClose}
+      {...props}
+      PaperProps={{
+        sx: {
+          maxWidth: props.maxWidth === "xs" ? "444px !important" : undefined,
+        },
+      }}
+    >
+      {title && <DialogTitle sx={{ fontSize: "20px" }}>{title}</DialogTitle>}
       <DialogContent>{children}</DialogContent>
       {footer && <DialogActions>{footer}</DialogActions>}
     </StyledDialog>
@@ -32,7 +42,16 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     borderRadius: "24px",
     minWidth: "300px",
     width: "100%",
-    maxHeight: "900px",
+    maxHeight: "1200px",
+    [`&.MuiDialog-paperWidthXs`]: {
+      maxWidth: "444px !important",
+    },
+    [`&.MuiDialog-paperWidthMd`]: {
+      maxWidth: "680px !important",
+    },
+    [`&.MuiDialog-paperWidthXl`]: {
+      maxWidth: "1080px !important",
+    },
   },
   "& .MuiDialogTitle-root": {
     fontSize: "18px",

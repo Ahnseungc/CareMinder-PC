@@ -1,12 +1,19 @@
-import { FC, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
 
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
-import { ReactComponent as Sleep } from "@/assets/sleep.svg";
+import { ReactComponent as Alert } from "@/assets/alert.svg";
 import { Checkbox, Typography } from "@mui/material";
+import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
+import { toast } from "react-toastify";
+import PaginationComponent from "@components/common/pagination";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -14,157 +21,246 @@ const columns = [
   { field: "TabletName", headerName: "태블릿 이름" },
   { field: "identificationNum", headerName: "식별번호" },
   { field: "PatientName", headerName: "환자이름" },
+  { field: "AdmissionDate", headerName: "입원 일자" },
+  { field: "Logout", headerName: "환자 로그아웃" },
 ];
 
-const rows = [
-  { id: 1, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 2, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 3, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 4, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 5, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 6, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 7, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 8, Section: "Snow", TableName: "Jon", PatientName: 35 },
-  { id: 9, Section: "Snow", TableName: "Jon", PatientName: 35 },
-];
+interface TabletManagementTableProps {
+  isClear: boolean;
+  setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const TabletManagementTable: FC = () => {
+const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [options, setOptions] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
+  const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const setIsEditing = useSetRecoilState(tabletEditingState);
+  const isEditing = useRecoilValue(tabletEditingState);
+
+  const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList({
+    myArea: false,
+    page: currentPage - 1,
+    size: 20,
+  });
+  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
+  const { mutate: changeTabletArea } = useChangeTabletArea();
+
+  const totalItems = wardTabletList?.data?.length ?? 0;
+  const selectedItems = selectIndex.length;
 
   const handleSelectAll = () => {
-    if (selectIndex.length === rows.length) {
-      setSelectIndex([]);
-    } else {
-      setSelectIndex(rows.map((_, index) => index));
+    if (wardTabletList) {
+      if (selectIndex.length === wardTabletList.data.length) {
+        setSelectIndex([]);
+      } else {
+        setSelectIndex(wardTabletList.data.map((_, index) => index));
+      }
     }
   };
 
-  return (
-    <StTable>
-      <thead>
-        <tr>
-          {columns.map((column, index) => {
-            if (column.field === "check") {
-              return (
-                <th key={index}>
-                  <Checkbox
-                    {...label}
-                    sx={{
-                      "&.MuiCheckbox-root": {
-                        color: "#ECECEC",
-                      },
-                      "& .MuiSvgIcon-root": {
-                        fontSize: 28,
-                      },
-                      "&.Mui-checked": {
-                        "& .MuiSvgIcon-root": {
-                          fill: "#B4C0FF",
-                        },
-                      },
-                    }}
-                    checked={selectIndex.length === rows.length}
-                    indeterminate={selectIndex.length > 0 && selectIndex.length < rows.length}
-                    onClick={handleSelectAll}
-                  />
-                </th>
-              );
-            }
-            return <th key={index}>{column.headerName}</th>;
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((_, index) => {
-          return (
-            <tr
-              key={index}
-              style={{ backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}` }}
-            >
-              <td>
-                <ComBoxLayout>
-                  <Checkbox
-                    {...label}
-                    sx={{
-                      "&.MuiCheckbox-root": {
-                        color: "#ECECEC",
-                      },
-                      "& .MuiSvgIcon-root": {
-                        fontSize: 28,
-                      },
-                      "&.Mui-checked": {
-                        "& .MuiSvgIcon-root": {
-                          fill: "#B4C0FF",
-                        },
-                      },
-                    }}
-                    checked={selectIndex.includes(index)}
-                    onClick={() => {
-                      setSelectIndex(prevList => {
-                        if (prevList.includes(index)) {
-                          return prevList.filter(item => item !== index);
-                        } else {
-                          return [...prevList, index];
-                        }
-                      });
-                    }}
-                  />
-                </ComBoxLayout>
-              </td>
+  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    console.log(areaId);
+    console.log(id);
+    changeTabletArea(
+      {
+        userIds: [id],
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
+  };
 
-              <td>
-                <ComBoxLayout>
-                  <CComboBox
-                    placeholder={"구역"}
-                    options={options}
-                    value={""}
-                    onChange={() => null}
-                    allowCustomInput={true}
-                    onCustomInputAdd={newValue => {
-                      setOptions([...options, newValue]);
-                    }}
-                  />
-                </ComBoxLayout>
-              </td>
-              <td>
-                <ComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"태블릿이름"}
-                    onChange={() => null}
-                    value={""}
-                    disabled={false}
-                    id={""}
-                  ></CInput>
-                  <TabletButtonLayout>
-                    <Leave />
-                    <Sleep />
-                  </TabletButtonLayout>
-                </ComBoxLayout>
-              </td>
-              <td>
-                <ComBoxLayout>
-                  <Typography>식별번호</Typography>
-                </ComBoxLayout>
-              </td>
-              <td>
-                <ComBoxLayout>
-                  <CInput
-                    variant={"outlined"}
-                    placeholder={"환자 이름"}
-                    onChange={() => null}
-                    value={""}
-                    disabled={false}
-                    id={""}
-                  ></CInput>
-                </ComBoxLayout>
-              </td>
+  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    console.log(page);
+  };
+
+  useEffect(() => {
+    if (isClear) {
+      setIsClear(false);
+      setSelectIndex([]);
+    }
+  }, [isEditing, isClear, setIsClear]);
+
+  useEffect(() => {
+    if (selectIndex.length === 0) {
+      setIsEditing([]);
+    } else {
+      setIsEditing(selectIndex);
+    }
+  }, [selectIndex, setIsEditing]);
+
+  useEffect(() => {
+    if (areaList) {
+      setArea(areaList.map(item => item.name));
+    }
+  }, [areaList]);
+
+  if (wardTabletLoading && areaLoading) {
+    return <div>로딩 중..</div>;
+  }
+
+  return (
+    <>
+      {wardTabletList?.data.length === 0 ? (
+        <></>
+      ) : (
+        <StTable>
+          <thead>
+            <tr>
+              {columns.map((column, index) => {
+                if (column.field === "check") {
+                  return (
+                    <th key={index}>
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
+                            "& .MuiSvgIcon-root": {
+                              fill: "#B4C0FF",
+                            },
+                          },
+                        }}
+                        checked={selectIndex.length === wardTabletList?.data.length}
+                        indeterminate={selectedItems > 0 && selectedItems < totalItems}
+                        onClick={handleSelectAll}
+                      />
+                    </th>
+                  );
+                }
+                return <th key={index}>{column.headerName}</th>;
+              })}
             </tr>
-          );
-        })}
-      </tbody>
-    </StTable>
+          </thead>
+          <tbody>
+            {wardTabletList?.data.map((row, index) => {
+              return (
+                <tr
+                  key={index}
+                  style={{
+                    backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
+                  }}
+                >
+                  <td>
+                    <ShortComBoxLayout>
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
+                            "& .MuiSvgIcon-root": {
+                              fill: "#B4C0FF",
+                            },
+                          },
+                        }}
+                        checked={selectIndex.includes(index)}
+                        onClick={() => {
+                          setSelectIndex(prevList => {
+                            if (prevList.includes(index)) {
+                              return prevList.filter(item => item !== index);
+                            } else {
+                              return [...prevList, index];
+                            }
+                          });
+                        }}
+                      />
+                    </ShortComBoxLayout>
+                  </td>
+                  <td>
+                    <LongComBoxLayout>
+                      <CComboBox
+                        placeholder={"구역"}
+                        options={area}
+                        value={row.areaName}
+                        onChange={e => handleChangeArea(e, row.tabletId)}
+                        // allowCustomInput={true}
+                        // onCustomInputAdd={newValue => {
+                        //   setOptions([...options, newValue]);
+                        // }}
+                      />
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <LongComBoxLayout>
+                      <CInput
+                        variant={"outlined"}
+                        placeholder={"태블릿이름"}
+                        onChange={() => null}
+                        value={row.tabletName}
+                        disabled={false}
+                        id={""}
+                      ></CInput>
+                      <TabletButtonLayout>
+                        <Alert />
+                      </TabletButtonLayout>
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <LongComBoxLayout>
+                      <Typography>{row.serialNumber}</Typography>
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <LongComBoxLayout>
+                      <CInput
+                        variant={"outlined"}
+                        placeholder={"환자 이름"}
+                        onChange={() => null}
+                        value={row.patientName}
+                        disabled={false}
+                        id={""}
+                      ></CInput>
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <LongComBoxLayout>
+                      <Typography>
+                        {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
+                      </Typography>
+                    </LongComBoxLayout>
+                  </td>
+                  <td>
+                    <ShortComBoxLayout>
+                      <Leave />
+                    </ShortComBoxLayout>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </StTable>
+      )}
+      <PaginationContainer>
+        <div>
+          <PaginationComponent
+            totalPage={wardTabletList?.totalPages as number}
+            onChange={(e, page) => handleChangePage(e, page)}
+          />
+        </div>
+      </PaginationContainer>
+    </>
   );
 };
 
@@ -194,7 +290,16 @@ const StTable = styled.table`
   }
 `;
 
-const ComBoxLayout = styled.div`
+const ShortComBoxLayout = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 138px;
+  height: 36px;
+  margin: 0 auto;
+`;
+
+const LongComBoxLayout = styled.div`
   position: relative;
   width: 224px;
   height: 36px;
@@ -203,9 +308,15 @@ const ComBoxLayout = styled.div`
 
 const TabletButtonLayout = styled.div`
   position: absolute;
-  top: 4px;
-  right: -70px;
-
+  top: 7px;
+  right: -35px;
   display: flex;
   gap: 5px;
+`;
+
+const PaginationContainer = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
 `;

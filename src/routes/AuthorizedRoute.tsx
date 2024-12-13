@@ -29,14 +29,16 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   }, []);
 
   useEffect(() => {
-    //병동
-
-    if (!user && accessTokenWard === "") {
+    //병동 페이지
+    // if (!user && accessTokenWard === "") {
+    //   navigate("/sign-in");
+    // }
+    if (!accessTokenWard) {
       navigate("/sign-in");
     }
 
     //스태프 페이지
-    if (pathname.includes("staff") && accessTokenStaff === "") {
+    if (pathname.includes("staff") && !accessTokenStaff) {
       if (user?.type === "STAFF") {
         navigate("/");
         setIsModalOpen(false);

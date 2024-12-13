@@ -14,13 +14,13 @@ import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
-import { OPTIONS } from "@components/settings/StaffAccountSettingsTable";
 import getPrevTimes from "@utils/getPrevTimes";
+import { OPTIONS } from "@components/settings/const";
 
 function StaffPatientListBox({
   isAccept,
   data,
-  onWaitOrAccept,
+  onMutates,
   roomId,
   setRoomId,
   refetchProps,
@@ -48,7 +48,9 @@ function StaffPatientListBox({
   };
 
   const onOpenChatting = async (id: number) => {
-    if (!isAccept) return;
+    if (!isAccept) {
+      return;
+    }
 
     if (roomId !== id) {
       DisConnect(setRoomId!, roomId);
@@ -124,7 +126,7 @@ function StaffPatientListBox({
         </TxtBox>
         <Check
           color={roleColorPick.dark}
-          onClick={e => onWaitOrAccept(e, data.patientRequestId, isAccept ? "accept" : "wait")}
+          onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
         </Check>
@@ -136,7 +138,13 @@ function StaffPatientListBox({
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
             ))}
           </ChatContainer>
-          <ChatInput roomId={roomId} Icon={roleColorPick.sendIcon} setRoomId={setRoomId!} />
+
+          <ChatInput
+            roomId={roomId}
+            Icon={roleColorPick.sendIcon}
+            setRoomId={setRoomId!}
+            color={roleColorPick.dark}
+          />
         </div>
       )}
     </InnerContainer>
@@ -220,7 +228,7 @@ const Check = styled("div")<{ color: string }>`
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
-
+  width: 100%;
   max-height: 300px;
   overflow: auto;
 `;

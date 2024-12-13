@@ -1,7 +1,7 @@
 import { Button, ButtonProps, styled } from "@mui/material";
 
 type ModalActionButtonProps = {
-  color?: "primary" | "secondary";
+  color?: "primary" | "secondary" | "success";
 } & Omit<ButtonProps, "color">;
 
 const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlined" {...props} />, {
@@ -32,6 +32,15 @@ const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlin
     "color": theme.palette.text.primary,
     "borderColor": theme.palette.divider,
     "backgroundColor": theme.palette.primary.contrastText,
+    "&:hover": {
+      borderColor: theme.palette.divider,
+      backgroundColor: theme.palette.primary.light,
+    },
+  }),
+  ...(color === "success" && {
+    "color": theme.palette.secondary.contrastText,
+    "borderColor": theme.palette.divider,
+    "backgroundColor": theme.palette.secondary.main,
     "&:hover": {
       borderColor: theme.palette.divider,
       backgroundColor: theme.palette.primary.light,
