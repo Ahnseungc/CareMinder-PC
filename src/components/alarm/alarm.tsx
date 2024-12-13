@@ -33,7 +33,7 @@ export default function Alarm() {
         Authorization: `Bearer ${userType === "WARD" ? Cookies.get("accessTokenWard") : Cookies.get("accessTokenStaff")}`,
       },
       withCredentials: true,
-      heartbeatTimeout: 86400000, //연결시간 24시간
+      heartbeatTimeout: 86400000,
     });
 
     eventSource.onopen = () => {};
