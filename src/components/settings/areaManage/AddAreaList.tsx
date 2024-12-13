@@ -16,11 +16,9 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
 
   const handleCreateArea = () => {
     const newAreaName = areaNameRef.current?.value;
-    const newAreaMemo = areaMemoRef.current?.value;
+    const newAreaMemo = areaMemoRef.current?.value || "";
 
-    console.log(wardId, newAreaName, newAreaMemo);
-
-    if (newAreaName && newAreaMemo) {
+    if (newAreaName) {
       createArea(
         { name: newAreaName, memo: newAreaMemo, wardId: wardId },
         {
@@ -41,6 +39,7 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
       );
     }
   };
+
   return (
     <Container>
       <InputWrapper width="160px">
@@ -51,7 +50,7 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
           InputProps={{ disableUnderline: true }}
           placeholder="구역명을 입력해주세요"
           backgroundColor="#F5F5F5"
-          onChange={e => console.log(e.target.value)}
+          // onChange={e => console.log(e.target.value)}
         />
       </InputWrapper>
       <InputWrapper width="800px">

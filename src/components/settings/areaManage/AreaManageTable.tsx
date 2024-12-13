@@ -2,17 +2,29 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import AddAreaList from "./AddAreaList";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { GetAreaListResponse, useGetAreaList } from "@hooks/queries/useGetAreaList";
 import { useGetWardInfo } from "@hooks/queries";
 import InfoModal from "../modal/InfoModal";
 import { useBooleanState } from "@toss/react";
 import DeleteWarning from "./DeleteWarning";
 import useDeleteArea from "@hooks/mutation/useDeleteArea";
 import { toast } from "react-toastify";
+import { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
 
-export default function AreaManageTable() {
+interface AreaManageTableProps {
+  onUpdate: React.Dispatch<SetStateAction<AreaInfo[]>>;
+}
+
+type EditedFields = {
+  [key: number]: {
+    name: string;
+    memo: string;
+  };
+};
+
+export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
   const { data: areaList, isLoading } = useGetAreaList();
   const { data: wardInfo, isLoading: isGetWardInfoLoading } = useGetWardInfo();
 
@@ -20,10 +32,72 @@ export default function AreaManageTable() {
 
   const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null);
   const [isDeleteIndex, setIsDeleteIndex] = useState<number>();
+
+  const [areaNameField, setAreaNameField] = useState<string>("");
+  const [areaMemoField, setAreaMemoField] = useState<string>("");
+  const [editedFields, setEditedFields] = useState<EditedFields>({});
+
   const [isOpenCheckDeleteModal, openCheckDeleteModal, closeCheckDeleteModal] = useBooleanState();
   const [isOpenDeleteModal, openDeleteModal, closeDeleteModal] = useBooleanState();
+
   const nameFieldRef = useRef<HTMLDivElement>(null);
   const memoFieldRef = useRef<HTMLDivElement>(null);
+
+  const updateAreaInfo = (areaId: number, updatedName?: string, updatedMemo?: string) => {
+    setEditedFields(prev => ({
+      ...prev,
+      [areaId]: {
+        name: updatedName || prev[areaId]?.name || "",
+        memo: updatedMemo || prev[areaId]?.memo || "",
+      },
+    }));
+
+    onUpdate(prev => {
+      const existingIndex = prev.findIndex(area => area.areaId === areaId);
+
+      if (existingIndex !== -1) {
+        return prev.map((area, idx) =>
+          idx === existingIndex
+            ? { ...area, name: updatedName || area.name, memo: updatedMemo || area.memo }
+            : area,
+        );
+      } else {
+        return [
+          ...prev,
+          {
+            areaId,
+            name: updatedName || "",
+            memo: updatedMemo || "",
+          },
+        ];
+      }
+    });
+  };
+
+  const handleStartEditing = (row: GetAreaListResponse) => {
+    setIsEditingIndex(row.id);
+    const editedField = editedFields[row.id];
+    setAreaNameField(editedField?.name || row.name);
+    setAreaMemoField(editedField?.memo || row.memo);
+  };
+
+  const handleNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    areaId: number,
+  ) => {
+    const newName = e.target.value;
+    setAreaNameField(newName);
+    updateAreaInfo(areaId, newName, areaMemoField);
+  };
+
+  const handleMemoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    areaId: number,
+  ) => {
+    const newMemo = e.target.value;
+    setAreaMemoField(newMemo);
+    updateAreaInfo(areaId, areaNameField, newMemo);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,31 +152,33 @@ export default function AreaManageTable() {
         <Table>
           <tbody>
             {areaList &&
-              areaList.map((row, index) => {
+              areaList.map(row => {
+                const editedField = editedFields[row.id];
                 return (
                   <tr
-                    key={index}
+                    key={row.id}
                     style={{
-                      backgroundColor: `${isEditingIndex === index ? "#D9DFFF66" : ""}`,
+                      backgroundColor: `${isEditingIndex === row.id ? "#D9DFFF66" : ""}`,
                     }}
                   >
-                    <td onDoubleClick={() => setIsEditingIndex(index)}>
-                      {isEditingIndex === index ? (
+                    <td onDoubleClick={() => handleStartEditing(row)}>
+                      {isEditingIndex === row.id ? (
                         <div ref={nameFieldRef}>
                           <StyledTextField
                             size="small"
                             variant="filled"
                             InputProps={{ disableUnderline: true }}
                             backgroundColor="#FFFFFF"
-                            value={row.name}
+                            value={areaNameField}
+                            onChange={e => handleNameChange(e, row.id)}
                           />
                         </div>
                       ) : (
-                        <AreaName>{row.name}</AreaName>
+                        <AreaName>{editedField?.name || row.name}</AreaName>
                       )}
                     </td>
-                    <td onDoubleClick={() => setIsEditingIndex(index)}>
-                      {isEditingIndex === index ? (
+                    <td onDoubleClick={() => handleStartEditing(row)}>
+                      {isEditingIndex === row.id ? (
                         <div ref={memoFieldRef}>
                           <StyledTextMemoField
                             size="small"
@@ -111,11 +187,12 @@ export default function AreaManageTable() {
                               disableUnderline: true,
                             }}
                             backgroundColor="#FFFFFF"
-                            value={row.memo}
+                            value={areaMemoField}
+                            onChange={e => handleMemoChange(e, row.id)}
                           />
                         </div>
                       ) : (
-                        <MemoName>{row.memo ? row.memo : "메모 없음"}</MemoName>
+                        <MemoName>{editedField?.memo || row.memo || "메모 없음"}</MemoName>
                       )}
                     </td>
                     <td
@@ -172,6 +249,12 @@ const TableWrapper = styled.div`
 
 const AreaName = styled.span`
   padding: 2px 45px;
+  display: block;
+  text-align: center;
+  max-width: 181px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const Table = styled.table`
