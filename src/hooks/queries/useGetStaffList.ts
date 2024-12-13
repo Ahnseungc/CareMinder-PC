@@ -2,6 +2,11 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 
+export type Areas = {
+  areaId: number;
+  areaName: string;
+};
+
 export type StaffListType = {
   staffId: number;
   name: string;
@@ -11,11 +16,10 @@ export type StaffListType = {
   nfc: string;
   fingerprint: string;
   staffRole: string;
+  areas: Areas[];
+  timeSinceLogout: string | null;
   accountLocked: boolean;
   isLogIn: boolean;
-  timeSinceLogout: string | null;
-  areaId: number;
-  areaName: string;
 };
 
 export type GetStaffListResponse = {

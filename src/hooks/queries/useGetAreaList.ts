@@ -6,7 +6,7 @@ export type GetAreaListResponse = {
   id: number;
   wardId: number;
   name: string;
-  memo: string | null;
+  memo: string;
 };
 
 export const getAreaList = async () => {
