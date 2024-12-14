@@ -1,7 +1,7 @@
 import { Stack, styled } from "@mui/material";
 import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
 import { Message, patientMapType } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";

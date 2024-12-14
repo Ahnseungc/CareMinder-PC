@@ -1,6 +1,7 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import axiosInstance from "@utils/axios/axiosInstance";
+import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 export type StaffSimpleListType = {
   staffId: number;
@@ -14,8 +15,14 @@ export type GetStaffSimpleListResponse = {
 };
 
 export const getStaffSimpleList = async () => {
-  const res = await axiosInstance.get("/wards/staff-simple-list");
-  // console.log(res.data);
+  const res = await axiosInstance.get("/wards/staff-simple-list", {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
+    },
+    customHeader: true,
+  } as CustomAxiosRequestConfig);
+
+  console.log(res.data);
   return res.data;
 };
 

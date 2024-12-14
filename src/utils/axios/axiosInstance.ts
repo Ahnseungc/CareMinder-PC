@@ -2,6 +2,10 @@ import axios, { InternalAxiosRequestConfig, AxiosHeaders } from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
 
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  customHeader?: boolean; // customHeader 속성 추가
+}
+
 const axiosInstance = axios.create({
   baseURL: SEVER_URL,
   headers: {
@@ -74,8 +78,13 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig<any>) => {
+  (config: CustomAxiosRequestConfig<any>) => {
     let token = "";
+
+    if (config.customHeader) {
+      return config;
+    }
+
     const userState = localStorage.getItem("recoil-persist");
 
     // const userType = userStateObj.userState.type;
