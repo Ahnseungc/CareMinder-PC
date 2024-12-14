@@ -3,7 +3,7 @@ import {
   // RequestsMenu,
   PatientManagementMenu,
   CompletedRequestsMenu,
-  NoticeMenu,
+  // NoticeMenu,
   SettingsMenu,
   // DietMenu,
 } from "@components/layout/sidebar/menu";
@@ -17,7 +17,7 @@ export default function StaffSidebar() {
       {/* <RequestsMenu /> */}
       <PatientManagementMenu />
       <CompletedRequestsMenu />
-      <NoticeMenu />
+      {/* <NoticeMenu /> */}
       <SettingsMenu />
     </>
   );

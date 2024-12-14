@@ -19,7 +19,7 @@ type MessageType = {
 export default function Alarm() {
   const [message, setMessage] = useState<MessageType | undefined>(undefined);
 
-  const [isOpen, setIsOpen] = useState<boolean | undefined>(false);
+  const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
   const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
 
   const NURSE = {
