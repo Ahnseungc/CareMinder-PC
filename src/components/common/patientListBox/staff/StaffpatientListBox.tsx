@@ -16,7 +16,7 @@ import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
-import useReadMessage from "@hooks/mutation/useReadMessage";
+// import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
   isAccept,
@@ -38,7 +38,7 @@ function StaffPatientListBox({
 
   const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
-  const { mutate: mutateReadMs } = useReadMessage(roomId!);
+  // const { mutate: mutateReadMs } = useReadMessage(roomId!);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -86,7 +86,7 @@ function StaffPatientListBox({
     if (messages.length === 0) return;
     const filterMessages = messages.filter(el => el.role === "STAFF");
     if (filterMessages.length === 0) return;
-    const userInfo = filterMessages[filterMessages.length - 1];
+    // const userInfo = filterMessages[filterMessages.length - 1];
     // mutateReadMs(userInfo.messageId);
   }, [messages]);
 

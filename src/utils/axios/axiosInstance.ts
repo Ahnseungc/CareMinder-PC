@@ -78,7 +78,7 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use(
-  (config: CustomAxiosRequestConfig<any>) => {
+  (config: CustomAxiosRequestConfig) => {
     let token = "";
 
     if (config.customHeader) {
