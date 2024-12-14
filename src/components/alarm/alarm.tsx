@@ -17,16 +17,7 @@ type MessageType = {
 };
 
 export default function Alarm() {
-  const [message, setMessage] = useState<MessageType | undefined>({
-    notificationId: "patientRequest:20241206_012035",
-    content: {
-      patientRequestId: 17,
-      requestContent: "test3-3",
-      patientName: "aa",
-      areaName: "구역",
-    },
-    type: "patientRequest",
-  });
+  const [message, setMessage] = useState<MessageType | undefined>(undefined);
 
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
   const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
