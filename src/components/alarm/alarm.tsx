@@ -66,7 +66,7 @@ export default function Alarm() {
     };
   }, [userType]);
 
-  if (isOpen === undefined) return;
+  if (isOpen === undefined) return <></>;
 
   if (message?.content.message)
     return (
@@ -92,6 +92,8 @@ export default function Alarm() {
         <ContentsWhite>{message?.content?.requestContent}</ContentsWhite>
       </Wrapper>
     );
+
+  return <></>;
 }
 const Wrapper = styled("div")<{ isOpen: boolean }>`
   position: absolute;
