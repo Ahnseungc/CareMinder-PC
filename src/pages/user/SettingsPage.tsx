@@ -80,7 +80,6 @@ export default function SettingsPage() {
 }
 
 const Container = styled(Stack)({
-  minWidth: "1900px",
   height: "100%",
   padding: "31.6px 0",
 });
