@@ -144,20 +144,19 @@ function StaffPatientListBox({
         </Check>
       </Bottom>
       {isAccept && data.patientRequestId === roomId && (
-        <div>
+        <ChatWrapper color={roleColorPick.light}>
           <ChatContainer id="top">
             {messages.map((el, idx) => (
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
             ))}
           </ChatContainer>
-
           <ChatInput
             roomId={roomId}
             Icon={roleColorPick.sendIcon}
             setRoomId={setRoomId!}
             color={roleColorPick.dark}
           />
-        </div>
+        </ChatWrapper>
       )}
     </InnerContainer>
   );
@@ -253,12 +252,18 @@ const Dot = styled("div")`
   align-items: center;
   justify-content: center;
 `;
+const ChatWrapper = styled("div")<{ color: string }>`
+  background-color: ${({ color }) => color};
+  margin-top: 8px;
+  border-radius: 12px;
+`;
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
   width: 100%;
   max-height: 300px;
   overflow: auto;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 10px;
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};

@@ -41,7 +41,7 @@ function ChatInput({
   // };
 
   return (
-    <>
+    <Container>
       <WordComplete id="word">
         {/* {testData.map(el => (
           <Word key={el} color={color} onClick={e => onWordComplete(e, el)}>
@@ -63,15 +63,18 @@ function ChatInput({
           <Icon />
         </SendButton>
       </Wrapper>
-    </>
+    </Container>
   );
 }
 export default ChatInput;
+const Container = styled("div")`
+  margin: 0 12px 12px 12px;
+  border-top: 1px solid white;
+`;
 const WordComplete = styled("div")`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  margin-top: 40px;
   position: relative;
 `;
 // const WordView = styled("div")`
@@ -107,12 +110,13 @@ const WordComplete = styled("div")`
 //   }
 // `;
 const Wrapper = styled("div")`
-  margin-top: 20px;
+  margin-top: 8px;
   width: 100%;
   background-color: white;
   border-radius: 10px;
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
 `;
 const Input = styled("input")`
   width: 100%;
