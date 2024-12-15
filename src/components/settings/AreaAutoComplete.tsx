@@ -17,12 +17,30 @@ const ComboBoxLayout = styled.div`
 `;
 
 const AreaComboBoxLayout = styled(ComboBoxLayout)`
+  position: relative;
   margin-bottom: 28px;
   p {
     font-size: 16px;
     font-weight: 500;
     color: #878787;
   }
+`;
+
+const ErrorMessage = styled.span`
+  position: absolute;
+  top: 65px;
+  color: #f24679;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+`;
+
+const InfoMessage = styled.p`
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
 `;
 
 const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
@@ -59,59 +77,80 @@ const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
   }, [selectedAreas, setSelectAreaState, areaList]);
 
   return (
-    <AreaComboBoxLayout>
-      {areaList && (
-        <Autocomplete
-          multiple
-          limitTags={4}
-          id="checkboxes-tags-demo"
-          options={areaList.map(area => area.name)}
-          value={selectedAreas}
-          disableCloseOnSelect
-          onChange={handleSelectionChange}
-          renderOption={(props, option, { selected }) => (
-            <ListItem {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              />
-              {option}
-            </ListItem>
-          )}
-          renderInput={params => <TextField {...params} placeholder="구역을 선택해주세요" />}
-          ChipProps={{ size: "small" }}
-          ListboxProps={{
-            style: { padding: 0 },
-          }}
-          ListboxComponent={props => (
-            <ul {...props}>
-              <ListItem
-                onClick={handleToggleAll}
-                style={{
-                  borderBottom: "1px solid #eee",
-                  position: "sticky",
-                  top: 0,
-                  backgroundColor: "white",
-                  zIndex: 1,
-                  cursor: "pointer",
-                }}
-              >
+    <>
+      <AreaComboBoxLayout>
+        {areaList && (
+          <Autocomplete
+            multiple
+            limitTags={4}
+            id="checkboxes-tags-demo"
+            options={areaList.map(area => area.name)}
+            value={selectedAreas}
+            disableCloseOnSelect
+            onChange={handleSelectionChange}
+            renderOption={(props, option, { selected }) => (
+              <ListItem {...props}>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
                   style={{ marginRight: 8 }}
-                  checked={areaList.length === selectedAreas.length}
+                  checked={selected}
                 />
-                전체 선택
+                {option}
               </ListItem>
-              {props.children}
-            </ul>
-          )}
-        />
-      )}
-    </AreaComboBoxLayout>
+            )}
+            renderInput={params => (
+              <TextField
+                {...params}
+                placeholder="구역을 선택해주세요"
+                error={selectedAreas.length === 0}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: selectedAreas.length === 0 ? "red" : undefined,
+                    },
+                  },
+                }}
+              />
+            )}
+            ChipProps={{ size: "small" }}
+            ListboxProps={{
+              style: { padding: 0 },
+            }}
+            ListboxComponent={props => (
+              <ul {...props}>
+                <ListItem
+                  onClick={handleToggleAll}
+                  style={{
+                    borderBottom: "1px solid #eee",
+                    position: "sticky",
+                    top: 0,
+                    backgroundColor: "white",
+                    zIndex: 1,
+                    cursor: "pointer",
+                  }}
+                >
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={areaList.length === selectedAreas.length}
+                  />
+                  전체 선택
+                </ListItem>
+                {props.children}
+              </ul>
+            )}
+          />
+        )}
+        {selectedAreas.length === 0 && (
+          <ErrorMessage>하나 이상의 구역을 선택해주세요.</ErrorMessage>
+        )}
+      </AreaComboBoxLayout>
+      <InfoMessage>
+        &nbsp;&nbsp;・&nbsp;&nbsp;간호사가 진행 중인 요청은 수정과 상관없이 유지됩니다.
+      </InfoMessage>
+    </>
   );
 };
 

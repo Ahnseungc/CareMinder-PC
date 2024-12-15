@@ -3,7 +3,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 
 export type NewStaffArea = {
   userIds: number[];
-  areaId: number;
+  areaIds: number[];
 };
 
 const changeStaffArea = async (newStaffArea: NewStaffArea) => {
