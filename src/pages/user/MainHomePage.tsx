@@ -16,7 +16,6 @@ export default function MainHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
-
   const onMutates = () => {
     if (userStatus?.type === "WARD") {
       return setIsModal(true);

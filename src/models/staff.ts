@@ -45,6 +45,8 @@ export type Message = {
   createdAt: string;
   role: string;
   senderName: string; //문의 후 수정 필요
+  isRead: null | boolean;
+  messageId: number;
 };
 
 export type patientMapType = {
