@@ -14,6 +14,7 @@ import {
   SigninPage,
   StaffNoticeWritePage,
   StaffNoticePage,
+  StaffSettingsPage,
 } from "@pages/index";
 import MainHomePage from "@pages/user/MainHomePage";
 import StaffHomePage from "@pages/user/StaffHomePage";
@@ -44,6 +45,7 @@ const routes: RouteObject[] = [
           { path: RoutePath.StaffWardInOut, element: <StaffWardInoutManagementPage /> },
           { path: RoutePath.StaffNotice, element: <StaffNoticePage /> },
           { path: RoutePath.StaffNoticeWrite, element: <StaffNoticeWritePage /> },
+          { path: RoutePath.StaffSettings, element: <StaffSettingsPage /> },
         ],
       },
       {
