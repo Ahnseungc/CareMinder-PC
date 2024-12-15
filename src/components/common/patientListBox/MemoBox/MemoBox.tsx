@@ -34,19 +34,22 @@ export default function MemoBox({ color }: { color: string }) {
       time: "2024.12.31",
     },
   ]);
-  const [memo, setMemo] = useState("");
+  const [changeMemo, setChangeMemo] = useState("");
+  const [newMemo, setNewMemo] = useState("");
   const [isFocusId, setIsFocusId] = useState<undefined | number>(undefined);
 
-  const onPushMemo = () => {
-    if (memo.trim().length === 0) return;
+  const onPushMemo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (newMemo.trim().length === 0) return;
     setMock([
       ...mock,
-      { name: "간호사1", contents: memo, isMine: true, time: "2024.12.31", id: 16 },
+      { name: "간호사1", contents: newMemo, isMine: true, time: "2024.12.31", id: 16 },
     ]);
-    setMemo("");
+    setNewMemo("");
   };
 
-  const onDeleteMemo = () => {
+  const onDeleteMemo = (e: React.MouseEvent) => {
+    e.stopPropagation();
     console.log("memo 삭제");
   };
 
@@ -60,14 +63,20 @@ export default function MemoBox({ color }: { color: string }) {
               {isFocusId === el.id ? (
                 <MemoInput
                   placeholder="메모를 입력해주세요"
-                  onChange={e => setMemo(e.target.value)}
+                  onChange={e => setChangeMemo(e.target.value)}
                   onBlur={() => setIsFocusId(undefined)}
-                  value={memo}
+                  onClick={e => e.stopPropagation()}
+                  value={changeMemo}
                   color={color}
                   autoFocus
                 />
               ) : (
-                <Content onClick={() => setIsFocusId(el.id)} style={{ cursor: "pointer" }}>
+                <Content
+                  onClick={e => {
+                    e.stopPropagation(), setIsFocusId(el.id);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <div>{el.contents}</div> <div>{el.time}</div>
                 </Content>
               )}
@@ -83,24 +92,26 @@ export default function MemoBox({ color }: { color: string }) {
           )}
 
           {el.id === isFocusId && (
-            <Icon onClick={onPushMemo}>
+            <Icon onClick={e => onPushMemo(e)}>
               <CheckIcon fontSize="small" />
             </Icon>
           )}
           {el.isMine && el.id !== isFocusId && (
-            <Icon onClick={onDeleteMemo}>
+            <Icon onClick={e => onDeleteMemo(e)}>
               <TrashIcon />
             </Icon>
           )}
         </Memo>
       ))}
+
       <Memo>
         <Title>내 메모</Title>
         <MemoInput
           placeholder="메모를 입력해주세요"
-          onChange={e => setMemo(e.target.value)}
-          value={memo}
+          onChange={e => setNewMemo(e.target.value)}
+          value={newMemo}
           color={"white"}
+          onClick={e => e.stopPropagation()}
         />
         <Icon onClick={onPushMemo}>
           <CheckIcon fontSize="small" />

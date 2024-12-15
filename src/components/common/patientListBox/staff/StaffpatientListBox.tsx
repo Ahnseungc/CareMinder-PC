@@ -31,7 +31,7 @@ function StaffPatientListBox({
 
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isMemo, setIsMomo] = useState(false);
+  const [isMemo, setIsMemo] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { pendingRefetch } = refetchProps!;
@@ -60,12 +60,14 @@ function StaffPatientListBox({
       ConnectChat(id, setMessages);
       const history = await LoadChatHistory(id);
       setMessages(history);
+      setIsMemo(true);
       setRoomId!(id);
       bottomScroll();
     }
     if (roomId === id) {
       DisConnect(setRoomId!, roomId);
       setRoomId!(null);
+      setIsMemo(false);
     }
   };
 
@@ -95,7 +97,11 @@ function StaffPatientListBox({
           <span> | </span>
           <div>{data.patientSimple.patientName}</div>
         </div>
-        <TitleRight onClick={() => setIsMomo(prev => !prev)}>
+        <TitleRight
+          onClick={e => {
+            e.stopPropagation(), setIsMemo(prev => !prev);
+          }}
+        >
           <Vector isMemo={isMemo}>
             <VectorIcon />
           </Vector>
@@ -264,6 +270,7 @@ const ChatContainer = styled("div")`
   overflow: auto;
   border-radius: 12px 12px 0 0;
   margin-bottom: 10px;
+  padding: 0 7px;
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
