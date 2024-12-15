@@ -27,6 +27,8 @@ import {
 } from "@models/ward";
 import EditStaffMultiField from "../EditStaffMultiInputField";
 import useChangeStaffInfo from "@hooks/mutation/usePutChangeStaffInfo";
+import useChangeStaffArea from "@hooks/mutation/useChangeArea";
+import useChangeStaffRole from "@hooks/mutation/useChangeRole";
 
 interface TabContentProps {
   isActive?: boolean;
@@ -87,6 +89,8 @@ export default function PasswordChangeModal({
   const { mutate: changePassword } = useChangePassword();
   const { mutate: reqChangePassword } = useReqChangePassword();
   const { mutate: changeStaffInfo } = useChangeStaffInfo();
+  const { mutate: changeStaffRole } = useChangeStaffRole();
+  const { mutate: changeStaffArea } = useChangeStaffArea();
 
   // useEffect(() => {
   //   if (isMultiEdit) {
@@ -119,6 +123,7 @@ export default function PasswordChangeModal({
       areaIds: selectAreaList,
       email: data.email,
     };
+    // console.log(newStaffInfo);
 
     changeStaffInfo(newStaffInfo, {
       onSuccess: () => {
@@ -145,7 +150,37 @@ export default function PasswordChangeModal({
 
   /** 스태프 다중 계정 정보 수정 로직 */
   const editMultionSubmit: SubmitHandler<EditMultiStaff> = data => {
-    console.log("계정 다중 수정", data);
+    /** 직업 변경 api 로직 */
+    const newStaffRole = OPTIONS.find(option => option.value === data.staffRole)?.role as string;
+    const changeRole = {
+      userIds: selectStaffList,
+      staffRole: newStaffRole,
+    };
+    console.log(changeRole);
+
+    /** 구역 변경 api 로직 */
+    changeStaffRole(changeRole, {
+      onSuccess: () => {},
+      onError: error => console.error(error),
+    });
+
+    const changeArea = {
+      userIds: selectStaffList,
+      areaIds: selectAreaList,
+    };
+    console.log(changeArea);
+
+    changeStaffArea(changeArea, {
+      onSuccess: () => {
+        toast.success("변경 내용이 저장되었습니다.");
+        props.onClose();
+        openSaveModal();
+      },
+      onError: error => {
+        toast.error("계정 정보 변경에 실패했습니다.");
+        console.error(error);
+      },
+    });
   };
 
   /** 비밀번호 로직 변경 useForm 객체 */
@@ -255,6 +290,7 @@ export default function PasswordChangeModal({
                       : handleEditMultiSubmit(editMultionSubmit)
                     : handleSubmit(onSubmit)
                 }
+                disabled={selectAreaList.length === 0}
               >
                 변경하기
               </ModalActionButton>
