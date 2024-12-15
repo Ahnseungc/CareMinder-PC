@@ -16,12 +16,6 @@ export default function MainHomePage() {
   const [isModal, setIsModal] = useRecoilState(modalState);
   const [userStatus] = useRecoilState(userState);
 
-  const onMutates = () => {
-    if (userStatus?.type === "WARD") {
-      return setIsModal(true);
-    }
-  };
-
   const { data: getPendingData } = useGetWardPatientPending(userStatus!.type);
   const { data: getInprogressData } = useGetWardPatientInProgress(userStatus!.type);
 
@@ -55,20 +49,25 @@ export default function MainHomePage() {
         <S.LeftSection>
           <S.TitleWrapper>
             <S.Title>대기중인 환자</S.Title>
-            <S.SearchBoxWrapper>
+            <S.SearchBoxWrapper onClick={onStaffLogIn}>
               <StaffSearchBox />
             </S.SearchBoxWrapper>
           </S.TitleWrapper>
           <S.SubTitle>
             <S.SubTitleLeft>
               <div>필터</div>
-              <S.FilterBox>환자별</S.FilterBox>
-              <S.FilterBox>구역</S.FilterBox>
-              <S.FilterBox>직종</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>환자별</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>구역</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>직종</S.FilterBox>
             </S.SubTitleLeft>
           </S.SubTitle>
           {getPendingData?.map(el => (
-            <PatientBox key={el.patientRequestId} user="mainWait" data={el} onMutates={onMutates} />
+            <PatientBox
+              key={el.patientRequestId}
+              user="mainWait"
+              data={el}
+              onMutates={onStaffLogIn}
+            />
           ))}
         </S.LeftSection>
         <S.RightSection>
@@ -81,9 +80,9 @@ export default function MainHomePage() {
           <S.SubTitle>
             <S.SubTitleLeft>
               <div>필터</div>
-              <S.FilterBox>환자별</S.FilterBox>
-              <S.FilterBox>구역</S.FilterBox>
-              <S.FilterBox>직종</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>환자별</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>구역</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn}>직종</S.FilterBox>
             </S.SubTitleLeft>
           </S.SubTitle>
           {getInprogressData?.map(el => (
@@ -91,7 +90,7 @@ export default function MainHomePage() {
               key={el.patientRequestId}
               user="mainAccept"
               data={el}
-              onMutates={onMutates}
+              onMutates={onStaffLogIn}
             />
           ))}
         </S.RightSection>

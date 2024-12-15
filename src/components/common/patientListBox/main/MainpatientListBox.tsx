@@ -4,29 +4,43 @@ import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { MainListBoxProps } from "@models/home";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import getPrevTimes from "@utils/getPrevTimes";
+import { ReactComponent as MoreHorizRoundedIcon } from "@/assets/homeIcons/Dot.svg";
+import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 
 function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   return (
     <InnerContainer color={roleColorPick.light}>
-      <Title color={roleColorPick.dark}>{data.areaSimple.areaName}</Title>
+      <LeftLine color={roleColorPick.dark}></LeftLine>
+      <Title color={roleColorPick.dark} tabIndex={0}>
+        <div>
+          <div>{data.areaSimple.areaName}</div>
+          <span> | </span>
+          <div>{data.patientSimple.patientName}</div>
+        </div>
+        <TitleRight
+          onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
+        >
+          <Vector isMemo={false}>
+            <VectorIcon />
+          </Vector>
+          메모
+        </TitleRight>
+      </Title>
       <Bottom>
-        <TxtBox>
+        <TxtBox color={roleColorPick.light}>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>
-            <span>{getPrevTimes(data.createdAt)}</span>
-          </TxtBoxRight>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
         </TxtBox>
+        <Dot onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}>
+          <MoreHorizRoundedIcon />
+        </Dot>
         <Check
           color={roleColorPick.dark}
           onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
-          {isAccept ? (
-            <CheckIcon style={{ cursor: "pointer" }} />
-          ) : (
-            <ArrowForwardRoundedIcon style={{ cursor: "pointer", color: "white" }} />
-          )}
+          {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
         </Check>
       </Bottom>
     </InnerContainer>
@@ -35,48 +49,61 @@ function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
 export default MainPatientListBox;
 
 const InnerContainer = styled(Stack)<{ color: string }>`
-  border-radius: 12px;
-  background-color: ${({ color }) => color};
+  position: relative;
   width: 100%;
-  padding: 16px 20px;
+  padding: 0 13px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 30px;
 `;
 
 const Title = styled("div")<{ color: string }>`
   font-weight: 700;
-  font-size: 14px;
-  color: ${({ color }) => color};
+  font-size: 16px;
+  color: #000000;
   margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  margin-right: 30px;
+  & > div {
+    display: flex;
+  }
+  & > div > span {
+    margin: 0 5px;
+  }
 `;
 const TxtBox = styled("div")`
   border-radius: 6px;
   width: 100%;
-  background-color: ${({ theme }) => theme.palette.primary.contrastText};
+  border: 3px solid ${({ color }) => color};
   padding: 6px 16px 6px 16px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   color: ${({ theme }) => theme.palette.primary.dark};
   display: flex;
-  align-items: center;
   justify-content: space-between;
+`;
+const TitleRight = styled("div")`
+  font-size: 14px;
+  color: ${({ theme }) => theme.palette.text.primary};
+  cursor: pointer;
 `;
 const TxtBoxLeft = styled("div")``;
 const TxtBoxRight = styled("div")`
   color: ${({ theme }) => theme.palette.text.primary};
   min-width: 60px;
   text-align: end;
-  display: flex;
-  align-items: center;
-  text-align: right;
-  justify-content: end;
 `;
 const Bottom = styled("div")`
   display: flex;
   width: 100%;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
+  position: relative;
+`;
+const Vector = styled("div")<{ isMemo: boolean }>`
+  transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
+  margin-right: 8px;
 `;
 const Check = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
@@ -88,8 +115,25 @@ const Check = styled("div")<{ color: string }>`
   justify-content: center;
   margin-left: 12px;
   font-weight: 900;
+  cursor: pointer;
 `;
-
+const LeftLine = styled("div")<{ color: string }>`
+  width: 4px;
+  height: 100%;
+  border-radius: 4px;
+  background-color: ${({ color }) => color};
+  position: absolute;
+  left: 0;
+`;
+const Dot = styled("div")`
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  margin-left: 6px;
+  align-items: center;
+  justify-content: center;
+`;
 //새로운 요청 표시 즉, N을 의미
 // const SmallCheck = styled("div")<{ color: string }>`
 //   background-color: ${({ color }) => color};
