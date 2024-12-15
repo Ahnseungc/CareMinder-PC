@@ -102,7 +102,7 @@ function StaffPatientListBox({
           메모
         </TitleRight>
       </Title>
-      <MemoBox />
+      {isMemo && <MemoBox color={roleColorPick.light} />}
       <Bottom>
         <TxtBox color={roleColorPick.light}>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
@@ -187,7 +187,7 @@ const Title = styled("div")<{ color: string }>`
   margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  margin-right: 40px;
+  margin-right: 30px;
   & > div {
     display: flex;
   }
