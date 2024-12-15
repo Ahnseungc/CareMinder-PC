@@ -5,13 +5,16 @@ type ChatData = {
   createdAt: string;
   role: string;
   senderName: string;
+  isRead: boolean | null;
+  messageId: number;
 };
 type ChatBoxProps = {
   data: ChatData;
   color: string;
+  darkColor?: string;
 };
 
-function ChatBox({ data, color }: ChatBoxProps) {
+function ChatBox({ data, color, darkColor }: ChatBoxProps) {
   const leftOrRight = data.role === "TABLET" ? "left" : "right";
 
   const makeTwoDigits = (time: number) => {
@@ -35,11 +38,17 @@ function ChatBox({ data, color }: ChatBoxProps) {
             <Title color={"white"} leftOrRight={leftOrRight}>
               {data.content}
             </Title>
+
             <Time>{getTime(data.createdAt)}</Time>
           </>
         ) : (
           <>
-            <Time>{getTime(data.createdAt)}</Time>
+            <Side>
+              <IsRead isRead={data.isRead ? true : false} color={darkColor!}>
+                {data.isRead ? "읽음" : "미확인"}
+              </IsRead>
+              <Time>{getTime(data.createdAt)}</Time>
+            </Side>
             <Title color={color} leftOrRight={leftOrRight}>
               {data.content}
             </Title>
@@ -69,4 +78,14 @@ const Title = styled("div")<{ color: string; leftOrRight: string }>`
   margin-right: ${({ leftOrRight }) => leftOrRight === "right" && "10px"};
   padding: 8px 15px;
   border-radius: 8px;
+`;
+const Side = styled("div")`
+  width: 100px;
+  text-align: end;
+`;
+const IsRead = styled("div")<{ isRead: boolean; color: string }>`
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 10px;
+  color: ${({ isRead, color }) => (isRead ? color : "#FF0000CC")};
 `;
