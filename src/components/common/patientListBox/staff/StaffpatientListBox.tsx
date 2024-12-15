@@ -3,7 +3,7 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { CSwitchProps, MainListBoxProps } from "@models/home";
 import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
@@ -82,13 +82,14 @@ function StaffPatientListBox({
     mutateDecline(data.patientRequestId);
   };
 
-  useEffect(() => {
-    if (messages.length === 0) return;
-    const filterMessages = messages.filter(el => el.role === "STAFF");
-    if (filterMessages.length === 0) return;
-    // const userInfo = filterMessages[filterMessages.length - 1];
-    // mutateReadMs(userInfo.messageId);
-  }, [messages]);
+  // useEffect(() => {
+  //   console.log(messages.length);
+  // if (messages.length === 0) return;
+  // const filterMessages = messages.filter(el => el.role === "TABLET");
+  // if (filterMessages.length === 0) return;
+  // const userInfo = filterMessages[filterMessages.length - 1];
+  // mutateReadMs(userInfo.messageId);
+  // }, [messages]);
 
   return (
     <InnerContainer
