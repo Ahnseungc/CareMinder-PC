@@ -42,7 +42,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     borderRadius: "24px",
     minWidth: "300px",
     width: "100%",
-    maxHeight: "1200px",
+    maxHeight: "100%",
     [`&.MuiDialog-paperWidthXs`]: {
       maxWidth: "444px !important",
     },

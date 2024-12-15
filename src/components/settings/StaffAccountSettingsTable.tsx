@@ -146,40 +146,41 @@ const StaffAccountSettingsTable = ({
           <p>등록된 스태프가 없습니다.</p>
         </EmptyStaffContainer>
       ) : (
-        <StTable>
-          <thead>
-            <tr>
-              {columns.map((column, index) => {
-                // const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
-                if (column.field === "check") {
+        <TableContainer>
+          <StTable>
+            <thead>
+              <tr>
+                {columns.map((column, index) => {
+                  // const shouldShowFilter = ["직업", "구역", "계정상태"].includes(column.headerName);
+                  if (column.field === "check") {
+                    return (
+                      <th key={index}>
+                        <Checkbox
+                          {...label}
+                          sx={{
+                            "&.MuiCheckbox-root": {
+                              color: "#ECECEC",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 28,
+                            },
+                            "&.Mui-checked": {
+                              "& .MuiSvgIcon-root": {
+                                fill: "#B4C0FF",
+                              },
+                            },
+                          }}
+                          checked={selectIndex.length === staffList?.data.length}
+                          indeterminate={selectedItems > 0 && selectedItems < totalItems}
+                          onClick={handleSelectAll}
+                        />
+                      </th>
+                    );
+                  }
                   return (
                     <th key={index}>
-                      <Checkbox
-                        {...label}
-                        sx={{
-                          "&.MuiCheckbox-root": {
-                            color: "#ECECEC",
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 28,
-                          },
-                          "&.Mui-checked": {
-                            "& .MuiSvgIcon-root": {
-                              fill: "#B4C0FF",
-                            },
-                          },
-                        }}
-                        checked={selectIndex.length === staffList?.data.length}
-                        indeterminate={selectedItems > 0 && selectedItems < totalItems}
-                        onClick={handleSelectAll}
-                      />
-                    </th>
-                  );
-                }
-                return (
-                  <th key={index}>
-                    <>{column.headerName}</>
-                    {/* {shouldShowFilter && (
+                      <>{column.headerName}</>
+                      {/* {shouldShowFilter && (
                       <>
                         <FilterLayout>
                           <Filter onClick={() => handleFilterBox(column.headerName)} />
@@ -208,194 +209,195 @@ const StaffAccountSettingsTable = ({
                         ) : null}
                       </>
                     )} */}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {staffList &&
-              staffList.data.map((row, index) => {
-                return (
-                  <tr
-                    key={index}
-                    style={{
-                      backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                      opacity: `${row.accountLocked ? 0.5 : 1}`,
-                    }}
-                  >
-                    <td>
-                      <Checkbox
-                        {...label}
-                        sx={{
-                          "&.MuiCheckbox-root": {
-                            color: "#ECECEC",
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 28,
-                          },
-                          "&.Mui-checked": {
-                            "& .MuiSvgIcon-root": {
-                              fill: "#B4C0FF",
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {staffList &&
+                staffList.data.map((row, index) => {
+                  return (
+                    <tr
+                      key={index}
+                      style={{
+                        backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
+                        opacity: `${row.accountLocked ? 0.5 : 1}`,
+                      }}
+                    >
+                      <td>
+                        <Checkbox
+                          {...label}
+                          sx={{
+                            "&.MuiCheckbox-root": {
+                              color: "#ECECEC",
                             },
-                          },
-                        }}
-                        checked={selectIndex.includes(index)}
-                        onClick={() => handleCheckBox(index)}
-                      />
-                    </td>
-                    <td>
-                      <ShortComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"스태프"}
-                          onChange={() => null}
-                          value={row.name}
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </ShortComBoxLayout>
-                    </td>
-                    <td>
-                      <ShortComBoxLayout>
-                        {/* input 디자인으로 변경됨 */}
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"간호사"}
-                          onChange={() => null}
-                          value={
-                            OPTIONS.find(option => option.role === row.staffRole)?.value as string
-                          }
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </ShortComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"구역"}
-                          onChange={() => null}
-                          value={
-                            row.areas.length === 0
-                              ? "미지정"
-                              : row.areas.map(area => area.areaName).join(",")
-                          }
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"아이디"}
-                          onChange={() => null}
-                          value={row.loginId}
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"전화번호"}
-                          onChange={() => null}
-                          value={row.phoneNumber}
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"이메일"}
-                          onChange={() => null}
-                          value={row.email}
-                          disabled={row.accountLocked}
-                          id={""}
-                        ></CInput>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <ShortComBoxLayout>
-                        {row.isLogIn ? (
-                          <>
-                            <div
-                              style={{
-                                width: "6px",
-                                height: "6px",
-                                backgroundColor: "#1ADE00",
-                                borderRadius: "50%",
-                                boxShadow: "0px 0px 2px rgba(26,222,0,0.5)",
-                                marginRight: "7px",
-                              }}
-                            ></div>
-                            <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
-                          </>
-                        ) : (
-                          <>
-                            {row.timeSinceLogout ? (
-                              <Typography>
-                                미접속
-                                <br />
-                                <TimeSince time={row.timeSinceLogout} />
-                              </Typography>
-                            ) : (
-                              // 계정 생성 후 로그인 기록이 없는 경우 처리
-                              <Typography>로그인 기록 없음</Typography>
-                            )}
-                          </>
-                        )}
-                      </ShortComBoxLayout>
-                    </td>
-                    <td>
-                      <AccountMenuLayout>
-                        <Edit
-                          onClick={() => {
-                            if (!row.accountLocked) {
-                              setSelectedStaff(row);
-                              openPWChangeModal();
-                              onManage("edit", [row.staffId]);
-                            } else {
-                              null;
-                            }
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 28,
+                            },
+                            "&.Mui-checked": {
+                              "& .MuiSvgIcon-root": {
+                                fill: "#B4C0FF",
+                              },
+                            },
                           }}
+                          checked={selectIndex.includes(index)}
+                          onClick={() => handleCheckBox(index)}
                         />
-                        {row.accountLocked ? (
-                          <div style={{ color: "#73777D" }}>
-                            <Lock
-                              onClick={() => {
-                                onManage("lock", [row.staffId]);
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <UnLock
+                      </td>
+                      <td>
+                        <ShortComBoxLayout>
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"스태프"}
+                            onChange={() => null}
+                            value={row.name}
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </ShortComBoxLayout>
+                      </td>
+                      <td>
+                        <ShortComBoxLayout>
+                          {/* input 디자인으로 변경됨 */}
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"간호사"}
+                            onChange={() => null}
+                            value={
+                              OPTIONS.find(option => option.role === row.staffRole)?.value as string
+                            }
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </ShortComBoxLayout>
+                      </td>
+                      <td>
+                        <LongComBoxLayout>
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"구역"}
+                            onChange={() => null}
+                            value={
+                              row.areas.length === 0
+                                ? "미지정"
+                                : row.areas.map(area => area.areaName).join(",")
+                            }
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </LongComBoxLayout>
+                      </td>
+                      <td>
+                        <LongComBoxLayout>
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"아이디"}
+                            onChange={() => null}
+                            value={row.loginId}
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </LongComBoxLayout>
+                      </td>
+                      <td>
+                        <LongComBoxLayout>
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"전화번호"}
+                            onChange={() => null}
+                            value={row.phoneNumber}
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </LongComBoxLayout>
+                      </td>
+                      <td>
+                        <LongComBoxLayout>
+                          <CInput
+                            variant={"outlined"}
+                            placeholder={"이메일"}
+                            onChange={() => null}
+                            value={row.email}
+                            disabled={row.accountLocked}
+                            id={""}
+                          ></CInput>
+                        </LongComBoxLayout>
+                      </td>
+                      <td>
+                        <ShortComBoxLayout>
+                          {row.isLogIn ? (
+                            <>
+                              <div
+                                style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  backgroundColor: "#1ADE00",
+                                  borderRadius: "50%",
+                                  boxShadow: "0px 0px 2px rgba(26,222,0,0.5)",
+                                  marginRight: "7px",
+                                }}
+                              ></div>
+                              <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
+                            </>
+                          ) : (
+                            <>
+                              {row.timeSinceLogout ? (
+                                <Typography>
+                                  미접속
+                                  <br />
+                                  <TimeSince time={row.timeSinceLogout} />
+                                </Typography>
+                              ) : (
+                                // 계정 생성 후 로그인 기록이 없는 경우 처리
+                                <Typography>로그인 기록 없음</Typography>
+                              )}
+                            </>
+                          )}
+                        </ShortComBoxLayout>
+                      </td>
+                      <td>
+                        <AccountMenuLayout>
+                          <Edit
                             onClick={() => {
-                              row.accountLocked ? null : onManage("unlock", [row.staffId]);
+                              if (!row.accountLocked) {
+                                setSelectedStaff(row);
+                                openPWChangeModal();
+                                onManage("edit", [row.staffId]);
+                              } else {
+                                null;
+                              }
                             }}
                           />
-                        )}
+                          {row.accountLocked ? (
+                            <div style={{ color: "#73777D" }}>
+                              <Lock
+                                onClick={() => {
+                                  onManage("lock", [row.staffId]);
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <UnLock
+                              onClick={() => {
+                                row.accountLocked ? null : onManage("unlock", [row.staffId]);
+                              }}
+                            />
+                          )}
 
-                        <Delete
-                          onClick={() => {
-                            row.accountLocked ? null : onManage("delete", [row.staffId]);
-                          }}
-                        />
-                      </AccountMenuLayout>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </StTable>
+                          <Delete
+                            onClick={() => {
+                              row.accountLocked ? null : onManage("delete", [row.staffId]);
+                            }}
+                          />
+                        </AccountMenuLayout>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </StTable>
+        </TableContainer>
       )}
       <PaginationContainer>
         <div>
@@ -411,9 +413,17 @@ const StaffAccountSettingsTable = ({
 
 export default StaffAccountSettingsTable;
 
-const StTable = styled.table`
+const TableContainer = styled.div`
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; // 모바일 스크롤 지원
+`;
+
+const StTable = styled.table`
+  min-width: 100%;
+  width: max-content;
   height: 100%;
+
   border-collapse: collapse;
   & thead {
     width: 100%;
