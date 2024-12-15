@@ -4,7 +4,7 @@ import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import TabletManagementTable from "@components/settings/TabletManagementTable";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 import TabletSleepModeModal from "./modal/TabletSleepModeModal";
@@ -29,6 +29,19 @@ export const TabletManagement = () => {
   const [isClear, setIsClear] = useState<boolean>(false);
 
   const [isModalOpen, openModalOpen, closeModalOpen] = useBooleanState();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
+        setIsSetting(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleClear = () => {
     setIsEditing([]);
