@@ -29,7 +29,7 @@ export default function StaffHomePage() {
 
   const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
   const [roomId, setRoomId] = useState<number | null>(null);
-
+  console.log("staffAcceptIsGroup", staffAcceptIsGroup);
   const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(null, false); //isRole, 내 환자 보기
   const { data: getInprogress, refetch: inprogressRefetch } =
     useGetStaffPatientInprogress(staffAcceptIsGroup);
