@@ -45,7 +45,7 @@ function ChatBox({ data, color, darkColor }: ChatBoxProps) {
           <>
             <Side>
               <IsRead isRead={data.isRead ? true : false} color={darkColor!}>
-                {data.isRead ? "읽음" : "미확인"}
+                {/* {data.isRead ? "읽음" : "미확인"} */}
               </IsRead>
               <Time>{getTime(data.createdAt)}</Time>
             </Side>
