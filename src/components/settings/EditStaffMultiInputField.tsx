@@ -37,7 +37,7 @@ export default function EditStaffMultiField({ field, form }: InputFieldProps) {
     setValue,
   } = form;
 
-  const [staffRole, setStaffRole] = useState<string>("");
+  const [staffRole, setStaffRole] = useState<string>("의사");
 
   const validationRules = {
     staffRole: {},
@@ -48,6 +48,10 @@ export default function EditStaffMultiField({ field, form }: InputFieldProps) {
     setStaffRole(event.target.value);
     setValue("staffRole", event.target.value);
   };
+
+  useEffect(() => {
+    setValue("staffRole", "의사");
+  }, []);
 
   return (
     <FormControl
@@ -74,14 +78,14 @@ export default function EditStaffMultiField({ field, form }: InputFieldProps) {
               staffRole: (
                 <ComboBoxLayout>
                   <CComboBox
-                    placeholder={"간호사"}
+                    placeholder={"직업을 선택해주세요."}
                     options={OPTIONS.map(option => option.value)}
                     value={staffRole}
                     onChange={handleChangeRole}
                   />
                 </ComboBoxLayout>
               ),
-              area: <>{areaData && <AreaAutoComplete value={areaData} />}</>,
+              area: <>{areaData && <AreaAutoComplete value={[]} />}</>,
             }}
             defaultComponent={<></>}
           />
