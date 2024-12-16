@@ -97,7 +97,10 @@ function StaffPatientListBox({
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
-        <div>{data.areaSimple.areaName}</div>
+        <div>
+          {data.areaSimple.areaName} | {data.patientSimple.patientName} ( T
+          {data.tabletSimple.tabletId} )
+        </div>
         <div>
           <MoreHorizRoundedIcon
             onClick={onOptionOnOff}
