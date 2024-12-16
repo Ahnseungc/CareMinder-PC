@@ -1,7 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
+import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
-import Cookies from "js-cookie";
 
 export type WardTabledListType = {
   areaId: number;
@@ -30,16 +29,12 @@ export type GetWardTabletListProps = {
 
 export const getWardTabledList = async ({ myArea = false, page, size }: GetWardTabletListProps) => {
   const res = await axiosInstance.get("/wards/tablet-list", {
-    headers: {
-      Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
-    },
-    customHeader: true,
     params: {
       myArea: myArea,
       page: page,
       size: size,
     },
-  } as CustomAxiosRequestConfig);
+  });
   return res.data;
 };
 
