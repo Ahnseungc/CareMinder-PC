@@ -270,15 +270,14 @@ export default TabletManagementTable;
 
 const TableContainer = styled.div`
   width: 100%;
-  height: 1280px;
   overflow-x: auto;
 `;
 
 const StTable = styled.table`
   min-width: 100%;
   width: max-content;
-  overflow: scroll;
   border-collapse: collapse;
+  margin-bottom: 20px;
   & thead {
     width: 100%;
     height: 20%;
