@@ -415,8 +415,8 @@ export default StaffAccountSettingsTable;
 
 const TableContainer = styled.div`
   width: 100%;
+  height: 1280px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; // 모바일 스크롤 지원
 `;
 
 const StTable = styled.table`
