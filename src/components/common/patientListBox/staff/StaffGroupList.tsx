@@ -34,7 +34,8 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
     <InnerContainer color={roleColorPick.light}>
       <Title color={roleColorPick.dark} tabIndex={0}>
         <div>
-          {data.patientSimple.patientName} ( T{data.tabletSimple.tabletId} )
+          {data.patientRequests[0]?.areaSimple.areaName} | {data.patientSimple.patientName} ( T
+          {data.tabletSimple.tabletId} )
         </div>
       </Title>
       <BottomWrapper isFullList={isFullList}>
