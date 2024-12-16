@@ -306,11 +306,20 @@ export const StaffAccount = () => {
                   <SettingDropdown>
                     <div
                       style={{ padding: "10px", textAlign: "center" }}
-                      onClick={openAreaManageModal}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openAreaManageModal();
+                      }}
                     >
                       구역 관리하기
                     </div>
-                    <div style={{ padding: "10px", textAlign: "center" }} onClick={openTOSModal}>
+                    <div
+                      style={{ padding: "10px", textAlign: "center" }}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openTOSModal();
+                      }}
+                    >
                       스태프 계정 생성하기
                     </div>
                   </SettingDropdown>

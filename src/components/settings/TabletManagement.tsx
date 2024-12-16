@@ -107,7 +107,13 @@ export const TabletManagement = () => {
                 </SettingButton>
                 {isSetting && (
                   <SettingDropdown>
-                    <div style={{ padding: "10px", textAlign: "center" }} onClick={openModalOpen}>
+                    <div
+                      style={{ padding: "10px", textAlign: "center" }}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openModalOpen();
+                      }}
+                    >
                       수면 모드 설정하기
                     </div>
                   </SettingDropdown>
