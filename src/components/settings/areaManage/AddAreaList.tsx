@@ -42,7 +42,7 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
 
   return (
     <Container>
-      <InputWrapper width="160px">
+      <InputWrapper width="205px">
         <StyledTextField
           inputRef={areaNameRef}
           size="small"
@@ -61,6 +61,7 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
           InputProps={{ disableUnderline: true }}
           placeholder="메모를 남겨주세요"
           backgroundColor="#F5F5F5"
+          sx={{ width: "100%" }}
         />
       </InputWrapper>
       <InputWrapper width="70px">
@@ -82,16 +83,17 @@ const Container = styled.div`
 `;
 
 const InputWrapper = styled.div<{ width: string }>`
-  width: ${({ width }) => width};
+  width: ${(props: { width: string }) => props.width};
 `;
 
 const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
-  padding: 8px 12px;
+  /* padding: 8px 12px; */
 
   .MuiInputBase-root {
     height: 32px;
     border-radius: 1px;
-    background-color: ${({ backgroundColor }) => backgroundColor || "transparent"};
+    background-color: ${(props: { backgroundColor: string }) =>
+      props.backgroundColor || "transparent"};
   }
 
   .MuiInputBase-input {

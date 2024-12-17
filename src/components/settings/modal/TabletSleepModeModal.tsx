@@ -45,10 +45,19 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
     <CMModal
       maxWidth="sm"
       title={"수면 모드 설정"}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        setIsDescOpen(false);
+      }}
       footer={
         <div style={{ marginBottom: "20px", display: "flex", gap: "24px" }}>
-          <ModalActionButton color="secondary" onClick={onClose}>
+          <ModalActionButton
+            color="secondary"
+            onClick={() => {
+              onClose();
+              setIsDescOpen(false);
+            }}
+          >
             취소
           </ModalActionButton>
           <ModalActionButton onClick={() => null}>저장</ModalActionButton>
@@ -58,7 +67,10 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
     >
       <X
         style={{ position: "absolute", right: "24px", top: "28px", cursor: "pointer" }}
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          setIsDescOpen(false);
+        }}
       />
       <ContentWrapper>
         <FuncDescText onClick={() => setIsDescOpen(prev => !prev)} isOpen={isDescOpen}>

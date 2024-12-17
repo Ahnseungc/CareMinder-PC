@@ -314,7 +314,8 @@ const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
   .MuiInputBase-root {
     height: 20px;
     border-radius: 1px;
-    background-color: ${({ backgroundColor }) => backgroundColor || "transparent"};
+    background-color: ${(props: { backgroundColor: string }) =>
+      props.backgroundColor || "transparent"};
   }
 
   .MuiInputBase-input {
