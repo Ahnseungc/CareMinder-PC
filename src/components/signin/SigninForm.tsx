@@ -37,7 +37,7 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
         style={{ marginTop: "43.22px" }}
         onClick={handleSubmit(handleFormSubmit)}
       >
-        로그인
+        LOGIN
       </CButton>
     </Container>
   );

@@ -7,8 +7,9 @@ import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
-import { Grid, Divider, styled, Stack } from "@mui/material";
-import { useBooleanState } from "@toss/react";
+import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
+import RoutePath from "@routes/routePath";
+import { SwitchCase, useBooleanState } from "@toss/react";
 import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -50,7 +51,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const onSubmit = signin;
 
   const onCloseAccountModal = (type: string) => {
-    if (type === "취소") return onOpenStopModal();
+    if (type === "취소") {
+      return onOpenStopModal();
+    }
 
     if (type === "중단하기") {
       closeStopModal();
@@ -72,6 +75,13 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
       />
       <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
       <Container item xs>
+        <SwitchCase
+          value={type}
+          caseBy={{
+            ADMIN: <Tag>어드민</Tag>,
+            WARD: <Tag>병동</Tag>,
+          }}
+        />
         <Content>
           <SigninHeader />
           <UserTypeTag type={type} />
@@ -81,9 +91,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         {footer && (
           <Footer divider={<Divider orientation="vertical" />}>
             {/* Todo */}
-            {/* <Link href="#" variant="h3">
-            ID / PW 찾기
-          </Link> */}
+            <Link href={RoutePath.FindAccount} variant="h3">
+              ID / PW 찾기
+            </Link>
             {footer}
           </Footer>
         )}
@@ -103,6 +113,23 @@ const Container = styled(Grid)({
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
+});
+
+const Tag = styled(Box)({
+  position: "absolute",
+  right: "23px",
+
+  display: "inline-flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "36px",
+  padding: "4px 24px",
+
+  backgroundColor: "#5d6dbe",
+  borderRadius: "100px",
+  color: "#ffffff",
+  fontSize: "22px",
+  fontWeight: "500",
 });
 
 const Content = styled(Stack)({
