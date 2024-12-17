@@ -3,7 +3,7 @@ import InputField from "@components/signin/admin/InputField";
 import { useCreateAdmin } from "@hooks/mutation";
 import doubleCheckState from "@libraries/recoil/staff";
 import { AdminUserField, NewAdminUser } from "@models/user";
-import { Checkbox, Container, FormControlLabel, Stack, styled, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -74,6 +74,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   return (
     <CMModal
       onClose={onClose}
+      maxWidth={step === "어드민 계정 생성 약관 동의서" ? "lg" : "xs"}
       title={step}
       footer={
         <SwitchCase
@@ -115,17 +116,37 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         caseBy={{
           ["어드민 계정 생성 약관 동의서"]: (
             <>
-              <AgreementContainer>
-                <Typography variant="h4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </Typography>
-                <Typography>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, soluta consectetur
-                  ipsam voluptatem corrupti dicta iure, minus, tenetur nemo necessitatibus
-                  asperiores facere deserunt perspiciatis inventore porro eligendi veniam nam.
-                  Asperiores.
-                </Typography>
-              </AgreementContainer>
+              <TOSContainer sx={{ width: "calc(100% - 24px)" }}>
+                <TOSContentField>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                </TOSContentField>
+              </TOSContainer>
               <FormControlLabel
                 control={<Checkbox checked={agreementChecked || false} onChange={toggle} />}
                 label="필수 약관에 동의합니다."
@@ -165,10 +186,31 @@ const fields: AdminUserField[] = [
 
 /** styles */
 
-const AgreementContainer = styled(Container)(({ theme }) => ({
-  height: "300px",
-  overflow: "auto",
-  padding: "16px 24px",
+const TOSContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.success.main,
   borderRadius: "24px",
-  backgroundColor: theme.palette.secondary.light,
+
+  marginBottom: "30px",
+  padding: "10px 20px",
+}));
+
+const TOSContentField = styled(Box)(({ theme }) => ({
+  "height": "688px",
+  "overflowY": "auto",
+  "paddingRight": "20px",
+
+  "&::-webkit-scrollbar": {
+    width: "6px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: theme.palette.background.default,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: theme.palette.primary.main,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: theme.palette.primary.light,
+  },
 }));

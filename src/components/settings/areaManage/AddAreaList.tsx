@@ -86,7 +86,7 @@ const InputWrapper = styled.div<{ width: string }>`
   width: ${(props: { width: string }) => props.width};
 `;
 
-const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
+const StyledTextField = styled(TextField)<{ backgroundColor: string }>`
   /* padding: 8px 12px; */
 
   .MuiInputBase-root {

@@ -26,6 +26,8 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState(); // 계정 활성화 Modal
   const [openStopModal, onOpenStopModal, closeStopModal] = useBooleanState(); // 계정 활성화 중단 Modal
+
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
   /* 어드민 계정 로그인 시 에러 핸들링*/
@@ -34,9 +36,16 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
     if (error?.response) {
       // @ts-ignore
       if (error?.response.data.statusCode === "401") {
-        /** 계정 잠김 에러 핸들링 */
-        setIsModalType("waiting");
-        onOpenAccountModal();
+        // @ts-ignore
+        if (error?.response.data.message.includes("비밀번호가 틀립니다.")) {
+          // @ts-ignore
+          setErrorMessage(error?.response.data.message as string);
+          setIsModalType("valueError");
+        } else {
+          /** 계정 잠김 에러 핸들링 */
+          setIsModalType("waiting");
+          onOpenAccountModal();
+        }
         // @ts-ignore
       } else if (error?.response.data.statusCode === "404") {
         /** 존재하지 않는 계정 에러 핸들링 */
@@ -73,7 +82,12 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         onClose={closeStopModal}
         onCloseAccountModal={onCloseAccountModal}
       />
-      <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
+      <InfoModal
+        open={open}
+        onClose={closeModal}
+        modalType={isModalType}
+        message={errorMessage}
+      ></InfoModal>
       <Container item xs>
         <SwitchCase
           value={type}

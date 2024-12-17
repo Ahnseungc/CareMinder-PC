@@ -307,7 +307,7 @@ const MemoName = styled.span`
   text-align: start;
 `;
 
-const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
+const StyledTextField = styled(TextField)<{ backgroundColor: string }>`
   width: 100%;
   padding: 0 12px;
 
