@@ -14,7 +14,7 @@ const RoutePath = {
   StaffWardInOut: "/staff/inout",
   StaffNotice: "/staff/notice",
   StaffNoticeWrite: "/staff/noticeWrite",
-  StaffSettings: "staff/settings",
+  StaffSettings: "/staff/settings",
 
   //admin
   AdminCreateWard: "/admin",

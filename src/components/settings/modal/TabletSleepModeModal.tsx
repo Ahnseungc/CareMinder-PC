@@ -261,7 +261,8 @@ const LimitSelect = styled.div<{ option: string }>`
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: ${props => OPTION_COLORS[props.option as keyof typeof OPTION_COLORS]};
+    background-color: ${(props: { option: string }) =>
+      OPTION_COLORS[props.option as keyof typeof OPTION_COLORS]};
   }
 
   &:hover {
