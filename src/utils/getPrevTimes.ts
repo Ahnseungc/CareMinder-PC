@@ -9,7 +9,7 @@ function getPrevTimes(createdAt: string) {
 
   if (diffDate >= 1) return Math.floor(diffDate) + "일 전";
   if (diffHour >= 1) return Math.floor(diffHour) + "시간 전";
-  if (diffMin >= 1) return Math.floor(diffHour) + "분 전";
+  if (diffMin >= 1) return Math.floor(diffMin) + "분 전";
   return "방금 전";
 }
 export default getPrevTimes;

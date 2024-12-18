@@ -35,7 +35,6 @@ export const getWardTabledList = async ({ myArea = false, page, size }: GetWardT
       size: size,
     },
   });
-  // console.log(res.data);
   return res.data;
 };
 

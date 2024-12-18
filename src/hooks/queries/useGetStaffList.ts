@@ -42,7 +42,6 @@ export const getStaffList = async ({ page, size }: GetStaffListProps) => {
       size: size,
     },
   });
-  // console.log(res.data);
   return res.data;
 };
 
