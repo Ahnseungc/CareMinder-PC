@@ -10,9 +10,9 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -25,7 +25,7 @@ const StaffWardInoutManagementPage = () => {
     setCurrentPage(page - 1);
   };
   //@ts-ignore
-  const { data: getTablet, isLoading } = useGetWardTabletRequests({
+  const { data: getTablet, refetch } = useGetWardTabletRequests({
     token: token,
     patientName: searchValue,
     myArea: isMyArea,
@@ -33,7 +33,7 @@ const StaffWardInoutManagementPage = () => {
   });
 
   //@ts-ignore
-  const { mutate, isPending } = useDischargePatients();
+  const { mutate } = useDischargePatients();
   const [selected, setSelected] = useState<
     Array<{
       name: string;
@@ -84,6 +84,8 @@ const StaffWardInoutManagementPage = () => {
       {
         onSuccess: () => {
           toast.success("퇴원 처리가 완료 되었습니다.");
+          refetch();
+          setSelected([]);
         },
         onError: error => {
           toast.error(error.message);
