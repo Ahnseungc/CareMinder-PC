@@ -27,21 +27,24 @@ export default function StaffHomePage() {
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
   const navigate = useNavigate();
 
-  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
+  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState({
+    pendingGroup: false,
+    inprogressGroup: false,
+  }); //수락중인 환자, 환자별로 묶기
   const [roomId, setRoomId] = useState<number | null>(null);
-  console.log("staffAcceptIsGroup", staffAcceptIsGroup);
   const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(null, false); //isRole, 내 환자 보기
-  const { data: getInprogress, refetch: inprogressRefetch } =
-    useGetStaffPatientInprogress(staffAcceptIsGroup);
+  const { data: getInprogress, refetch: inprogressRefetch } = useGetStaffPatientInprogress(
+    staffAcceptIsGroup.inprogressGroup,
+  );
   //@ts-ignore
   const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
-    useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
+    useGetStaffPatientInprogressGroup(staffAcceptIsGroup.inprogressGroup);
 
   const refetchProps = {
     pendingRefetch,
     inprogressRefetch,
     inprogressGroupRefetch,
-    staffAcceptIsGroup,
+    staffAcceptIsGroup: staffAcceptIsGroup.inprogressGroup,
   };
 
   const { mutate: postAccept } = useStaffAccept(refetchProps);
@@ -56,6 +59,8 @@ export default function StaffHomePage() {
       return patchComplete(id);
     }
   };
+
+  console.log(staffAcceptIsGroup);
 
   useEffect(() => {
     setlayoutState("home");
@@ -103,20 +108,32 @@ export default function StaffHomePage() {
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
-            <S.FilterBox>환자별</S.FilterBox>
-            <S.FilterBox>구역</S.FilterBox>
-            <S.FilterBox>직종</S.FilterBox>
+            <S.FilterBox
+              onClick={() =>
+                setStaffAcceptIsGroup(prev => ({
+                  ...prev,
+                  pendingGroup: !prev.pendingGroup,
+                }))
+              }
+              isTrue={staffAcceptIsGroup.pendingGroup}
+            >
+              환자별
+            </S.FilterBox>
+            <S.FilterBox isTrue={false}>구역</S.FilterBox>
+            <S.FilterBox isTrue={false}>직종</S.FilterBox>
           </S.SubTitleLeft>
         </S.SubTitle>
-        {getPending?.map(el => (
-          <PatientBox
-            key={el.patientRequestId}
-            user="staffWait"
-            data={el}
-            onMutates={onMutates}
-            refetchProps={refetchProps}
-          />
-        ))}
+        {!staffAcceptIsGroup.pendingGroup &&
+          getPending?.map(el => (
+            <PatientBox
+              key={el.patientRequestId}
+              user="staffWait"
+              data={el}
+              onMutates={onMutates}
+              refetchProps={refetchProps}
+            />
+          ))}
+        {staffAcceptIsGroup.pendingGroup && <div>dd</div>}
       </S.LeftSection>
       <S.RightSection>
         <S.TitleWrapper>
@@ -128,12 +145,22 @@ export default function StaffHomePage() {
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
-            <S.FilterBox onClick={() => setStaffAcceptIsGroup(prev => !prev)}>환자별</S.FilterBox>
-            <S.FilterBox>구역</S.FilterBox>
-            <S.FilterBox>직종</S.FilterBox>
+            <S.FilterBox
+              onClick={() =>
+                setStaffAcceptIsGroup(prev => ({
+                  ...prev,
+                  inprogressGroup: !prev.inprogressGroup,
+                }))
+              }
+              isTrue={staffAcceptIsGroup.inprogressGroup}
+            >
+              환자별
+            </S.FilterBox>
+            <S.FilterBox isTrue={false}>구역</S.FilterBox>
+            <S.FilterBox isTrue={false}>직종</S.FilterBox>
           </S.SubTitleLeft>
         </S.SubTitle>
-        {!staffAcceptIsGroup &&
+        {!staffAcceptIsGroup.inprogressGroup &&
           getInprogress?.map(el => (
             <PatientBox
               key={el.patientRequestId}
@@ -145,9 +172,15 @@ export default function StaffHomePage() {
               refetchProps={refetchProps}
             />
           ))}
-        {staffAcceptIsGroup &&
+        {staffAcceptIsGroup.inprogressGroup &&
           getInprogressGroup?.map(el => (
-            <StaffGroupList data={el} onMutates={onMutates} roomId={roomId} setRoomId={setRoomId} />
+            <StaffGroupList
+              key={el.patientSimple.patientId}
+              data={el}
+              onMutates={onMutates}
+              roomId={roomId}
+              setRoomId={setRoomId}
+            />
           ))}
       </S.RightSection>
     </>

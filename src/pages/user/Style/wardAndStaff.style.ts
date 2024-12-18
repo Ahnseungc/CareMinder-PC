@@ -43,12 +43,15 @@ export const SubTitleLeft = styled("div")`
   display: flex;
   align-items: center;
 `;
-export const FilterBox = styled("div")`
+export const FilterBox = styled("div")<{ isTrue: boolean }>`
   font-size: 14px;
-  border: 1px solid ${({ theme }) => theme.palette.action.disabled};
+  border: 1px solid
+    ${({ theme, isTrue }) =>
+      isTrue ? theme.palette.secondary.main : theme.palette.action.disabled};
   padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
+  background-color: ${({ isTrue }) => isTrue && "rgba(48, 180, 255, 0.1)"};
 `;
 export const SearchBoxWrapper = styled("div")`
   position: relative;
