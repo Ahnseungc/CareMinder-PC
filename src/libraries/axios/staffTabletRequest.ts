@@ -7,16 +7,17 @@ export type StaffsRequestApiType = {
   // getNoticeRequestsStatus(status: NoticeType): Promise<AxiosResponse>;
 };
 
-const PATH = "/staffs/tablet-list";
+const PATH = "/staffs/patient-list";
 
 const StaffTabletRequest: StaffsRequestApiType = {
   //모든 환자 요청 조회
-  getStaffTabletRequests({ token, patientName, myArea }) {
+  getStaffTabletRequests({ token, patientName, myArea, page }) {
     return axiosInstance.get(PATH, {
       params: {
         token,
         patientName,
         myArea,
+        page,
       },
     });
   },
