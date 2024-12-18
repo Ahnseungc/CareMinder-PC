@@ -1,19 +1,40 @@
 import CButton from "@components/common/atom/C-Button";
 import doubleCheckState from "@libraries/recoil/staff";
 import { AdminUserField, NewAdminUser } from "@models/user";
-import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  FormHelperText,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  styled,
+  TextField,
+} from "@mui/material";
 // import axiosInstance from "@utils/axios/axiosInstance";
 import axios from "axios";
 import { SEVER_URL } from "@constants/baseUrl";
 import { useState } from "react";
 // import { validateBusinessNumber } from "@utils/signin";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useBooleanState } from "@toss/react";
+import DaumPostModal from "./DaumPostModal";
+import addressState from "@libraries/recoil/address";
+// import verifyPhoneState from "@libraries/recoil/verifyPhone";
 
 type InputFieldProps = { form: UseFormReturn<NewAdminUser>; field: AdminUserField };
 
 export default function InputField({ field, form }: InputFieldProps) {
   const setDoubleCheck = useSetRecoilState(doubleCheckState);
+  // const setVerifyPhone = useSetRecoilState(verifyPhoneState);
+  const addressValue = useRecoilValue(addressState);
+
+  const [isDaumPostOpen, openDaumPost, closeDaumPost] = useBooleanState();
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [detailAddressValue, setDetailAddressValue] = useState<string>("");
   const [validState, setValidState] = useState<{
     username?: {
       isValid: boolean;
@@ -24,10 +45,13 @@ export default function InputField({ field, form }: InputFieldProps) {
       message?: string;
     };
   }>({});
+
   const validationRules = {
     name: { required: "이름을 입력해주세요." },
     hospitalName: { required: "병원명을 입력해주세요." },
-    hospitalAddress: { required: "병원 주소를 입력해주세요." },
+    postalCode: { required: "병원 주소를 입력해주세요." },
+    mainAddress: { required: "병원 주소를 입력해주세요." },
+    detailAddress: { required: "정보를 입력해주세요." },
     registrationNumber: {
       required: "사업자등록번호를 입력해주세요.",
       // validate: (value: string) =>
@@ -64,10 +88,9 @@ export default function InputField({ field, form }: InputFieldProps) {
       pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
     },
     email: {
-      required: "이메일을 입력해주세요.",
       pattern: {
         value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-        message: "올바른 이메일을 입력해주세요.",
+        message: "이메일 형식이 올바르지 않습니다.",
       },
     },
   };
@@ -77,6 +100,7 @@ export default function InputField({ field, form }: InputFieldProps) {
     control,
     formState: { errors },
     getValues,
+    setValue,
   } = form;
 
   const doubleCheck = async () => {
@@ -94,7 +118,6 @@ export default function InputField({ field, form }: InputFieldProps) {
           accountType: "ADMIN",
         };
         const res = await axios.post(`${SEVER_URL}/users/check-login-id`, doubleCheck);
-        // const res = await axiosInstance.post("/users/check-login-id", doubleCheck);
         if (res.data === "사용 가능한 아이디입니다.") {
           setDoubleCheck(true);
           form.clearErrors("username");
@@ -121,60 +144,211 @@ export default function InputField({ field, form }: InputFieldProps) {
     }
   };
 
+  const verifyPhoneNumber = async () => {
+    const phoneNumber = getValues("phoneNumber");
+    if (!phoneNumber) {
+      form.setError("phoneNumber", {
+        type: "required",
+        message: "전화번호를 입력해주세요.",
+      });
+      return;
+    } else {
+      try {
+        // const res = await axios.post(`${SEVER_URL}/sms/send`, phoneNumber);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  const handleClickShowPassword = () => setShowPassword(show => !show);
+
   return (
-    <FormControl key={name} error={Boolean(errors[name])} sx={{ gap: "3px" }}>
-      <InputLabel htmlFor={name} required>
-        {label}
-      </InputLabel>
-      <Controller
-        name={name}
-        control={control}
-        rules={validationRules[name]}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            id={name}
-            placeholder={placeholder}
-            type={inputTypes[name] || "text"}
-            error={Boolean(errors[name])}
-            onChange={e => {
-              field.onChange(e);
-              if (field.name === "username") {
-                setDoubleCheck(false); // 값이 변경되면 doubleCheck 상태를 false로
-                setValidState(prev => ({ ...prev, username: undefined })); // 성공 메시지도 제거
-              }
-            }}
-            InputProps={{
-              endAdornment:
-                field.name === "username" ? (
-                  <div style={{ width: "150px", cursor: "pointer" }}>
+    <>
+      <DaumPostModal open={isDaumPostOpen} onClose={closeDaumPost} setValue={setValue} />
+      <FormControl
+        key={name}
+        error={Boolean(errors[name])}
+        sx={{
+          "gap": "3px",
+          "& .MuiInputLabel-asterisk": {
+            color: "#FF7253 !important",
+          },
+          "display": `${addressValue === null && (name === "mainAddress" || name === "detailAddress") ? "none" : "block"}`,
+        }}
+      >
+        <InputLabel
+          htmlFor={name}
+          required={name !== "email"}
+          sx={{
+            position: "relative",
+            display: `${name === "mainAddress" || name === "detailAddress" ? "none" : "block"}`,
+          }}
+        >
+          {label}
+        </InputLabel>
+        <span style={{ position: "absolute", top: "0px", right: "0", fontSize: "10px" }}>
+          {label === "비밀번호" ? "4자 이상의 영문(대/소문자)또는 숫자" : ""}
+        </span>
+        <Controller
+          name={name}
+          control={control}
+          rules={validationRules[name]}
+          render={({ field }) => (
+            <div style={{ position: "relative" }}>
+              {field.name === "postalCode" ? (
+                <>
+                  <TextField
+                    {...field}
+                    id={name}
+                    placeholder={placeholder}
+                    type={inputTypes[name] || "text"}
+                    error={Boolean(errors[name])}
+                    sx={{ width: "60%" }}
+                    value={addressValue?.zonecode}
+                    onClick={openDaumPost}
+                  />
+                  <CButtonWrapper type="hospitalAddress">
                     <CButton
-                      buttontype="primary"
+                      buttontype="primarySpaureWhite"
                       sx={{
-                        "&:hover": {
-                          backgroundColor: "#4759b2", // hover 시 더 진한 빨간색
-                        },
+                        height: "56px",
+                      }}
+                      onClick={openDaumPost}
+                    >
+                      우편번호 찾기
+                    </CButton>
+                  </CButtonWrapper>
+                </>
+              ) : field.name === "mainAddress" ? (
+                <TextField
+                  {...field}
+                  id={name}
+                  placeholder={"상세 주소를 입력해주세요"}
+                  type={inputTypes[name] || "text"}
+                  error={Boolean(errors[name])}
+                  value={addressValue?.roadAddress}
+                  sx={{
+                    width: "100%",
+
+                    display: `${addressValue === null ? "none" : "flex"}`,
+                  }}
+                />
+              ) : field.name === "detailAddress" ? (
+                <TextField
+                  {...field}
+                  id={name}
+                  placeholder={"상세 주소를 입력해주세요"}
+                  type={inputTypes[name] || "text"}
+                  error={Boolean(errors[name])}
+                  value={detailAddressValue}
+                  sx={{
+                    width: "100%",
+                    display: `${addressValue === null ? "none" : "flex"}`,
+                  }}
+                  onChange={e => {
+                    setValue("detailAddress", e.target.value, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                    setDetailAddressValue(e.target.value);
+                  }}
+                />
+              ) : field.name === "username" ? (
+                <>
+                  <TextField
+                    {...field}
+                    id={name}
+                    placeholder={placeholder}
+                    type={inputTypes[name] || "text"}
+                    error={Boolean(errors[name])}
+                    onChange={e => {
+                      field.onChange(e);
+                      setDoubleCheck(false);
+                      setValidState(prev => ({ ...prev, username: undefined }));
+                    }}
+                    sx={{ width: "65%" }}
+                  />
+                  <CButtonWrapper type="username">
+                    <CButton
+                      buttontype="primarySpaureWhite"
+                      sx={{
+                        height: "56px",
                       }}
                       onClick={doubleCheck}
                     >
-                      중복확인
+                      중복 확인
                     </CButton>
-                  </div>
-                ) : null,
-            }}
-          />
+                  </CButtonWrapper>
+                </>
+              ) : field.name === "phoneNumber" ? (
+                <>
+                  <TextField
+                    {...field}
+                    id={name}
+                    placeholder={placeholder}
+                    type={inputTypes[name] || "text"}
+                    error={Boolean(errors[name])}
+                    onChange={e => {
+                      field.onChange(e);
+                      setDoubleCheck(false);
+                      setValidState(prev => ({ ...prev, username: undefined }));
+                    }}
+                    sx={{ width: "60%" }}
+                  />
+                  <CButtonWrapper type="phoneNumber">
+                    <CButton
+                      buttontype="primarySpaureWhite"
+                      sx={{
+                        height: "56px",
+                      }}
+                      onClick={verifyPhoneNumber}
+                    >
+                      인증번호 요청
+                    </CButton>
+                  </CButtonWrapper>
+                </>
+              ) : (
+                <TextField
+                  {...field}
+                  id={name}
+                  placeholder={placeholder}
+                  type={showPassword ? "text" : inputTypes[name]}
+                  error={Boolean(errors[name])}
+                  onChange={e => {
+                    field.onChange(e);
+                  }}
+                  sx={{ width: "100%" }}
+                  InputProps={{
+                    endAdornment:
+                      name === "password" || name === "confirmPassword" ? (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ) : null,
+                  }}
+                />
+              )}
+            </div>
+          )}
+        />
+        {errors[name] && <FormHelperText>{errors[name]?.message}</FormHelperText>}
+        {validState.username?.isValid && name === "username" && (
+          <FormHelperText sx={{ color: "#1ADE00" }}>{validState.username.message}</FormHelperText>
         )}
-      />
-      {errors[name] && <FormHelperText>{errors[name]?.message}</FormHelperText>}
-      {validState.username?.isValid && name === "username" && (
-        <FormHelperText sx={{ color: "#1ADE00" }}>{validState.username.message}</FormHelperText>
-      )}
-      {validState.confirmPassword?.isValid && name === "confirmPassword" && (
-        <FormHelperText sx={{ color: "#1ADE00" }}>
-          {validState.confirmPassword.message}
-        </FormHelperText>
-      )}
-    </FormControl>
+        {validState.confirmPassword?.isValid && name === "confirmPassword" && (
+          <FormHelperText sx={{ color: "#1ADE00" }}>
+            {validState.confirmPassword.message}
+          </FormHelperText>
+        )}
+      </FormControl>
+    </>
   );
 }
 
@@ -183,7 +357,9 @@ export default function InputField({ field, form }: InputFieldProps) {
 const inputTypes: { [key in keyof NewAdminUser]: string } = {
   name: "text",
   hospitalName: "text",
-  hospitalAddress: "text",
+  postalCode: "text",
+  mainAddress: "text",
+  detailAddress: "text",
   registrationNumber: "text",
   username: "text",
   password: "password",
@@ -191,3 +367,11 @@ const inputTypes: { [key in keyof NewAdminUser]: string } = {
   phoneNumber: "tel",
   email: "email",
 };
+
+const CButtonWrapper = styled(Box)<{ type: string }>`
+  cursor: pointer;
+  width: ${(props: { type: string }) => (props.type === "username" ? "110px" : "130px")};
+  position: absolute;
+  top: 0;
+  right: 0;
+`;

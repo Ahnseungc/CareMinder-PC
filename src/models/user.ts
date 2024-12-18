@@ -1,5 +1,4 @@
 export type UserType = "ADMIN" | "WARD" | "STAFF";
-export type reqUserType = "ADMIN" | "WARD" | "STAFF";
 
 export type User = {
   id: number;
@@ -10,7 +9,9 @@ export type User = {
 export type AdminUser = {
   name: string;
   hospitalName: string;
-  hospitalAddress: string;
+  postalCode: string;
+  mainAddress: string;
+  detailAddress: string;
   registrationNumber: string;
   username: string;
   password: string;
@@ -38,7 +39,11 @@ export type NewAdminUserRequests = {
   };
   hospitalCreateRequest: {
     name: string;
-    address: string;
+    address: {
+      postalCode: string;
+      mainAddress: string;
+      detailAddress: string;
+    };
     businessRegistrationNumber: string;
   };
 };
