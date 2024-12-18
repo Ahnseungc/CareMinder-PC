@@ -37,7 +37,7 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
       <tbody>
         {getTablet?.map(tablet => {
           return (
-            <tr key={tablet.areaId}>
+            <tr key={tablet.serialNumber || tablet.tabletId}>
               <td>
                 <ComBoxLayout>
                   <CComboBox
@@ -51,8 +51,8 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
               <td>
                 <ComBoxLayout>
                   <Checkbox
-                    checked={selected.some(item => item.id === tablet.areaId)}
-                    onChange={() => onChangeSelected(tablet.areaId, tablet.patientName)}
+                    checked={selected.some(item => item.id === tablet.tabletId)}
+                    onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
                     icon={
                       <div
                         style={{

@@ -45,7 +45,12 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
         tabIndex={0}
         onBlur={() => setIsOptions(false)}
       >
-        <div>{data.areaSimple.areaName}</div>
+        <div>
+          {data.areaSimple?.areaName}
+          {data.patientSimple
+            ? ` (T${data.tabletSimple?.tabletId} ) |  ${data.patientSimple?.patientName}`
+            : ""}
+        </div>
         <div>
           {!isAccept && (
             <MoreHorizRoundedIcon

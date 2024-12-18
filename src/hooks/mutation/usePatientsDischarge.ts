@@ -1,16 +1,13 @@
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { selectedWardType } from "@models/ward-tablet";
 
-const dischargePatients = async (tabletId: selectedWardType): Promise<void> => {
-  return (await axiosInstance.post("/patients/discharge-by-web", tabletId)).data;
+const useDischargePatients = () => {
+  return useMutation({
+    mutationFn: (tabletIds: selectedWardType) => {
+      return axiosInstance.post("/patients/discharge-by-web", tabletIds);
+    },
+  });
 };
 
-export default function useDischargePatients(): UseMutationResult<
-  void,
-  AxiosError,
-  selectedWardType
-> {
-  return useMutation({ mutationFn: dischargePatients });
-}
+export default useDischargePatients;
