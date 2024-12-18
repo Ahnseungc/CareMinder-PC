@@ -33,9 +33,9 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
     // if (!user && accessTokenWard === "") {
     //   navigate("/sign-in");
     // }
-    if (!accessTokenWard) {
-      navigate("/sign-in");
-    }
+    // if (!accessTokenWard) {
+    //   navigate("/sign-in");
+    // }
 
     //스태프 페이지
     if (pathname.includes("staff") && !accessTokenStaff) {

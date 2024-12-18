@@ -17,7 +17,7 @@ import {
   StaffSettingsPage,
 } from "@pages/index";
 import MainHomePage from "@pages/user/MainHomePage";
-import StaffHomePage from "@pages/user/StaffHomePage";
+import StaffHomePage from "@pages/staff/StaffHomePage";
 import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
 import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
 import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";

@@ -271,15 +271,13 @@ export default TabletManagementTable;
 const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; // 모바일 스크롤 지원
 `;
 
 const StTable = styled.table`
   min-width: 100%;
   width: max-content;
-  height: 100%;
-  overflow-x: scroll;
   border-collapse: collapse;
+  margin-bottom: 20px;
   & thead {
     width: 100%;
     height: 20%;

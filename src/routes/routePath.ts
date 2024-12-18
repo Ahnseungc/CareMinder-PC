@@ -14,7 +14,7 @@ const RoutePath = {
   StaffWardInOut: "/staff/inout",
   StaffNotice: "/staff/notice",
   StaffNoticeWrite: "/staff/noticeWrite",
-  StaffSettings: "staff/settings",
+  StaffSettings: "/staff/settings",
 
   //admin
   AdminCreateWard: "/admin",
@@ -26,6 +26,7 @@ const RoutePath = {
 
   Signin: "/sign-in",
   AdminSignin: "/sign-in/admin",
+  FindAccount: "/find-account",
 } as const;
 
 export default RoutePath;
