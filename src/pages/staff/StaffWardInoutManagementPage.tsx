@@ -19,16 +19,17 @@ const StaffWardInoutManagementPage = () => {
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   //@ts-ignore
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
-    setCurrentPage(page);
-  };
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page - 1);
+  };
   //@ts-ignore
   const { data: getTablet, isLoading } = useGetWardTabletRequests({
     token: token,
     patientName: searchValue,
     myArea: isMyArea,
+    page: currentPage,
   });
 
   //@ts-ignore
@@ -42,6 +43,7 @@ const StaffWardInoutManagementPage = () => {
 
   const onChangeMyArea = () => {
     setIsMyArea(prev => !prev);
+    setCurrentPage(0);
   };
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
@@ -73,6 +75,7 @@ const StaffWardInoutManagementPage = () => {
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setSearchValue(value);
+    setCurrentPage(0);
   };
 
   const onDischarge: SubmitHandler<WardTabletType> = () => {
@@ -122,11 +125,18 @@ const StaffWardInoutManagementPage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminTable getTablet={getTablet} onChangeSelected={onChangeSelected} selected={selected} />
+        <AdminTable
+          getTablet={getTablet?.data}
+          onChangeSelected={onChangeSelected}
+          selected={selected}
+        />
       </TableLayout>
       <FooterLayout>
         <div>
-          <PaginationComponent totalPage={5} onChange={(e, page) => handleChangePage(e, page)} />
+          <PaginationComponent
+            totalPage={getTablet?.totalPages}
+            onChange={(e, page) => handleChangePage(e, page)}
+          />
         </div>
       </FooterLayout>
     </Container>

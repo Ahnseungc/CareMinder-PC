@@ -37,7 +37,7 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
       <tbody>
         {getTablet?.map(tablet => {
           return (
-            <tr key={tablet.areaId}>
+            <tr key={tablet.serialNumber || tablet.tabletId}>
               <td>
                 <ComBoxLayout>
                   <CComboBox

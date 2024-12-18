@@ -22,7 +22,6 @@ export const getStaffSimpleList = async () => {
     customHeader: true,
   } as CustomAxiosRequestConfig);
 
-  console.log(res.data);
   return res.data;
 };
 

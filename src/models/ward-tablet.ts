@@ -12,6 +12,7 @@ export type reqWardParamsType = {
   token: string;
   patientName: string;
   myArea: boolean;
+  page: number;
 };
 
 export type selectedWardType = {
