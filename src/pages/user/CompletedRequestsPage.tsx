@@ -59,9 +59,10 @@ export default function CompletedRequestsPage() {
         <LeftWrapper>
           {isPatient &&
             getCompletedGroup?.map(el => (
-              <>
+              <div key={el.patientSimple.patientId}>
                 <Person key={el.createdAt}>
-                  <PersonIcon /> <div>{el.patientSimple.patientName}</div>
+                  <PersonIcon />
+                  <div>{el.patientSimple?.patientName} </div>
                   <HamburgerIcon />
                 </Person>
 
@@ -81,7 +82,7 @@ export default function CompletedRequestsPage() {
                     </div>
                   </PatientList>
                 ))}
-              </>
+              </div>
             ))}
           <PatientList>
             {!isPatient &&
