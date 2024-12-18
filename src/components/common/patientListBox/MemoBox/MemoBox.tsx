@@ -56,7 +56,7 @@ export default function MemoBox({ color }: { color: string }) {
   return (
     <MemoWrapper>
       {mock.map(el => (
-        <Memo>
+        <Memo key={el.id}>
           {el.isMine && (
             <>
               <Title>내 메모</Title>
