@@ -2,6 +2,7 @@ import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import InputField from "@components/signin/admin/InputField";
 import { useCreateAdmin } from "@hooks/mutation";
 import doubleCheckState from "@libraries/recoil/staff";
+import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import { AdminUserField, NewAdminUser } from "@models/user";
 import { Box, Checkbox, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
@@ -30,6 +31,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   const [step, setStep] = useState<Step>("어드민 계정 생성 약관 동의서");
   const [agreementChecked, setChecked] = useState<boolean>(false);
   const [isDoubleChecked, setIsDoubleCheckd] = useRecoilState(doubleCheckState);
+  const [isVerifyCodeChecked, setIsVerifyCodeChecked] = useRecoilState(verifyPhoneState);
 
   const form = useForm<NewAdminUser>({
     defaultValues,
@@ -48,7 +50,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         password: data.password,
         managerName: data.name,
         managerPhoneNumber: data.phoneNumber,
-        managerEmail: data.email.trim().length === 0 ? "" : data.email,
+        managerEmail: data.email,
         nfc: "",
         fingerprint: "",
       },
@@ -69,6 +71,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         console.log("어드민 회원가입 성공");
         toast.success("어드민 계정 생성이 완료되었습니다.");
         setIsDoubleCheckd(false);
+        setIsVerifyCodeChecked(false);
         reset();
         onClose();
       },
@@ -130,8 +133,11 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
                 >
                   취소
                 </ModalActionButton>
-                <ModalActionButton disabled={!isDoubleChecked} onClick={handleSubmit(onSubmit)}>
-                  추가하기
+                <ModalActionButton
+                  disabled={!isDoubleChecked || !isVerifyCodeChecked}
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  완료
                 </ModalActionButton>
               </>
             ),

@@ -44,6 +44,21 @@ export const TabletManagement = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (editContainerRef.current) {
+        const rect = editContainerRef.current.getBoundingClientRect();
+        const initialPosition = editContainerRef.current.offsetTop;
+        setIsSticky(rect.top <= 70 && window.scrollY > initialPosition);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleClear = () => {
     setIsEditing([]);
     setIsClear(true);

@@ -10,6 +10,7 @@ import {
   InputLabel,
   styled,
   TextField,
+  Typography,
 } from "@mui/material";
 // import axiosInstance from "@utils/axios/axiosInstance";
 import axios from "axios";
@@ -22,18 +23,25 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useBooleanState } from "@toss/react";
 import DaumPostModal from "./DaumPostModal";
 import addressState from "@libraries/recoil/address";
-// import verifyPhoneState from "@libraries/recoil/verifyPhone";
+import verifyPhoneState from "@libraries/recoil/verifyPhone";
+import useTimer from "@utils/useTimer";
 
 type InputFieldProps = { form: UseFormReturn<NewAdminUser>; field: AdminUserField };
 
+const INITIAL_TIMER_SECONDS = 180; // 인증번호 타이머
+
 export default function InputField({ field, form }: InputFieldProps) {
   const setDoubleCheck = useSetRecoilState(doubleCheckState);
-  // const setVerifyPhone = useSetRecoilState(verifyPhoneState);
+  const verifyPhone = useRecoilValue(verifyPhoneState);
+  const setVerifyPhone = useSetRecoilState(verifyPhoneState);
   const addressValue = useRecoilValue(addressState);
 
   const [isDaumPostOpen, openDaumPost, closeDaumPost] = useBooleanState();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showVerifyCode, setShowVerifyCode] = useState<boolean>(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [verifyCode, setVerifyCode] = useState<string>("");
   const [detailAddressValue, setDetailAddressValue] = useState<string>("");
   const [validState, setValidState] = useState<{
     username?: {
@@ -41,6 +49,10 @@ export default function InputField({ field, form }: InputFieldProps) {
       message?: string;
     };
     confirmPassword?: {
+      isValid: boolean;
+      message?: string;
+    };
+    phoneNumber?: {
       isValid: boolean;
       message?: string;
     };
@@ -86,7 +98,26 @@ export default function InputField({ field, form }: InputFieldProps) {
     phoneNumber: {
       required: "전화번호를 입력해주세요.",
       pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
+      validate: (value: string, { phoneNumber }: NewAdminUser) => {
+        if (value === phoneNumber) {
+          setValidState(prev => ({
+            ...prev,
+            phoneNumber: {
+              isValid: true,
+              message: "",
+            },
+          }));
+          return true;
+        }
+
+        setValidState(prev => ({
+          ...prev,
+          phoneNumber: undefined,
+        }));
+        return "전화번호를 올바르게 입력해주세요.";
+      },
     },
+    verifyCode: { required: "인증번호를 입력해주세요." },
     email: {
       pattern: {
         value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
@@ -144,6 +175,15 @@ export default function InputField({ field, form }: InputFieldProps) {
     }
   };
 
+  const { timer, resetTimer, stopTimer } = useTimer(INITIAL_TIMER_SECONDS);
+
+  // 타이머 함수
+  const formatTime = () => {
+    const minutes = Math.floor(timer / 60);
+    const seconds = timer % 60;
+    return `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  };
+
   const verifyPhoneNumber = async () => {
     const phoneNumber = getValues("phoneNumber");
     if (!phoneNumber) {
@@ -152,12 +192,44 @@ export default function InputField({ field, form }: InputFieldProps) {
         message: "전화번호를 입력해주세요.",
       });
       return;
-    } else {
-      try {
-        // const res = await axios.post(`${SEVER_URL}/sms/send`, phoneNumber);
-      } catch (err) {
-        console.log(err);
+    }
+
+    const phonePattern = /^\d{3}-\d{4}-\d{4}$/;
+    if (!phonePattern.test(phoneNumber)) {
+      form.setError("phoneNumber", {
+        type: "pattern",
+        message: "올바른 전화번호 형식을 입력해주세요.",
+      });
+      return;
+    }
+
+    try {
+      resetTimer();
+      const _phoneNumber = phoneNumber.replace(/-/g, "");
+      const res = await axios.post(`${SEVER_URL}/sms/send`, {
+        phoneNumber: _phoneNumber,
+      });
+      console.log(res.data);
+      setShowVerifyCode(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleCheckVerifyCode = async () => {
+    try {
+      const _phoneNumber = phoneNumber.replace(/-/g, "");
+      const res = await axios.post(`${SEVER_URL}/sms/verify`, {
+        phoneNumber: _phoneNumber,
+        verifyCode: verifyCode,
+      });
+
+      if (res.data.isVerified) {
+        setVerifyPhone(true);
+        stopTimer();
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -174,7 +246,11 @@ export default function InputField({ field, form }: InputFieldProps) {
           "& .MuiInputLabel-asterisk": {
             color: "#FF7253 !important",
           },
-          "display": `${addressValue === null && (name === "mainAddress" || name === "detailAddress") ? "none" : "block"}`,
+          "display": `${
+            addressValue === null && (name === "mainAddress" || name === "detailAddress")
+              ? "none"
+              : "block"
+          }`,
         }}
       >
         <InputLabel
@@ -224,13 +300,12 @@ export default function InputField({ field, form }: InputFieldProps) {
                 <TextField
                   {...field}
                   id={name}
-                  placeholder={"상세 주소를 입력해주세요"}
+                  placeholder={"도로명 주소를 입력해주세요"}
                   type={inputTypes[name] || "text"}
                   error={Boolean(errors[name])}
                   value={addressValue?.roadAddress}
                   sx={{
                     width: "100%",
-
                     display: `${addressValue === null ? "none" : "flex"}`,
                   }}
                 />
@@ -291,8 +366,9 @@ export default function InputField({ field, form }: InputFieldProps) {
                     error={Boolean(errors[name])}
                     onChange={e => {
                       field.onChange(e);
-                      setDoubleCheck(false);
-                      setValidState(prev => ({ ...prev, username: undefined }));
+                      setPhoneNumber(e.target.value);
+                      setVerifyPhone(false);
+                      setValidState(prev => ({ ...prev, phoneNumber: undefined }));
                     }}
                     sx={{ width: "60%" }}
                   />
@@ -304,7 +380,7 @@ export default function InputField({ field, form }: InputFieldProps) {
                       }}
                       onClick={verifyPhoneNumber}
                     >
-                      인증번호 요청
+                      {showVerifyCode ? "인증번호 재요청" : "인증번호 요청"}
                     </CButton>
                   </CButtonWrapper>
                 </>
@@ -348,6 +424,41 @@ export default function InputField({ field, form }: InputFieldProps) {
           </FormHelperText>
         )}
       </FormControl>
+      {showVerifyCode && (
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            marginBottom: `${verifyPhone ? "20px" : "50px"}`,
+          }}
+        >
+          <TextField
+            placeholder="인증번호를 입력하세요"
+            sx={{ width: "60%" }}
+            onChange={e => setVerifyCode(e.target.value)}
+          />
+          <Timer>{formatTime()}</Timer>
+          <VerifyCodeButtonWrapper>
+            <CButton
+              buttontype="primarySpaureWhite"
+              sx={{
+                height: "56px",
+              }}
+              onClick={handleCheckVerifyCode}
+            >
+              인증번호 확인
+            </CButton>
+          </VerifyCodeButtonWrapper>
+          {verifyPhone ? (
+            <SuccessText>인증이 완료되었습니다.</SuccessText>
+          ) : (
+            <VerifyText>
+              인증번호는 3분 이내 입력해야 합니다. <br />
+              제한시간이 지났을 경우 인증번호를 다시 받아 주세요.
+            </VerifyText>
+          )}
+        </div>
+      )}
     </>
   );
 }
@@ -374,4 +485,35 @@ const CButtonWrapper = styled(Box)<{ type: string }>`
   position: absolute;
   top: 0;
   right: 0;
+`;
+
+const VerifyCodeButtonWrapper = styled(Box)`
+  cursor: pointer;
+  width: 130px;
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const Timer = styled(Typography)`
+  position: absolute;
+  top: 19px;
+  left: 180px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff0000;
+`;
+
+const VerifyText = styled(Typography)`
+  position: absolute;
+  width: 80%;
+  left: 10px;
+  top: 60px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ff0000;
+`;
+
+const SuccessText = styled(VerifyText)`
+  color: #0fbc0c;
 `;
