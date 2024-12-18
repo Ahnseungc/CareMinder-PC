@@ -46,7 +46,7 @@ export const getStaffList = async ({ page, size }: GetStaffListProps) => {
       page: page,
       size: size,
     },
-  } as CustomAxiosRequestConfig);
+  });
   return res.data;
 };
 

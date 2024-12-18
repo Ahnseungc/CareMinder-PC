@@ -13,6 +13,7 @@ export default function useGetWardPatientPending(type: UserType) {
     queryKey: ["useGetWardPatientPending"],
     queryFn: getWardPatientPending,
     enabled: type === "WARD",
+    refetchInterval: 5000, // 5초마다 refetch
   });
   return { data, isLoading };
 }

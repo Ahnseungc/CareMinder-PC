@@ -39,7 +39,7 @@ export const getWardTabledList = async ({ myArea = false, page, size }: GetWardT
       page: page,
       size: size,
     },
-  } as CustomAxiosRequestConfig);
+  });
   return res.data;
 };
 
