@@ -2,8 +2,9 @@ import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import InputField from "@components/signin/admin/InputField";
 import { useCreateAdmin } from "@hooks/mutation";
 import doubleCheckState from "@libraries/recoil/staff";
+import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import { AdminUserField, NewAdminUser } from "@models/user";
-import { Checkbox, Container, FormControlLabel, Stack, styled, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -15,7 +16,9 @@ type Step = "어드민 계정 생성 약관 동의서" | "어드민 계정 생�
 const defaultValues: NewAdminUser = {
   name: "",
   hospitalName: "",
-  hospitalAddress: "",
+  postalCode: "",
+  mainAddress: "",
+  detailAddress: "",
   registrationNumber: "",
   username: "",
   password: "",
@@ -28,12 +31,13 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
   const [step, setStep] = useState<Step>("어드민 계정 생성 약관 동의서");
   const [agreementChecked, setChecked] = useState<boolean>(false);
   const [isDoubleChecked, setIsDoubleCheckd] = useRecoilState(doubleCheckState);
+  const [isVerifyCodeChecked, setIsVerifyCodeChecked] = useRecoilState(verifyPhoneState);
 
   const form = useForm<NewAdminUser>({
     defaultValues,
     mode: "onChange",
   });
-  const { handleSubmit } = form;
+  const { handleSubmit, reset } = form;
 
   const toggle = () => setChecked(prev => !prev);
 
@@ -52,7 +56,11 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
       },
       hospitalCreateRequest: {
         name: data.hospitalName,
-        address: data.hospitalAddress,
+        address: {
+          postalCode: data.postalCode,
+          mainAddress: data.mainAddress,
+          detailAddress: data.detailAddress,
+        },
         businessRegistrationNumber: data.registrationNumber,
       },
     };
@@ -63,6 +71,8 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         console.log("어드민 회원가입 성공");
         toast.success("어드민 계정 생성이 완료되었습니다.");
         setIsDoubleCheckd(false);
+        setIsVerifyCodeChecked(false);
+        reset();
         onClose();
       },
       onError: error => {
@@ -73,7 +83,21 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
 
   return (
     <CMModal
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        reset();
+        setChecked(false);
+        setStep("어드민 계정 생성 약관 동의서");
+      }}
+      maxWidth={step === "어드민 계정 생성 약관 동의서" ? "md" : "xs"}
+      sx={{
+        "height": `${step === "어드민 계정 생성" ? "95%" : "100%"}`,
+        "margin": "auto",
+        "& .MuiDialog-paper": {
+          // MUI Dialog 페이퍼의 스크롤바 제거
+          overflowY: "hidden",
+        },
+      }}
       title={step}
       footer={
         <SwitchCase
@@ -81,7 +105,13 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
           caseBy={{
             ["어드민 계정 생성 약관 동의서"]: (
               <>
-                <ModalActionButton color="secondary" onClick={onClose}>
+                <ModalActionButton
+                  color="secondary"
+                  onClick={() => {
+                    setChecked(false);
+                    onClose();
+                  }}
+                >
                   취소
                 </ModalActionButton>
                 <ModalActionButton
@@ -96,12 +126,18 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
               <>
                 <ModalActionButton
                   color="secondary"
-                  onClick={() => setStep("어드민 계정 생성 약관 동의서")}
+                  onClick={() => {
+                    reset();
+                    setStep("어드민 계정 생성 약관 동의서");
+                  }}
                 >
                   취소
                 </ModalActionButton>
-                <ModalActionButton disabled={!isDoubleChecked} onClick={handleSubmit(onSubmit)}>
-                  추가하기
+                <ModalActionButton
+                  disabled={!isDoubleChecked || !isVerifyCodeChecked}
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  완료
                 </ModalActionButton>
               </>
             ),
@@ -115,17 +151,172 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         caseBy={{
           ["어드민 계정 생성 약관 동의서"]: (
             <>
-              <AgreementContainer>
-                <Typography variant="h4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </Typography>
-                <Typography>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, soluta consectetur
-                  ipsam voluptatem corrupti dicta iure, minus, tenetur nemo necessitatibus
-                  asperiores facere deserunt perspiciatis inventore porro eligendi veniam nam.
-                  Asperiores.
-                </Typography>
-              </AgreementContainer>
+              <TOSContainer sx={{ width: "calc(100% - 24px)" }}>
+                <TOSContentField>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                  <Typography variant="body2">
+                    약관 동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관
+                    동의 조항 상세내용이 노출됩니다. 약관 동의 조항 상세내용이 노출됩니다. 약관 동의
+                    조항 상세내용이 노출됩니다.
+                  </Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                    약관 동의 조항 제목이 노출됩니다.
+                  </Typography>
+                </TOSContentField>
+              </TOSContainer>
               <FormControlLabel
                 control={<Checkbox checked={agreementChecked || false} onChange={toggle} />}
                 label="필수 약관에 동의합니다."
@@ -133,11 +324,13 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
             </>
           ),
           ["어드민 계정 생성"]: (
-            <Stack gap={"24px"}>
-              {fields.map(field => (
-                <InputField key={field.name} field={field} form={form} />
-              ))}
-            </Stack>
+            <AdminFormContainer>
+              <Stack gap={"24px"}>
+                {fields.map(field => (
+                  <InputField key={field.name} field={field} form={form} />
+                ))}
+              </Stack>
+            </AdminFormContainer>
           ),
         }}
       />
@@ -150,7 +343,9 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
 const fields: AdminUserField[] = [
   { name: "name", label: "이름", placeholder: "이름을 입력해주세요." },
   { name: "hospitalName", label: "병원명", placeholder: "병원명을 입력해주세요." },
-  { name: "hospitalAddress", label: "병원 주소", placeholder: "병원 주소를 입력해주세요." },
+  { name: "postalCode", label: "병원 주소", placeholder: "병원 주소를 입력해주세요." },
+  { name: "mainAddress", label: "메인 주소", placeholder: "병원 주소를 입력해주세요." },
+  { name: "detailAddress", label: "세부 주소", placeholder: "상세 주소를 입력해주세요" },
   {
     name: "registrationNumber",
     label: "사업자등록번호",
@@ -165,10 +360,52 @@ const fields: AdminUserField[] = [
 
 /** styles */
 
-const AgreementContainer = styled(Container)(({ theme }) => ({
-  height: "300px",
-  overflow: "auto",
-  padding: "16px 24px",
+const TOSContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.success.main,
   borderRadius: "24px",
-  backgroundColor: theme.palette.secondary.light,
+
+  marginBottom: "30px",
+  padding: "10px 20px",
+}));
+
+const TOSContentField = styled(Box)(({ theme }) => ({
+  "height": "488px",
+  "overflowY": "auto",
+  "paddingRight": "20px",
+
+  "&::-webkit-scrollbar": {
+    width: "6px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: theme.palette.background.default,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: theme.palette.primary.main,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: theme.palette.primary.light,
+  },
+}));
+
+const AdminFormContainer = styled(Box)(({ theme }) => ({
+  "height": "calc(100vh - 250px)", // 적절한 높이 조정
+  "overflowY": "auto",
+  "paddingRight": "20px",
+
+  "&::-webkit-scrollbar": {
+    width: "6px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: theme.palette.background.default,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: theme.palette.primary.main,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: theme.palette.primary.light,
+  },
 }));

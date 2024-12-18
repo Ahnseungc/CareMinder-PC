@@ -4,7 +4,7 @@ export default function Header() {
   return (
     <Container>
       <Title variant="h1">careminder</Title>
-      <Subtitle variant="h2">케어마인더에 오신 것을 환영합니다.</Subtitle>
+      <Subtitle variant="h2">케어마인더에 오신걸 환영합니다.</Subtitle>
     </Container>
   );
 }

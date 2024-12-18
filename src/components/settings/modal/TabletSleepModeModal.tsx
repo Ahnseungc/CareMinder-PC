@@ -6,15 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 const OPTION_COLORS = {
-  "강제종료": "#ff5733",
-  "요청만 가능": "#9c27b0",
-  "전체가능": "#4caf50",
+  "강제종료": "#ff4a4a",
+  "요청만 가능": "#b66ef1",
+  "전체가능": "#04b300",
 } as const;
 
 export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps) {
   const LIMIT_OPTIONS = ["강제종료", "요청만 가능", "전체가능"];
   const selectRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isDescOpen, setIsDescOpen] = useState<boolean>(false);
   const [selectOption, setSelectOption] = useState<string>(LIMIT_OPTIONS[2]);
 
   const handleChangeOption = (option: string) => {
@@ -24,7 +25,12 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      const limitSelectElement = document.querySelector('[data-select="limit"]');
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node) &&
+        !limitSelectElement?.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -39,10 +45,19 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
     <CMModal
       maxWidth="sm"
       title={"수면 모드 설정"}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        setIsDescOpen(false);
+      }}
       footer={
         <div style={{ marginBottom: "20px", display: "flex", gap: "24px" }}>
-          <ModalActionButton color="secondary" onClick={onClose}>
+          <ModalActionButton
+            color="secondary"
+            onClick={() => {
+              onClose();
+              setIsDescOpen(false);
+            }}
+          >
             취소
           </ModalActionButton>
           <ModalActionButton onClick={() => null}>저장</ModalActionButton>
@@ -52,70 +67,92 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
     >
       <X
         style={{ position: "absolute", right: "24px", top: "28px", cursor: "pointer" }}
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          setIsDescOpen(false);
+        }}
       />
       <ContentWrapper>
-        <p style={{ textDecoration: "underline" }}>기능 설명</p>
-        <p style={{ fontSize: "18px", color: "#5E5F65" }}>
-          현재 입원중인 모든 환자들에게 공통으로 적용됩니다.
-        </p>
-        <div style={{ borderBottom: "1px solid #5D6DBE", padding: "0 8px 4px 8px" }}>
-          <span style={{ color: "black", fontSize: "14px", fontWeight: "600" }}>시간 설정</span>
-        </div>
+        <FuncDescText onClick={() => setIsDescOpen(prev => !prev)} isOpen={isDescOpen}>
+          기능 설명
+        </FuncDescText>
+        {isDescOpen && (
+          <FuncDescContent>
+            <div>수면 모드는 환자들의 수면 시간을 고려하여 기능을 제한하는 설정입니다.</div>
+            <div>모드는 다음과 같이 세 가지 옵션이 있습니다:</div>
+            <br />
+            <div>
+              1.<span>강제 종료</span>:태블릿의 모든 기능이 차단되어 사용하실 수 없습니다.
+            </div>
+            <div>
+              2.<span>요청만 가능</span>:유튜브와 같은 앱은 사용하실 수 없지만,
+              <br /> 음성 요청이나 빠른 요청 같은 기본적인 요청은 가능합니다.
+            </div>
+            <div>
+              3.<span>전체 가능</span>:모든 기능을 자유롭게 사용하실 수 있습니다.
+              <br /> 이 경우 수면 모드가 적용되지 않으며, 별도의 시간 설정이 필요하지 않습니다.
+            </div>
+            <br />
+            <div>모드를 선택하신 후 시작시간과 종료시간을 입력해 주세요.</div>
+            <div>
+              예를 들어 07:00 AM 부터 02:00 AM까지 설정하시면,
+              <br /> 그날 아침부터 다음날 새벽까지 해당 모드가 자동으로 적용됩니다.
+            </div>
+          </FuncDescContent>
+        )}
+        <InfoText>현재 입원중인 모든 환자들에게 공통으로 적용됩니다.</InfoText>
+        <SettingText>
+          <span>시간 설정</span>
+        </SettingText>
         <TimeSettingWraaper>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <p style={{ color: "black", fontSize: "16px", fontWeight: "500" }}>시작 시간</p>
+          <TimePickerWrapper>
+            <p>시작 시간</p>
             <TimePicker
               sx={{
                 width: "140px",
               }}
               timeSteps={{ hours: 1, minutes: 1, seconds: 5 }}
-              defaultValue={dayjs("2022-04-17T20:00")}
+              defaultValue={dayjs("2024-12-15T20:00")}
               disabled={selectOption === "전체가능"}
             />
-          </div>
-          <span
-            style={{
-              position: "absolute",
-              top: "70px",
-              left: "228px",
-              color: "black",
-              fontWeight: "600",
-            }}
-          >
-            ~
-          </span>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <p style={{ color: "black", fontSize: "16px", fontWeight: "500" }}>종료 시간</p>
+          </TimePickerWrapper>
+          <Wave>~</Wave>
+          <TimePickerWrapper>
+            <p>종료 시간</p>
             <TimePicker
               sx={{ width: "140px" }}
               timeSteps={{ hours: 1, minutes: 1, seconds: 5 }}
-              defaultValue={dayjs("2022-04-18T08:00")}
+              defaultValue={dayjs("2024-12-15T08:00")}
               disabled={selectOption === "전체가능"}
             />
-          </div>
+          </TimePickerWrapper>
         </TimeSettingWraaper>
-        <div>
-          <p>제한 설정</p>
-          <LimitSelect option={selectOption} onClick={() => setIsOpen(prev => !prev)}>
-            {selectOption}
-          </LimitSelect>
-          {isOpen && (
-            <LimitSelectOption ref={selectRef}>
-              <ul>
-                {LIMIT_OPTIONS.map((option, index) => (
-                  <li
-                    key={index}
-                    style={{ fontWeight: `${option === selectOption ? "700" : "400"}` }}
-                    onClick={() => handleChangeOption(option)}
-                  >
-                    {option}
-                  </li>
-                ))}
-              </ul>
-            </LimitSelectOption>
-          )}
-        </div>
+
+        <SettingText>
+          <span>제한 설정</span>
+        </SettingText>
+        <LimitSelect
+          option={selectOption}
+          data-select="limit"
+          onClick={() => setIsOpen(prev => !prev)}
+        >
+          {selectOption}
+        </LimitSelect>
+        {isOpen && (
+          <LimitSelectOption ref={selectRef}>
+            <ul>
+              {LIMIT_OPTIONS.map((option, index) => (
+                <li
+                  key={index}
+                  style={{ fontWeight: `${option === selectOption ? "700" : "400"}` }}
+                  onClick={() => handleChangeOption(option)}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </LimitSelectOption>
+        )}
       </ContentWrapper>
     </CMModal>
   );
@@ -131,6 +168,66 @@ const ContentWrapper = styled.div`
   margin-bottom: 30px;
 `;
 
+const FuncDescText = styled.p<{ isOpen: boolean }>`
+  position: relative;
+  cursor: pointer;
+  text-decoration: underline;
+  color: ${(props: { isOpen: boolean }) => (props.isOpen ? "#5D6DBEcc" : " #21262bcc")};
+  &:hover {
+    color: #5d6dbecc;
+  }
+`;
+
+const FuncDescContent = styled.div`
+  position: absolute;
+  z-index: 100;
+  width: 531px;
+  padding: 16px;
+  background-color: #21262bcc;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+
+  span {
+    font-weight: 600;
+  }
+
+  div:nth-child(4) span {
+    color: #ff4a4a;
+  }
+
+  div:nth-child(5) span {
+    color: #b66ef1;
+  }
+
+  div:nth-child(6) span {
+    color: #04b300;
+  }
+`;
+
+const InfoText = styled.p`
+  font-size: 18px;
+  color: #5e5f65;
+`;
+
+const TimePickerWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  p {
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+  }
+`;
+
+const Wave = styled.span`
+  position: absolute;
+  top: 70px;
+  left: 228px;
+  color: black;
+  font-weight: 600;
+`;
+
 const TimeSettingWraaper = styled.div`
   display: flex;
   justify-content: center;
@@ -138,14 +235,21 @@ const TimeSettingWraaper = styled.div`
   position: relative;
   border-bottom: 1px solid #c4c5cc;
   padding-bottom: 24px;
+  margin-bottom: 24px;
   width: 460px;
 `;
 
-interface LimitSelectProps {
-  option: string;
-}
+const SettingText = styled.div`
+  border-bottom: 1px solid #5d6dbe;
+  padding: 0 8px 4px 8px;
+  span {
+    color: black;
+    font-size: 14px;
+    font-weight: 600;
+  }
+`;
 
-const LimitSelect = styled.div<LimitSelectProps>`
+const LimitSelect = styled.div<{ option: string }>`
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -161,6 +265,7 @@ const LimitSelect = styled.div<LimitSelectProps>`
   border: 1px solid #ececec;
   border-radius: 8px;
   padding: 8px 16px;
+  margin-top: 10px;
 
   &::before {
     content: "";
@@ -168,7 +273,8 @@ const LimitSelect = styled.div<LimitSelectProps>`
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: ${props => OPTION_COLORS[props.option as keyof typeof OPTION_COLORS]};
+    background-color: ${(props: { option: string }) =>
+      OPTION_COLORS[props.option as keyof typeof OPTION_COLORS]};
   }
 
   &:hover {

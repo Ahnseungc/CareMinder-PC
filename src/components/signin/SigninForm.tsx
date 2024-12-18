@@ -14,7 +14,7 @@ type SigninFormProps = {
 };
 
 export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
-  const { handleSubmit } = form;
+  const { handleSubmit, watch } = form;
   const user = useRecoilValue(userState);
   const autoCompleteId = useRecoilValue(autoCompleteIdState);
 
@@ -23,10 +23,15 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const handleFormSubmit = (data: SigninFormData) => {
     const updatedData = {
       ...data,
-      accountType: userType, // 원하는 accountType 설정
+      accountType: userType,
     };
     onSubmit(updatedData);
   };
+
+  const loginId = watch("loginId");
+  const password = watch("password");
+
+  const isButtonDisabled = !loginId || !password;
 
   return (
     <Container>
@@ -36,15 +41,15 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
         buttontype="login"
         style={{ marginTop: "43.22px" }}
         onClick={handleSubmit(handleFormSubmit)}
+        disabled={isButtonDisabled}
       >
-        로그인
+        LOGIN
       </CButton>
     </Container>
   );
 }
 
 /** styles */
-
 const Container = styled("form")({
   display: "flex",
   flexDirection: "column",

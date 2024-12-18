@@ -7,8 +7,9 @@ import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
-import { Grid, Divider, styled, Stack } from "@mui/material";
-import { useBooleanState } from "@toss/react";
+import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
+import RoutePath from "@routes/routePath";
+import { SwitchCase, useBooleanState } from "@toss/react";
 import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -25,6 +26,8 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState(); // 계정 활성화 Modal
   const [openStopModal, onOpenStopModal, closeStopModal] = useBooleanState(); // 계정 활성화 중단 Modal
+
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
   /* 어드민 계정 로그인 시 에러 핸들링*/
@@ -33,9 +36,16 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
     if (error?.response) {
       // @ts-ignore
       if (error?.response.data.statusCode === "401") {
-        /** 계정 잠김 에러 핸들링 */
-        setIsModalType("waiting");
-        onOpenAccountModal();
+        // @ts-ignore
+        if (error?.response.data.message.includes("비밀번호가 틀립니다.")) {
+          // @ts-ignore
+          setErrorMessage(error?.response.data.message as string);
+          setIsModalType("valueError");
+        } else {
+          /** 계정 잠김 에러 핸들링 */
+          setIsModalType("waiting");
+          onOpenAccountModal();
+        }
         // @ts-ignore
       } else if (error?.response.data.statusCode === "404") {
         /** 존재하지 않는 계정 에러 핸들링 */
@@ -50,7 +60,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const onSubmit = signin;
 
   const onCloseAccountModal = (type: string) => {
-    if (type === "취소") return onOpenStopModal();
+    if (type === "취소") {
+      return onOpenStopModal();
+    }
 
     if (type === "중단하기") {
       closeStopModal();
@@ -70,8 +82,20 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         onClose={closeStopModal}
         onCloseAccountModal={onCloseAccountModal}
       />
-      <InfoModal open={open} onClose={closeModal} modalType={isModalType}></InfoModal>
+      <InfoModal
+        open={open}
+        onClose={closeModal}
+        modalType={isModalType}
+        message={errorMessage}
+      ></InfoModal>
       <Container item xs>
+        <SwitchCase
+          value={type}
+          caseBy={{
+            ADMIN: <Tag>어드민</Tag>,
+            WARD: <Tag>병동</Tag>,
+          }}
+        />
         <Content>
           <SigninHeader />
           <UserTypeTag type={type} />
@@ -81,9 +105,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         {footer && (
           <Footer divider={<Divider orientation="vertical" />}>
             {/* Todo */}
-            {/* <Link href="#" variant="h3">
-            ID / PW 찾기
-          </Link> */}
+            <Link href={RoutePath.FindAccount} variant="h3">
+              ID / PW 찾기
+            </Link>
             {footer}
           </Footer>
         )}
@@ -103,6 +127,23 @@ const Container = styled(Grid)({
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
+});
+
+const Tag = styled(Box)({
+  position: "absolute",
+  right: "23px",
+
+  display: "inline-flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "36px",
+  padding: "4px 24px",
+
+  backgroundColor: "#5d6dbe",
+  borderRadius: "100px",
+  color: "#ffffff",
+  fontSize: "22px",
+  fontWeight: "500",
 });
 
 const Content = styled(Stack)({
