@@ -11,6 +11,7 @@ export default function useGetStaffPatientPending(aiRole: isRoleType, myArea: bo
   const { data, isLoading, refetch } = useQuery<RequestsData[], boolean>({
     queryKey: ["useGetStaffPatientPending", aiRole, myArea],
     queryFn: () => getStaffPatientPending(aiRole, myArea),
+    refetchInterval: 5000, // 5초마다 refetch
   });
   return { data, isLoading, refetch };
 }
