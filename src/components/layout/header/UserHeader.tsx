@@ -2,16 +2,11 @@ import SearchBox from "@components/common/SearachBox/SearchBox";
 import SignOutButton from "./SignOutButton";
 import { Box, styled, Typography } from "@mui/material";
 import { ReactComponent as Logo } from "@assets/full-logo.svg";
-import { useEffect } from "react";
-import { handleAllowNotification } from "@components/fcm/notificationPermission";
 // import Alarm from "@components/alarm/alarm.tsx";
 // import { initializeApp } from "firebase/app";
 // import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 export default function UserHeader() {
-  useEffect(() => {
-    handleAllowNotification();
-  }, []);
   return (
     <>
       <Logo />
