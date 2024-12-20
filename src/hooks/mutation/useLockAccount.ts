@@ -3,6 +3,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 
 export type LockInfo = {
   userIds: number[];
+  accountType: string;
 };
 
 const lockAccount = async (data: LockInfo) => {

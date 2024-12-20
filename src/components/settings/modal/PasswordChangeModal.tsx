@@ -193,8 +193,9 @@ export default function PasswordChangeModal({
   /** 비밀번호 강제 변경 로직 */
   const onSubmit: SubmitHandler<NewPassword> = data => {
     const newPasswordRequest = {
-      userIds: selectStaffList,
+      userIds: selectStaffList.length === 0 ? [staffInfo?.staffId as number] : selectStaffList,
       newPassword: data.confirmPassword,
+      accountType: "STAFF",
     };
     props.onClose();
     changePassword(newPasswordRequest, {
@@ -213,7 +214,10 @@ export default function PasswordChangeModal({
   /** 비밀번호 변경 요청 로직 */
   const handleRequestChangePassword = () => {
     reqChangePassword(
-      { userIds: selectStaffList },
+      {
+        userIds: selectStaffList.length === 0 ? [staffInfo?.staffId as number] : selectStaffList,
+        accountType: "STAFF",
+      },
       {
         onSuccess: () => {
           setSelectStaffList([]);
@@ -290,7 +294,13 @@ export default function PasswordChangeModal({
                       : handleEditMultiSubmit(editMultionSubmit)
                     : handleSubmit(onSubmit)
                 }
-                disabled={selectAreaList.length === 0}
+                disabled={
+                  activeMenu === "비밀번호 편집"
+                    ? false
+                    : selectAreaList.length === 0
+                      ? true
+                      : false
+                }
               >
                 변경하기
               </ModalActionButton>

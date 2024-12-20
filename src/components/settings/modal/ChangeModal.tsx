@@ -44,6 +44,7 @@ export default function ChangeModal({
     const newPasswordRequest = {
       userIds: [userStatus?.id as number],
       newPassword: data.confirmPassword,
+      accountType: "STAFF",
     };
     changePassword(newPasswordRequest, {
       onSuccess: () => {

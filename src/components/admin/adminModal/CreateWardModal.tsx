@@ -1,12 +1,17 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
-import { Stack } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import NewWardInputField from "./NewWardInputField";
 import { NewWard, NewWardField, NewWardRequest } from "@models/ward";
 import useCreateWard from "@hooks/mutation/useCreateWard";
 import InfoModal from "@components/settings/modal/InfoModal";
-import { useBooleanState } from "@toss/react";
+import { SwitchCase, useBooleanState } from "@toss/react";
+import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { doubleCheckState, wardNameCheckState } from "@libraries/recoil/idDoubleCheck";
+
+type Step = "병동 계정 생성 약관 동의서" | "병동 계정 생성";
 
 const defaultValues: NewWard = {
   wardName: "",
@@ -19,14 +24,21 @@ const defaultValues: NewWard = {
 };
 
 export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
+  const [step, setStep] = useState<Step>("병동 계정 생성 약관 동의서");
+  const [agreementChecked, setChecked] = useState<boolean>(false);
   const [open, openModal, closeModal] = useBooleanState();
-  const { mutate, isPending } = useCreateWard();
+  const [isWardNameChecked, setIsWardNameChecked] = useRecoilState(wardNameCheckState);
+  const [isLoginIdChecked, setIsLoginIdChecked] = useRecoilState(doubleCheckState);
 
   const form = useForm<NewWard>({
     defaultValues,
     mode: "onChange",
   });
-  const { handleSubmit } = form;
+  const { handleSubmit, reset } = form;
+
+  const toggle = () => setChecked(prev => !prev);
+
+  const { mutate } = useCreateWard();
 
   const onSubmit: SubmitHandler<NewWardRequest> = data => {
     const newWardRequesets = {
@@ -43,6 +55,8 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
         toast.success("병동 계정 생성이 완료되었습니다.");
         onClose();
         openModal();
+        setIsWardNameChecked(false);
+        setIsLoginIdChecked(false);
       },
       onError: error => {
         toast.error(error.message);
@@ -54,25 +68,122 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
     <>
       <InfoModal open={open} onClose={closeModal} modalType={"createSuccess"}></InfoModal>
       <CMModal
-        onClose={onClose}
-        title={"병동 계정 생성"}
+        onClose={() => {
+          onClose();
+          reset();
+          setChecked(false);
+          setStep("병동 계정 생성 약관 동의서");
+        }}
+        maxWidth={step === "병동 계정 생성 약관 동의서" ? "md" : "xs"}
+        sx={{
+          "height": `${step === "병동 계정 생성" ? "95%" : "100%"}`,
+          "margin": "auto",
+          "& .MuiDialog-paper": {
+            overflowY: "hidden",
+          },
+        }}
+        title={step}
         footer={
           <>
-            <ModalActionButton color="secondary" onClick={onClose}>
-              취소
-            </ModalActionButton>
-            <ModalActionButton disabled={isPending} onClick={handleSubmit(onSubmit)}>
-              다음
-            </ModalActionButton>
+            <SwitchCase
+              value={step}
+              caseBy={{
+                ["병동 계정 생성 약관 동의서"]: (
+                  <>
+                    <ModalActionButton
+                      color="secondary"
+                      onClick={() => {
+                        onClose();
+                        setChecked(false);
+                      }}
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "#5DB8BE3c !important",
+                        },
+                      }}
+                    >
+                      취소
+                    </ModalActionButton>
+                    <ModalActionButton
+                      color="info"
+                      disabled={!agreementChecked}
+                      onClick={() => setStep("병동 계정 생성")}
+                    >
+                      동의합니다
+                    </ModalActionButton>
+                  </>
+                ),
+                ["병동 계정 생성"]: (
+                  <>
+                    <ModalActionButton
+                      color="secondary"
+                      onClick={() => {
+                        onClose();
+                        reset();
+                        setChecked(false);
+                        setStep("병동 계정 생성 약관 동의서");
+                      }}
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "#5DB8BE3c !important",
+                        },
+                      }}
+                    >
+                      취소
+                    </ModalActionButton>
+                    <ModalActionButton
+                      color="info"
+                      onClick={handleSubmit(onSubmit)}
+                      disabled={!isWardNameChecked || !isLoginIdChecked}
+                    >
+                      완료
+                    </ModalActionButton>
+                  </>
+                ),
+              }}
+            />
           </>
         }
         {...props}
       >
-        <Stack gap={"24px"}>
-          {fields.map(field => (
-            <NewWardInputField key={field.name} field={field} form={form} />
-          ))}
-        </Stack>
+        <SwitchCase
+          value={step}
+          caseBy={{
+            ["병동 계정 생성 약관 동의서"]: (
+              <>
+                <TOSContainer sx={{ width: "calc(100% - 24px)" }}>
+                  <TOSContentField>
+                    <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                      약관 동의 조항 제목이 노출됩니다.
+                    </Typography>
+                  </TOSContentField>
+                </TOSContainer>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={agreementChecked || false}
+                      onChange={toggle}
+                      sx={{
+                        "color": "#5DB8BE",
+                        "&.Mui-checked": {
+                          color: "#5DB8BE",
+                        },
+                      }}
+                    />
+                  }
+                  label="필수 약관에 동의합니다."
+                />
+              </>
+            ),
+            ["병동 계정 생성"]: (
+              <Stack gap={"24px"}>
+                {fields.map(field => (
+                  <NewWardInputField key={field.name} field={field} form={form} />
+                ))}
+              </Stack>
+            ),
+          }}
+        />
       </CMModal>
     </>
   );
@@ -95,3 +206,32 @@ const fields: NewWardField[] = [
 ];
 
 /** styles */
+
+const TOSContainer = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.success.main,
+  borderRadius: "24px",
+
+  marginBottom: "30px",
+  padding: "10px 20px",
+}));
+
+const TOSContentField = styled(Box)(({ theme }) => ({
+  "height": "488px",
+  "overflowY": "auto",
+  "paddingRight": "20px",
+
+  "&::-webkit-scrollbar": {
+    width: "6px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: theme.palette.background.default,
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: "#5DB8BE",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#5DB8BEcc",
+  },
+}));
