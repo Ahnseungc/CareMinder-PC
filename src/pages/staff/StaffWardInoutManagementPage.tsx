@@ -10,29 +10,30 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   //@ts-ignore
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
-    setCurrentPage(page);
-  };
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
+  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page - 1);
+  };
   //@ts-ignore
-  const { data: getTablet, isLoading } = useGetWardTabletRequests({
+  const { data: getTablet, refetch } = useGetWardTabletRequests({
     token: token,
     patientName: searchValue,
     myArea: isMyArea,
+    page: currentPage,
   });
 
   //@ts-ignore
-  const { mutate, isPending } = useDischargePatients();
+  const { mutate } = useDischargePatients();
   const [selected, setSelected] = useState<
     Array<{
       name: string;
@@ -42,6 +43,7 @@ const StaffWardInoutManagementPage = () => {
 
   const onChangeMyArea = () => {
     setIsMyArea(prev => !prev);
+    setCurrentPage(0);
   };
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
@@ -73,6 +75,7 @@ const StaffWardInoutManagementPage = () => {
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setSearchValue(value);
+    setCurrentPage(0);
   };
 
   const onDischarge: SubmitHandler<WardTabletType> = () => {
@@ -81,6 +84,8 @@ const StaffWardInoutManagementPage = () => {
       {
         onSuccess: () => {
           toast.success("퇴원 처리가 완료 되었습니다.");
+          refetch();
+          setSelected([]);
         },
         onError: error => {
           toast.error(error.message);
@@ -122,11 +127,18 @@ const StaffWardInoutManagementPage = () => {
         </AdminInoutSubTitleContainer>
       </div>
       <TableLayout>
-        <AdminTable getTablet={getTablet} onChangeSelected={onChangeSelected} selected={selected} />
+        <AdminTable
+          getTablet={getTablet?.data}
+          onChangeSelected={onChangeSelected}
+          selected={selected}
+        />
       </TableLayout>
       <FooterLayout>
         <div>
-          <PaginationComponent totalPage={5} onChange={(e, page) => handleChangePage(e, page)} />
+          <PaginationComponent
+            totalPage={getTablet?.totalPages}
+            onChange={(e, page) => handleChangePage(e, page)}
+          />
         </div>
       </FooterLayout>
     </Container>
