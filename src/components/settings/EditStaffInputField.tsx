@@ -44,7 +44,7 @@ export default function EditStaffInputField({
     if (!initialStaffInfo) {
       getStaffDetail(selectStaffList[0][0], {
         onSuccess: data => {
-          console.log(data);
+          // console.log(data);
           setStaffInfo({
             staffId: data.staffId,
             name: data.name,
@@ -72,7 +72,7 @@ export default function EditStaffInputField({
 
   useEffect(() => {
     if (staffInfo) {
-      console.log(staffInfo);
+      // console.log(staffInfo);
       setValue("name", staffInfo.name || "");
       setValue("id", staffInfo.loginId || "");
       setValue("phoneNumber", staffInfo.phoneNumber || "");

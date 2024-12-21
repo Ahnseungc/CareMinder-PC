@@ -1,6 +1,7 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 export type Areas = {
   areaId: number;
@@ -37,6 +38,9 @@ export type GetStaffListProps = {
 
 export const getStaffList = async ({ page, size }: GetStaffListProps) => {
   const res = await axiosInstance.get("/wards/staff-list", {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
+    },
     params: {
       page: page,
       size: size,

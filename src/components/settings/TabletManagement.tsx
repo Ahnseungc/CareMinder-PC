@@ -3,8 +3,9 @@ import { Typography } from "@mui/material";
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
+import { ReactComponent as Alert } from "@/assets/Info_Mode.svg";
 import TabletManagementTable from "@components/settings/TabletManagementTable";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 import TabletSleepModeModal from "./modal/TabletSleepModeModal";
@@ -29,6 +30,34 @@ export const TabletManagement = () => {
   const [isClear, setIsClear] = useState<boolean>(false);
 
   const [isModalOpen, openModalOpen, closeModalOpen] = useBooleanState();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
+        setIsSetting(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (editContainerRef.current) {
+        const rect = editContainerRef.current.getBoundingClientRect();
+        const initialPosition = editContainerRef.current.offsetTop;
+        setIsSticky(rect.top <= 70 && window.scrollY > initialPosition);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const handleClear = () => {
     setIsEditing([]);
@@ -84,6 +113,18 @@ export const TabletManagement = () => {
             <div>
               <Title variant="h1">태블릿 병상 관리</Title>
             </div>
+            <ModeInfoText>
+              현재 <span>전체가능</span> 모드입니다. 4시간 후 강제종료 모드로 전환됩니다.
+            </ModeInfoText>
+            <ModeInfoWrapper>
+              <ModeInfoHideBox>
+                <Alert />
+              </ModeInfoHideBox>
+              <ModeInfoHideContent>
+                현재 <span>&nbsp;전체가능&nbsp;</span> 모드입니다. 4시간 후 강제종료 모드로
+                전환됩니다.
+              </ModeInfoHideContent>
+            </ModeInfoWrapper>
             <StaffButtonContainer>
               <div ref={settingRef} style={{ position: "relative" }}>
                 <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
@@ -94,7 +135,13 @@ export const TabletManagement = () => {
                 </SettingButton>
                 {isSetting && (
                   <SettingDropdown>
-                    <div style={{ padding: "10px", textAlign: "center" }} onClick={openModalOpen}>
+                    <div
+                      style={{ padding: "10px", textAlign: "center" }}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openModalOpen();
+                      }}
+                    >
                       수면 모드 설정하기
                     </div>
                   </SettingDropdown>
@@ -148,32 +195,104 @@ const Title = styled(Typography)(({ theme }) => ({
   letterSpacing: "-3%",
 }));
 
-const StaffButtonContainer = styled(Box)({
-  position: "absolute",
-  right: "80px",
-  display: "flex",
-  gap: "20px",
-  width: "146px",
-  zIndex: 10,
-});
+const ModeInfoText = styled(Typography)`
+  position: absolute;
+  right: 240px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #7c7c7c;
+
+  & span {
+    color: #04b300;
+  }
+
+  @media (max-width: 1500px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 1300px) {
+    display: none;
+  }
+`;
+
+const ModeInfoWrapper = styled(Box)`
+  position: relative;
+`;
+
+const ModeInfoHideBox = styled(Box)`
+  display: flex;
+  align-items: center;
+  visibility: hidden;
+  position: absolute;
+  top: -10px;
+  right: -230px;
+  & :hover {
+    cursor: pointer;
+  }
+  @media (max-width: 1300px) {
+    visibility: visible;
+  }
+
+  &:hover + div {
+    display: flex;
+  }
+`;
+
+const ModeInfoHideContent = styled(Box)`
+  position: absolute;
+  top: 15px;
+  right: -300px;
+  z-index: 9999;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  width: 320px;
+  padding: 10px;
+
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: #7c7c7c;
+  & span {
+    color: #04b300;
+  }
+`;
+
+const StaffButtonContainer = styled(Box)`
+  position: absolute;
+  right: 80px;
+  display: flex;
+  gap: 20px;
+  width: 146px;
+  z-index: 10;
+`;
 
 const SettingButton = styled(Box, {
   shouldForwardProp: prop => prop !== "isClick",
 })<SettingButtonProps>(({ isClick }) => ({
-  position: "relative",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  cursor: "pointer",
-  width: "148px",
-  height: "36px",
-  border: "1px solid #5D6DBE",
-  borderRadius: isClick ? "5px 5px 0 0" : "5px",
-  color: "#5D6DBE",
-  fontWeight: 700,
-  fontSize: "16px",
-  backgroundColor: "#FFFFFF",
-  zIndex: 21,
+  "position": "relative",
+  "display": "flex",
+  "justifyContent": "center",
+  "alignItems": "center",
+  "cursor": "pointer",
+  "width": "148px",
+  "height": "36px",
+  "border": "1px solid #5D6DBE",
+  "borderRadius": isClick ? "5px 5px 0 0" : "5px",
+  "color": "#5D6DBE",
+  "fontWeight": 700,
+  "fontSize": "16px",
+  "backgroundColor": "#FFFFFF",
+  "zIndex": 21,
+
+  "&:hover": {
+    backgroundColor: "#F5F6FF",
+  },
 }));
 
 const SettingDropdown = styled(Box)({

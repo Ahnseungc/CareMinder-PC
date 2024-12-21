@@ -306,11 +306,20 @@ export const StaffAccount = () => {
                   <SettingDropdown>
                     <div
                       style={{ padding: "10px", textAlign: "center" }}
-                      onClick={openAreaManageModal}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openAreaManageModal();
+                      }}
                     >
                       구역 관리하기
                     </div>
-                    <div style={{ padding: "10px", textAlign: "center" }} onClick={openTOSModal}>
+                    <div
+                      style={{ padding: "10px", textAlign: "center" }}
+                      onClick={() => {
+                        setIsSetting(false);
+                        openTOSModal();
+                      }}
+                    >
                       스태프 계정 생성하기
                     </div>
                   </SettingDropdown>
@@ -385,20 +394,23 @@ const EditMenu = styled(Typography)({
 const SettingButton = styled(Box, {
   shouldForwardProp: prop => prop !== "isClick",
 })<SettingButtonProps>(({ isClick }) => ({
-  position: "relative",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  cursor: "pointer",
-  width: "148px",
-  height: "36px",
-  border: "1px solid #5D6DBE",
-  borderRadius: isClick ? "5px 5px 0 0" : "5px",
-  color: "#5D6DBE",
-  fontWeight: 700,
-  fontSize: "16px",
-  backgroundColor: "#FFFFFF",
-  zIndex: 21,
+  "position": "relative",
+  "display": "flex",
+  "justifyContent": "center",
+  "alignItems": "center",
+  "cursor": "pointer",
+  "width": "148px",
+  "height": "36px",
+  "border": "1px solid #5D6DBE",
+  "borderRadius": isClick ? "5px 5px 0 0" : "5px",
+  "color": "#5D6DBE",
+  "fontWeight": 700,
+  "fontSize": "16px",
+  "backgroundColor": "#FFFFFF",
+  "zIndex": 21,
+  "&:hover": {
+    backgroundColor: "#F5F6FF",
+  },
 }));
 
 const SettingDropdown = styled(Box)({

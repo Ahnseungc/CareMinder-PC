@@ -116,141 +116,143 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
       {wardTabletList?.data.length === 0 ? (
         <></>
       ) : (
-        <StTable>
-          <thead>
-            <tr>
-              {columns.map((column, index) => {
-                if (column.field === "check") {
-                  return (
-                    <th key={index}>
-                      <Checkbox
-                        {...label}
-                        sx={{
-                          "&.MuiCheckbox-root": {
-                            color: "#ECECEC",
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 28,
-                          },
-                          "&.Mui-checked": {
-                            "& .MuiSvgIcon-root": {
-                              fill: "#B4C0FF",
+        <TableContainer>
+          <StTable>
+            <thead>
+              <tr>
+                {columns.map((column, index) => {
+                  if (column.field === "check") {
+                    return (
+                      <th key={index}>
+                        <Checkbox
+                          {...label}
+                          sx={{
+                            "&.MuiCheckbox-root": {
+                              color: "#ECECEC",
                             },
-                          },
-                        }}
-                        checked={selectIndex.length === wardTabletList?.data.length}
-                        indeterminate={selectedItems > 0 && selectedItems < totalItems}
-                        onClick={handleSelectAll}
-                      />
-                    </th>
-                  );
-                }
-                return <th key={index}>{column.headerName}</th>;
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 28,
+                            },
+                            "&.Mui-checked": {
+                              "& .MuiSvgIcon-root": {
+                                fill: "#B4C0FF",
+                              },
+                            },
+                          }}
+                          checked={selectIndex.length === wardTabletList?.data.length}
+                          indeterminate={selectedItems > 0 && selectedItems < totalItems}
+                          onClick={handleSelectAll}
+                        />
+                      </th>
+                    );
+                  }
+                  return <th key={index}>{column.headerName}</th>;
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {wardTabletList?.data.map((row, index) => {
+                return (
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
+                    }}
+                  >
+                    <td>
+                      <ShortComBoxLayout>
+                        <Checkbox
+                          {...label}
+                          sx={{
+                            "&.MuiCheckbox-root": {
+                              color: "#ECECEC",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 28,
+                            },
+                            "&.Mui-checked": {
+                              "& .MuiSvgIcon-root": {
+                                fill: "#B4C0FF",
+                              },
+                            },
+                          }}
+                          checked={selectIndex.includes(index)}
+                          onClick={() => {
+                            setSelectIndex(prevList => {
+                              if (prevList.includes(index)) {
+                                return prevList.filter(item => item !== index);
+                              } else {
+                                return [...prevList, index];
+                              }
+                            });
+                          }}
+                        />
+                      </ShortComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CComboBox
+                          placeholder={"구역"}
+                          options={area}
+                          value={row.areaName}
+                          onChange={e => handleChangeArea(e, row.tabletId)}
+                          // allowCustomInput={true}
+                          // onCustomInputAdd={newValue => {
+                          //   setOptions([...options, newValue]);
+                          // }}
+                        />
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"태블릿이름"}
+                          onChange={() => null}
+                          value={row.tabletName}
+                          disabled={false}
+                          id={""}
+                        ></CInput>
+                        <TabletButtonLayout>
+                          <Alert />
+                        </TabletButtonLayout>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <Typography>{row.serialNumber}</Typography>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"환자 이름"}
+                          onChange={() => null}
+                          value={row.patientName}
+                          disabled={false}
+                          id={""}
+                        ></CInput>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <Typography>
+                          {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
+                        </Typography>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        <Leave />
+                      </ShortComBoxLayout>
+                    </td>
+                  </tr>
+                );
               })}
-            </tr>
-          </thead>
-          <tbody>
-            {wardTabletList?.data.map((row, index) => {
-              return (
-                <tr
-                  key={index}
-                  style={{
-                    backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                  }}
-                >
-                  <td>
-                    <ShortComBoxLayout>
-                      <Checkbox
-                        {...label}
-                        sx={{
-                          "&.MuiCheckbox-root": {
-                            color: "#ECECEC",
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 28,
-                          },
-                          "&.Mui-checked": {
-                            "& .MuiSvgIcon-root": {
-                              fill: "#B4C0FF",
-                            },
-                          },
-                        }}
-                        checked={selectIndex.includes(index)}
-                        onClick={() => {
-                          setSelectIndex(prevList => {
-                            if (prevList.includes(index)) {
-                              return prevList.filter(item => item !== index);
-                            } else {
-                              return [...prevList, index];
-                            }
-                          });
-                        }}
-                      />
-                    </ShortComBoxLayout>
-                  </td>
-                  <td>
-                    <LongComBoxLayout>
-                      <CComboBox
-                        placeholder={"구역"}
-                        options={area}
-                        value={row.areaName}
-                        onChange={e => handleChangeArea(e, row.tabletId)}
-                        // allowCustomInput={true}
-                        // onCustomInputAdd={newValue => {
-                        //   setOptions([...options, newValue]);
-                        // }}
-                      />
-                    </LongComBoxLayout>
-                  </td>
-                  <td>
-                    <LongComBoxLayout>
-                      <CInput
-                        variant={"outlined"}
-                        placeholder={"태블릿이름"}
-                        onChange={() => null}
-                        value={row.tabletName}
-                        disabled={false}
-                        id={""}
-                      ></CInput>
-                      <TabletButtonLayout>
-                        <Alert />
-                      </TabletButtonLayout>
-                    </LongComBoxLayout>
-                  </td>
-                  <td>
-                    <LongComBoxLayout>
-                      <Typography>{row.serialNumber}</Typography>
-                    </LongComBoxLayout>
-                  </td>
-                  <td>
-                    <LongComBoxLayout>
-                      <CInput
-                        variant={"outlined"}
-                        placeholder={"환자 이름"}
-                        onChange={() => null}
-                        value={row.patientName}
-                        disabled={false}
-                        id={""}
-                      ></CInput>
-                    </LongComBoxLayout>
-                  </td>
-                  <td>
-                    <LongComBoxLayout>
-                      <Typography>
-                        {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
-                      </Typography>
-                    </LongComBoxLayout>
-                  </td>
-                  <td>
-                    <ShortComBoxLayout>
-                      <Leave />
-                    </ShortComBoxLayout>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </StTable>
+            </tbody>
+          </StTable>
+        </TableContainer>
       )}
       <PaginationContainer>
         <div>
@@ -266,10 +268,16 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
 
 export default TabletManagementTable;
 
-const StTable = styled.table`
+const TableContainer = styled.div`
   width: 100%;
-  height: 100%;
+  overflow-x: auto;
+`;
+
+const StTable = styled.table`
+  min-width: 100%;
+  width: max-content;
   border-collapse: collapse;
+  margin-bottom: 20px;
   & thead {
     width: 100%;
     height: 20%;

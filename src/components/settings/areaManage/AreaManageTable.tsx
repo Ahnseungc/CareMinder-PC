@@ -307,14 +307,15 @@ const MemoName = styled.span`
   text-align: start;
 `;
 
-const StyledTextField = styled(TextField)<{ backgroundColor?: string }>`
+const StyledTextField = styled(TextField)<{ backgroundColor: string }>`
   width: 100%;
   padding: 0 12px;
 
   .MuiInputBase-root {
     height: 20px;
     border-radius: 1px;
-    background-color: ${({ backgroundColor }) => backgroundColor || "transparent"};
+    background-color: ${(props: { backgroundColor: string }) =>
+      props.backgroundColor || "transparent"};
   }
 
   .MuiInputBase-input {
