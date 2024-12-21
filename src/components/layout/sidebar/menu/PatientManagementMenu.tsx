@@ -15,14 +15,14 @@ export default function PatientManagementMenu() {
         WARD: (
           <MenuLayout
             routePath={RoutePath.StaffWardInOut}
-            pageName={"입퇴원 관리"}
+            pageName={"환자 관리"}
             icon={PatientManagement}
           />
         ),
         STAFF: (
           <MenuLayout
             routePath={RoutePath.StaffWardInOut}
-            pageName={"입퇴원 관리"}
+            pageName={"환자 관리"}
             icon={PatientManagement}
           />
         ),

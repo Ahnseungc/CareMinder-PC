@@ -97,17 +97,13 @@ const StaffWardInoutManagementPage = () => {
   return (
     <Container>
       <div>
-        <Title variant="h1">입퇴원 관리</Title>
-        <AdminInoutSubTitleContainer>
+        <Title variant="h1">환자 관리</Title>
+        {/* <AdminInoutSubTitleContainer>
           <AdminInoutSubTitleLeftContainer>
             <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
             <div>
               <CSwitch onChange={onChangeMyArea} />
             </div>
-            {/* <SectionArrayLayout>
-              <Arraytitle variant="h2">구역 정렬</Arraytitle>
-              <SvgIcon component={ArrayIcon} inheritViewBox />
-            </SectionArrayLayout> */}
           </AdminInoutSubTitleLeftContainer>
           <AdminInoutSubTitleRightContainer>
             <SearchLayout>
@@ -124,7 +120,7 @@ const StaffWardInoutManagementPage = () => {
               </CButton>
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
-        </AdminInoutSubTitleContainer>
+        </AdminInoutSubTitleContainer> */}
       </div>
       <TableLayout>
         <AdminTable
@@ -134,12 +130,12 @@ const StaffWardInoutManagementPage = () => {
         />
       </TableLayout>
       <FooterLayout>
-        <div>
+        {/* <div>
           <PaginationComponent
             totalPage={getTablet?.totalPages}
             onChange={(e, page) => handleChangePage(e, page)}
           />
-        </div>
+        </div> */}
       </FooterLayout>
     </Container>
   );

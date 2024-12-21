@@ -6,6 +6,7 @@ export type WardTabletType = {
   serialNumber: string;
   patientId: number;
   patientName: string;
+  createdAt: string;
 };
 
 export type reqWardParamsType = {

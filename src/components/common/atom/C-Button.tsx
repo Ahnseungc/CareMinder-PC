@@ -9,7 +9,8 @@ export type CustomButtonProps = {
     | "login"
     | "primaryWhite"
     | "primaryBlack"
-    | "primarySpaureLong";
+    | "primarySpaureLong"
+    | "impactRed";
 } & ButtonProps;
 
 const CButton: FC<CustomButtonProps> = ({ children, buttontype, ...props }) => {
@@ -84,6 +85,27 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) =
       backgroundColor: theme.palette.action.disabled,
       color: theme.palette.primary.contrastText,
       border: "none",
+    },
+  }),
+  ...(buttontype === "impactRed" && {
+    "backgroundColor": "#FF5353",
+    "color": theme.palette.primary.contrastText,
+    "borderRadius": "100px",
+    "fontSize": "14px",
+    "lineHeight": "24px",
+    "fontWeight": "500",
+    "width": "141px",
+    "height": "32px",
+    "&:disabled": {
+      backgroundImage: "none",
+      backgroundColor: theme.palette.action.disabled,
+      color: theme.palette.primary.contrastText,
+      border: "none",
+    },
+    "&:hover": {
+      backgroundColor: "#fffff",
+      border: "1px solid #FF5353",
+      color: "#FF5353",
     },
   }),
 }));
