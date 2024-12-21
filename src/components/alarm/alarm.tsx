@@ -1,8 +1,7 @@
-import { SEVER_URL } from "@constants/baseUrl";
-import { EventSourcePolyfill } from "event-source-polyfill";
-import Cookies from "js-cookie";
 import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "@components/fcm/initFirebase";
 
 type MessageType = {
   content: {
@@ -15,12 +14,9 @@ type MessageType = {
   notificationId: string;
   type: string;
 };
-
 export default function Alarm() {
   const [message, setMessage] = useState<MessageType | undefined>(undefined);
-
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
-  const userType = JSON.parse(localStorage.getItem("recoil-persist") as string).userState.type;
 
   const NURSE = {
     dark: "#04B300",
@@ -28,43 +24,23 @@ export default function Alarm() {
   };
 
   useEffect(() => {
-    const EventSource = EventSourcePolyfill;
-
-    const eventSource = new EventSource(`${SEVER_URL}/sse/open`, {
-      headers: {
-        Authorization: `Bearer ${userType === "WARD" ? Cookies.get("accessTokenWard") : Cookies.get("accessTokenStaff")}`,
-      },
-      withCredentials: true,
-      heartbeatTimeout: 86400000, //연결시간 24시간
-    });
-
-    eventSource.onopen = () => {};
-
-    eventSource.addEventListener("notification", async (e: any) => {
-      const res = await e.data;
-      const parsedData = JSON.parse(res);
-      setMessage(parsedData);
+    onMessage(messaging, payload => {
+      setMessage(JSON.parse(payload!.data!.data));
       setIsOpen(true);
-      console.log(res);
-
-      const slideOutTimer = setTimeout(() => {
-        setIsOpen(false);
-
-        const clearNoticeTimer = setTimeout(() => {
-          setMessage(undefined);
-        }, 500);
-
-        return () => clearTimeout(clearNoticeTimer);
-      }, 5000);
-
-      return () => clearTimeout(slideOutTimer);
     });
 
-    eventSource.onerror = function () {
-      console.log("에러");
-      eventSource.close();
-    };
-  }, [userType]);
+    const slideOutTimer = setTimeout(() => {
+      setIsOpen(false);
+
+      const clearNoticeTimer = setTimeout(() => {
+        setMessage(undefined);
+      }, 500);
+
+      return () => clearTimeout(clearNoticeTimer);
+    }, 5000);
+
+    return () => clearTimeout(slideOutTimer);
+  }, []);
 
   if (isOpen === undefined) return <></>;
 
@@ -96,6 +72,7 @@ export default function Alarm() {
   return <></>;
 }
 const Wrapper = styled("div")<{ isOpen: boolean }>`
+  cursor: pointer;
   position: absolute;
   right: 0;
   top: 0;

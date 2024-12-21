@@ -5,9 +5,8 @@ import { registerServiceWorker } from "./serviceWorker";
 
 export async function handleAllowNotification() {
   // registerServiceWorker();
+  const registration = await registerServiceWorker();
   try {
-    const registration = await registerServiceWorker();
-
     if (!registration) {
       throw new Error("서비스 워커 등록에 실패했습니다.");
     }
@@ -20,7 +19,6 @@ export async function handleAllowNotification() {
           "BDOPhFvQMqh6P-qImnWLcs_eCrPP04JOZ3MYUS1aPhdrsxq1HrliVRIaIcC7mMr2Xcw7zYQyVvEtuTD8D3ux1pU",
         serviceWorkerRegistration: registration, // 서비스 워커 등록 전달
       });
-      console.log("token", token);
       if (token) {
         await axiosInstance.post(
           `/fcm/save`,
