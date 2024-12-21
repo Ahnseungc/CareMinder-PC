@@ -46,7 +46,7 @@ export default function Alarm() {
 
   if (message?.content.message)
     return (
-      <Wrapper isOpen={isOpen!}>
+      <Wrapper isOpen={isOpen!} onClick={() => setIsOpen(false)}>
         <Title>{message?.content?.requestContent}</Title>
         <Place>
           <Ball color={NURSE.dark}></Ball>
@@ -58,7 +58,7 @@ export default function Alarm() {
 
   if (!message?.content.message)
     return (
-      <Wrapper isOpen={isOpen!}>
+      <Wrapper isOpen={isOpen!} onClick={() => setIsOpen(false)}>
         <Title>
           <Place>
             <Ball color={NURSE.dark}></Ball>

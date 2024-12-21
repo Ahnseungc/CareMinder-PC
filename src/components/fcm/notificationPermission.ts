@@ -4,9 +4,9 @@ import { messaging } from "./initFirebase";
 import { registerServiceWorker } from "./serviceWorker";
 
 export async function handleAllowNotification() {
-  // registerServiceWorker();
-  const registration = await registerServiceWorker();
   try {
+    const registration = await registerServiceWorker();
+
     if (!registration) {
       throw new Error("서비스 워커 등록에 실패했습니다.");
     }
