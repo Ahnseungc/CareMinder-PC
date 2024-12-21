@@ -7,6 +7,7 @@ import { UserType } from "@models/user";
 import { useNavigate } from "react-router-dom";
 import { SEVER_URL } from "@constants/baseUrl";
 import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
+import { logoutServiceWorker } from "@components/fcm/serviceWorker";
 
 const signOut = async (type: UserType) => {
   let token;
@@ -68,6 +69,7 @@ export default function useSignOut(type: UserType) {
         navigate("/");
       } else {
         setUserState(null);
+        logoutServiceWorker();
         navigate("/sign-in");
       }
       setAutoCompleteId("");
