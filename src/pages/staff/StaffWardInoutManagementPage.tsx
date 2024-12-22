@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, styled } from "@mui/material";
+import { Box, Button, Stack, Typography, styled } from "@mui/material";
 // import {SvgIcon } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CSwitch from "@components/common/atom/C-Switch";
@@ -147,7 +147,9 @@ const StaffWardInoutManagementPage = () => {
             <SelectedActionBox>
               <div style={{ display: "flex", alignItems: "center", paddingLeft: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                  <StaffCancelIcon />
+                  <Button onClick={() => setSelected([])}>
+                    <StaffCancelIcon />
+                  </Button>
                   <Text>{selected.length}항목 선택됨</Text>
                 </div>
                 <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
