@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { PaginationItem, styled } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 
@@ -11,7 +11,7 @@ function PaginationComponent({ totalPage, onChange }: PaginationProps) {
     <Wrapper>
       <Stack spacing={2}>
         <Pagination
-          color="primary"
+          color={"secondary"}
           showFirstButton
           showLastButton
           count={totalPage}
@@ -19,6 +19,25 @@ function PaginationComponent({ totalPage, onChange }: PaginationProps) {
           shape="rounded"
           defaultValue={1}
           onChange={onChange}
+          renderItem={item => (
+            <PaginationItem
+              {...item}
+              sx={{
+                "fontSize": "16px",
+                "fontWeight": 500,
+                "color": "black",
+                "&.Mui-selected": {
+                  backgroundColor: "#30B4FF",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: "700",
+                },
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
+            />
+          )}
         />
       </Stack>
     </Wrapper>

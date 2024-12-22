@@ -40,17 +40,23 @@ interface AdminTableProps {
     name: string;
     id: number;
   }>;
+  onCHangeSelectAll: any;
 }
 
-const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected }) => {
-  console.log(getTablet);
+const AdminTable: FC<AdminTableProps> = ({
+  onCHangeSelectAll,
+  getTablet,
+  selected,
+  onChangeSelected,
+}) => {
   return (
     <StTable>
       <thead>
         <InoutTableHedaerTr>
           <th style={{ display: "flex" }}>
             <Checkbox
-              checked={true}
+              checked={selected?.length === getTablet?.length}
+              onChange={onCHangeSelectAll}
               icon={
                 <div
                   style={{
@@ -111,7 +117,8 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
             <InoutTableBodyTr key={tablet.serialNumber || tablet.tabletId}>
               <InoutTableBodyTd width="28px">
                 <Checkbox
-                  checked={true}
+                  onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
+                  checked={selected.some(item => item.id === tablet.tabletId)}
                   icon={
                     <div
                       style={{
@@ -159,11 +166,11 @@ const AdminTable: FC<AdminTableProps> = ({ getTablet, selected, onChangeSelected
                 <div style={{ width: "100%", height: "36px" }}>
                   <label htmlFor="section"></label>
                   <CInput
-                    placeholder={"구역"}
+                    placeholder={"환자 이름"}
                     value={tablet.patientName}
                     onChange={() => null}
                     variant={"outlined"}
-                    disabled={false}
+                    disabled={true}
                     id={"section"}
                   />
                 </div>
@@ -226,7 +233,7 @@ const StTable = styled.table`
   }
 `;
 
-const ComBoxLayout = styled.div<{ width: string }>`
+export const ComBoxLayout = styled.div<{ width: string }>`
   width: ${props => props.width || "100%"};
   height: 36px;
   margin: 0 auto;
@@ -261,7 +268,6 @@ const InoutTableBodyTr = styled.tr`
   display: flex;
   align-items: center;
   gap: 136.67px;
-
   border-bottom: 1px solid #c4c5cc;
   padding-left: 24px;
   padding-top: 16px;

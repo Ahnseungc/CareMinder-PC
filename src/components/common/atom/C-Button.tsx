@@ -24,7 +24,6 @@ const CButton: FC<CustomButtonProps> = ({ children, buttontype, ...props }) => {
 export default CButton;
 
 /** styled */
-
 const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) => ({
   ...(buttontype === "primary" && {
     backgroundColor: theme.palette.primary.main,

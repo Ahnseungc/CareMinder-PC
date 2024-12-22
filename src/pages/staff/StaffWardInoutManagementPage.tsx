@@ -6,6 +6,7 @@ import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
 // import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
+import { motion, AnimatePresence } from "framer-motion";
 import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
@@ -13,6 +14,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { ComBoxLayout } from "@components/admin/admininout/adminTable";
+import { CComboBox } from "@components/common/atom/C-ComboBox";
+import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -44,6 +48,16 @@ const StaffWardInoutManagementPage = () => {
   const onChangeMyArea = () => {
     setIsMyArea(prev => !prev);
     setCurrentPage(0);
+  };
+
+  const onChangeSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setSelected(
+        getTablet?.data.map(tablet => ({ name: tablet.patientName, id: tablet.tabletId })),
+      );
+    } else {
+      setSelected([]);
+    }
   };
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
@@ -96,9 +110,8 @@ const StaffWardInoutManagementPage = () => {
 
   return (
     <Container>
-      <div>
-        <Title variant="h1">환자 관리</Title>
-        {/* <AdminInoutSubTitleContainer>
+      <Title variant="h1">환자 관리</Title>
+      {/* <AdminInoutSubTitleContainer>
           <AdminInoutSubTitleLeftContainer>
             <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
             <div>
@@ -121,21 +134,87 @@ const StaffWardInoutManagementPage = () => {
             </ButtonLayout>
           </AdminInoutSubTitleRightContainer>
         </AdminInoutSubTitleContainer> */}
-      </div>
+
+      <AnimatePresence mode="wait">
+        {selected.length > 0 ? (
+          <motion.div
+            key="selected"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            <SelectedActionBox>
+              <div style={{ display: "flex", alignItems: "center", paddingLeft: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                  <StaffCancelIcon />
+                  <Text>{selected.length}항목 선택됨</Text>
+                </div>
+                <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
+                  <ComBoxLayout width={"192px"}>
+                    <CComboBox
+                      placeholder={"구역"}
+                      options={[]}
+                      value={"테스트"}
+                      onChange={() => null}
+                    />
+                  </ComBoxLayout>
+                  <ComBoxLayout width={"160px"}>
+                    <CComboBox
+                      placeholder={"구역"}
+                      options={[]}
+                      value={"테스트"}
+                      onChange={() => null}
+                    />
+                  </ComBoxLayout>
+                  <CButton buttontype={"impactRed"}>환자 퇴원 처리</CButton>
+                </div>
+              </div>
+            </SelectedActionBox>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="nan-selected"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            <NanSelectedActionBox>
+              <SearchLayout>
+                <CSearchBox
+                  value={searchValue}
+                  onChange={onChangeSearchValue}
+                  placeholder={"환자 이름을 검색해 주세요."}
+                  borderColor={"#ECECEC"}
+                />
+              </SearchLayout>
+
+              <ButtonLayout>
+                <CButton buttontype={"primarySpaure"} onClick={handleDischarge(onDischarge)}>
+                  설정
+                </CButton>
+              </ButtonLayout>
+            </NanSelectedActionBox>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <TableLayout>
         <AdminTable
           getTablet={getTablet?.data}
           onChangeSelected={onChangeSelected}
+          onCHangeSelectAll={onChangeSelectAll}
           selected={selected}
         />
       </TableLayout>
       <FooterLayout>
-        {/* <div>
+        <div>
           <PaginationComponent
             totalPage={getTablet?.totalPages}
             onChange={(e, page) => handleChangePage(e, page)}
           />
-        </div> */}
+        </div>
       </FooterLayout>
     </Container>
   );
@@ -149,27 +228,8 @@ const Container = styled(Stack)({
   height: "100%",
 });
 
-const AdminInoutSubTitleContainer = styled(Box)({
-  marginTop: "17.66px",
-  display: "flex",
-  justifyContent: "space-between",
-});
-
-const AdminInoutSubTitleLeftContainer = styled(Box)({
-  display: "flex",
-  gap: "20px",
-  alignItems: "center",
-});
-const AdminInoutSubTitleRightContainer = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "15.66px",
-});
-const ButtonLayout = styled(Box)({
-  width: "148px",
-});
 const TableLayout = styled(Box)({
-  marginTop: "40px",
+  marginTop: "40.5px",
 });
 
 const FooterLayout = styled(Box)({
@@ -188,25 +248,43 @@ const Title = styled(Typography)(({ theme }) => ({
   letterSpacing: "-3%",
 }));
 
-const Subtitle = styled(Typography)(({ theme }) => ({
-  lineHeight: "26px",
-  fontSize: "18px",
-  fontWeight: 500,
+const Text = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
+  textTransform: "uppercase",
+  lineHeight: "24px",
+  fontSize: "16px",
+  letterSpacing: "-3%",
 }));
-// const Arraytitle = styled(Typography)(({ theme }) => ({
-//   lineHeight: "26px",
-//   fontSize: "18px",
-//   fontWeight: 500,
-//   color: theme.palette.primary.main,
-// }));
 
-// const SectionArrayLayout = styled(Box)({
-//   display: "flex",
-//   alignItems: "center",
-//   gap: "5px",
-// });
+const SelectedActionBox = styled(Box)(({ theme }) => ({
+  width: "100%",
+  borderRadius: 100,
+  paddingTop: 12,
+  paddingBottom: 8,
+  borderColor: theme.palette.secondary.main,
+  borderWidth: 2,
+  borderStyle: "solid",
+  display: "flex",
+  alignItems: "center",
+  marginTop: 23.5,
+}));
+
+const NanSelectedActionBox = styled(Box)(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  paddingTop: 12,
+  paddingBottom: 8,
+  marginTop: 23.5,
+  borderColor: "white",
+  borderWidth: 2,
+  borderStyle: "solid",
+  alignItems: "center",
+  justifyContent: "space-between",
+}));
 
 const SearchLayout = styled(Box)({
   width: "373px",
+});
+const ButtonLayout = styled(Box)({
+  width: "148px",
 });
