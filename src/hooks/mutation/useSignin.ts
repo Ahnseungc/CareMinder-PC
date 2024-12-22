@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { UserType } from "@models/user";
 import { SEVER_URL } from "@constants/baseUrl";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
+import { handleAllowNotification } from "@components/fcm/notificationPermission";
 
 const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
@@ -59,6 +60,7 @@ export default function useSignin() {
           case "STAFF":
             setReqChangePWState(res.currentUser?.passwordChangeRequested);
             navigate("/staff");
+            handleAllowNotification();
             break;
           case "WARD":
             navigate("/");
