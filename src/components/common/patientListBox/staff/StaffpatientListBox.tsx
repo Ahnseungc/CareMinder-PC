@@ -85,7 +85,8 @@ function StaffPatientListBox({
     e.stopPropagation();
     mutateDecline(data.patientRequestId);
   };
-
+  console.log("isOptions", isOptions);
+  console.log("isEdit", isEdit);
   // useEffect(() => {
   //   console.log(messages.length);
   // if (messages.length === 0) return;
@@ -129,26 +130,32 @@ function StaffPatientListBox({
           {isOptions && (
             <Options>
               {isAccept ? (
-                <Option onClick={el => onCancelAccept(el)}>수락취소</Option>
+                <Option onClick={el => onCancelAccept(el)}>요청 수락 취소하기</Option>
               ) : (
-                <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
+                <Option
+                  onMouseDown={e => {
+                    e.stopPropagation(), setIsEdit(true);
+                  }}
+                >
+                  담당직종 변경
+                </Option>
               )}
               <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
-                퇴원
+                퇴원 처리하기
               </Option>
             </Options>
           )}
           {isEdit && (
             <Options tabIndex={0}>
               <span>담당직종 변경</span>
-              <BoxWrapper>
+              {/* <BoxWrapper>
                 <CComboBox
                   placeholder={"직종 선택"}
                   options={["간호사", "의사", "조무사", "직원"]}
                   value={OPTIONS.find(el => el.role === data.aiRole)?.value || "정의되지 않음"}
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
-              </BoxWrapper>
+              </BoxWrapper> */}
             </Options>
           )}
         </Dot>
@@ -299,7 +306,7 @@ const Options = styled("div")`
     border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
   }
   & > span {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: ${({ theme }) => theme.palette.primary.dark};
   }
@@ -311,7 +318,7 @@ const Option = styled("div")`
   font-weight: 500;
   padding: 8px 0;
   cursor: pointer;
-  width: 69px;
+  width: 100%;
   :hover {
     color: ${({ theme }) => theme.palette.primary.main};
   }

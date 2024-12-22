@@ -15,4 +15,8 @@ export const OPTIONS = [
     role: "WORKER",
     value: "직원",
   },
+  {
+    role: "NOT_CLASSIFIED",
+    value: "간호사",
+  },
 ] as const;
