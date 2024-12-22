@@ -16,11 +16,26 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(payload => {
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    // icon: "/logo.svg",
+  const message = JSON.parse(payload.data.data);
+
+  let notificationTitle = "";
+  let notificationOptions = {
+    body: "",
   };
+
+  if (message.content.message) {
+    notificationTitle = `${message.content.patientName} : ${message.content.requestTitle}`;
+    notificationOptions = {
+      body: message.content.message,
+      // icon: "/logo.svg",
+    };
+  } else {
+    notificationTitle = message.content.patientName;
+    notificationOptions = {
+      body: message.content.requestContent,
+      // icon: "/logo.svg",
+    };
+  }
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

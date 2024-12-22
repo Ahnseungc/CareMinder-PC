@@ -8,8 +8,9 @@ type MessageType = {
     areaName: string;
     patientName: string;
     patientRequestId: number;
-    requestContent: string;
+    requestTitle?: string;
     message?: string;
+    requestContent?: string;
   };
   notificationId: string;
   type: string;
@@ -47,7 +48,7 @@ export default function Alarm() {
   if (message?.content.message)
     return (
       <Wrapper isOpen={isOpen!} onClick={() => setIsOpen(false)}>
-        <Title>{message?.content?.requestContent}</Title>
+        <Title>{message?.content?.requestTitle}</Title>
         <Place>
           <Ball color={NURSE.dark}></Ball>
           {message?.content?.areaName} | {message?.content?.patientName}
