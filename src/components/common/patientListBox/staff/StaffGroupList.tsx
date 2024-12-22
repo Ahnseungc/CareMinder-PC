@@ -8,10 +8,13 @@ import ChatBox from "@components/chat/chatBox";
 import ChatInput from "@components/chat/chatInput";
 import getPrevTimes from "@utils/getPrevTimes";
 import { StaffGroupListBoxProps } from "@models/index";
+import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
+import MemoBox from "../MemoBox/MemoBox";
 
 function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
   const roleColorPick = roleColor("NURSE");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isMemo, setIsMemo] = useState<boolean>(false);
 
   const onOpenChatting = async (id: number) => {
     if (roomId !== id) {
@@ -31,17 +34,37 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
   const [isFullList, setIsFullList] = useState(false);
 
   return (
-    <InnerContainer color={roleColorPick.light}>
+    <InnerContainer>
       <Title color={roleColorPick.dark} tabIndex={0}>
         <div>
-          {data.patientRequests[0]?.areaSimple.areaName} | {data.patientSimple.patientName} ( T
-          {data.tabletSimple.tabletId} )
+          <div>{data.patientRequests[0].areaSimple.areaName}</div>
+          <span> | </span>
+          <div>{data.patientSimple.patientName}</div>
         </div>
+        <TitleRight
+          onClick={e => {
+            e.stopPropagation(), setIsMemo(prev => !prev);
+          }}
+        >
+          <Vector isMemo={isMemo}>
+            <VectorIcon />
+          </Vector>
+          메모
+        </TitleRight>
       </Title>
+      {isMemo && <MemoBox color={roleColorPick.light} />}
+
       <BottomWrapper isFullList={isFullList}>
         {data.patientRequests.map((el: patientMapType) => (
-          <Bottom color={roleColorPick.dark} isFocus={el.patientRequestId === roomId}>
-            <TxtBox onClick={() => onOpenChatting(el.patientRequestId)}>
+          <Bottom color={roleColorPick.dark}>
+            <LeftLine color={roleColorPick.dark}></LeftLine>
+
+            <TxtBox
+              onClick={() => onOpenChatting(el.patientRequestId)}
+              color={roleColorPick.dark}
+              isFocus={el.patientRequestId === roomId}
+              light={roleColorPick.light}
+            >
               <TxtBoxLeft>{el.content}</TxtBoxLeft>
               <TxtBoxRight>{getPrevTimes(el.createdAt)}</TxtBoxRight>
             </TxtBox>
@@ -58,7 +81,7 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
         {isFullList ? "닫기" : "요청 전체 보기"}
       </IsTotalList>
       {data.patientRequests.find((e: patientMapType) => e.patientRequestId === roomId) && (
-        <div>
+        <ChatWrapper color={roleColorPick.light}>
           <ChatContainer id="top">
             {messages.map((el, idx) => (
               <ChatBox key={idx} data={el} color={roleColorPick.normal} />
@@ -70,34 +93,47 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
             setRoomId={setRoomId!}
             color={roleColorPick.normal}
           />
-        </div>
+        </ChatWrapper>
       )}
     </InnerContainer>
   );
 }
 export default StaffGroupList;
 
-const InnerContainer = styled(Stack)<{ color: string }>`
+const InnerContainer = styled(Stack)`
   border-radius: 12px;
-  background-color: ${({ color }) => color};
   width: 100%;
-  padding: 16px 20px;
+  padding: 16px 0px;
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
 `;
 
+const Vector = styled("div")<{ isMemo: boolean }>`
+  transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
+  margin-right: 8px;
+`;
 const Title = styled("div")<{ color: string }>`
   font-weight: 700;
-  font-size: 14px;
-  color: ${({ color }) => color};
+  font-size: 16px;
+  color: #000000;
   margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  padding-right: 5px;
-  position: relative;
+  margin-right: 30px;
+  & > div {
+    display: flex;
+  }
+  & > div > span {
+    margin: 0 5px;
+  }
 `;
-const TxtBox = styled("div")`
+const TitleRight = styled("div")`
+  font-size: 14px;
+  color: ${({ theme }) => theme.palette.text.primary};
+  cursor: pointer;
+`;
+const TxtBox = styled("div")<{ color: string; isFocus: boolean; light: string }>`
   border-radius: 6px;
   width: 100%;
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
@@ -107,30 +143,31 @@ const TxtBox = styled("div")`
   color: ${({ theme }) => theme.palette.primary.dark};
   display: flex;
   justify-content: space-between;
+  background-color: ${({ color, isFocus }) => isFocus && color};
+  cursor: pointer;
+  color: ${({ isFocus }) => isFocus && "white"};
+  border: 3px solid ${({ light }) => light};
+  & > div {
+    color: ${({ isFocus }) => isFocus && "white"};
+  }
 `;
 const TxtBoxLeft = styled("div")`
   display: flex;
   align-items: center;
+  margin-left: 3px;
 `;
 const TxtBoxRight = styled("div")`
   color: ${({ theme }) => theme.palette.text.primary};
   min-width: 60px;
   text-align: end;
 `;
-const Bottom = styled("div")<{ color: string; isFocus: boolean }>`
+const Bottom = styled("div")<{ color: string }>`
   display: flex;
   width: 100%;
   align-items: end;
   justify-content: space-between;
   margin-bottom: 8px;
-  & > div {
-    background-color: ${({ color, isFocus }) => isFocus && color};
-    cursor: pointer;
-    color: ${({ isFocus }) => isFocus && "white"};
-    & > div {
-      color: ${({ isFocus }) => isFocus && "white"};
-    }
-  }
+  position: relative;
   :hover {
     & > div {
       background-color: ${({ color }) => color};
@@ -153,6 +190,7 @@ const Check = styled("div")<{ color: string }>`
   margin-left: 12px;
   font-weight: 900;
   cursor: pointer;
+  margin-bottom: 3px;
 `;
 const BottomWrapper = styled("div")<{ isFullList: boolean }>`
   max-height: ${({ isFullList }) => !isFullList && "135px"};
@@ -167,8 +205,24 @@ const IsTotalList = styled("div")`
 `;
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
-
+  width: 100%;
   max-height: 300px;
   overflow: auto;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 10px;
+  padding: 0 7px;
+`;
+const LeftLine = styled("div")<{ color: string }>`
+  width: 4px;
+  height: 60%;
+  bottom: 7px;
+  border-radius: 4px;
+  background-color: ${({ color }) => color};
+  position: absolute;
+  left: 10px;
+`;
+const ChatWrapper = styled("div")<{ color: string }>`
+  background-color: ${({ color }) => color};
+  margin-top: 8px;
+  border-radius: 12px;
 `;

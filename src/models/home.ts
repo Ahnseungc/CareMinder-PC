@@ -32,7 +32,7 @@ export type StaffListBoxProps = {
 };
 
 export type StaffGroupListBoxProps = {
-  data: staffGroup;
+  data: any;
   onMutates: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, id: number, type: string) => void;
   roomId?: number | null;
   setRoomId?: React.Dispatch<React.SetStateAction<number | null>>;

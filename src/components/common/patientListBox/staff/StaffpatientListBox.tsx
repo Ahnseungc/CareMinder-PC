@@ -1,7 +1,8 @@
 import { Stack, styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { bottomScroll, roleColor } from "@utils/homePage";
+import { ReactComponent as MoreHorizRoundedIcon } from "@/assets/homeIcons/Dot.svg";
+import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { useState } from "react";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -16,7 +17,7 @@ import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
-// import useReadMessage from "@hooks/mutation/useReadMessage";
+import MemoBox from "../MemoBox/MemoBox";
 
 function StaffPatientListBox({
   isAccept,
@@ -30,6 +31,7 @@ function StaffPatientListBox({
 
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isMemo, setIsMemo] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { pendingRefetch } = refetchProps!;
@@ -59,12 +61,14 @@ function StaffPatientListBox({
       ConnectChat(id, setMessages);
       const history = await LoadChatHistory(id);
       setMessages(history);
+      setIsMemo(true);
       setRoomId!(id);
       bottomScroll();
     }
     if (roomId === id) {
       DisConnect(setRoomId!, roomId);
       setRoomId!(null);
+      setIsMemo(false);
     }
   };
 
@@ -96,16 +100,32 @@ function StaffPatientListBox({
       color={roleColorPick.light}
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
+      <LeftLine color={roleColorPick.dark}></LeftLine>
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <div>
-          {data.areaSimple.areaName} | {data.patientSimple.patientName} ( T
-          {data.tabletSimple.tabletId} )
+          <div>{data.areaSimple.areaName}</div>
+          <span> | </span>
+          <div>{data.patientSimple.patientName}</div>
         </div>
-        <div>
-          <MoreHorizRoundedIcon
-            onClick={onOptionOnOff}
-            sx={{ color: "#C4C5CC", cursor: "pointer" }}
-          />
+        <TitleRight
+          onClick={e => {
+            e.stopPropagation(), setIsMemo(prev => !prev);
+          }}
+        >
+          <Vector isMemo={isMemo}>
+            <VectorIcon />
+          </Vector>
+          메모
+        </TitleRight>
+      </Title>
+      {isMemo && <MemoBox color={roleColorPick.light} />}
+      <Bottom>
+        <TxtBox color={roleColorPick.light}>
+          <TxtBoxLeft>{data.content}</TxtBoxLeft>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
+        </TxtBox>
+        <Dot onClick={onOptionOnOff}>
+          <MoreHorizRoundedIcon />
           {isOptions && (
             <Options>
               {isAccept ? (
@@ -131,13 +151,7 @@ function StaffPatientListBox({
               </BoxWrapper>
             </Options>
           )}
-        </div>
-      </Title>
-      <Bottom>
-        <TxtBox>
-          <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
-        </TxtBox>
+        </Dot>
         <Check
           color={roleColorPick.dark}
           onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
@@ -146,7 +160,7 @@ function StaffPatientListBox({
         </Check>
       </Bottom>
       {isAccept && data.patientRequestId === roomId && (
-        <div>
+        <ChatWrapper color={roleColorPick.light}>
           <ChatContainer id="top">
             {messages.map((el, idx) => (
               <ChatBox
@@ -157,14 +171,13 @@ function StaffPatientListBox({
               />
             ))}
           </ChatContainer>
-
           <ChatInput
             roomId={roomId}
             Icon={roleColorPick.sendIcon}
             setRoomId={setRoomId!}
             color={roleColorPick.dark}
           />
-        </div>
+        </ChatWrapper>
       )}
     </InnerContainer>
   );
@@ -172,32 +185,48 @@ function StaffPatientListBox({
 export default StaffPatientListBox;
 
 const InnerContainer = styled(Stack)<{ color: string }>`
-  border-radius: 12px;
-  background-color: ${({ color }) => color};
+  position: relative;
   width: 100%;
-  padding: 16px 20px;
+  padding: 0 13px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 30px;
 `;
-
+const LeftLine = styled("div")<{ color: string }>`
+  width: 4px;
+  height: 100%;
+  border-radius: 4px;
+  background-color: ${({ color }) => color};
+  position: absolute;
+  left: 0;
+`;
 const Title = styled("div")<{ color: string }>`
   font-weight: 700;
-  font-size: 14px;
-  color: ${({ color }) => color};
+  font-size: 16px;
+  color: #000000;
   margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  padding-right: 5px;
-  position: relative;
+  margin-right: 30px;
+  & > div {
+    display: flex;
+  }
+  & > div > span {
+    margin: 0 5px;
+  }
 `;
-const TxtBox = styled("div")`
+const TitleRight = styled("div")`
+  font-size: 14px;
+  color: ${({ theme }) => theme.palette.text.primary};
+  cursor: pointer;
+`;
+const TxtBox = styled("div")<{ color: string }>`
   border-radius: 6px;
   width: 100%;
-  background-color: ${({ theme }) => theme.palette.primary.contrastText};
+  border: 3px solid ${({ color }) => color};
   padding: 6px 16px 6px 16px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   color: ${({ theme }) => theme.palette.primary.dark};
   display: flex;
   justify-content: space-between;
@@ -205,6 +234,10 @@ const TxtBox = styled("div")`
 const TxtBoxLeft = styled("div")`
   display: flex;
   align-items: center;
+`;
+const Vector = styled("div")<{ isMemo: boolean }>`
+  transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
+  margin-right: 8px;
 `;
 const TxtBoxRight = styled("div")`
   color: ${({ theme }) => theme.palette.text.primary};
@@ -214,8 +247,9 @@ const TxtBoxRight = styled("div")`
 const Bottom = styled("div")`
   display: flex;
   width: 100%;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
+  position: relative;
 `;
 const Check = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
@@ -229,33 +263,35 @@ const Check = styled("div")<{ color: string }>`
   font-weight: 900;
   cursor: pointer;
 `;
-// const SmallCheck = styled("div")<{ color: string }>`
-//   background-color: ${({ color }) => color};
-//   border-radius: 50%;
-//   width: 20px;
-//   height: 20px;
-//   display: flex;
-//   padding-top: 2px;
-//   justify-content: center;
-//   margin-right: 6px;
-//   font-size: 13px;
-//   color: ${({ theme }) => theme.palette.primary.contrastText};
-//   font-weight: 900;
-//   margin-bottom: 2px;
-// `;
 
+const Dot = styled("div")`
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  margin-left: 6px;
+  align-items: center;
+  justify-content: center;
+`;
+const ChatWrapper = styled("div")<{ color: string }>`
+  background-color: ${({ color }) => color};
+  margin-top: 8px;
+  border-radius: 12px;
+`;
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
   width: 100%;
   max-height: 300px;
   overflow: auto;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 10px;
+  padding: 0 7px;
 `;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
   position: absolute;
-  top: 20px;
   right: 0px;
+  top: 40px;
   padding: 11px;
   box-shadow: 0px 4px 12px 0px #89898e4d;
   border-radius: 8px;
@@ -267,6 +303,7 @@ const Options = styled("div")`
     font-weight: 700;
     color: ${({ theme }) => theme.palette.primary.dark};
   }
+  z-index: 100;
 `;
 const Option = styled("div")`
   font-size: 13px;

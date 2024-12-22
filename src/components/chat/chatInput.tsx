@@ -14,6 +14,13 @@ function ChatInput({
   color: string;
 }) {
   const [chat, setChat] = useState("");
+  // const testData = [
+  //   "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다321321. ",
+  //   "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsadsa ",
+  //   "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.ewqwq ",
+  //   "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa 자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다.dsa ",
+  //   "자동완성된 텍스트 입니다. 텍스트 입니다. 텍스트 입니다. ",
+  // ];
 
   const onSend = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
@@ -25,6 +32,7 @@ function ChatInput({
       if (e.nativeEvent.isComposing) return;
       onSend(e);
     }
+    console.log(color);
   };
 
   // const onWordComplete = (e: React.MouseEvent<HTMLDivElement>, el: string) => {
@@ -33,15 +41,15 @@ function ChatInput({
   // };
 
   return (
-    <>
-      {/* <WordComplete id="word"> */}
-      {/* {testData.map(el => (
+    <Container>
+      <WordComplete id="word">
+        {/* {testData.map(el => (
           <Word key={el} color={color} onClick={e => onWordComplete(e, el)}>
             {el}
             <WordView>{el}</WordView>
           </Word>
         ))} */}
-      {/* </WordComplete> */}
+      </WordComplete>
       <Wrapper>
         <Input
           type="text"
@@ -55,17 +63,20 @@ function ChatInput({
           <Icon />
         </SendButton>
       </Wrapper>
-    </>
+    </Container>
   );
 }
 export default ChatInput;
-// const WordComplete = styled("div")`
-//   display: flex;
-//   width: 100%;
-//   justify-content: space-between;
-//   margin-top: 40px;
-//   position: relative;
-// `;
+const Container = styled("div")`
+  margin: 0 12px 12px 12px;
+  border-top: 1px solid white;
+`;
+const WordComplete = styled("div")`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+`;
 // const WordView = styled("div")`
 //   position: absolute;
 //   background-color: white;
@@ -99,12 +110,13 @@ export default ChatInput;
 //   }
 // `;
 const Wrapper = styled("div")`
-  margin-top: 20px;
+  margin-top: 8px;
   width: 100%;
   background-color: white;
   border-radius: 10px;
   display: flex;
   align-items: center;
+  margin-bottom: 8px;
 `;
 const Input = styled("input")`
   width: 100%;

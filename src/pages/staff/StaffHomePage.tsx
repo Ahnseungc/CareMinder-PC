@@ -1,5 +1,3 @@
-import { CComboBox } from "@components/common/atom/C-ComboBox";
-import CSwitch from "@components/common/atom/C-Switch";
 import PatientBox from "@components/common/patientListBox";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import StaffGroupList from "@components/common/patientListBox/staff/StaffGroupList";
@@ -12,14 +10,15 @@ import {
 import { userState } from "@libraries/recoil";
 import layoutState from "@libraries/recoil/layout";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
-import { CSwitchType, isRoleType } from "@models/home";
-import { Box, styled, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
-import { isFindRole } from "@utils/homePage";
+// import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { OPTIONS } from "@components/settings/const";
+// import { OPTIONS } from "@components/settings/const";
+import * as S from "./Style/wardAndStaff.style";
+import StaffSearchBox from "@components/common/SearachBox/StaffSearchBox";
 
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
@@ -28,26 +27,24 @@ export default function StaffHomePage() {
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
   const navigate = useNavigate();
 
-  const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
-  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState<boolean>(false); //수락중인 환자, 환자별로 묶기
-  const [isRole, setIsRole] = useState<isRoleType>(null);
+  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState({
+    pendingGroup: false,
+    inprogressGroup: false,
+  }); //수락중인 환자, 환자별로 묶기
   const [roomId, setRoomId] = useState<number | null>(null);
-
-  const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(
-    isRole,
-    staffWaitIsMine,
+  const { data: getPending, refetch: pendingRefetch } = useGetStaffPatientPending(null, false); //isRole, 내 환자 보기
+  const { data: getInprogress, refetch: inprogressRefetch } = useGetStaffPatientInprogress(
+    staffAcceptIsGroup.inprogressGroup,
   );
-  const { data: getInprogress, refetch: inprogressRefetch } =
-    useGetStaffPatientInprogress(staffAcceptIsGroup);
   //@ts-ignore
   const { data: getInprogressGroup, refetch: inprogressGroupRefetch } =
-    useGetStaffPatientInprogressGroup(staffAcceptIsGroup);
+    useGetStaffPatientInprogressGroup(staffAcceptIsGroup.inprogressGroup);
 
   const refetchProps = {
     pendingRefetch,
     inprogressRefetch,
     inprogressGroupRefetch,
-    staffAcceptIsGroup,
+    staffAcceptIsGroup: staffAcceptIsGroup.inprogressGroup,
   };
 
   const { mutate: postAccept } = useStaffAccept(refetchProps);
@@ -62,6 +59,8 @@ export default function StaffHomePage() {
       return patchComplete(id);
     }
   };
+
+  console.log(staffAcceptIsGroup);
 
   useEffect(() => {
     setlayoutState("home");
@@ -99,42 +98,69 @@ export default function StaffHomePage() {
         rightText={"변경하기"}
         isPasswordChange={true}
       />
-      <LeftSection>
-        <Title>대기중인 환자</Title>
-        <SubTitle>
-          <SubTitleLeft>
-            <span>내 환자만 보기</span>
-            <CSwitch onChange={(el: CSwitchType) => setStaffWaitIsMine(el.target.checked)} />
-          </SubTitleLeft>
-          <SubTitleRight>
-            <span>직종</span>
-            <CComboBox
-              placeholder={"전체"}
-              options={["전체", "간호사", "조무사", "직원", "의사"]}
-              value={OPTIONS.find(el => el.role === isRole)?.value || "전체"}
-              onChange={el => setIsRole(isFindRole(el.target.value))}
+      <S.LeftSection>
+        <S.TitleWrapper>
+          <S.Title>대기중인 환자</S.Title>
+          <S.SearchBoxWrapper>
+            <StaffSearchBox />
+          </S.SearchBoxWrapper>
+        </S.TitleWrapper>
+        <S.SubTitle>
+          <S.SubTitleLeft>
+            <div>필터</div>
+            <S.FilterBox
+              onClick={() =>
+                setStaffAcceptIsGroup(prev => ({
+                  ...prev,
+                  pendingGroup: !prev.pendingGroup,
+                }))
+              }
+              isTrue={staffAcceptIsGroup.pendingGroup}
+            >
+              환자별
+            </S.FilterBox>
+            <S.FilterBox isTrue={false}>구역</S.FilterBox>
+            <S.FilterBox isTrue={false}>직종</S.FilterBox>
+          </S.SubTitleLeft>
+        </S.SubTitle>
+        {!staffAcceptIsGroup.pendingGroup &&
+          getPending?.map(el => (
+            <PatientBox
+              key={el.patientRequestId}
+              user="staffWait"
+              data={el}
+              onMutates={onMutates}
+              refetchProps={refetchProps}
             />
-          </SubTitleRight>
-        </SubTitle>
-        {getPending?.map(el => (
-          <PatientBox
-            key={el.patientRequestId}
-            user="staffWait"
-            data={el}
-            onMutates={onMutates}
-            refetchProps={refetchProps}
-          />
-        ))}
-      </LeftSection>
-      <RightSection>
-        <Title>수락중인 환자</Title>
-        <SubTitle>
-          <SubTitleLeft>
-            <span>환자별로 묶기</span>
-            <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
-          </SubTitleLeft>
-        </SubTitle>
-        {!staffAcceptIsGroup &&
+          ))}
+        {staffAcceptIsGroup.pendingGroup && <div>dd</div>}
+      </S.LeftSection>
+      <S.RightSection>
+        <S.TitleWrapper>
+          <S.Title>수락 중인 환자</S.Title>
+          <S.SearchBoxWrapper>
+            <StaffSearchBox />
+          </S.SearchBoxWrapper>
+        </S.TitleWrapper>
+        <S.SubTitle>
+          <S.SubTitleLeft>
+            <div>필터</div>
+            <S.FilterBox
+              onClick={() =>
+                setStaffAcceptIsGroup(prev => ({
+                  ...prev,
+                  inprogressGroup: !prev.inprogressGroup,
+                }))
+              }
+              isTrue={staffAcceptIsGroup.inprogressGroup}
+            >
+              환자별
+            </S.FilterBox>
+            <S.FilterBox isTrue={false}>구역</S.FilterBox>
+            <S.FilterBox isTrue={false}>직종</S.FilterBox>
+          </S.SubTitleLeft>
+        </S.SubTitle>
+        {!staffAcceptIsGroup.inprogressGroup &&
           getInprogress?.map(el => (
             <PatientBox
               key={el.patientRequestId}
@@ -146,61 +172,17 @@ export default function StaffHomePage() {
               refetchProps={refetchProps}
             />
           ))}
-        {/* 디자인 나오기 전이여서 주석 처리 */}
-        {staffAcceptIsGroup &&
+        {staffAcceptIsGroup.inprogressGroup &&
           getInprogressGroup?.map(el => (
-            <StaffGroupList data={el} onMutates={onMutates} roomId={roomId} setRoomId={setRoomId} />
+            <StaffGroupList
+              key={el.patientSimple.patientId}
+              data={el}
+              onMutates={onMutates}
+              roomId={roomId}
+              setRoomId={setRoomId}
+            />
           ))}
-      </RightSection>
+      </S.RightSection>
     </>
   );
 }
-
-const SectionBase = styled(Box)(({ theme }) => ({
-  width: "calc(50% - 15px)",
-  padding: "30px",
-  borderRadius: "24px",
-  backgroundColor: theme.palette.background.paper,
-  minHeight: "80vh",
-}));
-
-const LeftSection = styled(SectionBase)({
-  // 왼쪽 컨테이너에 스타일 적용
-});
-
-const RightSection = styled(SectionBase)({
-  // 오른쪽 컨테이너에 스타일 적용
-});
-
-const Title = styled("div")`
-  font-weight: 700;
-  font-size: 24px;
-  color: #000000;
-  margin-bottom: 26px;
-`;
-const SubTitle = styled("div")`
-  font-weight: 500;
-  font-size: 18px;
-  color: #000000;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const SubTitleLeft = styled("div")`
-  & > span {
-    margin-right: 18px;
-  }
-`;
-const SubTitleRight = styled("div")`
-  display: flex;
-  align-items: center;
-  height: 35px;
-  & > * {
-    font-size: 14px;
-  }
-  & > span {
-    width: 40px;
-    margin-right: 12px;
-  }
-`;
