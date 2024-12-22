@@ -2,49 +2,30 @@ import { styled } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { ReactComponent as TrashIcon } from "@/assets/homeIcons/Trash.svg";
 import { useState } from "react";
+import useGetMemo from "@hooks/queries/useGetMemo";
+import usePostMemo from "@hooks/mutation/usePostMemo";
 
-export default function MemoBox({ color }: { color: string }) {
-  const [mock, setMock] = useState([
-    {
-      name: "간호사1",
-      id: 12,
-      contents: "음...이거 뭐 해야합니다!!",
-      isMine: true,
-      time: "2024.12.31",
-    },
-    {
-      name: "간호사1",
-      id: 13,
-      contents: "음...이거 뭐 해야합니다!!",
-      isMine: false,
-      time: "2024.12.31",
-    },
-    {
-      name: "간호사1",
-      id: 14,
-      contents: "음...이거 뭐 해야합니다!!",
-      isMine: true,
-      time: "2024.12.31",
-    },
-    {
-      name: "간호사1",
-      id: 15,
-      contents: "음...이거 뭐 해야합니다!!",
-      isMine: false,
-      time: "2024.12.31",
-    },
-  ]);
+export default function MemoBox({ color, patientId }: { color: string; patientId: number }) {
   const [changeMemo, setChangeMemo] = useState("");
   const [newMemo, setNewMemo] = useState("");
   const [isFocusId, setIsFocusId] = useState<undefined | number>(undefined);
 
+  const { data, refetch } = useGetMemo(patientId);
+  const { mutate: postMemo } = usePostMemo();
+  console.log(data);
   const onPushMemo = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (newMemo.trim().length === 0) return;
-    setMock([
-      ...mock,
-      { name: "간호사1", contents: newMemo, isMine: true, time: "2024.12.31", id: 16 },
-    ]);
+    postMemo(
+      { patientId, content: newMemo },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+        onError: () => {},
+      },
+    );
+
     setNewMemo("");
   };
 
@@ -55,9 +36,9 @@ export default function MemoBox({ color }: { color: string }) {
 
   return (
     <MemoWrapper>
-      {mock.map(el => (
-        <Memo key={el.id}>
-          {el.isMine && (
+      {data?.map(el => (
+        <Memo key={el.createdAt}>
+          {/* {el.isMine && (
             <>
               <Title>내 메모</Title>
               {isFocusId === el.id ? (
@@ -81,17 +62,17 @@ export default function MemoBox({ color }: { color: string }) {
                 </Content>
               )}
             </>
-          )}
-          {!el.isMine && (
-            <>
-              <Title>{el.name}</Title>
-              <Content>
-                <div>{el.contents}</div> <div>{el.time}</div>
-              </Content>
-            </>
-          )}
+          )} */}
+          {/* {!el.isMine && ( */}
+          <>
+            <Title>{el.staffName}</Title>
+            <Content>
+              <div>{el.content}</div> <div>{el.createdAt}</div>
+            </Content>
+          </>
+          {/* )} */}
 
-          {el.id === isFocusId && (
+          {/* {el.id === isFocusId && (
             <Icon onClick={e => onPushMemo(e)}>
               <CheckIcon fontSize="small" />
             </Icon>
@@ -100,7 +81,7 @@ export default function MemoBox({ color }: { color: string }) {
             <Icon onClick={e => onDeleteMemo(e)}>
               <TrashIcon />
             </Icon>
-          )}
+          )} */}
         </Memo>
       ))}
 

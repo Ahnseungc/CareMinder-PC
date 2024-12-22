@@ -33,7 +33,7 @@ export default function StaffSearchBox() {
           disableUnderline={true}
           startAdornment={
             <ListBox onClick={toggleList}>
-              <Search style={{ marginBottom: "2px" }} />
+              <Search />
             </ListBox>
           }
           endAdornment={<DownArrow />}
@@ -51,7 +51,7 @@ export default function StaffSearchBox() {
 
 const SearchInputWrapper = styled(Box)({
   position: "absolute",
-  right: "-20px",
+  right: "0",
   top: "-4px",
 });
 
@@ -60,7 +60,6 @@ const SearchInput = styled(Input, {
 })<SearchInputProps>(({ theme, isOpen }) => ({
   position: "relative",
   width: "200px",
-  minHeight: "36px",
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: "6px",
   padding: isOpen ? "7.9px 15px 178px 15px" : "7.9px 15px",

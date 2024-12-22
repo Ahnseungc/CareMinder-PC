@@ -118,7 +118,7 @@ function StaffPatientListBox({
           메모
         </TitleRight>
       </Title>
-      {isMemo && <MemoBox color={roleColorPick.light} />}
+      {isMemo && <MemoBox color={roleColorPick.light} patientId={data.patientSimple.patientId} />}
       <Bottom>
         <TxtBox color={roleColorPick.light}>
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
