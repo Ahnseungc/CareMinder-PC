@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 // import { OPTIONS } from "@components/settings/const";
-import * as S from "./Style/wardAndStaff.style";
+import * as S from "../../pages/user/Style/wardAndStaff.style";
 import StaffSearchBox from "@components/common/SearachBox/StaffSearchBox";
 
 export default function StaffHomePage() {
