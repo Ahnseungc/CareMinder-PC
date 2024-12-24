@@ -35,6 +35,7 @@ interface InfoModalProps extends Omit<CMModalProps, "title"> {
   message?: React.ReactNode;
   leftText?: string;
   rightText?: string;
+  isAdmin?: boolean;
 }
 
 export default function InfoModal({
@@ -44,6 +45,7 @@ export default function InfoModal({
   message,
   leftText = "아니오",
   rightText = "예",
+  isAdmin = false,
   ...props
 }: InfoModalProps) {
   const { title, controlAccount } = useMemo(
@@ -55,6 +57,11 @@ export default function InfoModal({
     <CMModal
       maxWidth="xs"
       onClose={onClose}
+      title={
+        modalType === "successChangeInfo" || modalType === "successChangePW"
+          ? "스태프 정보 수정하기"
+          : ""
+      }
       footer={
         controlAccount ? (
           <>
@@ -64,7 +71,9 @@ export default function InfoModal({
             <ModalActionButton onClick={onConfirm}>{rightText}</ModalActionButton>
           </>
         ) : (
-          <ModalActionButton onClick={onClose}>확인</ModalActionButton>
+          <ModalActionButton onClick={onClose} color={isAdmin ? "info" : "primary"}>
+            확인
+          </ModalActionButton>
         )
       }
       {...props}

@@ -15,6 +15,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
 import axios from "axios";
 import { SEVER_URL } from "@constants/baseUrl";
+import Cookies from "js-cookie";
 
 type InputFieldProps = { form: UseFormReturn<NewWard>; field: NewWardField };
 
@@ -101,11 +102,15 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
       return;
     } else {
       try {
-        const doubleCheckWardName = {
-          wardName: wardName,
-        };
-        const res = await axios.post(`${SEVER_URL}/wards/check-ward-name`, doubleCheckWardName);
-        if (res.data === "사용 가능한 병동명입니다.") {
+        const res = await axios.get(`${SEVER_URL}/wards/check-ward-name`, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
+          },
+          params: {
+            wardName: wardName,
+          },
+        });
+        if (res.data === "사용 가능한 병동 이름 입니다.") {
           setWardNameDoubleCheck(true);
           form.clearErrors("wardName");
           setValidState({
@@ -184,7 +189,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
         },
       }}
     >
-      <InputLabel htmlFor={name} required>
+      <InputLabel htmlFor={name} required={name !== "managerEmail"}>
         {label}
       </InputLabel>
       <span style={{ position: "absolute", right: "0", fontSize: "10px" }}>
@@ -298,6 +303,9 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
         )}
       />
       {errors[name] && <FormHelperText>{errors[name]?.message}</FormHelperText>}
+      {validState.wardName?.isValid && name === "wardName" && (
+        <FormHelperText sx={{ color: "#1ADE00" }}>{validState.wardName.message}</FormHelperText>
+      )}
       {validState.loginId?.isValid && name === "loginId" && (
         <FormHelperText sx={{ color: "#1ADE00" }}>{validState.loginId.message}</FormHelperText>
       )}

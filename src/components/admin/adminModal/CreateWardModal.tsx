@@ -45,7 +45,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
       wardName: data.wardName,
       loginId: data.loginId,
       password: data.password,
-      managerName: data.managerPhoneNumber,
+      managerName: data.managerName,
       managerPhoneNumber: data.managerPhoneNumber,
       managerEmail: data.managerEmail,
     };

@@ -11,11 +11,13 @@ import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import PaginationComponent from "@components/common/pagination";
 import { useBooleanState } from "@toss/react";
-import { useGetwardList } from "@hooks/queries/useGetWardList";
+import { useGetwardList, WardListType } from "@hooks/queries/useGetWardList";
 import { TimeSince } from "@components/settings/TimeSince";
 import CButton from "@components/common/atom/C-Button";
 import CreateWardModal from "@components/admin/adminModal/CreateWardModal";
 import wardEditingState from "@libraries/recoil/wardEdit";
+import EditWardInfoModal from "@components/admin/adminModal/EditWardInfoModal";
+import wardListState from "@libraries/recoil/wardList";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -47,13 +49,14 @@ const WardAccountSettingsTable = ({
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
-  // const [selectedWard, setSelectedWard] = useState<WardListType>();
+  const [selectedWard, setSelectedWard] = useState<WardListType>();
 
-  const setIsEditing = useSetRecoilState(wardEditingState);
   const isEditing = useRecoilValue(wardEditingState);
+  const setIsEditing = useSetRecoilState(wardEditingState);
+  const setSelectWardList = useSetRecoilState(wardListState);
 
   const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
-  // const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
+  const [editOpen, openEditModal, closeEditModal] = useBooleanState(false);
 
   const totalItems = wardList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -97,10 +100,10 @@ const WardAccountSettingsTable = ({
     }
   }, [isEditing, isClear, setIsClear]);
 
-  // useEffect(() => {
-  //   const index = selectIndex.map(item => wardList?.data[item].wardId) as number[];
-  //   // setSelectStaffList(index);
-  // }, [selectIndex, wardList]);
+  useEffect(() => {
+    const index = selectIndex.map(item => wardList?.data[item].wardId) as number[];
+    setSelectWardList(index);
+  }, [setSelectWardList, selectIndex, wardList]);
 
   if (wardLoading) {
     return <div>로딩 중..</div>;
@@ -108,16 +111,8 @@ const WardAccountSettingsTable = ({
 
   return (
     <>
-      {/* 비밀번호 편집 모달 */}
-      {/* <PasswordChangeModal
-        open={isPWChangeModalOpen}
-        onClose={() => {
-          closePWChangeModal();
-          setIsClear(true);
-        }}
-        staffInfo={selectedStaff}
-        isMultiEdit={false}
-      /> */}
+      {/* 병동 계정 정보 편집 모달 */}
+      <EditWardInfoModal open={editOpen} onClose={closeEditModal} wardData={selectedWard} />
 
       {/* 병동 계정 생성 모달 */}
       <CreateWardModal open={open} onClose={closeCreateModal} />
@@ -302,7 +297,8 @@ const WardAccountSettingsTable = ({
                           <Edit
                             onClick={() => {
                               if (!row.userStatusInfo.accountLocked) {
-                                // setSelectedStaff(row);
+                                setSelectedWard(row);
+                                openEditModal();
                                 onManage("edit", [row.wardId]);
                               } else {
                                 null;
