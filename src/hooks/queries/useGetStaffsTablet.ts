@@ -18,9 +18,11 @@ export default function useGetWardTabletRequests({
   myArea,
   page,
 }: reqWardParamsType) {
-  const { data, refetch } = useQuery({
+  const { data, refetch, isLoading, isError } = useQuery({
     queryKey: ["useGetStaffTabletRequests", token, patientName, myArea, page],
+    retry: 3,
+    retryDelay: 1000,
     queryFn: () => getStaffsTabletRequests({ token, patientName, myArea, page }),
   });
-  return { data, refetch };
+  return { data, refetch, isLoading, isError };
 }

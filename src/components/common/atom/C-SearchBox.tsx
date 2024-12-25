@@ -1,7 +1,7 @@
 import { Box, Input, styled, Typography } from "@mui/material";
 import { FC, useState } from "react";
 import { ReactComponent as Buger } from "@/assets/buger-icon.svg";
-import { ReactComponent as Search } from "@/assets/serachIcons/search.svg";
+import { ReactComponent as Search } from "@/assets/search-icon-new.svg";
 import { ReactComponent as DownArrowMiddle } from "@/assets/downarrow-middle-icon.svg";
 
 type CSearchBoxProps = {
@@ -55,13 +55,19 @@ const SearchInputWrapper = styled(Box)({
 const SearchInput = styled(Input, {
   shouldForwardProp: prop => prop !== "isOpen",
 })<any>(({ theme, bordercolor }) => ({
-  width: "100%",
-  maxHeight: "36px",
-  borderRadius: "20px",
-  border: `1px solid ${bordercolor ? bordercolor : "theme.palette.divider"}`,
-  transition: "padding 0.3s ease-in-out",
-  padding: "7.9px 15px",
-  backgroundColor: theme.palette.background.paper,
+  "width": "100%",
+  "maxHeight": "44px",
+  "borderRadius": "6px",
+  "border": `1px solid ${bordercolor ? bordercolor : "theme.palette.divider"}`,
+  "transition": "padding 0.3s ease-in-out",
+  "padding": "7.9px 15px",
+  "backgroundColor": theme.palette.background.paper,
+  "& .MuiInputBase-input": {
+    color: "black",
+  },
+  "& .MuiInputBase-input::placeholder": {
+    color: "#5E5F6599",
+  },
 }));
 
 const ListBox = styled(Box)(({}) => ({

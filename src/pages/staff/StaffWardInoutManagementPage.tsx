@@ -1,22 +1,25 @@
-import { Box, Button, Stack, Typography, styled } from "@mui/material";
-// import {SvgIcon } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
-import CSwitch from "@components/common/atom/C-Switch";
 import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
-// import { ReactComponent as ArrayIcon } from "@assets/array.svg";
 import PaginationComponent from "@components/common/pagination";
 import { motion, AnimatePresence } from "framer-motion";
 import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
+import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
+import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
+import { Height } from "@mui/icons-material";
+import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import CCalendar from "@components/common/atom/Calendar/C-Calendar";
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -24,17 +27,32 @@ const StaffWardInoutManagementPage = () => {
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   //@ts-ignore
   const [currentPage, setCurrentPage] = useState<number>(0);
+  const [isAcitve, setIsActive] = useState(false);
+  const [disChargeDate, setDisChargeDate] = useState(new Date());
+
+  const handleDisChargeDate = (selectedDate: Date) => {
+    setDisChargeDate(selectedDate);
+  };
 
   const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
   };
   //@ts-ignore
-  const { data: getTablet, refetch } = useGetWardTabletRequests({
+  const {
+    data: getTablet,
+    refetch,
+    isError,
+    isLoading,
+  } = useGetWardTabletRequests({
     token: token,
     patientName: searchValue,
     myArea: isMyArea,
     page: currentPage,
   });
+
+  useEffect(() => {
+    setSelected([]);
+  }, [currentPage]);
 
   //@ts-ignore
   const { mutate } = useDischargePatients();
@@ -44,11 +62,6 @@ const StaffWardInoutManagementPage = () => {
       id: number;
     }>
   >([]);
-
-  const onChangeMyArea = () => {
-    setIsMyArea(prev => !prev);
-    setCurrentPage(0);
-  };
 
   const onChangeSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -78,6 +91,16 @@ const StaffWardInoutManagementPage = () => {
     patientId: 0,
     patientName: "",
   };
+  const handleActive = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsActive(prev => !prev);
+  };
+
+  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setSearchValue(value);
+    setCurrentPage(0);
+  };
 
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
@@ -86,13 +109,7 @@ const StaffWardInoutManagementPage = () => {
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
-  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget;
-    setSearchValue(value);
-    setCurrentPage(0);
-  };
-
-  const onDischarge: SubmitHandler<WardTabletType> = () => {
+  const updateDischarge: SubmitHandler<WardTabletType> = () => {
     mutate(
       { tabletIds: selected.map(item => item.id) },
       {
@@ -108,33 +125,11 @@ const StaffWardInoutManagementPage = () => {
     );
   };
 
+  const onDisCharge = handleDischarge(updateDischarge);
+
   return (
     <Container>
       <Title variant="h1">환자 관리</Title>
-      {/* <AdminInoutSubTitleContainer>
-          <AdminInoutSubTitleLeftContainer>
-            <Subtitle variant="h2">내 구역 테블릿 리스트</Subtitle>
-            <div>
-              <CSwitch onChange={onChangeMyArea} />
-            </div>
-          </AdminInoutSubTitleLeftContainer>
-          <AdminInoutSubTitleRightContainer>
-            <SearchLayout>
-              <CSearchBox
-                value={searchValue}
-                onChange={onChangeSearchValue}
-                placeholder={"환자 이름을 검색해 주세요."}
-                borderColor={"#ECECEC"}
-              />
-            </SearchLayout>
-            <ButtonLayout>
-              <CButton buttontype={"primarySpaure"} onClick={handleDischarge(onDischarge)}>
-                퇴원 처리
-              </CButton>
-            </ButtonLayout>
-          </AdminInoutSubTitleRightContainer>
-        </AdminInoutSubTitleContainer> */}
-
       <AnimatePresence mode="wait">
         {selected.length > 0 ? (
           <motion.div
@@ -142,7 +137,7 @@ const StaffWardInoutManagementPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
+            transition={{ duration: 0.15 }}
           >
             <SelectedActionBox>
               <div style={{ display: "flex", alignItems: "center", paddingLeft: 12 }}>
@@ -162,13 +157,23 @@ const StaffWardInoutManagementPage = () => {
                     />
                   </ComBoxLayout>
                   <ComBoxLayout width={"160px"}>
-                    <CComboBox
-                      placeholder={"구역"}
-                      options={[]}
-                      value={"테스트"}
-                      onChange={() => null}
-                    />
+                    <CalendarSelect onClick={handleActive}>
+                      <Text
+                        sx={{
+                          fontSize: 14,
+                          lineHeight: 20,
+                          fontWeight: 400,
+                          letterSpacing: "-3%",
+                          opacity: 0.3,
+                        }}
+                      >
+                        예상 퇴원 날짜
+                      </Text>
+                      <CalendarIcon />
+                      {isAcitve && <CCalendar value={new Date()} onChange={handleDisChargeDate} />}
+                    </CalendarSelect>
                   </ComBoxLayout>
+
                   <CButton buttontype={"impactRed"}>환자 퇴원 처리</CButton>
                 </div>
               </div>
@@ -187,13 +192,17 @@ const StaffWardInoutManagementPage = () => {
                 <CSearchBox
                   value={searchValue}
                   onChange={onChangeSearchValue}
-                  placeholder={"환자 이름을 검색해 주세요."}
+                  placeholder={"검색할 내용을 입력해 주세요."}
                   borderColor={"#ECECEC"}
                 />
               </SearchLayout>
 
               <ButtonLayout>
-                <CButton buttontype={"primarySpaure"} onClick={handleDischarge(onDischarge)}>
+                <CButton
+                  buttontype={"primarySecond"}
+                  onClick={handleActive}
+                  icon={<DrowDownIcon />}
+                >
                   설정
                 </CButton>
               </ButtonLayout>
@@ -204,9 +213,11 @@ const StaffWardInoutManagementPage = () => {
 
       <TableLayout>
         <AdminTable
+          isLoading={isLoading}
           getTablet={getTablet?.data}
           onChangeSelected={onChangeSelected}
-          onCHangeSelectAll={onChangeSelectAll}
+          onChangeSelectAll={onChangeSelectAll}
+          onDisCharge={onDisCharge}
           selected={selected}
         />
       </TableLayout>
@@ -263,6 +274,7 @@ const SelectedActionBox = styled(Box)(({ theme }) => ({
   borderRadius: 100,
   paddingTop: 12,
   paddingBottom: 8,
+  marginBottom: 7,
   borderColor: theme.palette.secondary.main,
   borderWidth: 2,
   borderStyle: "solid",
@@ -290,3 +302,15 @@ const SearchLayout = styled(Box)({
 const ButtonLayout = styled(Box)({
   width: "148px",
 });
+
+const CalendarSelect = styled(Button)(({ theme }) => ({
+  width: "100%",
+  height: "100%",
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: 6,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 24,
+  position: "relative",
+}));
