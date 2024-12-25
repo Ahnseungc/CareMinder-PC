@@ -21,3 +21,14 @@ export function formatDateDash(date: Date): string {
 
   return `${year}-${month}-${day}`;
 }
+
+export function formatDateYYYYMMDD(date: Date | null): string {
+  if (!date) return ""; // 날짜가 null인 경우 처리
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+  const day = date.getDate();
+
+  // 2024-12-2 형식으로 반환
+  return `${year}-${month}-${day}`;
+}

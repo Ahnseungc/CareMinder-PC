@@ -7,6 +7,8 @@ type PaginationProps = {
   onChange: (event: React.ChangeEvent<unknown>, page: number) => void;
 };
 function PaginationComponent({ totalPage, onChange }: PaginationProps) {
+  const pageCount = Math.max(totalPage, 1);
+
   return (
     <Wrapper>
       <Stack spacing={2}>
@@ -14,7 +16,7 @@ function PaginationComponent({ totalPage, onChange }: PaginationProps) {
           color={"secondary"}
           showFirstButton
           showLastButton
-          count={totalPage}
+          count={pageCount}
           defaultPage={1}
           shape="rounded"
           defaultValue={1}

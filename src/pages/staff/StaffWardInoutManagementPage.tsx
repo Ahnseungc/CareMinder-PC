@@ -8,7 +8,7 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
@@ -16,36 +16,35 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
 import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
 import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
-import { Height } from "@mui/icons-material";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
-import CCalendar from "@components/common/atom/Calendar/C-Calendar";
+import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
+import { formatDateYYYYMMDD } from "@utils/getDateform";
+import { debounce } from "lodash";
+
+type SelectedItem = {
+  name: string;
+  id: number;
+};
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
-  //@ts-ignore
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isAcitve, setIsActive] = useState(false);
-  const [disChargeDate, setDisChargeDate] = useState(new Date());
+  const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
+  const [debounceValue, setDebounceValue] = useState("");
 
-  const handleDisChargeDate = (selectedDate: Date) => {
-    setDisChargeDate(selectedDate);
-  };
-
-  const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
+  const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
-  };
-  //@ts-ignore
+  }, []);
+
   const {
     data: getTablet,
     refetch,
-    isError,
     isLoading,
   } = useGetWardTabletRequests({
     token: token,
-    patientName: searchValue,
+    patientName: debounceValue,
     myArea: isMyArea,
     page: currentPage,
   });
@@ -54,24 +53,18 @@ const StaffWardInoutManagementPage = () => {
     setSelected([]);
   }, [currentPage]);
 
-  //@ts-ignore
   const { mutate } = useDischargePatients();
-  const [selected, setSelected] = useState<
-    Array<{
-      name: string;
-      id: number;
-    }>
-  >([]);
+  const [selected, setSelected] = useState<Array<SelectedItem>>([]);
 
-  const onChangeSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setSelected(
-        getTablet?.data.map(tablet => ({ name: tablet.patientName, id: tablet.tabletId })),
+        getTablet?.data.map((tablet: any) => ({ name: tablet.patientName, id: tablet.tabletId })),
       );
     } else {
       setSelected([]);
     }
-  };
+  }, []);
 
   const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
@@ -90,22 +83,43 @@ const StaffWardInoutManagementPage = () => {
     serialNumber: "",
     patientId: 0,
     patientName: "",
+    createdAt: "",
   };
-  const handleActive = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIsActive(prev => !prev);
-  };
+  const handleActive = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      setIsActive(prev => !prev);
+    },
+    [isAcitve],
+  );
 
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
+
     setSearchValue(value);
+    debounceSearchValue(value);
     setCurrentPage(0);
   };
+
+  const debounceSearchValue = useCallback(
+    debounce((value: string) => {
+      setDebounceValue(value);
+    }, 200),
+    [],
+  );
 
   const formDischarge = useForm<WardTabletType>({
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
+
+  useEffect(() => {
+    isAcitve && setIsActive(false);
+  }, [disChargeDate]);
+
+  useEffect(() => {
+    selected.length === 0 && isAcitve && setIsActive(false);
+  }, [selected]);
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
@@ -131,7 +145,7 @@ const StaffWardInoutManagementPage = () => {
     <Container>
       <Title variant="h1">환자 관리</Title>
       <AnimatePresence mode="wait">
-        {selected.length > 0 ? (
+        {selected?.length > 0 ? (
           <motion.div
             key="selected"
             initial={{ opacity: 0 }}
@@ -158,19 +172,33 @@ const StaffWardInoutManagementPage = () => {
                   </ComBoxLayout>
                   <ComBoxLayout width={"160px"}>
                     <CalendarSelect onClick={handleActive}>
-                      <Text
-                        sx={{
-                          fontSize: 14,
-                          lineHeight: 20,
-                          fontWeight: 400,
-                          letterSpacing: "-3%",
-                          opacity: 0.3,
-                        }}
-                      >
-                        예상 퇴원 날짜
-                      </Text>
+                      {disChargeDate !== new Date() ? (
+                        <Text
+                          sx={{
+                            fontSize: 14,
+                            lineHeight: 20,
+                            fontWeight: 400,
+                            letterSpacing: "-3%",
+                            opacity: 1,
+                          }}
+                        >
+                          {formatDateYYYYMMDD(disChargeDate as Date)}
+                        </Text>
+                      ) : (
+                        <Text
+                          sx={{
+                            fontSize: 14,
+                            lineHeight: 20,
+                            fontWeight: 400,
+                            letterSpacing: "-3%",
+                            opacity: 0.3,
+                          }}
+                        >
+                          예상 퇴원 날짜
+                        </Text>
+                      )}
                       <CalendarIcon />
-                      {isAcitve && <CCalendar value={new Date()} onChange={handleDisChargeDate} />}
+                      {isAcitve && <CCalendar value={disChargeDate} setState={setDisChargeDate} />}
                     </CalendarSelect>
                   </ComBoxLayout>
 
@@ -196,7 +224,6 @@ const StaffWardInoutManagementPage = () => {
                   borderColor={"#ECECEC"}
                 />
               </SearchLayout>
-
               <ButtonLayout>
                 <CButton
                   buttontype={"primarySecond"}

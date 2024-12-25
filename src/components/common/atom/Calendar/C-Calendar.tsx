@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, SetStateAction, useCallback, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
@@ -7,12 +7,15 @@ import CCheckBox from "../C-CheckBox";
 import { ReactComponent as LeftArrow } from "@assets/calendar/calendar-left-arrow.svg";
 import { ReactComponent as RightArrow } from "@assets/calendar/calendar-right-arrow.svg";
 
+type ValuePiece = Date | null;
+export type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 interface MyCalendarProps {
-  value: Date;
-  onChange: (selectedDate: Date) => void;
+  value: Value;
+  setState: React.Dispatch<SetStateAction<Value>>;
 }
 
-const MyCalendar: FC<MyCalendarProps> = ({ value, onChange }) => {
+const MyCalendar: FC<MyCalendarProps> = ({ value, setState }) => {
   const [unspecified, setUnspecified] = useState(false);
 
   const handleUnspecified = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,17 +24,24 @@ const MyCalendar: FC<MyCalendarProps> = ({ value, onChange }) => {
   };
 
   return (
-    <StyledCalendarWrapper unspecified={unspecified}>
+    <StyledCalendarWrapper
+      unspecified={unspecified}
+      onClick={e => {
+        e.stopPropagation();
+      }}
+    >
       <StyledCalendarHeader>
         <CCheckBox onChange={handleUnspecified} checked={unspecified} />
         <p>퇴원 일자 미지정</p>
       </StyledCalendarHeader>
       <Calendar
-        onChange={onChange}
+        onChange={setState}
         value={value}
         view="month"
         minDetail="month"
-        formatDay={date => moment(date).format("D")}
+        formatDay={(locale, date) => {
+          return moment(date).format("D");
+        }}
         nextLabel={<RightArrow />}
         prevLabel={<LeftArrow />}
         next2Label={null}
@@ -162,14 +172,14 @@ export const StyledCalendarWrapper = styled.div<{ unspecified: boolean }>`
 
   /* 오늘 날짜 */
   .react-calendar__tile--now {
-    background-color: #30b4ff;
-    color: #fff;
-    font-size: 12px;
+    background-color: #fff;
+    /* color: #fff; */
+    /* font-size: 12px;
     line-height: 20px;
     font-weight: 500;
     border-radius: 100%;
     width: 25.5px;
-    height: 25.5px;
+    height: 25.5px; */
   }
 
   /* 선택된 날짜의 배경색 변경 */

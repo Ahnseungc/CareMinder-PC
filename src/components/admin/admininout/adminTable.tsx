@@ -94,7 +94,7 @@ const AdminTable: FC<AdminTableProps> = ({
           <th style={{ display: "flex" }}>
             <CCheckBox
               onChange={onChangeSelectAll}
-              checked={selected?.length === getTablet?.length}
+              checked={getTablet?.length > 0 && selected?.length === getTablet?.length}
             />
           </th>
           {columns.map(column => {
@@ -107,7 +107,6 @@ const AdminTable: FC<AdminTableProps> = ({
           })}
         </InoutTableHedaerTr>
       </thead>
-
       <tbody>
         {isLoading ? (
           <LoadingLayout>
