@@ -8,6 +8,7 @@ import useUpdateAreaInfo, { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
 import { toast } from "react-toastify";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import { useGetWardAreaLists } from "@hooks/queries/useGetWardAreaLists";
+import useUpdateWardAreaLists from "@hooks/mutation/useUpdateWardAreaLists";
 
 interface AreaManageModalProps extends CMModalProps {
   isAdmin?: boolean;
@@ -24,6 +25,7 @@ export default function AreaManageModal({
   const { data: areaList, isLoading: areaListLoading } = useGetAreaList();
   const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists();
   const { mutate: updateAreaInfo } = useUpdateAreaInfo();
+  const { mutate: updateWardAreaLists } = useUpdateWardAreaLists();
 
   const handleUpdateArea = () => {
     updateAreaInfo(areaData, {
@@ -45,6 +47,41 @@ export default function AreaManageModal({
     return;
   }
 
+  const handleUpdateWardAreaList = () => {
+    const filteredData = wardAreaLists
+      .map(ward => ({
+        ...ward,
+        areas: ward.areas
+          .filter(area => areaData.some(updated => updated.areaId === area.areaId))
+          .map(area => {
+            const updatedArea = areaData.find(updated => updated.areaId === area.areaId);
+            if (updatedArea) {
+              return {
+                ...area,
+                areaName: updatedArea.name,
+                memo: updatedArea.memo,
+              };
+            }
+            return area;
+          }),
+      }))
+      .filter(ward => ward.areas.length > 0);
+
+    console.log(filteredData);
+
+    updateWardAreaLists(
+      { wards: filteredData },
+      {
+        onSuccess: () => {
+          toast.success("구역 정보를 변경했습니다.");
+        },
+        onError: error => {
+          console.error(error);
+        },
+      },
+    );
+  };
+
   return (
     <CMModal
       maxWidth="xl"
@@ -56,7 +93,7 @@ export default function AreaManageModal({
             취소
           </ModalActionButton>
           <ModalActionButton
-            onClick={isAdmin ? null : handleUpdateArea}
+            onClick={isAdmin ? handleUpdateWardAreaList : handleUpdateArea}
             color={isAdmin ? "info" : "primary"}
           >
             변경하기
