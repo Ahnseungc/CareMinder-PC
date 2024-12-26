@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import { useGetWardAreaLists } from "@hooks/queries/useGetWardAreaLists";
 import useUpdateWardAreaLists from "@hooks/mutation/useUpdateWardAreaLists";
+import { useRecoilState } from "recoil";
+import { editedWardNamesState } from "@libraries/recoil/editWardNames";
 
 interface AreaManageModalProps extends CMModalProps {
   isAdmin?: boolean;
@@ -22,6 +24,8 @@ export default function AreaManageModal({
   ...props
 }: AreaManageModalProps) {
   const [areaData, setAreaData] = useState<AreaInfo[]>([]);
+  const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
+
   const { data: areaList, isLoading: areaListLoading } = useGetAreaList();
   const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists();
   const { mutate: updateAreaInfo } = useUpdateAreaInfo();
@@ -48,26 +52,52 @@ export default function AreaManageModal({
   }
 
   const handleUpdateWardAreaList = () => {
-    const filteredData = wardAreaLists
-      .map(ward => ({
-        ...ward,
-        areas: ward.areas
-          .filter(area => areaData.some(updated => updated.areaId === area.areaId))
-          .map(area => {
-            const updatedArea = areaData.find(updated => updated.areaId === area.areaId);
-            if (updatedArea) {
-              return {
-                ...area,
-                areaName: updatedArea.name,
-                memo: updatedArea.memo,
-              };
-            }
-            return area;
-          }),
-      }))
-      .filter(ward => ward.areas.length > 0);
+    if (Object.keys(editedWardNames).length > 0 && areaData.length === 0) {
+      const filteredData = wardAreaLists
+        .filter(ward => editedWardNames[ward.wardId])
+        .map(ward => ({
+          ...ward,
+          wardName: editedWardNames[ward.wardId],
+        }));
 
-    console.log(filteredData);
+      updateWardAreaLists(
+        { wards: filteredData },
+        {
+          onSuccess: () => {
+            toast.success("구역 정보를 변경했습니다.");
+          },
+          onError: error => {
+            console.error(error);
+          },
+        },
+      );
+      return;
+    }
+
+    const filteredData = wardAreaLists
+      .map(ward => {
+        const updatedWard = editedWardNames[ward.wardId]
+          ? { ...ward, wardName: editedWardNames[ward.wardId] }
+          : ward;
+
+        return {
+          ...updatedWard,
+          areas: ward.areas
+            .filter(area => areaData.some(updated => updated.areaId === area.areaId))
+            .map(area => {
+              const updatedArea = areaData.find(updated => updated.areaId === area.areaId);
+              if (updatedArea) {
+                return {
+                  ...area,
+                  areaName: updatedArea.name,
+                  memo: updatedArea.memo,
+                };
+              }
+              return area;
+            }),
+        };
+      })
+      .filter(ward => ward.areas.length > 0);
 
     updateWardAreaLists(
       { wards: filteredData },
@@ -86,13 +116,19 @@ export default function AreaManageModal({
     <CMModal
       maxWidth="xl"
       title={title}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        setEditedWardNames({});
+      }}
       footer={
         <>
           <ModalActionButton
             color="secondary"
             hoverColor={`${isAdmin ? "#5DB8BE22" : ""}`}
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              setEditedWardNames({});
+            }}
           >
             취소
           </ModalActionButton>
@@ -108,7 +144,10 @@ export default function AreaManageModal({
     >
       <X
         style={{ position: "absolute", right: "24px", top: "28px", cursor: "pointer" }}
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          setEditedWardNames({});
+        }}
       />
       <ContentWrapper>
         <Typography

@@ -13,6 +13,8 @@ import useDeleteArea from "@hooks/mutation/useDeleteArea";
 import { toast } from "react-toastify";
 import { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
 import { AreasType, GetWardAreaListsResponse } from "@hooks/queries/useGetWardAreaLists";
+import { useRecoilState } from "recoil";
+import { editedWardNamesState } from "@libraries/recoil/editWardNames";
 
 interface AreaManageTableProps {
   onUpdate: React.Dispatch<SetStateAction<AreaInfo[]>>;
@@ -51,16 +53,21 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
 
   const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null);
   const [isDeleteIndex, setIsDeleteIndex] = useState<number>();
+  const [isEditingWardName, setIsEditingWardName] = useState<number | null>(null);
 
   const [areaNameField, setAreaNameField] = useState<string>("");
   const [areaMemoField, setAreaMemoField] = useState<string>("");
+  const [wardNameField, setWardNameField] = useState<string>("");
+
   const [editedFields, setEditedFields] = useState<EditedFields>({});
+  const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
 
   const [isOpenCheckDeleteModal, openCheckDeleteModal, closeCheckDeleteModal] = useBooleanState();
   const [isOpenDeleteModal, openDeleteModal, closeDeleteModal] = useBooleanState();
 
   const nameFieldRef = useRef<HTMLDivElement>(null);
   const memoFieldRef = useRef<HTMLDivElement>(null);
+  const wardNameFieldRef = useRef<HTMLDivElement>(null);
 
   const updateAreaInfo = (areaId: number, updatedName?: string, updatedMemo?: string) => {
     setEditedFields(prev => ({
@@ -93,6 +100,7 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
     });
   };
 
+  /** 구역 이름, 구역 메모 정보 수정 관련 로직 */
   const handleStartEditing = (row: GetAreaListResponse | AreasType) => {
     const id = isAreasType(row) ? row.areaId : row.id;
     setIsEditingIndex(id);
@@ -126,13 +134,34 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
     updateAreaInfo(areaId, areaNameField, newMemo);
   };
 
+  /** 병동 이름 수정 관련 로직 */
+  const handleWardNameEditing = (wardId: number, wardName: string) => {
+    console.log(wardId);
+    setIsEditingWardName(wardId);
+    setWardNameField(wardName);
+  };
+
+  const handleWardNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    wardId: number,
+  ) => {
+    const newName = e.target.value;
+    setWardNameField(newName);
+    setEditedWardNames(prev => ({
+      ...prev,
+      [wardId]: newName,
+    }));
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         !nameFieldRef.current?.contains(event.target as Node) &&
-        !memoFieldRef.current?.contains(event.target as Node)
+        !memoFieldRef.current?.contains(event.target as Node) &&
+        !wardNameFieldRef.current?.contains(event.target as Node)
       ) {
         setIsEditingIndex(null);
+        setIsEditingWardName(null);
       }
     };
 
@@ -257,7 +286,40 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
         <>
           {(areaList as GetWardAreaListsResponse[]).map(wardAreaList => (
             <div style={{ width: "100%", marginBottom: "20px" }}>
-              <TableHeader isAdmin={true}>{wardAreaList.wardName}</TableHeader>
+              <div
+                onDoubleClick={() =>
+                  handleWardNameEditing(wardAreaList.wardId, wardAreaList.wardName)
+                }
+              >
+                <TableHeader isAdmin={true}>
+                  {isEditingWardName === wardAreaList.wardId ? (
+                    <div ref={wardNameFieldRef}>
+                      <TextField
+                        value={wardNameField}
+                        onChange={e => handleWardNameChange(e, wardAreaList.wardId)}
+                        size="small"
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            "color": "black",
+                            "& input": {
+                              padding: "2px 8px",
+                              fontSize: "16px",
+                              fontWeight: 500,
+                              backgroundColor: "#E6EFF0",
+                              outline: "none",
+                            },
+                            "& fieldset": {
+                              border: "none",
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <>{editedWardNames[wardAreaList.wardId] || wardAreaList.wardName}</>
+                  )}
+                </TableHeader>
+              </div>
               {wardAreaList.areas.length === 0 ? (
                 <EmptyArea>
                   <p>관리되고 있는 구역 정보 없음</p>
