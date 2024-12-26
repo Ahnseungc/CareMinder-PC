@@ -7,9 +7,10 @@ import { toast } from "react-toastify";
 
 interface AddAreaListProps {
   wardId: number;
+  isAdmin: boolean;
 }
 
-export default function AddAreaList({ wardId }: AddAreaListProps) {
+export default function AddAreaList({ wardId, isAdmin }: AddAreaListProps) {
   const { mutate: createArea } = useCreateArea();
   const areaNameRef = useRef<HTMLInputElement>(null);
   const areaMemoRef = useRef<HTMLInputElement>(null);
@@ -65,7 +66,7 @@ export default function AddAreaList({ wardId }: AddAreaListProps) {
         />
       </InputWrapper>
       <InputWrapper width="70px">
-        <UploadButton onClick={handleCreateArea}>
+        <UploadButton onClick={handleCreateArea} isAdmin={isAdmin}>
           <UploadMemo />
         </UploadButton>
       </InputWrapper>
@@ -102,6 +103,7 @@ const StyledTextField = styled(TextField)<{ backgroundColor: string }>`
   }
 `;
 
-const UploadButton = styled.div`
+const UploadButton = styled.div<{ isAdmin: boolean }>`
   cursor: pointer;
+  color: ${props => (props.isAdmin ? `#5db8be` : `#5D6DBE`)};
 `;

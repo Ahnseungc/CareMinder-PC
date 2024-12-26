@@ -10,6 +10,7 @@ import { SwitchCase, useBooleanState } from "@toss/react";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { doubleCheckState, wardNameCheckState } from "@libraries/recoil/idDoubleCheck";
+import verifyPhoneState from "@libraries/recoil/verifyPhone";
 
 type Step = "병동 계정 생성 약관 동의서" | "병동 계정 생성";
 
@@ -29,6 +30,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
   const [open, openModal, closeModal] = useBooleanState();
   const [isWardNameChecked, setIsWardNameChecked] = useRecoilState(wardNameCheckState);
   const [isLoginIdChecked, setIsLoginIdChecked] = useRecoilState(doubleCheckState);
+  const [isVerifyPhoneChecked, setIsVerifyPhoneChecked] = useRecoilState(verifyPhoneState);
 
   const form = useForm<NewWard>({
     defaultValues,
@@ -57,6 +59,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
         openModal();
         setIsWardNameChecked(false);
         setIsLoginIdChecked(false);
+        setIsVerifyPhoneChecked(false);
       },
       onError: error => {
         toast.error(error.message);
@@ -134,7 +137,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                     <ModalActionButton
                       color="info"
                       onClick={handleSubmit(onSubmit)}
-                      disabled={!isWardNameChecked || !isLoginIdChecked}
+                      disabled={!isWardNameChecked || !isLoginIdChecked || !isVerifyPhoneChecked}
                     >
                       완료
                     </ModalActionButton>

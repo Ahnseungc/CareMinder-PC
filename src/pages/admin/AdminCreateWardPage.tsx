@@ -14,13 +14,18 @@ import { useEffect, useRef, useState } from "react";
 import WardAccountSettingsTable from "@components/signin/admin/AdminWardManage/WardAccountSettingsTable";
 import { useRecoilState } from "recoil";
 import wardEditingState from "@libraries/recoil/wardEdit";
+import AreaManageModal from "@components/settings/modal/AreaManageModal";
 
 export default function AdminCreateWardPage() {
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isSetting, setIsSetting] = useState<boolean>(false);
-  const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
-  const [isEditing, setIsEditing] = useRecoilState(wardEditingState);
   const [isSticky, setIsSticky] = useState(false);
+
+  const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
+  const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
+
+  const [isEditing, setIsEditing] = useRecoilState(wardEditingState);
+
   const editContainerRef = useRef<HTMLDivElement>(null);
   const settingRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +92,14 @@ export default function AdminCreateWardPage() {
       {/* 병동 계정 생성 모달 */}
       <CreateWardModal open={open} onClose={closeCreateModal} />
 
+      {/* 구역 관리 하기 모달 */}
+      <AreaManageModal
+        open={isAreaManageModalOpen}
+        onClose={closeAreaManageModal}
+        title="병동/구역 관리하기"
+        isAdmin={true}
+      />
+
       <Container>
         <HeadContainer>
           <div>
@@ -136,6 +149,7 @@ export default function AdminCreateWardPage() {
                     <div
                       style={{ padding: "10px", textAlign: "center" }}
                       onClick={() => {
+                        openAreaManageModal();
                         setIsSetting(false);
                       }}
                     >

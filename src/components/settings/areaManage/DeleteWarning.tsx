@@ -6,7 +6,6 @@ const WarningContainer = styled.div`
 `;
 
 const WarningHeader = styled.p`
-  color: #5d6dbe;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -6,9 +6,23 @@ import AreaManageTable from "../areaManage/AreaManageTable";
 import { useState } from "react";
 import useUpdateAreaInfo, { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
 import { toast } from "react-toastify";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetWardAreaLists } from "@hooks/queries/useGetWardAreaLists";
 
-export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
+interface AreaManageModalProps extends CMModalProps {
+  isAdmin?: boolean;
+  title?: string;
+}
+
+export default function AreaManageModal({
+  onClose,
+  isAdmin = false,
+  title = "구역 관리하기",
+  ...props
+}: AreaManageModalProps) {
   const [areaData, setAreaData] = useState<AreaInfo[]>([]);
+  const { data: areaList, isLoading: areaListLoading } = useGetAreaList();
+  const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists();
   const { mutate: updateAreaInfo } = useUpdateAreaInfo();
 
   const handleUpdateArea = () => {
@@ -23,17 +37,30 @@ export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
     });
   };
 
+  if (!areaList) {
+    return;
+  }
+
+  if (!wardAreaLists) {
+    return;
+  }
+
   return (
     <CMModal
       maxWidth="xl"
-      title={"구역 관리하기"}
+      title={title}
       onClose={onClose}
       footer={
         <>
-          <ModalActionButton color="secondary" onClick={onClose}>
+          <ModalActionButton color="secondary" hoverColor="#5DB8BE22" onClick={onClose}>
             취소
           </ModalActionButton>
-          <ModalActionButton onClick={handleUpdateArea}>변경하기</ModalActionButton>
+          <ModalActionButton
+            onClick={isAdmin ? null : handleUpdateArea}
+            color={isAdmin ? "info" : "primary"}
+          >
+            변경하기
+          </ModalActionButton>
         </>
       }
       {...props}
@@ -47,13 +74,17 @@ export default function AreaManageModal({ onClose, ...props }: CMModalProps) {
           variant="h4"
           sx={{ color: "#878787", fontSize: "16px", fontWeight: "500", margin: "40px 0 " }}
         >
-          구역 관리에서는 구역 이름을 더블 클릭해 수정하고, 구역을 추가하거나 삭제할 수 있습니다.{" "}
+          {`${isAdmin ? "병동/구역 관리에서는 병동 또는 구역 이름을" : "구역 관리에서는 구역 이름을"} 더블 클릭해 수정하고, 구역을 추가하거나 삭제할 수 있습니다.`}
           <br />
           또한, 메모란에 각 구역의 호실 이름이나 기타 메모를 입력할 수 있습니다.
           <br />
           해당 메모는 현 팝업(구역 관리하기)에서만 확인이 가능합니다.
         </Typography>
-        <AreaManageTable onUpdate={setAreaData} />
+        <AreaManageTable
+          onUpdate={setAreaData}
+          areaList={isAdmin ? wardAreaLists : areaList}
+          isLoading={isAdmin ? wardAreaListsLoading : areaListLoading}
+        />
       </ContentWrapper>
     </CMModal>
   );

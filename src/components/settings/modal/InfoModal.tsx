@@ -68,7 +68,9 @@ export default function InfoModal({
             <ModalActionButton color="secondary" onClick={onClose}>
               {leftText}
             </ModalActionButton>
-            <ModalActionButton onClick={onConfirm}>{rightText}</ModalActionButton>
+            <ModalActionButton onClick={onConfirm} color={isAdmin ? "info" : "primary"}>
+              {rightText}
+            </ModalActionButton>
           </>
         ) : (
           <ModalActionButton onClick={onClose} color={isAdmin ? "info" : "primary"}>
