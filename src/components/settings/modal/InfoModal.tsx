@@ -12,6 +12,7 @@ const MODAL_CONTEXTS = {
   checkTOS: { title: "필수 약관 체크 누락되었습니다.", controlAccount: false },
   successChangePW: { title: "비밀번호가 변경되었습니다.", controlAccount: false },
   successChangeInfo: { title: "변경 내용이 저장되었습니다.", controlAccount: false },
+  successAccountLock: { title: "잠금 처리되었습니다.", controlAccount: false },
   confirmFail: { title: "인증실패되었습니다.", controlAccount: false },
   adminPopup: {
     title: "본 페이지는 관리자를 위한 페이지로, 관리자 외에 접근을 금합니다.",
@@ -65,7 +66,11 @@ export default function InfoModal({
       footer={
         controlAccount ? (
           <>
-            <ModalActionButton color="secondary" onClick={onClose}>
+            <ModalActionButton
+              color="secondary"
+              hoverColor={`${isAdmin ? "#5DB8BE22" : ""}`}
+              onClick={onClose}
+            >
               {leftText}
             </ModalActionButton>
             <ModalActionButton onClick={onConfirm} color={isAdmin ? "info" : "primary"}>

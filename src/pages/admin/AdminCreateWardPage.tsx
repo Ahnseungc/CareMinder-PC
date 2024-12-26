@@ -12,9 +12,12 @@ import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 import { useEffect, useRef, useState } from "react";
 import WardAccountSettingsTable from "@components/signin/admin/AdminWardManage/WardAccountSettingsTable";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import wardEditingState from "@libraries/recoil/wardEdit";
 import AreaManageModal from "@components/settings/modal/AreaManageModal";
+import wardListState from "@libraries/recoil/wardList";
+import InfoModal from "@components/settings/modal/InfoModal";
+import DeleteWarning from "@components/settings/areaManage/DeleteWarning";
 
 export default function AdminCreateWardPage() {
   const [isClear, setIsClear] = useState<boolean>(false);
@@ -23,8 +26,11 @@ export default function AdminCreateWardPage() {
 
   const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
   const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
+  const [isOpenCheckLockModal, openCheckLockModal, closeCheckLockModal] = useBooleanState();
+  const [isOpenSuccessLockModal, openSuccessLockModal, closeSuccessLockModal] = useBooleanState();
 
   const [isEditing, setIsEditing] = useRecoilState(wardEditingState);
+  const selectedWardList = useRecoilValue(wardListState);
 
   const editContainerRef = useRef<HTMLDivElement>(null);
   const settingRef = useRef<HTMLDivElement>(null);
@@ -78,13 +84,54 @@ export default function AdminCreateWardPage() {
         unLockAccount(lockData);
         break;
       case "unlock":
-        lockAccount(lockData);
+        openCheckLockModal();
+        // lockAccount(lockData);
         break;
       case "delete":
         // setIsModalType("checkDeleteStaff");
         // openInfoModal();
         break;
     }
+  };
+
+  const handleLock = () => {
+    console.log(selectedWardList);
+    lockAccount(
+      {
+        userIds: selectedWardList,
+        accountType: "WARD",
+      },
+      {
+        onSuccess: () => {
+          closeCheckLockModal();
+          openSuccessLockModal();
+        },
+      },
+    );
+  };
+
+  const handleAllLock = () => {
+    console.log(selectedWardList);
+    const lockData = {
+      userIds: selectedWardList,
+      accountType: "WARD",
+    };
+    lockAccount(lockData, {
+      onSuccess: () => {
+        openSuccessLockModal();
+        closeCheckLockModal();
+      },
+    });
+    setIsClear(true);
+  };
+
+  const handleAllUnLock = () => {
+    const lockData = {
+      userIds: selectedWardList,
+      accountType: "WARD",
+    };
+    unLockAccount(lockData);
+    setIsClear(true);
   };
 
   return (
@@ -97,6 +144,26 @@ export default function AdminCreateWardPage() {
         open={isAreaManageModalOpen}
         onClose={closeAreaManageModal}
         title="병동/구역 관리하기"
+        isAdmin={true}
+      />
+
+      {/* 계정 잠금 경고 모달 */}
+      <InfoModal
+        open={isOpenCheckLockModal}
+        onClose={closeCheckLockModal}
+        modalType="checkDelete"
+        leftText="취소"
+        rightText="잠금"
+        isAdmin={true}
+        onConfirm={selectedWardList.length === 1 ? handleLock : handleAllLock}
+        message={<DeleteWarning isLock={true} />}
+      />
+
+      {/* 계정 잠금 처리 확인 모달 */}
+      <InfoModal
+        open={isOpenSuccessLockModal}
+        onClose={closeSuccessLockModal}
+        modalType="successAccountLock"
         isAdmin={true}
       />
 
@@ -177,8 +244,8 @@ export default function AdminCreateWardPage() {
                 <span>
                   <Edit onClick={() => null} />
                 </span>
-                <Lock onClick={() => null} />
-                <UnLock onClick={() => null} />
+                <Lock onClick={openCheckLockModal} />
+                <UnLock onClick={handleAllUnLock} />
                 <Delete />
               </div>
             </EditContainer>

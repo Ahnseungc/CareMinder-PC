@@ -89,7 +89,11 @@ export default function AreaManageModal({
       onClose={onClose}
       footer={
         <>
-          <ModalActionButton color="secondary" hoverColor="#5DB8BE22" onClick={onClose}>
+          <ModalActionButton
+            color="secondary"
+            hoverColor={`${isAdmin ? "#5DB8BE22" : ""}`}
+            onClick={onClose}
+          >
             취소
           </ModalActionButton>
           <ModalActionButton

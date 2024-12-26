@@ -316,6 +316,7 @@ const WardAccountSettingsTable = ({
                           ) : (
                             <UnLock
                               onClick={() => {
+                                setSelectWardList([row.wardId]);
                                 row.userStatusInfo.accountLocked
                                   ? null
                                   : onManage("unlock", [row.wardId]);
