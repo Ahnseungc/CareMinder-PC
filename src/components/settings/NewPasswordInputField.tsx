@@ -83,6 +83,16 @@ export default function NewPasswordField({ field, form }: InputFieldProps) {
             placeholder={placeholder}
             type={showPassword ? "text" : inputTypes[name]}
             error={Boolean(errors[name])}
+            onChange={e => {
+              field.onChange(e);
+
+              if (name === "confirmPassword" && !e.target.value) {
+                setValidState(prev => ({
+                  ...prev,
+                  confirmPassword: undefined,
+                }));
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

@@ -1,5 +1,5 @@
 import ActionButton from "@components/signin/ActionButton";
-import CreateAdminModal from "./CreateAdminModal";
+import CreateAdminModal from "./Modal/CreateAdminModal";
 import { useBooleanState } from "@toss/react";
 
 export default function CreateAdminButton() {

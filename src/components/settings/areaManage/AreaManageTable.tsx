@@ -4,7 +4,7 @@ import { ReactComponent as Delete } from "@/assets/completedRequests/accountDele
 import AddAreaList from "./AddAreaList";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
-import { GetAreaListResponse, useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
 import { useGetWardInfo } from "@hooks/queries";
 import InfoModal from "../modal/InfoModal";
 import { useBooleanState } from "@toss/react";
@@ -12,9 +12,14 @@ import DeleteWarning from "./DeleteWarning";
 import useDeleteArea from "@hooks/mutation/useDeleteArea";
 import { toast } from "react-toastify";
 import { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
+import { AreasType, GetWardAreaListsResponse } from "@hooks/queries/useGetWardAreaLists";
+import { useRecoilState } from "recoil";
+import { editedWardNamesState } from "@libraries/recoil/editWardNames";
 
 interface AreaManageTableProps {
   onUpdate: React.Dispatch<SetStateAction<AreaInfo[]>>;
+  areaList: GetAreaListResponse[] | GetWardAreaListsResponse[];
+  isLoading: boolean;
 }
 
 type EditedFields = {
@@ -24,24 +29,45 @@ type EditedFields = {
   };
 };
 
-export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
-  const { data: areaList, isLoading } = useGetAreaList();
+export function isWardAreaListsResponse(
+  arr: GetAreaListResponse[] | GetWardAreaListsResponse[],
+): arr is GetWardAreaListsResponse[] {
+  return arr.length > 0 && "wardName" in arr[0];
+}
+
+export function isAreasType(row: GetAreaListResponse | AreasType): row is AreasType {
+  return "areaId" in row;
+}
+
+export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaManageTableProps) {
   const { data: wardInfo, isLoading: isGetWardInfoLoading } = useGetWardInfo();
+  const [isAllList, setIsAllList] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (areaList && areaList.length > 0) {
+      setIsAllList(isWardAreaListsResponse(areaList));
+    }
+  }, [areaList]);
 
   const { mutate: deleteArea } = useDeleteArea();
 
   const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null);
   const [isDeleteIndex, setIsDeleteIndex] = useState<number>();
+  const [isEditingWardName, setIsEditingWardName] = useState<number | null>(null);
 
   const [areaNameField, setAreaNameField] = useState<string>("");
   const [areaMemoField, setAreaMemoField] = useState<string>("");
+  const [wardNameField, setWardNameField] = useState<string>("");
+
   const [editedFields, setEditedFields] = useState<EditedFields>({});
+  const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
 
   const [isOpenCheckDeleteModal, openCheckDeleteModal, closeCheckDeleteModal] = useBooleanState();
   const [isOpenDeleteModal, openDeleteModal, closeDeleteModal] = useBooleanState();
 
   const nameFieldRef = useRef<HTMLDivElement>(null);
   const memoFieldRef = useRef<HTMLDivElement>(null);
+  const wardNameFieldRef = useRef<HTMLDivElement>(null);
 
   const updateAreaInfo = (areaId: number, updatedName?: string, updatedMemo?: string) => {
     setEditedFields(prev => ({
@@ -74,11 +100,20 @@ export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
     });
   };
 
-  const handleStartEditing = (row: GetAreaListResponse) => {
-    setIsEditingIndex(row.id);
-    const editedField = editedFields[row.id];
-    setAreaNameField(editedField?.name || row.name);
-    setAreaMemoField(editedField?.memo || row.memo);
+  /** 구역 이름, 구역 메모 정보 수정 관련 로직 */
+  const handleStartEditing = (row: GetAreaListResponse | AreasType) => {
+    const id = isAreasType(row) ? row.areaId : row.id;
+    setIsEditingIndex(id);
+
+    const editedField = editedFields[id];
+
+    if (isAreasType(row)) {
+      setAreaNameField(editedField?.name || row.areaName);
+      setAreaMemoField(editedField?.memo || row.memo);
+    } else {
+      setAreaNameField(editedField?.name || row.name);
+      setAreaMemoField(editedField?.memo || row.memo);
+    }
   };
 
   const handleNameChange = (
@@ -99,13 +134,34 @@ export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
     updateAreaInfo(areaId, areaNameField, newMemo);
   };
 
+  /** 병동 이름 수정 관련 로직 */
+  const handleWardNameEditing = (wardId: number, wardName: string) => {
+    console.log(wardId);
+    setIsEditingWardName(wardId);
+    setWardNameField(wardName);
+  };
+
+  const handleWardNameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    wardId: number,
+  ) => {
+    const newName = e.target.value;
+    setWardNameField(newName);
+    setEditedWardNames(prev => ({
+      ...prev,
+      [wardId]: newName,
+    }));
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         !nameFieldRef.current?.contains(event.target as Node) &&
-        !memoFieldRef.current?.contains(event.target as Node)
+        !memoFieldRef.current?.contains(event.target as Node) &&
+        !wardNameFieldRef.current?.contains(event.target as Node)
       ) {
         setIsEditingIndex(null);
+        setIsEditingWardName(null);
       }
     };
 
@@ -132,9 +188,14 @@ export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
     openDeleteModal();
   };
 
+  if (!wardInfo) {
+    return;
+  }
+
   if (areaList && isLoading && wardInfo && isGetWardInfoLoading) {
     return <div>로딩 중..</div>;
   }
+
   return (
     <>
       <InfoModal
@@ -143,89 +204,213 @@ export default function AreaManageTable({ onUpdate }: AreaManageTableProps) {
         modalType="checkDelete"
         leftText="취소하기"
         rightText="삭제하기"
+        isAdmin={isAllList}
         onConfirm={() => handleDeleteArea()}
         message={<DeleteWarning />}
       />
-      <InfoModal open={isOpenDeleteModal} onClose={closeDeleteModal} modalType="delete" />
-      <TableHeader>{wardInfo && wardInfo.wardName}</TableHeader>
-      <TableWrapper>
-        <Table>
-          <tbody>
-            {areaList &&
-              areaList.map(row => {
-                const editedField = editedFields[row.id];
-                return (
-                  <tr
-                    key={row.id}
-                    style={{
-                      backgroundColor: `${isEditingIndex === row.id ? "#D9DFFF66" : ""}`,
-                    }}
-                  >
-                    <td onDoubleClick={() => handleStartEditing(row)}>
-                      {isEditingIndex === row.id ? (
-                        <div ref={nameFieldRef}>
-                          <StyledTextField
-                            size="small"
-                            variant="filled"
-                            InputProps={{ disableUnderline: true }}
-                            backgroundColor="#FFFFFF"
-                            value={areaNameField}
-                            onChange={e => handleNameChange(e, row.id)}
-                          />
-                        </div>
-                      ) : (
-                        <AreaName>{editedField?.name || row.name}</AreaName>
-                      )}
-                    </td>
-                    <td onDoubleClick={() => handleStartEditing(row)}>
-                      {isEditingIndex === row.id ? (
-                        <div ref={memoFieldRef}>
-                          <StyledTextMemoField
-                            size="small"
-                            variant="filled"
-                            InputProps={{
-                              disableUnderline: true,
+      <InfoModal
+        open={isOpenDeleteModal}
+        onClose={closeDeleteModal}
+        isAdmin={isAllList}
+        modalType="delete"
+      />
+      {!isAllList ? (
+        <>
+          <TableHeader isAdmin={false}>{wardInfo.wardName}</TableHeader>
+          <TableWrapper isAdmin={false}>
+            <Table>
+              <tbody>
+                <>
+                  {(areaList as GetAreaListResponse[]).map(row => {
+                    const editedField = editedFields[row.id];
+                    return (
+                      <tr
+                        key={row.id}
+                        style={{
+                          backgroundColor: `${isEditingIndex === row.id ? "#D9DFFF66" : ""}`,
+                        }}
+                      >
+                        <td onDoubleClick={() => handleStartEditing(row)}>
+                          {isEditingIndex === row.id ? (
+                            <div ref={nameFieldRef}>
+                              <StyledTextField
+                                size="small"
+                                variant="filled"
+                                InputProps={{ disableUnderline: true }}
+                                backgroundColor="#FFFFFF"
+                                value={areaNameField}
+                                onChange={e => handleNameChange(e, row.id)}
+                              />
+                            </div>
+                          ) : (
+                            <AreaName>{editedField?.name || row.name}</AreaName>
+                          )}
+                        </td>
+                        <td onDoubleClick={() => handleStartEditing(row)}>
+                          {isEditingIndex === row.id ? (
+                            <div ref={memoFieldRef}>
+                              <StyledTextMemoField
+                                size="small"
+                                variant="filled"
+                                InputProps={{
+                                  disableUnderline: true,
+                                }}
+                                backgroundColor="#FFFFFF"
+                                value={areaMemoField}
+                                onChange={e => handleMemoChange(e, row.id)}
+                              />
+                            </div>
+                          ) : (
+                            <MemoName>{editedField?.memo || row.memo || "메모 없음"}</MemoName>
+                          )}
+                        </td>
+                        <td
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setIsDeleteIndex(row.id);
+                            openCheckDeleteModal();
+                          }}
+                        >
+                          <Delete />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </>
+              </tbody>
+            </Table>
+          </TableWrapper>
+          {wardInfo && <AddAreaList wardId={wardInfo?.id} isAdmin={false} />}
+        </>
+      ) : (
+        <>
+          {(areaList as GetWardAreaListsResponse[]).map(wardAreaList => (
+            <div style={{ width: "100%", marginBottom: "20px" }}>
+              <div
+                onDoubleClick={() =>
+                  handleWardNameEditing(wardAreaList.wardId, wardAreaList.wardName)
+                }
+              >
+                <TableHeader isAdmin={true}>
+                  {isEditingWardName === wardAreaList.wardId ? (
+                    <div ref={wardNameFieldRef}>
+                      <TextField
+                        value={wardNameField}
+                        onChange={e => handleWardNameChange(e, wardAreaList.wardId)}
+                        size="small"
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            "color": "black",
+                            "& input": {
+                              padding: "2px 8px",
+                              fontSize: "16px",
+                              fontWeight: 500,
+                              backgroundColor: "#E6EFF0",
+                              outline: "none",
+                            },
+                            "& fieldset": {
+                              border: "none",
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <>{editedWardNames[wardAreaList.wardId] || wardAreaList.wardName}</>
+                  )}
+                </TableHeader>
+              </div>
+              {wardAreaList.areas.length === 0 ? (
+                <EmptyArea>
+                  <p>관리되고 있는 구역 정보 없음</p>
+                </EmptyArea>
+              ) : (
+                <TableWrapper isAdmin={true}>
+                  <Table>
+                    <tbody>
+                      {wardAreaList.areas.map(row => {
+                        const editedField = editedFields[row.areaId];
+                        return (
+                          <tr
+                            key={row.areaId}
+                            style={{
+                              backgroundColor: `${isEditingIndex === row.areaId ? "#E6EFF0" : ""}`,
                             }}
-                            backgroundColor="#FFFFFF"
-                            value={areaMemoField}
-                            onChange={e => handleMemoChange(e, row.id)}
-                          />
-                        </div>
-                      ) : (
-                        <MemoName>{editedField?.memo || row.memo || "메모 없음"}</MemoName>
-                      )}
-                    </td>
-                    <td
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setIsDeleteIndex(row.id);
-                        openCheckDeleteModal();
-                      }}
-                    >
-                      <Delete />
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
-      </TableWrapper>
-      {wardInfo && <AddAreaList wardId={wardInfo?.id} />}
+                          >
+                            <td onDoubleClick={() => handleStartEditing(row)}>
+                              {isEditingIndex === row.areaId ? (
+                                <div ref={nameFieldRef}>
+                                  <StyledTextField
+                                    size="small"
+                                    variant="filled"
+                                    InputProps={{ disableUnderline: true }}
+                                    backgroundColor="#FFFFFF"
+                                    value={areaNameField}
+                                    onChange={e => handleNameChange(e, row.areaId)}
+                                  />
+                                </div>
+                              ) : (
+                                <AreaName>{editedField?.name || row.areaName}</AreaName>
+                              )}
+                            </td>
+                            <td onDoubleClick={() => handleStartEditing(row)}>
+                              {isEditingIndex === row.areaId ? (
+                                <div ref={memoFieldRef}>
+                                  <StyledTextMemoField
+                                    size="small"
+                                    variant="filled"
+                                    InputProps={{
+                                      disableUnderline: true,
+                                    }}
+                                    backgroundColor="#FFFFFF"
+                                    value={areaMemoField}
+                                    onChange={e => handleMemoChange(e, row.areaId)}
+                                  />
+                                </div>
+                              ) : (
+                                <MemoName>{editedField?.memo || row.memo || "메모 없음"}</MemoName>
+                              )}
+                            </td>
+                            <td
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                setIsDeleteIndex(row.areaId);
+                                openCheckDeleteModal();
+                              }}
+                            >
+                              <Delete />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </TableWrapper>
+              )}
+
+              {wardInfo && <AddAreaList wardId={wardAreaList.wardId} isAdmin={true} />}
+            </div>
+          ))}
+        </>
+      )}
     </>
   );
 }
-const TableHeader = styled.div`
+
+/** styles */
+
+const TableHeader = styled.div<{ isAdmin: boolean }>`
   width: 100%;
   padding: 8px 0 8px 22px;
-  background-color: #5d6dbe;
+  background-color: ${props => (props.isAdmin ? "#5DB8BE" : "#5d6dbe")};
   font-size: 16px;
   font-weight: 500;
   color: #ffffff;
   text-align: start;
 `;
 
-const TableWrapper = styled.div`
-  height: 240px;
+const TableWrapper = styled.div<{ isAdmin: boolean }>`
+  max-height: 240px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -238,7 +423,7 @@ const TableWrapper = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #5d6dbe;
+    background: ${props => (props.isAdmin ? "#5DB8BE" : "#5d6dbe")};
     border-radius: 4px;
   }
 
@@ -261,10 +446,12 @@ const Table = styled.table`
   width: 100%;
   height: 100%;
   border-collapse: collapse;
+
   & tbody {
     width: 100%;
-    height: 240px;
+    max-height: 240px;
     overflow: scroll;
+
     & tr > td {
       cursor: pointer;
       text-align: center;
@@ -339,4 +526,12 @@ const StyledTextMemoField = styled(StyledTextField)`
     text-align: start;
     padding: 0;
   }
+`;
+
+const EmptyArea = styled.div`
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 `;
