@@ -1,5 +1,5 @@
 import { SigninFormData } from "@models/signin";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
@@ -36,10 +36,12 @@ export default function useSignin() {
   const navigate = useNavigate();
   const setUserState = useSetRecoilState(userState);
   const setReqChangePWState = useSetRecoilState(reqChangePWState);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: signin,
     onSuccess: res => {
+      queryClient.invalidateQueries({ queryKey: ["useGetWardPatientPending"] });
       console.log("로그인 성공");
       console.log(res);
       // 추가 응답 API 개발 완료 후

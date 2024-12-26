@@ -13,6 +13,7 @@ export default function useCreateStaff(): UseMutationResult<void, AxiosError, Ne
     mutationFn: createStaff,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
+      queryClient.invalidateQueries({ queryKey: ["staffSimpleList"] });
     },
   });
 }
