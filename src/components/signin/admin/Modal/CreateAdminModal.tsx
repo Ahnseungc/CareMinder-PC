@@ -1,16 +1,16 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import InputField from "@components/signin/admin/InputField";
 import { useCreateAdmin } from "@hooks/mutation";
-import doubleCheckState from "@libraries/recoil/staff";
+import { doubleCheckState } from "@libraries/recoil/idDoubleCheck";
+import { useRecoilState } from "recoil";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import { AdminUserField, NewAdminUser } from "@models/user";
 import { Box, Checkbox, FormControlLabel, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
 import { toast } from "react-toastify";
-import { useRecoilState } from "recoil";
+
 type Step = "어드민 계정 생성 약관 동의서" | "어드민 계정 생성";
 
 const defaultValues: NewAdminUser = {
@@ -94,7 +94,6 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
         "height": `${step === "어드민 계정 생성" ? "95%" : "100%"}`,
         "margin": "auto",
         "& .MuiDialog-paper": {
-          // MUI Dialog 페이퍼의 스크롤바 제거
           overflowY: "hidden",
         },
       }}
@@ -118,7 +117,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
                   disabled={!agreementChecked}
                   onClick={() => setStep("어드민 계정 생성")}
                 >
-                  다음
+                  동의합니다
                 </ModalActionButton>
               </>
             ),
@@ -390,7 +389,7 @@ const TOSContentField = styled(Box)(({ theme }) => ({
 }));
 
 const AdminFormContainer = styled(Box)(({ theme }) => ({
-  "height": "calc(100vh - 250px)", // 적절한 높이 조정
+  "height": "calc(100vh - 250px)",
   "overflowY": "auto",
   "paddingRight": "20px",
 

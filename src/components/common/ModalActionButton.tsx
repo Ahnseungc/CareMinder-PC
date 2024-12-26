@@ -1,12 +1,13 @@
 import { Button, ButtonProps, styled } from "@mui/material";
 
 type ModalActionButtonProps = {
-  color?: "primary" | "secondary" | "success";
+  color?: "primary" | "secondary" | "success" | "info";
+  hoverColor?: string;
 } & Omit<ButtonProps, "color">;
 
 const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlined" {...props} />, {
-  shouldForwardProp: prop => prop !== "variant",
-})<ModalActionButtonProps>(({ color = "primary", theme }) => ({
+  shouldForwardProp: prop => prop !== "variant" && prop !== "hoverColor",
+})<ModalActionButtonProps>(({ color = "primary", theme, hoverColor }) => ({
   borderRadius: "100px",
   minWidth: "108px",
   padding: "6px 16px",
@@ -34,7 +35,7 @@ const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlin
     "backgroundColor": theme.palette.primary.contrastText,
     "&:hover": {
       borderColor: theme.palette.divider,
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: hoverColor || theme.palette.primary.light,
     },
   }),
   ...(color === "success" && {
@@ -44,6 +45,20 @@ const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlin
     "&:hover": {
       borderColor: theme.palette.divider,
       backgroundColor: theme.palette.primary.light,
+    },
+  }),
+  ...(color === "info" && {
+    "color": theme.palette.secondary.contrastText,
+    "borderColor": theme.palette.divider,
+    "backgroundColor": theme.palette.success.light,
+    "&:hover": {
+      borderColor: theme.palette.divider,
+      backgroundColor: "#5DB8BEcc",
+    },
+    "&:disabled": {
+      backgroundColor: "#5DB8BE66",
+      border: "none",
+      color: theme.palette.primary.contrastText,
     },
   }),
 }));

@@ -6,7 +6,6 @@ const WarningContainer = styled.div`
 `;
 
 const WarningHeader = styled.p`
-  color: #5d6dbe;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,7 +34,11 @@ const WarningConfirm = styled.p`
   font-weight: 500;
 `;
 
-const DeleteWarning = () => {
+type DeleteWarningProps = {
+  isLock?: boolean;
+};
+
+const DeleteWarning = (props: DeleteWarningProps) => {
   return (
     <WarningContainer>
       <WarningHeader>
@@ -44,13 +47,31 @@ const DeleteWarning = () => {
         </WarningTitle>
         경고
       </WarningHeader>
-      <WarningText>구역 삭제 시 복구가 불가능합니다</WarningText>
-      <WarningDescription>
-        해당 구역에 있던 스태프와 테블릿은
-        <br />
-        구역 '미지정'으로 변경됩니다.
-      </WarningDescription>
-      <WarningConfirm>정말로 삭제하시겠습니까?</WarningConfirm>
+      {props.isLock ? (
+        <>
+          <WarningText>
+            계정 잠금 시 해당 인력은
+            <br />
+            더이상 계정에 접근할 수 없게 됩니다.
+          </WarningText>
+          <WarningDescription>
+            현재 접속 중인 경우
+            <br />
+            강제 로그아웃은 되지 않습니다.
+          </WarningDescription>
+          <WarningConfirm>정말로 해당 계정을 잠그시겠습니까?</WarningConfirm>
+        </>
+      ) : (
+        <>
+          <WarningText>구역 삭제 시 복구가 불가능합니다</WarningText>
+          <WarningDescription>
+            해당 구역에 있던 스태프와 테블릿은
+            <br />
+            구역 '미지정'으로 변경됩니다.
+          </WarningDescription>
+          <WarningConfirm>정말로 삭제하시겠습니까?</WarningConfirm>
+        </>
+      )}
     </WarningContainer>
   );
 };
