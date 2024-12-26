@@ -1,4 +1,4 @@
-import axios, { InternalAxiosRequestConfig, AxiosHeaders } from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosHeaders, AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { SEVER_URL } from "@/constants/baseUrl";
 
@@ -12,7 +12,6 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 //토큰 유효성 검사
 axiosInstance.interceptors.response.use(
   res => {
@@ -53,15 +52,19 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(refreshEndpoint, {
-          accessToken: Cookies.get(accessTokenKey),
-          refreshToken: Cookies.get(refreshTokenKey),
-        });
+        const response = await axios.post(
+          refreshEndpoint,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get(refreshTokenKey)}`,
+            },
+          },
+        );
 
         if (!response.data) {
           return Promise.reject(new Error("토큰 리프레쉬 실패"));
         }
-
         Cookies.set(accessTokenKey, response.data.accessToken);
         Cookies.set(refreshTokenKey, response.data.refreshToken);
 
@@ -69,6 +72,9 @@ axiosInstance.interceptors.response.use(
         error.config.headers.Authorization = `Bearer ${response.data.accessToken}`;
         return axiosInstance.request(error.config);
       } catch (refreshError) {
+        if (refreshError instanceof AxiosError && refreshError.status === 401) {
+          window.location.href = "/sign-in";
+        }
         return Promise.reject(refreshError);
       }
     }

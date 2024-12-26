@@ -96,10 +96,6 @@ export default function SearchBox() {
     searchNurses();
   }, [debouncedQuery, staffList]);
 
-  useEffect(() => {
-    console.log(isOpen);
-  }, [isOpen]);
-
   return (
     <>
       <SearchInputWrapper>
