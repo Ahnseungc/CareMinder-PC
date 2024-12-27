@@ -19,6 +19,7 @@ import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.s
 import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
 import { formatDateYYYYMMDD } from "@utils/getDateform";
 import { debounce } from "lodash";
+import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 
 type SelectedItem = {
   name: string;
@@ -33,6 +34,7 @@ const StaffWardInoutManagementPage = () => {
   const [isAcitve, setIsActive] = useState(false);
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
   const [debounceValue, setDebounceValue] = useState("");
+  const [isModal, setIsModal] = useState(false);
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
@@ -56,25 +58,31 @@ const StaffWardInoutManagementPage = () => {
   const { mutate } = useDischargePatients();
   const [selected, setSelected] = useState<Array<SelectedItem>>([]);
 
-  const onChangeSelectAll = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      setSelected(
-        getTablet?.data.map((tablet: any) => ({ name: tablet.patientName, id: tablet.tabletId })),
-      );
-    } else {
-      setSelected([]);
-    }
-  }, []);
-
-  const onChangeSelected = (tabletId: number, patientName: string) => {
-    setSelected(prev => {
-      if (prev.some(item => item.id === tabletId)) {
-        return prev.filter(item => item.id !== tabletId);
+  const onChangeSelectAll = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.checked) {
+        setSelected(
+          getTablet?.data.map((tablet: any) => ({ name: tablet.patientName, id: tablet.tabletId })),
+        );
       } else {
-        return [...prev, { name: patientName, id: tabletId }];
+        setSelected([]);
       }
-    });
-  };
+    },
+    [selected],
+  );
+
+  const onChangeSelected = useCallback(
+    (tabletId: number, patientName: string) => {
+      setSelected(prev => {
+        if (prev.some(item => item.id === tabletId)) {
+          return prev.filter(item => item.id !== tabletId);
+        } else {
+          return [...prev, { name: patientName, id: tabletId }];
+        }
+      });
+    },
+    [selected],
+  );
   const defaultValuesUpdate: WardTabletType = {
     areaId: 0,
     tabletId: 0,
@@ -95,7 +103,6 @@ const StaffWardInoutManagementPage = () => {
 
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
-
     setSearchValue(value);
     debounceSearchValue(value);
     setCurrentPage(0);
@@ -105,7 +112,7 @@ const StaffWardInoutManagementPage = () => {
     debounce((value: string) => {
       setDebounceValue(value);
     }, 200),
-    [],
+    [searchValue],
   );
 
   const formDischarge = useForm<WardTabletType>({
@@ -118,19 +125,20 @@ const StaffWardInoutManagementPage = () => {
   }, [disChargeDate]);
 
   useEffect(() => {
-    selected.length === 0 && isAcitve && setIsActive(false);
+    selected?.length === 0 && isAcitve && setIsActive(false);
   }, [selected]);
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
   const updateDischarge: SubmitHandler<WardTabletType> = () => {
     mutate(
-      { tabletIds: selected.map(item => item.id) },
+      { tabletIds: selectSingle.length !== 0 ? selectSingle : selected.map(item => item.id) },
       {
         onSuccess: () => {
           toast.success("퇴원 처리가 완료 되었습니다.");
           refetch();
           setSelected([]);
+          handleModal();
         },
         onError: error => {
           toast.error(error.message);
@@ -141,122 +149,151 @@ const StaffWardInoutManagementPage = () => {
 
   const onDisCharge = handleDischarge(updateDischarge);
 
+  const [selectSingle, setSelectSingle] = useState<Array<number>>([]);
+
+  const handleModal = () => {
+    setIsModal(prev => !prev);
+  };
+
+  const handleDischargeSingle = (tabletId: number) => {
+    setSelectSingle([tabletId]);
+    handleModal();
+  };
+
+  useEffect(() => {
+    setSelectSingle([]);
+  }, [selected]);
+
   return (
-    <Container>
-      <Title variant="h1">환자 관리</Title>
-      <AnimatePresence mode="wait">
-        {selected?.length > 0 ? (
-          <motion.div
-            key="selected"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            <SelectedActionBox>
-              <div style={{ display: "flex", alignItems: "center", paddingLeft: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                  <Button onClick={() => setSelected([])}>
-                    <StaffCancelIcon />
-                  </Button>
-                  <Text>{selected.length}항목 선택됨</Text>
-                </div>
-                <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
-                  <ComBoxLayout width={"192px"}>
-                    <CComboBox
-                      placeholder={"구역"}
-                      options={[]}
-                      value={"테스트"}
-                      onChange={() => null}
-                    />
-                  </ComBoxLayout>
-                  <ComBoxLayout width={"160px"}>
-                    <CalendarSelect onClick={handleActive}>
-                      {disChargeDate !== new Date() ? (
-                        <Text
-                          sx={{
-                            fontSize: 14,
-                            lineHeight: 20,
-                            fontWeight: 400,
-                            letterSpacing: "-3%",
-                            opacity: 1,
-                          }}
-                        >
-                          {formatDateYYYYMMDD(disChargeDate as Date)}
-                        </Text>
-                      ) : (
-                        <Text
-                          sx={{
-                            fontSize: 14,
-                            lineHeight: 20,
-                            fontWeight: 400,
-                            letterSpacing: "-3%",
-                            opacity: 0.3,
-                          }}
-                        >
-                          예상 퇴원 날짜
-                        </Text>
-                      )}
-                      <CalendarIcon />
-                      {isAcitve && <CCalendar value={disChargeDate} setState={setDisChargeDate} />}
-                    </CalendarSelect>
-                  </ComBoxLayout>
-
-                  <CButton buttontype={"impactRed"}>환자 퇴원 처리</CButton>
-                </div>
-              </div>
-            </SelectedActionBox>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="nan-selected"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-          >
-            <NanSelectedActionBox>
-              <SearchLayout>
-                <CSearchBox
-                  value={searchValue}
-                  onChange={onChangeSearchValue}
-                  placeholder={"검색할 내용을 입력해 주세요."}
-                  borderColor={"#ECECEC"}
-                />
-              </SearchLayout>
-              <ButtonLayout>
-                <CButton
-                  buttontype={"primarySecond"}
-                  onClick={handleActive}
-                  icon={<DrowDownIcon />}
-                >
-                  설정
-                </CButton>
-              </ButtonLayout>
-            </NanSelectedActionBox>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <TableLayout>
-        <AdminTable
-          isLoading={isLoading}
-          getTablet={getTablet?.data}
-          onChangeSelected={onChangeSelected}
-          onChangeSelectAll={onChangeSelectAll}
+    <>
+      {isModal && (
+        <DischargeModal
+          modalTitle={"주의"}
+          subTitle={"테스트"}
+          onClose={handleModal}
+          open={isModal}
           onDisCharge={onDisCharge}
-          selected={selected}
         />
-      </TableLayout>
-      <FooterLayout>
-        <div>
-          <PaginationComponent
-            totalPage={getTablet?.totalPages}
-            onChange={(e, page) => handleChangePage(e, page)}
+      )}
+      <Container>
+        <Title variant="h1">환자 관리</Title>
+        <AnimatePresence mode="wait">
+          {selected?.length > 0 ? (
+            <motion.div
+              key="selected"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <SelectedActionBox>
+                <div style={{ display: "flex", alignItems: "center", paddingLeft: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                    <Button onClick={() => setSelected([])}>
+                      <StaffCancelIcon />
+                    </Button>
+                    <Text>{selected?.length}항목 선택됨</Text>
+                  </div>
+                  <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
+                    <ComBoxLayout width={"192px"}>
+                      <CComboBox
+                        placeholder={"구역"}
+                        options={[]}
+                        value={"테스트"}
+                        onChange={() => null}
+                      />
+                    </ComBoxLayout>
+                    <ComBoxLayout width={"160px"}>
+                      <CalendarSelect onClick={handleActive}>
+                        {disChargeDate !== new Date() ? (
+                          <Text
+                            sx={{
+                              fontSize: 14,
+                              lineHeight: 20,
+                              fontWeight: 400,
+                              letterSpacing: "-3%",
+                              opacity: 1,
+                            }}
+                          >
+                            {formatDateYYYYMMDD(disChargeDate as Date)}
+                          </Text>
+                        ) : (
+                          <Text
+                            sx={{
+                              fontSize: 14,
+                              lineHeight: 20,
+                              fontWeight: 400,
+                              letterSpacing: "-3%",
+                              opacity: 0.3,
+                            }}
+                          >
+                            예상 퇴원 날짜
+                          </Text>
+                        )}
+                        <CalendarIcon />
+                        {isAcitve && (
+                          <CCalendar value={disChargeDate} setState={setDisChargeDate} />
+                        )}
+                      </CalendarSelect>
+                    </ComBoxLayout>
+                    <CButton buttontype={"impactRed"} onClick={handleModal}>
+                      환자 퇴원 처리
+                    </CButton>
+                  </div>
+                </div>
+              </SelectedActionBox>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="nan-selected"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+            >
+              <NanSelectedActionBox>
+                <SearchLayout>
+                  <CSearchBox
+                    value={searchValue}
+                    onChange={onChangeSearchValue}
+                    placeholder={"검색할 내용을 입력해 주세요."}
+                    borderColor={"#ECECEC"}
+                  />
+                </SearchLayout>
+                <ButtonLayout>
+                  <CButton
+                    buttontype={"primarySecond"}
+                    onClick={handleActive}
+                    icon={<DrowDownIcon />}
+                  >
+                    설정
+                  </CButton>
+                </ButtonLayout>
+              </NanSelectedActionBox>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <TableLayout>
+          <AdminTable
+            isLoading={isLoading}
+            getTablet={getTablet?.data}
+            onChangeSelected={onChangeSelected}
+            onChangeSelectAll={onChangeSelectAll}
+            onDisCharge={handleDischargeSingle}
+            selected={selected}
           />
-        </div>
-      </FooterLayout>
-    </Container>
+        </TableLayout>
+        <FooterLayout>
+          <div>
+            <PaginationComponent
+              totalPage={getTablet?.totalPages}
+              onChange={(e, page) => handleChangePage(e, page)}
+            />
+          </div>
+        </FooterLayout>
+      </Container>
+    </>
   );
 };
 

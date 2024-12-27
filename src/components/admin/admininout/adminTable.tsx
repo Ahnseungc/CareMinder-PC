@@ -46,7 +46,8 @@ interface AdminTableProps {
     id: number;
   }>;
   isLoading: boolean;
-  onDisCharge: (e: React.FormEvent<HTMLFormElement>) => void;
+  // onDisCharge: (e: React.FormEvent<HTMLFormElement>) => void;
+  onDisCharge: (tabletId: number) => void;
 }
 
 const AdminTable: FC<AdminTableProps> = ({
@@ -60,11 +61,13 @@ const AdminTable: FC<AdminTableProps> = ({
   const { mutate: changeTabletArea } = useChangeTabletArea();
   const { data: areaList, isLoading: areaLoading } = useGetStaffAreaList();
 
+  console.log(areaList);
+
   const [area, setArea] = useState<string[]>([""]);
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    // const value = event.target.value;
-    // const areaId = areaList?.find(item => item.name === value)?.id as number;
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
     // console.log(areaId);
     // console.log(id);
     // changeTabletArea(
@@ -118,12 +121,12 @@ const AdminTable: FC<AdminTableProps> = ({
               return (
                 <InoutTableBodyTr
                   key={tablet.serialNumber || tablet.tabletId}
-                  isSelected={selected.some(item => item.id === tablet.tabletId)}
+                  isSelected={selected?.some(item => item.id === tablet.tabletId)}
                 >
                   <InoutTableBodyTd width="28px">
                     <CCheckBox
                       onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
-                      checked={selected.some(item => item.id === tablet.tabletId)}
+                      checked={selected?.some(item => item.id === tablet.tabletId)}
                     />
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width="144px">
@@ -166,7 +169,12 @@ const AdminTable: FC<AdminTableProps> = ({
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width="64px"></InoutTableBodyTd>
                   <InoutTableBodyTd width="141px">
-                    <CButton buttontype={"impactRed"} onClick={onDisCharge}>
+                    <CButton
+                      buttontype={"impactRed"}
+                      onClick={() => {
+                        onDisCharge(tablet.tabletId);
+                      }}
+                    >
                       환자 퇴원 처리
                     </CButton>
                   </InoutTableBodyTd>

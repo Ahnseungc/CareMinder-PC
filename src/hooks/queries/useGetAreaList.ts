@@ -25,7 +25,6 @@ export const getAreaList = async ({ type }: getAreaListRequest) => {
         Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
       },
     });
-    console.log(res);
     return res.data;
   }
 };
@@ -39,7 +38,7 @@ export const useGetAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosErr
 
 export const useGetStaffAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
   return useQuery({
-    queryKey: ["useGetStaffTabletRequests"],
+    queryKey: ["areaList"],
     retry: 3,
     retryDelay: 1000,
     queryFn: () => getAreaList({ type: "STAFF" }),

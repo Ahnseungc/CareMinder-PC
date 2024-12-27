@@ -1,18 +1,18 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
+import { styled, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
-  onConfirm: () => void;
   modalTitle: string;
   subTitle: string | React.ReactNode;
-  rightText: string;
+  onDisCharge: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const DischargeModal = ({
   onClose,
-  onConfirm,
   modalTitle,
   subTitle,
-  rightText,
+  onDisCharge,
   ...props
 }: ChargeModalProps) => {
   return (
@@ -22,15 +22,45 @@ const DischargeModal = ({
       title={modalTitle}
       footer={
         <>
-          <ModalActionButton color="secondary" onClick={onClose}>
-            취소
+          <ModalActionButton color="success" onClick={onClose}>
+            취소하기
           </ModalActionButton>
-          <ModalActionButton onClick={() => null}>{rightText}</ModalActionButton>
+          <ModalActionButton color="secondary" onClick={onDisCharge}>
+            퇴원하기
+          </ModalActionButton>
         </>
       }
       {...props}
-    ></CMModal>
+    >
+      <View>
+        <Text>
+          퇴원 처리 시 복구가 불가능합니다. <br />
+          <br />
+          해당 환자의 요청은 모두 완료/삭제 처리가 되며,
+          <br />
+          태블릿 내 환자 계정은 로그아웃 및 초기화됩니다.
+          <br />
+          <br /> 퇴원 처리하시겠습니까?
+        </Text>
+      </View>
+    </CMModal>
   );
 };
+
+const Text = styled(Typography)(() => ({
+  color: "#000000",
+  fontWeight: 500,
+  fontSize: 18,
+  textAlign: "center",
+  lineHeight: "26px",
+  letterSpacing: "-3%",
+}));
+
+const View = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+}));
 
 export default DischargeModal;
