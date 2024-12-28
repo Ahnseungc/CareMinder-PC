@@ -1,4 +1,5 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
+import { UserType } from "@models/user";
 import { Box, styled, Typography } from "@mui/material";
 import React, { useMemo } from "react";
 
@@ -36,7 +37,7 @@ interface InfoModalProps extends Omit<CMModalProps, "title"> {
   message?: React.ReactNode;
   leftText?: string;
   rightText?: string;
-  isAdmin?: boolean;
+  userType?: UserType;
 }
 
 export default function InfoModal({
@@ -46,7 +47,7 @@ export default function InfoModal({
   message,
   leftText = "아니오",
   rightText = "예",
-  isAdmin = false,
+  userType,
   ...props
 }: InfoModalProps) {
   const { title, controlAccount } = useMemo(
@@ -68,17 +69,25 @@ export default function InfoModal({
           <>
             <ModalActionButton
               color="secondary"
-              hoverColor={`${isAdmin ? "#5DB8BE22" : ""}`}
+              hoverColor={
+                userType === "STAFF" ? "#30B4FF22" : userType === "ADMIN" ? "#5DB8BE22" : ""
+              }
               onClick={onClose}
             >
               {leftText}
             </ModalActionButton>
-            <ModalActionButton onClick={onConfirm} color={isAdmin ? "info" : "primary"}>
+            <ModalActionButton
+              onClick={onConfirm}
+              color={userType === "STAFF" ? "success" : userType === "ADMIN" ? "info" : "primary"}
+            >
               {rightText}
             </ModalActionButton>
           </>
         ) : (
-          <ModalActionButton onClick={onClose} color={isAdmin ? "info" : "primary"}>
+          <ModalActionButton
+            onClick={onClose}
+            color={userType === "STAFF" ? "success" : userType === "ADMIN" ? "info" : "primary"}
+          >
             확인
           </ModalActionButton>
         )
