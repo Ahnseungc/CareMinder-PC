@@ -116,15 +116,7 @@ export const TabletManagement = () => {
             <ModeInfoText>
               현재 <span>전체가능</span> 모드입니다. 4시간 후 강제종료 모드로 전환됩니다.
             </ModeInfoText>
-            <ModeInfoWrapper>
-              <ModeInfoHideBox>
-                <Alert />
-              </ModeInfoHideBox>
-              <ModeInfoHideContent>
-                현재 <span>&nbsp;전체가능&nbsp;</span> 모드입니다. 4시간 후 강제종료 모드로
-                전환됩니다.
-              </ModeInfoHideContent>
-            </ModeInfoWrapper>
+
             <StaffButtonContainer>
               <div ref={settingRef} style={{ position: "relative" }}>
                 <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
@@ -146,6 +138,15 @@ export const TabletManagement = () => {
                     </div>
                   </SettingDropdown>
                 )}
+                <div style={{ position: "absolute", left: "-250px", top: "18px" }}>
+                  <ModeInfoHideBox>
+                    <Alert />
+                  </ModeInfoHideBox>
+                  <ModeInfoHideContent>
+                    현재 <span>&nbsp;전체가능&nbsp;</span> 모드입니다. 4시간 후 강제종료 모드로
+                    전환됩니다.
+                  </ModeInfoHideContent>
+                </div>
               </div>
             </StaffButtonContainer>
           </>
@@ -213,10 +214,6 @@ const ModeInfoText = styled(Typography)`
   @media (max-width: 1300px) {
     display: none;
   }
-`;
-
-const ModeInfoWrapper = styled(Box)`
-  position: relative;
 `;
 
 const ModeInfoHideBox = styled(Box)`

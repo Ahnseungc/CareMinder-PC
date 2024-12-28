@@ -138,7 +138,7 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
         modalType="successChangePW"
         open={isInfoModalOpen}
         onClose={closeInfoModal}
-        isAdmin={true}
+        userType="ADMIN"
       />
 
       {/* 바말번호 변경 요청 성공 안내 모달 */}
@@ -146,7 +146,7 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
         modalType="successChangeInfo"
         open={isSaveModalOpen}
         onClose={closeSaveModal}
-        isAdmin={true}
+        userType="ADMIN"
       />
 
       <CMModal

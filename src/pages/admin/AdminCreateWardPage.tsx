@@ -154,7 +154,7 @@ export default function AdminCreateWardPage() {
         modalType="checkDelete"
         leftText="취소"
         rightText="잠금"
-        isAdmin={true}
+        userType="ADMIN"
         onConfirm={selectedWardList.length === 1 ? handleLock : handleAllLock}
         message={<DeleteWarning isLock={true} />}
       />
@@ -164,7 +164,7 @@ export default function AdminCreateWardPage() {
         open={isOpenSuccessLockModal}
         onClose={closeSuccessLockModal}
         modalType="successAccountLock"
-        isAdmin={true}
+        userType="ADMIN"
       />
 
       <Container>
