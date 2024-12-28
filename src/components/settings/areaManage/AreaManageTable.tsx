@@ -204,14 +204,14 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
         modalType="checkDelete"
         leftText="취소하기"
         rightText="삭제하기"
-        isAdmin={isAllList}
+        userType={isAllList ? "ADMIN" : "WARD"}
         onConfirm={() => handleDeleteArea()}
         message={<DeleteWarning />}
       />
       <InfoModal
         open={isOpenDeleteModal}
         onClose={closeDeleteModal}
-        isAdmin={isAllList}
+        userType={isAllList ? "ADMIN" : "WARD"}
         modalType="delete"
       />
       {!isAllList ? (

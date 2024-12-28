@@ -41,6 +41,11 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
     );
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleCheck();
+  };
+
   const handleModalClose = () => {
     navigate(-1); // 인증 실패 상태에서 닫을 때만 이전 페이지로
     onClose();
@@ -58,7 +63,7 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
         maxWidth="xs"
         onClose={handleModalClose}
         title={"병동 설정 비밀번호 확인"}
-        footer={<ModalActionButton onClick={handleCheck}>확인</ModalActionButton>}
+        footer={<ModalActionButton onClick={handleSubmit}>확인</ModalActionButton>}
         {...props}
       >
         <Container>
@@ -67,12 +72,14 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
             <br />
             계정 비밀번호를 입력하여 본인 인증을 진행해 주세요.
           </Typography>
-          <PasswordInputContainer>
-            <PasswordInput ref={inputRef} type={showPassword ? "text" : "password"} />
-            <IconContainer onClick={() => setShowPassword(show => !show)}>
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconContainer>
-          </PasswordInputContainer>
+          <form onSubmit={handleSubmit}>
+            <PasswordInputContainer>
+              <PasswordInput ref={inputRef} type={showPassword ? "text" : "password"} />
+              <IconContainer onClick={() => setShowPassword(show => !show)}>
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconContainer>
+            </PasswordInputContainer>
+          </form>
         </Container>
       </CMModal>
     </>
