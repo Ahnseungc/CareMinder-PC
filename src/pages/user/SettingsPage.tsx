@@ -1,10 +1,9 @@
 import { SettingsModal } from "@components/settings";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { StaffAccount } from "../../components/settings/StaffAccount";
 import { TabletManagement } from "../../components/settings/TabletManagement";
-import { useNavigate } from "react-router-dom";
 import settingsLoginState from "@libraries/recoil/settings/login";
 
 export type TabButtonProps = {
@@ -12,15 +11,20 @@ export type TabButtonProps = {
 };
 
 export default function SettingsPage() {
-  // 로그인 되어있지 않은 상태에서 병동 설정 선택 시 로그인 모달 open
+  // 병동 설정 페이지 진입 시 재로그인 모달
   const [isModalOpen, setIsModalOpen] = useRecoilState(settingsLoginState);
   const [activeTab, setActiveTab] = useState<string>("스태프 계정 수정");
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsModalOpen(false);
+
+    return () => {
+      setIsModalOpen(true);
+    };
+  }, []);
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    /* 병동 로그인을 하지 않으면 병동 설정에 접근하지 못하도록 */
-    navigate(-1);
+    setIsModalOpen(true);
   };
 
   const handleTabClick = (value: string) => {
@@ -42,7 +46,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <SettingsModal open={isModalOpen} onClose={handleCloseModal} />
+      <SettingsModal open={!isModalOpen} onClose={handleCloseModal} />
       <Container>
         <HeadContainer>
           <div>
