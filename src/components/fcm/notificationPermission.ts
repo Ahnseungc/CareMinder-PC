@@ -19,6 +19,7 @@ export async function handleAllowNotification() {
           "BDOPhFvQMqh6P-qImnWLcs_eCrPP04JOZ3MYUS1aPhdrsxq1HrliVRIaIcC7mMr2Xcw7zYQyVvEtuTD8D3ux1pU",
         serviceWorkerRegistration: registration, // 서비스 워커 등록 전달
       });
+      console.log(token);
       if (token) {
         await axiosInstance.post(
           `/fcm/save`,

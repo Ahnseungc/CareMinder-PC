@@ -1,5 +1,5 @@
-import { Box, CircularProgress, Stack, Typography, styled } from "@mui/material";
-import { AdminTable } from "@components/admin";
+import { Box, Stack, Typography, styled } from "@mui/material";
+// import { AdminTable } from "@components/admin";
 import CButton from "@components/common/atom/C-Button";
 // import PaginationComponent from "@components/common/pagination";
 import AdminNoticeWriteForm from "@components/admin/adminNotice/adminNoticeWriteForm";
@@ -59,7 +59,7 @@ const StaffNoticeWritePage = () => {
   const handleFileUploadClick = () => {
     fileInputRef.current?.click();
   };
-
+  //@ts-ignore
   const onChangeSelected = (tabletId: number, patientName: string) => {
     setSelected(prev => {
       if (prev.some(item => item.id === tabletId)) {
@@ -132,7 +132,7 @@ const StaffNoticeWritePage = () => {
       </div>
       <TableLayout>
         <AdminNoticeListLayout>
-          {isLoading ? (
+          {/* {isLoading ? (
             <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
               <CircularProgress />
             </Box>
@@ -142,7 +142,7 @@ const StaffNoticeWritePage = () => {
               onChangeSelected={onChangeSelected}
               selected={selected}
             />
-          )}
+          )} */}
         </AdminNoticeListLayout>
         <AdminNoticeWriteForm
           handleRecipientDelete={handleRecipientDelete}
