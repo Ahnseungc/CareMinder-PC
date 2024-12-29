@@ -1,6 +1,6 @@
 import CButton from "@components/common/atom/C-Button";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-import doubleCheckState from "@libraries/recoil/staff";
+import { doubleCheckState } from "@libraries/recoil/idDoubleCheck";
 import { NewStaff, NewStaffField } from "@models/staff";
 import {
   Autocomplete,

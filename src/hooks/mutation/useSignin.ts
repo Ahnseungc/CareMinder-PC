@@ -1,5 +1,5 @@
 import { SigninFormData } from "@models/signin";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { UserType } from "@models/user";
 import { SEVER_URL } from "@constants/baseUrl";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
+import { handleAllowNotification } from "@components/fcm/notificationPermission";
 
 const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
@@ -36,10 +37,12 @@ export default function useSignin() {
   const navigate = useNavigate();
   const setUserState = useSetRecoilState(userState);
   const setReqChangePWState = useSetRecoilState(reqChangePWState);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: signin,
     onSuccess: res => {
+      queryClient.invalidateQueries({ queryKey: ["useGetWardPatientPending"] });
       console.log("로그인 성공");
       console.log(res);
       // 추가 응답 API 개발 완료 후
@@ -59,6 +62,7 @@ export default function useSignin() {
           case "STAFF":
             setReqChangePWState(res.currentUser?.passwordChangeRequested);
             navigate("/staff");
+            handleAllowNotification();
             break;
           case "WARD":
             navigate("/");

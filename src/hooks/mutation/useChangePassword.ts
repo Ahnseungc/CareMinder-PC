@@ -4,6 +4,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 export type NewPassword = {
   userIds: number[];
   newPassword: string;
+  accountType: string;
 };
 
 const changePassword = async (newPassword: NewPassword) => {

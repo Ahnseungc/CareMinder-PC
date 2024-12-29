@@ -33,14 +33,22 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
 
   const isButtonDisabled = !loginId || !password;
 
+  const onSubmitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isButtonDisabled) {
+      handleSubmit(handleFormSubmit)();
+    }
+  };
+
   return (
-    <Container>
+    <Container onSubmit={onSubmitForm}>
       <TextField label="ID" name="loginId" form={form} value={autoCompleteId} />
       <TextField label="PW" name="password" form={form} type="password" />
       <CButton
         buttontype="login"
         style={{ marginTop: "43.22px" }}
-        onClick={handleSubmit(handleFormSubmit)}
+        type="submit"
+        // onClick={handleSubmit(handleFormSubmit)}
         disabled={isButtonDisabled}
       >
         LOGIN

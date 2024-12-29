@@ -4,6 +4,8 @@ import { TimePicker } from "@mui/x-date-pickers";
 import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
+import usePostSleepMode, { SleepModeType } from "@hooks/mutation/usePostSleepMode";
+import { toast } from "react-toastify";
 
 const OPTION_COLORS = {
   "강제종료": "#ff4a4a",
@@ -11,12 +13,24 @@ const OPTION_COLORS = {
   "전체가능": "#04b300",
 } as const;
 
+type ModeType = {
+  [key: string]: {
+    type: SleepModeType;
+    message: string;
+  };
+};
+
 export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps) {
   const LIMIT_OPTIONS = ["강제종료", "요청만 가능", "전체가능"];
   const selectRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isDescOpen, setIsDescOpen] = useState<boolean>(false);
   const [selectOption, setSelectOption] = useState<string>(LIMIT_OPTIONS[2]);
+
+  const [startTime, setStartTime] = useState<dayjs.Dayjs | null>(dayjs("2024-12-15T08:00"));
+  const [endTime, setEndTime] = useState<dayjs.Dayjs | null>(dayjs("2024-12-15T08:00"));
+
+  const { mutate: setSleepMode } = usePostSleepMode();
 
   const handleChangeOption = (option: string) => {
     setSelectOption(option);
@@ -41,6 +55,59 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
     };
   }, []);
 
+  const handleSleepMode = () => {
+    const startHour = startTime?.hour();
+    const startMinutes = startTime?.minute();
+    const endHour = endTime?.hour();
+    const endMinutes = endTime?.minute();
+
+    if (
+      startHour === undefined ||
+      startMinutes === undefined ||
+      endHour === undefined ||
+      endMinutes === undefined
+    ) {
+      return;
+    }
+
+    const modeTypes: ModeType = {
+      "전체가능": {
+        type: "FULL_ACCESS",
+        message: "전체 가능",
+      },
+      "요청만 가능": {
+        type: "REQUEST_ONLY",
+        message: "요청만 가능한",
+      },
+      "강제종료": {
+        type: "FORCE_TERMINATE",
+        message: "강제 종료",
+      },
+    };
+
+    const selectedMode = modeTypes[selectOption];
+    const timeSettings =
+      selectedMode.type === "FULL_ACCESS"
+        ? { startHour: 0, startMinute: 0, endHour: 0, endMinute: 0 }
+        : { startHour, startMinute: startMinutes, endHour, endMinute: endMinutes };
+
+    setSleepMode(
+      {
+        ...timeSettings,
+        type: selectedMode.type,
+      },
+      {
+        onSuccess: () => {
+          onClose();
+          toast.success(`수면 모드가 ${selectedMode.message} 모드로 설정 되었습니다.`);
+        },
+        onError: () => {
+          toast.error("수면 모드 설정에 오류가 발생했습니다");
+        },
+      },
+    );
+  };
+
   return (
     <CMModal
       maxWidth="sm"
@@ -60,7 +127,7 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
           >
             취소
           </ModalActionButton>
-          <ModalActionButton onClick={() => null}>저장</ModalActionButton>
+          <ModalActionButton onClick={handleSleepMode}>저장</ModalActionButton>
         </div>
       }
       {...props}
@@ -108,12 +175,14 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
           <TimePickerWrapper>
             <p>시작 시간</p>
             <TimePicker
-              sx={{
-                width: "140px",
-              }}
+              sx={{ width: "140px" }}
               timeSteps={{ hours: 1, minutes: 1, seconds: 5 }}
-              defaultValue={dayjs("2024-12-15T20:00")}
+              defaultValue={dayjs("2024-12-15T08:00")}
               disabled={selectOption === "전체가능"}
+              views={["hours", "minutes"]}
+              onChange={newValue => {
+                setStartTime(newValue);
+              }}
             />
           </TimePickerWrapper>
           <Wave>~</Wave>
@@ -124,6 +193,10 @@ export default function TabletSleepModeModal({ onClose, ...props }: CMModalProps
               timeSteps={{ hours: 1, minutes: 1, seconds: 5 }}
               defaultValue={dayjs("2024-12-15T08:00")}
               disabled={selectOption === "전체가능"}
+              views={["hours", "minutes"]}
+              onChange={newValue => {
+                setEndTime(newValue);
+              }}
             />
           </TimePickerWrapper>
         </TimeSettingWraaper>

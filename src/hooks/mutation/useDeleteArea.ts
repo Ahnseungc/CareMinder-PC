@@ -15,6 +15,7 @@ export default function useDeleteArea() {
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
       queryClient.invalidateQueries({ queryKey: ["staffSimpleList"] });
       queryClient.invalidateQueries({ queryKey: ["areaList"] });
+      queryClient.invalidateQueries({ queryKey: ["ward-area-List"] });
     },
     onError: error => {
       console.error("구역 삭제 실패", error);

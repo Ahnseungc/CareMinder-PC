@@ -1,51 +1,48 @@
-import { PaginationItem, styled } from "@mui/material";
+import { styled } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 
 type PaginationProps = {
   totalPage: number;
   onChange: (event: React.ChangeEvent<unknown>, page: number) => void;
+  customColor?: string; // 커스텀 색상 prop 추가
 };
-function PaginationComponent({ totalPage, onChange }: PaginationProps) {
-  const pageCount = Math.max(totalPage, 1);
 
+function PaginationComponent({ totalPage, onChange, customColor }: PaginationProps) {
   return (
     <Wrapper>
       <Stack spacing={2}>
-        <Pagination
-          color={"secondary"}
+        <StyledPagination
+          customColor={customColor}
           showFirstButton
           showLastButton
-          count={pageCount}
+          count={totalPage}
           defaultPage={1}
           shape="rounded"
           defaultValue={1}
           onChange={onChange}
-          renderItem={item => (
-            <PaginationItem
-              {...item}
-              sx={{
-                "fontSize": "16px",
-                "fontWeight": 500,
-                "color": "black",
-                "&.Mui-selected": {
-                  backgroundColor: "#30B4FF",
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: "700",
-                },
-                "&:hover": {
-                  backgroundColor: "#e0e0e0",
-                },
-              }}
-            />
-          )}
         />
       </Stack>
     </Wrapper>
   );
 }
+
 export default PaginationComponent;
+
+const StyledPagination = styled(Pagination)<{ customColor?: string }>`
+  & .MuiPaginationItem-root {
+    color: "#5E5F65";
+
+    &.Mui-selected {
+      background-color: ${props => props.customColor || "#5D6DBE"};
+      color: white;
+
+      &:hover {
+        background-color: ${props => props.customColor || "#5D6DBE"}cc;
+      }
+    }
+  }
+`;
 
 const Wrapper = styled("div")`
   display: flex;

@@ -1,5 +1,5 @@
 import CButton from "@components/common/atom/C-Button";
-import doubleCheckState from "@libraries/recoil/staff";
+import { doubleCheckState } from "@libraries/recoil/idDoubleCheck";
 import { AdminUserField, NewAdminUser } from "@models/user";
 import {
   Box,
@@ -21,7 +21,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useBooleanState } from "@toss/react";
-import DaumPostModal from "./DaumPostModal";
+import DaumPostModal from "./Modal/DaumPostModal";
 import addressState from "@libraries/recoil/address";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import useTimer from "@utils/useTimer";
