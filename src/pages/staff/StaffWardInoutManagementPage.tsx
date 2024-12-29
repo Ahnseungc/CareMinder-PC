@@ -21,6 +21,7 @@ import { Value } from "@components/common/atom/Calendar/C-Calendar";
 // import { formatDateYYYYMMDD } from "@utils/getDateform";
 import { debounce } from "lodash";
 import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
+import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeSuccessModal";
 
 type SelectedItem = {
   name: string;
@@ -38,6 +39,7 @@ const StaffWardInoutManagementPage = () => {
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
   const [debounceValue, setDebounceValue] = useState("");
   const [isModal, setIsModal] = useState(false);
+  const [isSuccessModal, setIsSuccessModal] = useState(false);
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
@@ -139,7 +141,8 @@ const StaffWardInoutManagementPage = () => {
       { tabletIds: selectSingle.length !== 0 ? selectSingle : selected.map(item => item.id) },
       {
         onSuccess: () => {
-          toast.success("퇴원 처리가 완료 되었습니다.");
+          // toast.success("퇴원 처리가 완료 되었습니다.");
+          setIsSuccessModal(true);
           refetch();
           setSelected([]);
           handleModal();
@@ -179,6 +182,14 @@ const StaffWardInoutManagementPage = () => {
           onDisCharge={onDisCharge}
         />
       )}
+      {isSuccessModal && (
+        <DischargeSuccessModal
+          modalTitle={" "}
+          onClose={() => setIsSuccessModal(false)}
+          open={isSuccessModal}
+        />
+      )}
+      {isSuccessModal}
       <Container>
         <Title variant="h1">환자 관리</Title>
         <AnimatePresence mode="wait">
@@ -291,6 +302,7 @@ const StaffWardInoutManagementPage = () => {
         <FooterLayout>
           <div>
             <PaginationComponent
+              customColor={"#30B4FF"}
               totalPage={getTablet?.totalPages}
               onChange={(e, page) => handleChangePage(e, page)}
             />
