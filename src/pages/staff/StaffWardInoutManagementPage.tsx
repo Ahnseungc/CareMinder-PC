@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Stack, Typography, styled } from "@mui/material";
+import { Box, Button, Stack, Typography, styled } from "@mui/material";
 import { AdminTable } from "@components/admin";
 import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
@@ -8,16 +8,17 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
-import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
-import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
-import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
-import { formatDateYYYYMMDD } from "@utils/getDateform";
+// import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
+// import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
+// import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
+import { Value } from "@components/common/atom/Calendar/C-Calendar";
+// import { formatDateYYYYMMDD } from "@utils/getDateform";
 import { debounce } from "lodash";
 import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 
@@ -29,9 +30,11 @@ type SelectedItem = {
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const token = Cookies.get("accessTokenStaff") as string;
+  //@ts-ignore
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isAcitve, setIsActive] = useState(false);
+  //@ts-ignore
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
   const [debounceValue, setDebounceValue] = useState("");
   const [isModal, setIsModal] = useState(false);
@@ -93,6 +96,7 @@ const StaffWardInoutManagementPage = () => {
     patientName: "",
     createdAt: "",
   };
+  //@ts-ignore
   const handleActive = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
@@ -347,6 +351,7 @@ const SelectedActionBox = styled(Box)(({ theme }) => ({
   marginTop: 23.5,
 }));
 
+//@ts-ignore
 const NanSelectedActionBox = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
@@ -363,10 +368,12 @@ const NanSelectedActionBox = styled(Box)(({ theme }) => ({
 const SearchLayout = styled(Box)({
   width: "373px",
 });
+//@ts-ignore
 const ButtonLayout = styled(Box)({
   width: "148px",
 });
 
+//@ts-ignore
 const CalendarSelect = styled(Button)(({ theme }) => ({
   width: "100%",
   height: "100%",

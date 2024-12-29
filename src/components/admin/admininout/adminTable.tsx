@@ -1,19 +1,20 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-import Checkbox from "@mui/material/Checkbox";
+// import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
-import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
-import { Box, CircularProgress, SvgIcon } from "@mui/material";
+// import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
+import { Box, CircularProgress } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
 import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-icon.svg";
 import CButton from "@components/common/atom/C-Button";
 import { formatDateDash } from "@utils/getDateform";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
+//@ts-ignore
 import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import CCheckBox from "@components/common/atom/C-CheckBox";
 
 const columns = [
@@ -58,15 +59,18 @@ const AdminTable: FC<AdminTableProps> = ({
   isLoading,
   onDisCharge,
 }) => {
+  //@ts-ignore
   const { mutate: changeTabletArea } = useChangeTabletArea();
+  //@ts-ignore
   const { data: areaList, isLoading: areaLoading } = useGetStaffAreaList();
 
-  console.log(areaList);
-
+  //@ts-ignore
   const [area, setArea] = useState<string[]>([""]);
 
+  //@ts-ignore
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const value = event.target.value;
+    //@ts-ignore
     const areaId = areaList?.find(item => item.name === value)?.id as number;
     // console.log(areaId);
     // console.log(id);

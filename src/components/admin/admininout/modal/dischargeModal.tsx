@@ -25,7 +25,7 @@ const DischargeModal = ({
           <ModalActionButton color="success" onClick={onClose}>
             취소하기
           </ModalActionButton>
-          <ModalActionButton color="secondary" onClick={onDisCharge}>
+          <ModalActionButton color="secondary" onClick={() => onDisCharge}>
             퇴원하기
           </ModalActionButton>
         </>

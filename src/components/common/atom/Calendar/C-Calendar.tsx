@@ -1,4 +1,4 @@
-import React, { FC, SetStateAction, useCallback, useState } from "react";
+import React, { FC, SetStateAction, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
@@ -39,6 +39,7 @@ const MyCalendar: FC<MyCalendarProps> = ({ value, setState }) => {
         value={value}
         view="month"
         minDetail="month"
+        //@ts-ignore
         formatDay={(locale, date) => {
           return moment(date).format("D");
         }}
