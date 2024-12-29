@@ -4,7 +4,6 @@ import { AxiosResponse } from "axios";
 
 export type StaffsRequestApiType = {
   getStaffTabletRequests(params: reqWardParamsType): Promise<AxiosResponse>;
-  // getNoticeRequestsStatus(status: NoticeType): Promise<AxiosResponse>;
 };
 
 const PATH = "/staffs/patient-list";
