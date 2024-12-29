@@ -203,7 +203,7 @@ const StaffWardInoutManagementPage = () => {
                         onChange={() => null}
                       />
                     </ComBoxLayout>
-                    <ComBoxLayout width={"160px"}>
+                    {/* <ComBoxLayout width={"160px"}>
                       <CalendarSelect onClick={handleActive}>
                         {disChargeDate !== new Date() ? (
                           <Text
@@ -235,7 +235,7 @@ const StaffWardInoutManagementPage = () => {
                           <CCalendar value={disChargeDate} setState={setDisChargeDate} />
                         )}
                       </CalendarSelect>
-                    </ComBoxLayout>
+                    </ComBoxLayout> */}
                     <CButton buttontype={"impactRed"} onClick={handleModal}>
                       환자 퇴원 처리
                     </CButton>
@@ -260,7 +260,7 @@ const StaffWardInoutManagementPage = () => {
                     borderColor={"#ECECEC"}
                   />
                 </SearchLayout>
-                <ButtonLayout>
+                {/* <ButtonLayout>
                   <CButton
                     buttontype={"primarySecond"}
                     onClick={handleActive}
@@ -268,7 +268,7 @@ const StaffWardInoutManagementPage = () => {
                   >
                     설정
                   </CButton>
-                </ButtonLayout>
+                </ButtonLayout> */}
               </NanSelectedActionBox>
             </motion.div>
           )}

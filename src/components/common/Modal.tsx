@@ -14,7 +14,6 @@ export default function Modal({
   title,
   footer,
   children,
-
   ...props
 }: PropsWithChildren<ModalProps>) {
   return (
