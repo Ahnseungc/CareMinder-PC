@@ -34,7 +34,7 @@ const columns = [
     icon: <FilterVerticalIcon />,
     width: "96px",
   },
-  { id: 4, field: "TableName", headerName: "메모 보기", width: "64px" },
+  // { id: 4, field: "TableName", headerName: "메모 보기", width: "64px" },
   { id: 5, field: "TableName", headerName: "퇴원 처리 하기", width: "141px" },
 ];
 
@@ -171,7 +171,7 @@ const AdminTable: FC<AdminTableProps> = ({
                   <InoutTableBodyTd width="96px">
                     {formatDateDash(new Date(tablet.createdAt))}
                   </InoutTableBodyTd>
-                  <InoutTableBodyTd width="64px"></InoutTableBodyTd>
+                  {/* <InoutTableBodyTd width="64px"></InoutTableBodyTd> */}
                   <InoutTableBodyTd width="141px">
                     <CButton
                       buttontype={"impactRed"}
