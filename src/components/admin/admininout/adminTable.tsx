@@ -53,7 +53,6 @@ interface AdminTableProps {
   onDisCharge: (tabletId: number) => void;
 }
 
-// 테블릿, 환자 이름 변경 가능 하게
 const AdminTable: FC<AdminTableProps> = ({
   onChangeSelectAll,
   getTablet,
@@ -67,6 +66,7 @@ const AdminTable: FC<AdminTableProps> = ({
   const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { mutate: changeTabletInfo } = useChangeTabletInfo();
   const queryClient = useQueryClient();
+  const [isLaunch, setIsLaunch] = useState(true);
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const value = event.target.value;
@@ -95,13 +95,17 @@ const AdminTable: FC<AdminTableProps> = ({
   const changeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    setIsLaunch(false);
+  }, []);
+
+  useEffect(() => {
     if (!isChanging) {
       setTabletData(getTablet);
     }
   }, [getTablet]);
 
   useEffect(() => {
-    if (!isChanging) {
+    if (!isChanging && !isLaunch) {
       const tabletIds = Object.keys(changedColumns).map(num => Number(num));
 
       Promise.all(
