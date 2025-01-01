@@ -1,10 +1,8 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
-// import Checkbox from "@mui/material/Checkbox";
 import CInput from "@components/common/atom/C-Input";
-// import { ReactComponent as CheckedIcon } from "@assets/checked-icon.svg";
 import { Box, CircularProgress } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
@@ -13,9 +11,10 @@ import CButton from "@components/common/atom/C-Button";
 import { formatDateDash } from "@utils/getDateform";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 //@ts-ignore
-import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
-// import { toast } from "react-toastify";
+import { Area, useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import CCheckBox from "@components/common/atom/C-CheckBox";
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 
 const columns = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "144px" },
@@ -40,17 +39,20 @@ const columns = [
 
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
-  onChangeSelected: (tabletId: number, patientName: string) => void;
+  onChangeSelected: (tabletId: number, patientName: string, areaName: string) => void;
   onChangeSelectAll: any;
   selected: Array<{
     name: string;
     id: number;
+    areaName: string;
   }>;
   isLoading: boolean;
-  // onDisCharge: (e: React.FormEvent<HTMLFormElement>) => void;
+  areaList: any;
+  area: Array<string>;
   onDisCharge: (tabletId: number) => void;
 }
 
+// 테블릿, 환자 이름 변경 가능 하게
 const AdminTable: FC<AdminTableProps> = ({
   onChangeSelectAll,
   getTablet,
@@ -58,42 +60,62 @@ const AdminTable: FC<AdminTableProps> = ({
   onChangeSelected,
   isLoading,
   onDisCharge,
+  areaList,
+  area,
 }) => {
-  //@ts-ignore
-  const { mutate: changeTabletArea } = useChangeTabletArea();
-  //@ts-ignore
-  const { data: areaList, isLoading: areaLoading } = useGetStaffAreaList();
+  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
+  const queryClient = useQueryClient();
 
-  //@ts-ignore
-  const [area, setArea] = useState<string[]>([""]);
-
-  //@ts-ignore
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const value = event.target.value;
-    //@ts-ignore
     const areaId = areaList?.find(item => item.name === value)?.id as number;
-    // console.log(areaId);
-    // console.log(id);
-    // changeTabletArea(
-    //   {
-    //     userIds: [id],
-    //     areaId: areaId,
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       toast.success("구역 변경이 완료되었습니다");
-    //     },
-    //     onError: () => {
-    //       toast.error("구역 변경을 실패했습니다");
-    //     },
-    //   },
-    // );
+    changeTabletArea(
+      {
+        userIds: [id],
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          //@ts-ignore
+          queryClient.invalidateQueries(["areaListStaff"]);
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
   };
-  // useEffect(() => {
-  //   if (areaList) {
-  //     setArea(areaList.map(item => item.name));
-  //   }
-  // }, [areaList]);
+
+  const [changedColumns, setChangedColumns] = useState<{ [key: string]: boolean }>({});
+
+  const [name, setName] = useState("");
+
+  const [tabletData, setTabletData] = useState<any[]>(getTablet); // getTablet 데이터를 상태로 관리
+
+  useEffect(() => {
+    setTabletData(getTablet);
+  }, [getTablet]);
+
+  // 환자 이름 변경 시
+  const onChangeName = (e: React.ChangeEvent<HTMLInputElement>, tabletId: number) => {
+    const { value } = e.currentTarget;
+
+    setName(value);
+
+    // 변경된 데이터 추적
+    setTabletData(prevTabletData =>
+      prevTabletData.map(tablet =>
+        tablet.tabletId === tabletId ? { ...tablet, patientName: name } : tablet,
+      ),
+    );
+
+    setChangedColumns(prev => ({
+      ...prev,
+      [`patientName-${tabletId}`]: true,
+    }));
+  };
+
   return (
     <StTable>
       <thead>
@@ -121,7 +143,7 @@ const AdminTable: FC<AdminTableProps> = ({
           </LoadingLayout>
         ) : (
           <>
-            {getTablet?.map(tablet => {
+            {tabletData?.map(tablet => {
               return (
                 <InoutTableBodyTr
                   key={tablet.serialNumber || tablet.tabletId}
@@ -129,7 +151,9 @@ const AdminTable: FC<AdminTableProps> = ({
                 >
                   <InoutTableBodyTd width="28px">
                     <CCheckBox
-                      onChange={() => onChangeSelected(tablet.tabletId, tablet.patientName)}
+                      onChange={() =>
+                        onChangeSelected(tablet.tabletId, tablet.patientName, tablet.areaName)
+                      }
                       checked={selected?.some(item => item.id === tablet.tabletId)}
                     />
                   </InoutTableBodyTd>
@@ -139,9 +163,9 @@ const AdminTable: FC<AdminTableProps> = ({
                       <CInput
                         placeholder={"환자 이름"}
                         value={tablet.patientName}
-                        onChange={() => null}
+                        onChange={e => onChangeName(e, tablet.tabletId)}
                         variant={"outlined"}
-                        disabled={true}
+                        disabled={false}
                         id={"section"}
                       />
                     </div>
@@ -150,7 +174,8 @@ const AdminTable: FC<AdminTableProps> = ({
                     <ComBoxLayout width={"192px"}>
                       <CComboBox
                         placeholder={"구역"}
-                        options={[tablet.areaName]}
+                        options={area}
+                        isStaff={false}
                         value={tablet.areaName}
                         onChange={e => handleChangeArea(e, tablet.tabletId)}
                       />
@@ -163,7 +188,7 @@ const AdminTable: FC<AdminTableProps> = ({
                         placeholder={"태블릿 이름"}
                         onChange={() => null}
                         value={tablet.tabletName}
-                        disabled={true}
+                        disabled={false}
                         id={""}
                       ></CInput>
                     </ComBoxLayout>
@@ -173,14 +198,20 @@ const AdminTable: FC<AdminTableProps> = ({
                   </InoutTableBodyTd>
                   {/* <InoutTableBodyTd width="64px"></InoutTableBodyTd> */}
                   <InoutTableBodyTd width="141px">
-                    <CButton
-                      buttontype={"impactRed"}
-                      onClick={() => {
-                        onDisCharge(tablet.tabletId);
-                      }}
-                    >
-                      환자 퇴원 처리
-                    </CButton>
+                    {changedColumns[`patientName-${tablet.tabletId}`] ? (
+                      <CButton buttontype={"impactRed"} onClick={() => undefined}>
+                        변경
+                      </CButton>
+                    ) : (
+                      <CButton
+                        buttontype={"impactRed"}
+                        onClick={() => {
+                          onDisCharge(tablet.tabletId);
+                        }}
+                      >
+                        환자 퇴원 처리
+                      </CButton>
+                    )}
                   </InoutTableBodyTd>
                 </InoutTableBodyTr>
               );

@@ -8,7 +8,7 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
@@ -22,10 +22,14 @@ import { Value } from "@components/common/atom/Calendar/C-Calendar";
 import { debounce } from "lodash";
 import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeSuccessModal";
+import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { useQueryClient } from "@tanstack/react-query";
 
 type SelectedItem = {
   name: string;
   id: number;
+  areaName: string;
 };
 
 const StaffWardInoutManagementPage = () => {
@@ -67,7 +71,11 @@ const StaffWardInoutManagementPage = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
         setSelected(
-          getTablet?.data.map((tablet: any) => ({ name: tablet.patientName, id: tablet.tabletId })),
+          getTablet?.data.map((tablet: any) => ({
+            name: tablet.patientName,
+            id: tablet.tabletId,
+            areaName: tablet.areaName,
+          })),
         );
       } else {
         setSelected([]);
@@ -77,12 +85,12 @@ const StaffWardInoutManagementPage = () => {
   );
 
   const onChangeSelected = useCallback(
-    (tabletId: number, patientName: string) => {
+    (tabletId: number, patientName: string, areaName: string) => {
       setSelected(prev => {
         if (prev.some(item => item.id === tabletId)) {
           return prev.filter(item => item.id !== tabletId);
         } else {
-          return [...prev, { name: patientName, id: tabletId }];
+          return [...prev, { name: patientName, id: tabletId, areaName: areaName }];
         }
       });
     },
@@ -138,10 +146,9 @@ const StaffWardInoutManagementPage = () => {
 
   const updateDischarge: SubmitHandler<WardTabletType> = () => {
     mutate(
-      { tabletIds: selectSingle.length !== 0 ? selectSingle : selected.map(item => item.id) },
+      { tabletIds: selectSingle?.length !== 0 ? selectSingle : selected?.map(item => item.id) },
       {
         onSuccess: () => {
-          // toast.success("퇴원 처리가 완료 되었습니다.");
           setIsSuccessModal(true);
           refetch();
           setSelected([]);
@@ -153,6 +160,39 @@ const StaffWardInoutManagementPage = () => {
       },
     );
   };
+
+  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
+  const { data: areaList } = useGetStaffAreaList();
+  const queryClient = useQueryClient();
+
+  const [area, setArea] = useState<string[]>([""]);
+  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    const userIds = selected?.map(item => item.id);
+    changeTabletArea(
+      {
+        userIds: userIds,
+        areaId: areaId,
+      },
+      {
+        onSuccess: () => {
+          //@ts-ignore
+          queryClient.invalidateQueries(["areaListStaff"]);
+          setSelected([]);
+          toast.success("구역 변경이 완료되었습니다");
+        },
+        onError: () => {
+          toast.error("구역 변경을 실패했습니다");
+        },
+      },
+    );
+  };
+  useEffect(() => {
+    if (areaList) {
+      setArea(areaList.map(item => item.name));
+    }
+  }, [areaList]);
 
   const onDisCharge = handleDischarge(updateDischarge);
 
@@ -166,6 +206,31 @@ const StaffWardInoutManagementPage = () => {
     setSelectSingle([tabletId]);
     handleModal();
   };
+
+  const mostFrequentAreaName = useMemo(() => {
+    if (!selected || selected.length === 0) return null;
+
+    const frequencyMap: Record<string, number> = {};
+
+    // selectedList에서 areaName 빈도수 계산
+    selected?.forEach(item => {
+      if (frequencyMap[item.areaName]) {
+        frequencyMap[item.areaName] += 1;
+      } else {
+        frequencyMap[item.areaName] = 1;
+      }
+    });
+
+    let maxFrequency = 0;
+    let mostFrequentArea = null;
+    for (const [areaName, frequency] of Object.entries(frequencyMap)) {
+      if (frequency > maxFrequency) {
+        maxFrequency = frequency;
+        mostFrequentArea = areaName;
+      }
+    }
+    return mostFrequentArea;
+  }, [selected, getTablet]);
 
   useEffect(() => {
     setSelectSingle([]);
@@ -213,9 +278,10 @@ const StaffWardInoutManagementPage = () => {
                     <ComBoxLayout width={"192px"}>
                       <CComboBox
                         placeholder={"구역"}
-                        options={[]}
-                        value={"테스트"}
-                        onChange={() => null}
+                        options={area}
+                        isStaff={false}
+                        value={mostFrequentAreaName as string}
+                        onChange={e => handleChangeArea(e)}
                       />
                     </ComBoxLayout>
                     {/* <ComBoxLayout width={"160px"}>
@@ -275,15 +341,6 @@ const StaffWardInoutManagementPage = () => {
                     borderColor={"#ECECEC"}
                   />
                 </SearchLayout>
-                {/* <ButtonLayout>
-                  <CButton
-                    buttontype={"primarySecond"}
-                    onClick={handleActive}
-                    icon={<DrowDownIcon />}
-                  >
-                    설정
-                  </CButton>
-                </ButtonLayout> */}
               </NanSelectedActionBox>
             </motion.div>
           )}
@@ -297,6 +354,8 @@ const StaffWardInoutManagementPage = () => {
             onChangeSelectAll={onChangeSelectAll}
             onDisCharge={handleDischargeSingle}
             selected={selected}
+            areaList={areaList}
+            area={area}
           />
         </TableLayout>
         <FooterLayout>
