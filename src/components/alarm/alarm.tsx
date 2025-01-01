@@ -28,22 +28,22 @@ export default function Alarm() {
     onMessage(messaging, payload => {
       setMessage(JSON.parse(payload!.data!.data));
       setIsOpen(true);
+
+      const slideOutTimer = setTimeout(() => {
+        setIsOpen(false);
+
+        const clearNoticeTimer = setTimeout(() => {
+          setMessage(undefined);
+        }, 500);
+        return () => clearTimeout(clearNoticeTimer);
+      }, 5000);
+
+      return () => clearTimeout(slideOutTimer);
     });
-
-    const slideOutTimer = setTimeout(() => {
-      setIsOpen(false);
-
-      const clearNoticeTimer = setTimeout(() => {
-        setMessage(undefined);
-      }, 500);
-
-      return () => clearTimeout(clearNoticeTimer);
-    }, 5000);
-
-    return () => clearTimeout(slideOutTimer);
   }, []);
 
   if (isOpen === undefined) return <></>;
+  // if (isOpen === false) return <></>;
 
   if (message?.content.message)
     return (
