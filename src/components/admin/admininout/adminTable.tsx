@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
@@ -15,6 +15,7 @@ import { Area, useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGet
 import CCheckBox from "@components/common/atom/C-CheckBox";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
+import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 
 const columns = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "144px" },
@@ -64,11 +65,12 @@ const AdminTable: FC<AdminTableProps> = ({
   area,
 }) => {
   const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
+  const { mutate: changeTabletInfo } = useChangeTabletInfo();
   const queryClient = useQueryClient();
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const value = event.target.value;
-    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
     changeTabletArea(
       {
         userIds: [id],
@@ -87,33 +89,80 @@ const AdminTable: FC<AdminTableProps> = ({
     );
   };
 
-  const [changedColumns, setChangedColumns] = useState<{ [key: string]: boolean }>({});
-
-  const [name, setName] = useState("");
-
-  const [tabletData, setTabletData] = useState<any[]>(getTablet); // getTablet 데이터를 상태로 관리
+  const [changedColumns, setChangedColumns] = useState<{ [key: number]: boolean }>({});
+  const [tabletData, setTabletData] = useState<any[]>(getTablet);
+  const [isChanging, setIsChanging] = useState(false);
+  const changeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setTabletData(getTablet);
+    if (!isChanging) {
+      setTabletData(getTablet);
+    }
   }, [getTablet]);
 
-  // 환자 이름 변경 시
-  const onChangeName = (e: React.ChangeEvent<HTMLInputElement>, tabletId: number) => {
+  useEffect(() => {
+    if (!isChanging) {
+      const tabletIds = Object.keys(changedColumns).map(num => Number(num));
+
+      Promise.all(
+        tabletIds.map(tabletId => {
+          const updateTabletInfo = tabletData?.find(data => data.tabletId === tabletId);
+          return changeTabletInfo({
+            tabletIds: [tabletId],
+            areaId: updateTabletInfo?.areaId,
+            tabletName: updateTabletInfo?.tabletName,
+            patientName: updateTabletInfo?.patientName,
+          });
+        }),
+      )
+        .then(() => {
+          //@ts-ignore
+          queryClient.invalidateQueries(["areaListStaff"]);
+          toast.success("정보 변경이 완료되었습니다.");
+        })
+        .catch(() => {
+          toast.error("정보 변경에 실패하였습니다.");
+        });
+    }
+  }, [isChanging]);
+  useEffect(() => {
+    if (!isChanging) {
+      setTabletData(getTablet);
+    }
+  }, [getTablet]);
+
+  const onChangeData = (e: React.ChangeEvent<HTMLInputElement>, tabletId: number, type: string) => {
+    setIsChanging(true);
     const { value } = e.currentTarget;
 
-    setName(value);
-
     // 변경된 데이터 추적
-    setTabletData(prevTabletData =>
-      prevTabletData.map(tablet =>
-        tablet.tabletId === tabletId ? { ...tablet, patientName: name } : tablet,
-      ),
-    );
+    if (type === "patientName") {
+      setTabletData(prevTabletData =>
+        prevTabletData.map(tablet =>
+          tablet.tabletId === tabletId ? { ...tablet, patientName: value } : tablet,
+        ),
+      );
+    }
+    if (type === "tabletName") {
+      setTabletData(prevTabletData =>
+        prevTabletData.map(tablet =>
+          tablet.tabletId === tabletId ? { ...tablet, tabletName: value } : tablet,
+        ),
+      );
+    }
 
     setChangedColumns(prev => ({
       ...prev,
-      [`patientName-${tabletId}`]: true,
+      [tabletId as number]: true,
     }));
+
+    if (changeTimerRef.current) {
+      clearTimeout(changeTimerRef.current);
+    }
+
+    changeTimerRef.current = setTimeout(() => {
+      setIsChanging(false);
+    }, 1000);
   };
 
   return (
@@ -163,7 +212,7 @@ const AdminTable: FC<AdminTableProps> = ({
                       <CInput
                         placeholder={"환자 이름"}
                         value={tablet.patientName}
-                        onChange={e => onChangeName(e, tablet.tabletId)}
+                        onChange={e => onChangeData(e, tablet.tabletId, "patientName")}
                         variant={"outlined"}
                         disabled={false}
                         id={"section"}
@@ -186,7 +235,7 @@ const AdminTable: FC<AdminTableProps> = ({
                       <CInput
                         variant={"outlined"}
                         placeholder={"태블릿 이름"}
-                        onChange={() => null}
+                        onChange={e => onChangeData(e, tablet.tabletId, "tabletName")}
                         value={tablet.tabletName}
                         disabled={false}
                         id={""}
@@ -198,20 +247,14 @@ const AdminTable: FC<AdminTableProps> = ({
                   </InoutTableBodyTd>
                   {/* <InoutTableBodyTd width="64px"></InoutTableBodyTd> */}
                   <InoutTableBodyTd width="141px">
-                    {changedColumns[`patientName-${tablet.tabletId}`] ? (
-                      <CButton buttontype={"impactRed"} onClick={() => undefined}>
-                        변경
-                      </CButton>
-                    ) : (
-                      <CButton
-                        buttontype={"impactRed"}
-                        onClick={() => {
-                          onDisCharge(tablet.tabletId);
-                        }}
-                      >
-                        환자 퇴원 처리
-                      </CButton>
-                    )}
+                    <CButton
+                      buttontype={"impactRed"}
+                      onClick={() => {
+                        onDisCharge(tablet.tabletId);
+                      }}
+                    >
+                      환자 퇴원 처리
+                    </CButton>
                   </InoutTableBodyTd>
                 </InoutTableBodyTr>
               );

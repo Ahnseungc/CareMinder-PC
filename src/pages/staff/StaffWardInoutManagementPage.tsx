@@ -168,7 +168,7 @@ const StaffWardInoutManagementPage = () => {
   const [area, setArea] = useState<string[]>([""]);
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    const areaId = areaList?.find(item => item.name === value)?.id as number;
+    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
     const userIds = selected?.map(item => item.id);
     changeTabletArea(
       {
@@ -190,7 +190,7 @@ const StaffWardInoutManagementPage = () => {
   };
   useEffect(() => {
     if (areaList) {
-      setArea(areaList.map(item => item.name));
+      setArea(areaList.map((item: any) => item.name));
     }
   }, [areaList]);
 
@@ -347,16 +347,18 @@ const StaffWardInoutManagementPage = () => {
         </AnimatePresence>
 
         <TableLayout>
-          <AdminTable
-            isLoading={isLoading}
-            getTablet={getTablet?.data}
-            onChangeSelected={onChangeSelected}
-            onChangeSelectAll={onChangeSelectAll}
-            onDisCharge={handleDischargeSingle}
-            selected={selected}
-            areaList={areaList}
-            area={area}
-          />
+          {!isLoading && (
+            <AdminTable
+              isLoading={isLoading}
+              getTablet={getTablet?.data}
+              onChangeSelected={onChangeSelected}
+              onChangeSelectAll={onChangeSelectAll}
+              onDisCharge={handleDischargeSingle}
+              selected={selected}
+              areaList={areaList}
+              area={area}
+            />
+          )}
         </TableLayout>
         <FooterLayout>
           <div>

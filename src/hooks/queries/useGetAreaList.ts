@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";

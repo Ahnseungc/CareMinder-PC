@@ -1,4 +1,3 @@
-import { reqWardParamsType } from "@models/ward-tablet";
 import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
