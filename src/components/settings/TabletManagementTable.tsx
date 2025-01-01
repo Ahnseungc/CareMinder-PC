@@ -45,7 +45,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     size: 20,
   });
   const { data: areaList, isLoading: areaLoading } = useGetAreaList();
-  const { mutate: changeTabletArea } = useChangeTabletArea();
+  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "WARD" });
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
