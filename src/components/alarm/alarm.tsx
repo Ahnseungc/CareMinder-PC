@@ -2,6 +2,7 @@ import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "@components/fcm/initFirebase";
+import alarmSound from "@/assets/audio/alarmEx.mp3";
 
 type MessageType = {
   content: {
@@ -18,6 +19,7 @@ type MessageType = {
 export default function Alarm() {
   const [message, setMessage] = useState<MessageType | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
+  let audio = new Audio(alarmSound);
 
   const NURSE = {
     dark: "#04B300",
@@ -27,6 +29,7 @@ export default function Alarm() {
   useEffect(() => {
     onMessage(messaging, payload => {
       setMessage(JSON.parse(payload!.data!.data));
+      audio.play();
       setIsOpen(true);
 
       const slideOutTimer = setTimeout(() => {
