@@ -11,8 +11,8 @@ function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
   return (
     <InnerContainer color={roleColorPick.light}>
       <Title color={roleColorPick.dark}>
-        {data.areaSimple.areaName} | {data.patientSimple.patientName} ( T
-        {data.tabletSimple.tabletId} )
+        {data.areaSimple.areaName} | {data.patientSimple.patientName} (
+        {data.tabletSimple.tabletName})
       </Title>
       <Bottom>
         <TxtBox>
