@@ -10,6 +10,7 @@ export type CComboBoxProps = {
   disabled?: boolean;
   onChange: (event: any) => void;
   allowCustomInput?: boolean;
+  isStaff?: boolean;
   onCustomInputAdd?: (value: any) => void;
 };
 
@@ -20,6 +21,7 @@ export const CComboBox: FC<CComboBoxProps> = ({
   disabled,
   onChange,
   allowCustomInput = false,
+  isStaff,
   onCustomInputAdd,
 }) => {
   const [isCreate, setIsCreate] = useState(false);
@@ -61,7 +63,7 @@ export const CComboBox: FC<CComboBoxProps> = ({
                 borderRadius: "4px",
               },
               "&::-webkit-scrollbar-thumb": {
-                background: "#5d6dbe",
+                background: isStaff ? "#30B4FF" : "#5d6dbe",
                 borderRadius: "4px",
               },
               "&::-webkit-scrollbar-thumb:hover": {
