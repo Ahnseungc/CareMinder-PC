@@ -10,7 +10,7 @@ import getPrevTimes from "@utils/getPrevTimes";
 import { StaffGroupListBoxProps } from "@models/index";
 
 function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
-  const roleColorPick = roleColor("NURSE");
+  const roleColorPick = roleColor(data.patientRequests[0].aiRole);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const onOpenChatting = async (id: number) => {
