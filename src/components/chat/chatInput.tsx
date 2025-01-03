@@ -32,7 +32,6 @@ function ChatInput({
       if (e.nativeEvent.isComposing) return;
       onSend(e);
     }
-    console.log(color);
   };
 
   // const onWordComplete = (e: React.MouseEvent<HTMLDivElement>, el: string) => {

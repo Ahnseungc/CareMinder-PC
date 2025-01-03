@@ -56,9 +56,15 @@ export default function MainHomePage() {
           <S.SubTitle>
             <S.SubTitleLeft>
               <div>필터</div>
-              <S.FilterBox onClick={onStaffLogIn}>환자별</S.FilterBox>
-              <S.FilterBox onClick={onStaffLogIn}>구역</S.FilterBox>
-              <S.FilterBox onClick={onStaffLogIn}>직종</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                환자별
+              </S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                구역
+              </S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                직종
+              </S.FilterBox>
             </S.SubTitleLeft>
           </S.SubTitle>
           {getPendingData?.map(el => (
@@ -80,9 +86,15 @@ export default function MainHomePage() {
           <S.SubTitle>
             <S.SubTitleLeft>
               <div>필터</div>
-              <S.FilterBox onClick={onStaffLogIn}>환자별</S.FilterBox>
-              <S.FilterBox onClick={onStaffLogIn}>구역</S.FilterBox>
-              <S.FilterBox onClick={onStaffLogIn}>직종</S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                환자별
+              </S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                구역
+              </S.FilterBox>
+              <S.FilterBox onClick={onStaffLogIn} isTrue={false}>
+                직종
+              </S.FilterBox>
             </S.SubTitleLeft>
           </S.SubTitle>
           {getInprogressData?.map(el => (

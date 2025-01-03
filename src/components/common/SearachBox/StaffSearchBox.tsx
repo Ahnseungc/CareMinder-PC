@@ -9,7 +9,7 @@ export default function StaffSearchBox() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  // const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   const toggleList = () => {
     setIsOpen(prev => !prev);
@@ -22,7 +22,7 @@ export default function StaffSearchBox() {
           ref={inputRef}
           type="search"
           value={""}
-          onChange={searchHandler}
+          // onChange={searchHandler}
           onFocus={() => setIsOpen(true)}
           onBlur={() => {
             setTimeout(() => {

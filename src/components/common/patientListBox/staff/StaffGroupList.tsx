@@ -7,17 +7,19 @@ import { Message, patientMapType } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import ChatInput from "@components/chat/chatInput";
 import getPrevTimes from "@utils/getPrevTimes";
-import { StaffGroupListBoxProps } from "@models/index";
+import { StaffGroupListBoxProps, isRoleType } from "@models/index";
 import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 import MemoBox from "../MemoBox/MemoBox";
 
 function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
-  const roleColorPick = roleColor(data.patientRequests[0].aiRole);
+  const [focusRole, setFocusRole] = useState<Exclude<isRoleType, null>>("NURSE");
+  const roleColorPick = roleColor(focusRole);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isMemo, setIsMemo] = useState<boolean>(false);
 
-  const onOpenChatting = async (id: number) => {
+  const onOpenChatting = async (id: number, role: Exclude<isRoleType, null>) => {
     if (roomId !== id) {
+      setFocusRole(role);
       DisConnect(setRoomId!, roomId);
       ConnectChat(id, setMessages);
       const history = await LoadChatHistory(id);
@@ -35,9 +37,11 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
 
   return (
     <InnerContainer>
-      <Title color={roleColorPick.dark} tabIndex={0}>
+      <Title tabIndex={0}>
         <div>
-          <div>{data.patientRequests[0].areaSimple.areaName}</div>
+          <div>
+            {data.patientRequests[0].areaSimple.areaName} ({data.tabletSimple.tabletName})
+          </div>
           <span> | </span>
           <div>{data.patientSimple.patientName}</div>
         </div>
@@ -52,24 +56,24 @@ function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBo
           메모
         </TitleRight>
       </Title>
-      {isMemo && <MemoBox color={roleColorPick.light} />}
+      {isMemo && <MemoBox color={"#EAF8EA"} patientId={data.patientSimple.patientId} />}
 
       <BottomWrapper isFullList={isFullList}>
         {data.patientRequests.map((el: patientMapType) => (
-          <Bottom color={roleColorPick.dark}>
-            <LeftLine color={roleColorPick.dark}></LeftLine>
+          <Bottom key={el.patientRequestId} color={roleColor(el.aiRole).dark}>
+            <LeftLine color={roleColor(el.aiRole).dark}></LeftLine>
 
             <TxtBox
-              onClick={() => onOpenChatting(el.patientRequestId)}
-              color={roleColorPick.dark}
+              onClick={() => onOpenChatting(el.patientRequestId, el.aiRole)}
+              color={roleColor(el.aiRole).dark}
               isFocus={el.patientRequestId === roomId}
-              light={roleColorPick.light}
+              light={roleColor(el.aiRole).light}
             >
               <TxtBoxLeft>{el.content}</TxtBoxLeft>
               <TxtBoxRight>{getPrevTimes(el.createdAt)}</TxtBoxRight>
             </TxtBox>
             <Check
-              color={roleColorPick.dark}
+              color={roleColor(el.aiRole).dark}
               onClick={e => onMutates(e, el.patientRequestId, "accept")}
             >
               <CheckIcon />
@@ -113,7 +117,7 @@ const Vector = styled("div")<{ isMemo: boolean }>`
   transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
   margin-right: 8px;
 `;
-const Title = styled("div")<{ color: string }>`
+const Title = styled("div")`
   font-weight: 700;
   font-size: 16px;
   color: #000000;

@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 // import { OPTIONS } from "@components/settings/const";
 import * as S from "../../pages/user/Style/wardAndStaff.style";
-import StaffSearchBox from "@components/common/SearachBox/StaffSearchBox";
+// import StaffSearchBox from "@components/common/SearachBox/StaffSearchBox";
 
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
@@ -27,8 +27,7 @@ export default function StaffHomePage() {
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
   const navigate = useNavigate();
 
-  //setStaffAcceptIsGroup
-  const [staffAcceptIsGroup] = useState({
+  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState({
     pendingGroup: false,
     inprogressGroup: false,
   }); //수락중인 환자, 환자별로 묶기
@@ -141,12 +140,12 @@ export default function StaffHomePage() {
           <S.SubTitleLeft>
             <div>필터</div>
             <S.FilterBox
-              // onClick={() =>
-              //   setStaffAcceptIsGroup(prev => ({
-              //     ...prev,
-              //     inprogressGroup: !prev.inprogressGroup,
-              //   }))
-              // }
+              onClick={() =>
+                setStaffAcceptIsGroup(prev => ({
+                  ...prev,
+                  inprogressGroup: !prev.inprogressGroup,
+                }))
+              }
               isTrue={staffAcceptIsGroup.inprogressGroup}
             >
               환자별

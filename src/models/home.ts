@@ -1,4 +1,4 @@
-import { RefetchProps, staffGroup } from "./staff";
+import { RefetchProps } from "./staff";
 
 export type UserTypes = {
   user:

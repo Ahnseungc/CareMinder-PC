@@ -5,18 +5,15 @@ import { ReactComponent as MoreHorizRoundedIcon } from "@/assets/homeIcons/Dot.s
 import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { useState } from "react";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
-import { CSwitchProps, MainListBoxProps } from "@models/home";
+import { MainListBoxProps } from "@models/home";
 import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
 import ChatInput from "@components/chat/chatInput";
-import { isFindRole } from "@utils/homePage";
-import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
+// import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
 import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
-import { OPTIONS } from "@components/settings/const";
 import MemoBox from "../MemoBox/MemoBox";
 
 function StaffPatientListBox({
@@ -34,9 +31,7 @@ function StaffPatientListBox({
   const [isMemo, setIsMemo] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { pendingRefetch } = refetchProps!;
-
-  const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
+  // const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
 
   const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
@@ -324,8 +319,8 @@ const Option = styled("div")`
     color: ${({ theme }) => theme.palette.primary.main};
   }
 `;
-const BoxWrapper = styled("div")`
-  height: 39px;
-  width: 130px;
-  margin-top: 8px;
-`;
+// const BoxWrapper = styled("div")`
+//   height: 39px;
+//   width: 130px;
+//   margin-top: 8px;
+// `;
