@@ -6,6 +6,8 @@ export type GetMemoRes = {
   staffRole: string;
   content: string;
   createdAt: string;
+  isMine: boolean;
+  memoId: number;
 };
 const getMemo = async (patientId: number) => {
   const res = await MemoRequest.getMemo(patientId);

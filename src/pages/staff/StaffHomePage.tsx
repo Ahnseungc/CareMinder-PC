@@ -27,7 +27,8 @@ export default function StaffHomePage() {
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
   const navigate = useNavigate();
 
-  const [staffAcceptIsGroup, setStaffAcceptIsGroup] = useState({
+  //setStaffAcceptIsGroup
+  const [staffAcceptIsGroup] = useState({
     pendingGroup: false,
     inprogressGroup: false,
   }); //수락중인 환자, 환자별로 묶기
@@ -59,8 +60,6 @@ export default function StaffHomePage() {
       return patchComplete(id);
     }
   };
-
-  console.log(staffAcceptIsGroup);
 
   useEffect(() => {
     setlayoutState("home");
@@ -101,20 +100,18 @@ export default function StaffHomePage() {
       <S.LeftSection>
         <S.TitleWrapper>
           <S.Title>대기중인 환자</S.Title>
-          <S.SearchBoxWrapper>
-            <StaffSearchBox />
-          </S.SearchBoxWrapper>
+          <S.SearchBoxWrapper>{/* <StaffSearchBox /> */}</S.SearchBoxWrapper>
         </S.TitleWrapper>
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
             <S.FilterBox
-              onClick={() =>
-                setStaffAcceptIsGroup(prev => ({
-                  ...prev,
-                  pendingGroup: !prev.pendingGroup,
-                }))
-              }
+              // onClick={() =>
+              //   setStaffAcceptIsGroup(prev => ({
+              //     ...prev,
+              //     pendingGroup: !prev.pendingGroup,
+              //   }))
+              // }
               isTrue={staffAcceptIsGroup.pendingGroup}
             >
               환자별
@@ -138,20 +135,18 @@ export default function StaffHomePage() {
       <S.RightSection>
         <S.TitleWrapper>
           <S.Title>수락 중인 환자</S.Title>
-          <S.SearchBoxWrapper>
-            <StaffSearchBox />
-          </S.SearchBoxWrapper>
+          <S.SearchBoxWrapper>{/* <StaffSearchBox /> */}</S.SearchBoxWrapper>
         </S.TitleWrapper>
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
             <S.FilterBox
-              onClick={() =>
-                setStaffAcceptIsGroup(prev => ({
-                  ...prev,
-                  inprogressGroup: !prev.inprogressGroup,
-                }))
-              }
+              // onClick={() =>
+              //   setStaffAcceptIsGroup(prev => ({
+              //     ...prev,
+              //     inprogressGroup: !prev.inprogressGroup,
+              //   }))
+              // }
               isTrue={staffAcceptIsGroup.inprogressGroup}
             >
               환자별

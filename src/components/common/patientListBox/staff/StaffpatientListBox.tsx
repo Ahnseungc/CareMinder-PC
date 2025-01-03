@@ -72,21 +72,20 @@ function StaffPatientListBox({
     }
   };
 
-  const onChangePatientRole = (value: CSwitchProps) => {
-    mutateRole({
-      aiRole: isFindRole(value)!,
-      patientRequestId: data.patientRequestId,
-    });
-    setIsEdit(false);
-    setIsOptions(false);
-  };
+  // const onChangePatientRole = (value: CSwitchProps) => {
+  //   mutateRole({
+  //     aiRole: isFindRole(value)!,
+  //     patientRequestId: data.patientRequestId,
+  //   });
+  //   setIsEdit(false);
+  //   setIsOptions(false);
+  // };
 
   const onCancelAccept = (e: React.MouseEvent) => {
     e.stopPropagation();
     mutateDecline(data.patientRequestId);
   };
-  console.log("isOptions", isOptions);
-  console.log("isEdit", isEdit);
+
   // useEffect(() => {
   //   console.log(messages.length);
   // if (messages.length === 0) return;
@@ -104,7 +103,9 @@ function StaffPatientListBox({
       <LeftLine color={roleColorPick.dark}></LeftLine>
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <div>
-          <div>{data.areaSimple.areaName}</div>
+          <div>
+            {data.areaSimple.areaName} ({data.tabletSimple.tabletName})
+          </div>
           <span> | </span>
           <div>{data.patientSimple.patientName}</div>
         </div>
