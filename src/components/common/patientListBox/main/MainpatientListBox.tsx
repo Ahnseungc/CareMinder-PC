@@ -15,7 +15,9 @@ function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
       <LeftLine color={roleColorPick.dark}></LeftLine>
       <Title color={roleColorPick.dark} tabIndex={0}>
         <div>
-          <div>{data.areaSimple.areaName}</div>
+          <div>
+            {data.areaSimple.areaName} ({data.tabletSimple.tabletName})
+          </div>
           <span> | </span>
           <div>{data.patientSimple.patientName}</div>
         </div>
