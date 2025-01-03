@@ -12,7 +12,7 @@ import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg
 import MemoBox from "../MemoBox/MemoBox";
 
 function StaffGroupList({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
-  const roleColorPick = roleColor("NURSE");
+  const roleColorPick = roleColor(data.patientRequests[0].aiRole);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isMemo, setIsMemo] = useState<boolean>(false);
 

@@ -13,6 +13,7 @@ export default function useUnLockAccount() {
     onSuccess: () => {
       console.log("계정 잠금 해제 완료");
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
+      queryClient.invalidateQueries({ queryKey: ["wardList"] });
     },
     onError: error => {
       console.error("계정 잠금 해제 실패", error);

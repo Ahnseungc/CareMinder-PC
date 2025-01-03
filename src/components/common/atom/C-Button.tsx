@@ -9,13 +9,17 @@ export type CustomButtonProps = {
     | "login"
     | "primaryWhite"
     | "primaryBlack"
-    | "primarySpaureLong";
+    | "primarySpaureLong"
+    | "impactRed"
+    | "primarySecond";
+  icon?: React.ReactNode;
 } & ButtonProps;
 
-const CButton: FC<CustomButtonProps> = ({ children, buttontype, ...props }) => {
+const CButton: FC<CustomButtonProps> = ({ children, buttontype, icon, ...props }) => {
   return (
     <StyledButton buttontype={buttontype} {...props}>
       {children}
+      {icon && <IconWrapper>{icon}</IconWrapper>} {/* 아이콘을 children 앞에 렌더링 */}
     </StyledButton>
   );
 };
@@ -23,8 +27,8 @@ const CButton: FC<CustomButtonProps> = ({ children, buttontype, ...props }) => {
 export default CButton;
 
 /** styled */
-
 const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) => ({
+  position: "relative",
   ...(buttontype === "primary" && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
@@ -86,7 +90,55 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) =
       border: "none",
     },
   }),
+  ...(buttontype === "impactRed" && {
+    "backgroundColor": "#FF5353",
+    "color": theme.palette.primary.contrastText,
+    "borderRadius": "100px",
+    "fontSize": "14px",
+    "lineHeight": "24px",
+    "fontWeight": "500",
+    "width": "141px",
+    "height": "32px",
+    "&:disabled": {
+      backgroundImage: "none",
+      backgroundColor: theme.palette.action.disabled,
+      color: theme.palette.primary.contrastText,
+      border: "none",
+    },
+    "&:hover": {
+      backgroundColor: "#fffff",
+      border: "1px solid #FF5353",
+      color: "#FF5353",
+    },
+  }),
+  ...(buttontype === "primarySecond" && {
+    "backgroundColor": "#ffffff",
+    "color": theme.palette.secondary.main,
+    "borderRadius": "6px",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "fontWeight": "700",
+    "width": "148px",
+    "height": "36px",
+    "border": `1px solid ${theme.palette.secondary.main}`,
+    "&:disabled": {
+      backgroundImage: "none",
+      backgroundColor: theme.palette.action.disabled,
+      color: theme.palette.primary.contrastText,
+      border: "none",
+    },
+    "&:hover": {
+      backgroundColor: theme.palette.secondary.main,
+      color: "#ffffff",
+    },
+  }),
 }));
+const IconWrapper = styled("span")({
+  display: "flex",
+  position: "absolute",
+  alignItems: "center",
+  right: 9,
+});
 
 /* 
 EX)

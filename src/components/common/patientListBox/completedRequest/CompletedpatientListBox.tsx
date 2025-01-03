@@ -48,7 +48,7 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
         <div>
           {data.areaSimple?.areaName}
           {data.patientSimple
-            ? ` (T${data.tabletSimple?.tabletId} ) |  ${data.patientSimple?.patientName}`
+            ? ` (${data.tabletSimple?.tabletName}) |  ${data.patientSimple?.patientName}`
             : ""}
         </div>
         <div>

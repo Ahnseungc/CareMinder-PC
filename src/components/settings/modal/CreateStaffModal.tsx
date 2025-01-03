@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import NewStaffInputField from "../NewStaffInputField";
 import { NewStaff, NewStaffField } from "@models/staff";
 import { useRecoilState } from "recoil";
-import doubleCheckState from "@libraries/recoil/staff";
+import { doubleCheckState } from "@libraries/recoil/idDoubleCheck";
 import useCreateStaff from "@hooks/mutation/useCreateStaff";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";

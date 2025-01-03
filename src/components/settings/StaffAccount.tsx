@@ -108,6 +108,7 @@ export const StaffAccount = () => {
   const handleInfoModal = (modalType: string, staffId: number[]) => {
     const lockData = {
       userIds: staffId,
+      accountType: "STAFF",
     };
     switch (modalType) {
       case "edit":
@@ -170,6 +171,7 @@ export const StaffAccount = () => {
   const handleAllLock = () => {
     const lockData = {
       userIds: selectStaffList[0],
+      accountType: "STAFF",
     };
     lockAccount(lockData);
     setIsClear(true);
@@ -178,6 +180,7 @@ export const StaffAccount = () => {
   const handleAllUnLock = () => {
     const lockData = {
       userIds: selectStaffList[0],
+      accountType: "STAFF",
     };
     unLockAccount(lockData);
     setIsClear(true);

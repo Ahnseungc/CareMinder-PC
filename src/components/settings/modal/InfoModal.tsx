@@ -1,4 +1,5 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
+import { UserType } from "@models/user";
 import { Box, styled, Typography } from "@mui/material";
 import React, { useMemo } from "react";
 
@@ -12,6 +13,7 @@ const MODAL_CONTEXTS = {
   checkTOS: { title: "필수 약관 체크 누락되었습니다.", controlAccount: false },
   successChangePW: { title: "비밀번호가 변경되었습니다.", controlAccount: false },
   successChangeInfo: { title: "변경 내용이 저장되었습니다.", controlAccount: false },
+  successAccountLock: { title: "잠금 처리되었습니다.", controlAccount: false },
   confirmFail: { title: "인증실패되었습니다.", controlAccount: false },
   adminPopup: {
     title: "본 페이지는 관리자를 위한 페이지로, 관리자 외에 접근을 금합니다.",
@@ -35,6 +37,7 @@ interface InfoModalProps extends Omit<CMModalProps, "title"> {
   message?: React.ReactNode;
   leftText?: string;
   rightText?: string;
+  userType?: UserType;
 }
 
 export default function InfoModal({
@@ -44,6 +47,7 @@ export default function InfoModal({
   message,
   leftText = "아니오",
   rightText = "예",
+  userType,
   ...props
 }: InfoModalProps) {
   const { title, controlAccount } = useMemo(
@@ -55,16 +59,37 @@ export default function InfoModal({
     <CMModal
       maxWidth="xs"
       onClose={onClose}
+      title={
+        modalType === "successChangeInfo" || modalType === "successChangePW"
+          ? "스태프 정보 수정하기"
+          : ""
+      }
       footer={
         controlAccount ? (
           <>
-            <ModalActionButton color="secondary" onClick={onClose}>
+            <ModalActionButton
+              color="secondary"
+              hoverColor={
+                userType === "STAFF" ? "#30B4FF22" : userType === "ADMIN" ? "#5DB8BE22" : ""
+              }
+              onClick={onClose}
+            >
               {leftText}
             </ModalActionButton>
-            <ModalActionButton onClick={onConfirm}>{rightText}</ModalActionButton>
+            <ModalActionButton
+              onClick={onConfirm}
+              color={userType === "STAFF" ? "success" : userType === "ADMIN" ? "info" : "primary"}
+            >
+              {rightText}
+            </ModalActionButton>
           </>
         ) : (
-          <ModalActionButton onClick={onClose}>확인</ModalActionButton>
+          <ModalActionButton
+            onClick={onClose}
+            color={userType === "STAFF" ? "success" : userType === "ADMIN" ? "info" : "primary"}
+          >
+            확인
+          </ModalActionButton>
         )
       }
       {...props}

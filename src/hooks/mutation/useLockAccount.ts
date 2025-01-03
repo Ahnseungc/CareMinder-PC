@@ -3,6 +3,7 @@ import axiosInstance from "@utils/axios/axiosInstance";
 
 export type LockInfo = {
   userIds: number[];
+  accountType: string;
 };
 
 const lockAccount = async (data: LockInfo) => {
@@ -16,6 +17,7 @@ export default function useLockAccount() {
     onSuccess: () => {
       console.log("계정 잠금 완료");
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
+      queryClient.invalidateQueries({ queryKey: ["wardList"] });
     },
     onError: error => {
       console.error("계정 잠금 실패", error);

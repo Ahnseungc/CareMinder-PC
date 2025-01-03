@@ -18,7 +18,7 @@ export const useAutoLogout = ({
   const userType = useRecoilValue(userState)?.type;
   const { mutate: signOut } = useSignOut(userType as UserType);
 
-  const { getRemainingTime } = useIdleTimer({
+  const { getRemainingTime, reset } = useIdleTimer({
     timeout,
     events: [
       "mousemove",
@@ -49,10 +49,9 @@ export const useAutoLogout = ({
 
   useEffect(() => {
     if (remaining === 0) {
-      alert(message);
       signOut();
     }
   }, [remaining, signOut, message]);
 
-  return { remaining };
+  return { remaining, reset };
 };
