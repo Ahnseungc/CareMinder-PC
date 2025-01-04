@@ -1,7 +1,7 @@
 import { Button, ButtonProps, styled } from "@mui/material";
 
 type ModalActionButtonProps = {
-  color?: "primary" | "secondary" | "success" | "info";
+  color?: "primary" | "secondary" | "success" | "info" | "secondarySm";
   hoverColor?: string;
 } & Omit<ButtonProps, "color">;
 
