@@ -38,12 +38,12 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
         onSuccess: () => {
           //@ts-ignore
           queryClient.invalidateQueries(["useGetMemo"]);
-          toast.success("구역이 추가되었습니다.");
+          toast.success("메모가 추가되었습니다.");
           onClose();
         },
         onError: error => {
           console.error(error);
-          toast.error("구역 추가에 실패했습니다.");
+          toast.error("메모 추가에 실패했습니다.");
         },
       },
     );
