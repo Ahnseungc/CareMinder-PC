@@ -5,6 +5,7 @@ import { PropsWithChildren, ReactElement } from "react";
 export type ModalProps = {
   title?: string | ReactElement;
   footer?: ReactElement;
+  titleColor?: string;
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
 } & Omit<DialogProps, "children">;
 
@@ -14,8 +15,10 @@ export default function Modal({
   title,
   footer,
   children,
+  titleColor,
   ...props
 }: PropsWithChildren<ModalProps>) {
+  console.log(titleColor);
   return (
     <StyledDialog
       maxWidth="xs"
@@ -28,7 +31,11 @@ export default function Modal({
         },
       }}
     >
-      {title && <DialogTitle sx={{ fontSize: "20px" }}>{title}</DialogTitle>}
+      {title && (
+        <DialogTitle sx={{ fontSize: "20px", color: `${titleColor} !important` || "defaultColor" }}>
+          {title}
+        </DialogTitle>
+      )}
       <DialogContent>{children}</DialogContent>
       {footer && <DialogActions>{footer}</DialogActions>}
     </StyledDialog>

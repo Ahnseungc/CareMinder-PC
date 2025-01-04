@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
 import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-icon.svg";
@@ -16,26 +16,27 @@ import CCheckBox from "@components/common/atom/C-CheckBox";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
+import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
 
-const columns = [
-  { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "144px" },
-  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "192px" },
+const columnsHeader = [
+  { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
+  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "11.08%" },
   {
     id: 2,
     field: "TableName",
     headerName: "태블릿 이름",
     icon: <FilterVerticalIcon />,
-    width: "192px",
+    width: "11.08%",
   },
   {
     id: 3,
     field: "TableName",
     headerName: "입원일자",
     icon: <FilterVerticalIcon />,
-    width: "96px",
+    width: "8.54%",
   },
-  // { id: 4, field: "TableName", headerName: "메모 보기", width: "64px" },
-  { id: 5, field: "TableName", headerName: "퇴원 처리 하기", width: "141px" },
+  { id: 4, field: "TableName", headerName: "메모 보기", width: "8.69%" },
+  { id: 5, field: "TableName", headerName: "퇴원 처리 하기", width: "11.14%" },
 ];
 
 interface AdminTableProps {
@@ -51,6 +52,7 @@ interface AdminTableProps {
   areaList: any;
   area: Array<string>;
   onDisCharge: (tabletId: number) => void;
+  handleMemoModal: (patientId: number, patientName: string) => void;
 }
 
 const AdminTable: FC<AdminTableProps> = ({
@@ -62,6 +64,7 @@ const AdminTable: FC<AdminTableProps> = ({
   onDisCharge,
   areaList,
   area,
+  handleMemoModal,
 }) => {
   const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { mutate: changeTabletInfo } = useChangeTabletInfo();
@@ -179,7 +182,7 @@ const AdminTable: FC<AdminTableProps> = ({
               checked={getTablet?.length > 0 && selected?.length === getTablet?.length}
             />
           </th>
-          {columns.map(column => {
+          {columnsHeader.map(column => {
             return (
               <InoutTableHeaderTh key={column.id} width={column.width}>
                 <p>{column.headerName}</p>
@@ -202,7 +205,7 @@ const AdminTable: FC<AdminTableProps> = ({
                   key={tablet.serialNumber || tablet.tabletId}
                   isSelected={selected?.some(item => item.id === tablet.tabletId)}
                 >
-                  <InoutTableBodyTd width="28px">
+                  <InoutTableBodyTd width="1.62%">
                     <CCheckBox
                       onChange={() =>
                         onChangeSelected(tablet.tabletId, tablet.patientName, tablet.areaName)
@@ -210,7 +213,7 @@ const AdminTable: FC<AdminTableProps> = ({
                       checked={selected?.some(item => item.id === tablet.tabletId)}
                     />
                   </InoutTableBodyTd>
-                  <InoutTableBodyTd width="144px">
+                  <InoutTableBodyTd width={columnsHeader[0].width}>
                     <div style={{ width: "100%", height: "36px" }}>
                       <label htmlFor="section"></label>
                       <CInput
@@ -223,8 +226,8 @@ const AdminTable: FC<AdminTableProps> = ({
                       />
                     </div>
                   </InoutTableBodyTd>
-                  <InoutTableBodyTd width="192px">
-                    <ComBoxLayout width={"192px"}>
+                  <InoutTableBodyTd width={columnsHeader[1].width}>
+                    <ComBoxLayout width={"100%"}>
                       <CComboBox
                         placeholder={"구역"}
                         options={area}
@@ -234,8 +237,8 @@ const AdminTable: FC<AdminTableProps> = ({
                       />
                     </ComBoxLayout>
                   </InoutTableBodyTd>
-                  <InoutTableBodyTd width="192px">
-                    <ComBoxLayout width={"192px"}>
+                  <InoutTableBodyTd width={columnsHeader[2].width}>
+                    <ComBoxLayout width={"100%"}>
                       <CInput
                         variant={"outlined"}
                         placeholder={"태블릿 이름"}
@@ -246,11 +249,16 @@ const AdminTable: FC<AdminTableProps> = ({
                       ></CInput>
                     </ComBoxLayout>
                   </InoutTableBodyTd>
-                  <InoutTableBodyTd width="96px">
+                  <InoutTableBodyTd width={columnsHeader[3].width}>
                     {formatDateDash(new Date(tablet.createdAt))}
                   </InoutTableBodyTd>
-                  {/* <InoutTableBodyTd width="64px"></InoutTableBodyTd> */}
-                  <InoutTableBodyTd width="141px">
+                  <InoutTableBodyTd width={columnsHeader[4].width}>
+                    <SvgIcon
+                      component={MemoIcon}
+                      onClick={() => handleMemoModal(tablet.patientId, tablet.patientName)}
+                    />
+                  </InoutTableBodyTd>
+                  <InoutTableBodyTd width={columnsHeader[5].width}>
                     <CButton
                       buttontype={"impactRed"}
                       onClick={() => {
@@ -276,6 +284,7 @@ const StTable = styled.table`
   width: 100%;
   height: 100%;
   min-height: 773px;
+  table-layout: fixed;
 
   & thead {
     width: 100%;
@@ -305,15 +314,17 @@ const InoutTableHedaerTr = styled.tr`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 136.67px;
-
+  /* gap: 136.67px; */
+  justify-content: center;
+  justify-content: space-between;
   padding-left: 24px;
+  padding-right: 32px;
 `;
 
 const InoutTableHeaderTh = styled.th<{ width: string }>`
   display: flex;
   align-items: center;
-  gap: 4px;
+  /* gap: 4px; */
   width: ${props => props.width || "100%"};
   justify-content: center;
   color: ${palette.text.primary};
@@ -326,9 +337,12 @@ const InoutTableBodyTr = styled.tr<{ isSelected: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 136.67px;
+  /* gap: 136.67px; */
+  justify-content: space-between;
+  /* justify-content: center; */
   border-bottom: 1px solid #c4c5cc;
   padding-left: 24px;
+  padding-right: 32px;
   padding-top: 16px;
   padding-bottom: 16px;
   cursor: pointer;

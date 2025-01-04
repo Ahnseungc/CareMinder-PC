@@ -25,6 +25,7 @@ import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeS
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { useQueryClient } from "@tanstack/react-query";
+import MemoModal from "@components/admin/admininout/modal/memo-modal";
 
 type SelectedItem = {
   name: string;
@@ -44,6 +45,7 @@ const StaffWardInoutManagementPage = () => {
   const [debounceValue, setDebounceValue] = useState("");
   const [isModal, setIsModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
+  const [isMemoModal, setIsMemoModal] = useState(false);
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
@@ -66,6 +68,7 @@ const StaffWardInoutManagementPage = () => {
 
   const { mutate } = useDischargePatients();
   const [selected, setSelected] = useState<Array<SelectedItem>>([]);
+  const [memoData, setMemoData] = useState<{ patientName: string; patientId: number }>();
 
   const onChangeSelectAll = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,6 +205,11 @@ const StaffWardInoutManagementPage = () => {
     setIsModal(prev => !prev);
   };
 
+  const handleMemoModal = (patientId: number, patientName: string) => {
+    setMemoData(prev => ({ ...prev, patientName: patientName, patientId: patientId }));
+    setIsMemoModal(prev => !prev);
+  };
+
   const handleDischargeSingle = (tabletId: number) => {
     setSelectSingle([tabletId]);
     handleModal();
@@ -238,6 +246,15 @@ const StaffWardInoutManagementPage = () => {
 
   return (
     <>
+      {isMemoModal && (
+        <MemoModal
+          modalTitle={memoData?.patientName as string}
+          subTitle={undefined}
+          patientId={memoData?.patientId as number}
+          onClose={() => setIsMemoModal(false)}
+          open={isMemoModal}
+        />
+      )}
       {isModal && (
         <DischargeModal
           modalTitle={"주의"}
@@ -357,6 +374,7 @@ const StaffWardInoutManagementPage = () => {
               selected={selected}
               areaList={areaList}
               area={area}
+              handleMemoModal={handleMemoModal}
             />
           )}
         </TableLayout>
