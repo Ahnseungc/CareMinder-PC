@@ -51,6 +51,7 @@ export const CComboBox: FC<CComboBoxProps> = ({
         value={value}
         onChange={onChange}
         displayEmpty
+        isStaff={isStaff}
         MenuProps={{
           PaperProps: {
             sx: {
@@ -125,7 +126,7 @@ const StyledFormControl = styled(FormControl)({
   height: "100%",
 });
 
-const StyledSelect = styled(Select)(({ theme }) => ({
+const StyledSelect = styled(Select)<{ isStaff?: boolean }>(({ theme, isStaff }) => ({
   "width": "100%",
   "height": "100%", // 부모의 height 상속
 
@@ -133,7 +134,9 @@ const StyledSelect = styled(Select)(({ theme }) => ({
     borderColor: theme.palette.divider, // 아웃라인 색상
     borderRadius: "6px",
   },
-
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: isStaff ? theme.palette.secondary.main : theme.palette.primary.main,
+  },
   "& .MuiSelect-icon": {
     right: "16px", // 아이콘의 위치를 오른쪽으로 조정
     top: "50%", // 아이콘의 위치를 수직 중앙으로 조정

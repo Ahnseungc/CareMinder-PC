@@ -9,6 +9,7 @@ export type CustomInputProps = {
   value: string;
   disabled: boolean;
   id: string;
+  focusColorType?: string;
 };
 
 const CInput: FC<CustomInputProps> = ({
@@ -18,6 +19,7 @@ const CInput: FC<CustomInputProps> = ({
   disabled,
   variant,
   id,
+  focusColorType,
   ...props
 }) => {
   return (
@@ -28,6 +30,7 @@ const CInput: FC<CustomInputProps> = ({
       value={value}
       onChange={onChange}
       variant={variant}
+      focusColorType={focusColorType}
       {...props}
     />
   );
@@ -37,22 +40,28 @@ export default CInput;
 
 /** styled */
 
-const StyledTextField = styled(TextField)({
-  "width": "100%",
-  "height": "100%",
-  "borderRadius": "6px",
-  "padding": "6px,16px",
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "6px",
-    height: "100%",
-  },
-  "& .MuiOutlinedInput-notchedOutline": {
-    borderRadius: "6px",
-  },
-  "& .MuiInputBase-input": {
-    color: "black",
-  },
-});
+const StyledTextField = styled(TextField)<{ focusColorType?: string }>(
+  ({ theme, focusColorType }) => ({
+    "width": "100%",
+    "height": "100%",
+    "borderRadius": "6px",
+    "padding": "6px,16px",
+    "& .MuiOutlinedInput-root": {
+      "borderRadius": "6px",
+      "height": "100%",
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor:
+          focusColorType === "STAFF" ? theme.palette.secondary.main : theme.palette.primary.main,
+      },
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderRadius: "6px",
+    },
+    "& .MuiInputBase-input": {
+      color: "black",
+    },
+  }),
+);
 
 /* 
 EX)
