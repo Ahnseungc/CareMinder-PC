@@ -14,7 +14,7 @@ const DischargeSuccessModal = ({ onClose, modalTitle, ...props }: ChargeModalPro
       title={modalTitle}
       footer={
         <>
-          <ModalActionButton color="success" onClick={onClose}>
+          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onClose}>
             완료
           </ModalActionButton>
         </>

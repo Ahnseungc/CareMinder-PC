@@ -217,6 +217,7 @@ const AdminTable: FC<AdminTableProps> = ({
                     <div style={{ width: "100%", height: "36px" }}>
                       <label htmlFor="section"></label>
                       <CInput
+                        focusColorType="STAFF"
                         placeholder={"환자 이름"}
                         value={tablet.patientName}
                         onChange={e => onChangeData(e, tablet.tabletId, "patientName")}
@@ -231,7 +232,7 @@ const AdminTable: FC<AdminTableProps> = ({
                       <CComboBox
                         placeholder={"구역"}
                         options={area}
-                        isStaff={false}
+                        isStaff={true}
                         value={tablet.areaName}
                         onChange={e => handleChangeArea(e, tablet.tabletId)}
                       />
@@ -240,6 +241,7 @@ const AdminTable: FC<AdminTableProps> = ({
                   <InoutTableBodyTd width={columnsHeader[2].width}>
                     <ComBoxLayout width={"100%"}>
                       <CInput
+                        focusColorType="STAFF"
                         variant={"outlined"}
                         placeholder={"태블릿 이름"}
                         onChange={e => onChangeData(e, tablet.tabletId, "tabletName")}

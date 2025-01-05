@@ -57,11 +57,11 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
       titleColor="#21262B"
       footer={
         <>
-          <ModalActionButton color="secondary" onClick={onClose}>
+          <ModalActionButton hoverColor="#19181813" color="secondary" onClick={onClose}>
             취소
           </ModalActionButton>
 
-          <ModalActionButton color="success" onClick={handleCreateMemo}>
+          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={handleCreateMemo}>
             변경
           </ModalActionButton>
         </>

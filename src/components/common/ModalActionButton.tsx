@@ -44,7 +44,7 @@ const ModalActionButton = styled((props: ButtonProps) => <Button variant="outlin
     "backgroundColor": theme.palette.secondary.main,
     "&:hover": {
       borderColor: theme.palette.divider,
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: hoverColor || theme.palette.primary.light,
     },
   }),
   ...(color === "info" && {
