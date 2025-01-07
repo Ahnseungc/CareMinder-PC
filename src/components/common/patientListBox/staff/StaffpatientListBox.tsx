@@ -16,6 +16,7 @@ import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
+import getNewRequest from "@utils/getNewRequest";
 // import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
@@ -97,10 +98,13 @@ function StaffPatientListBox({
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
-        <div>
+        <TitleLeft>
           {data.areaSimple.areaName} | {data.patientSimple.patientName} (
           {data.tabletSimple.tabletName})
-        </div>
+          {isAccept
+            ? data.unreadCount !== 0 && <New>new</New>
+            : getNewRequest(data.createdAt) && <New>new</New>}
+        </TitleLeft>
         <div>
           <MoreHorizRoundedIcon
             onClick={onOptionOnOff}
@@ -283,4 +287,19 @@ const BoxWrapper = styled("div")`
   height: 39px;
   width: 130px;
   margin-top: 8px;
+`;
+const TitleLeft = styled("div")`
+  display: flex;
+  align-items: center;
+`;
+const New = styled("div")`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.palette.error.main};
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+  color: ${({ theme }) => theme.palette.primary.contrastText};
 `;
