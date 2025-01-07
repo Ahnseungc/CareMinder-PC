@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
 import CInput from "@components/common/atom/C-Input";
-
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
-import { ReactComponent as Alert } from "@/assets/alert.svg";
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { Checkbox, Typography } from "@mui/material";
-import { useGetWardTabletList } from "@hooks/queries/useGetWardTabletList";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
-import { toast } from "react-toastify";
+import { useGetWardTabletList, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 import PaginationComponent from "@components/common/pagination";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
+import InfoModal from "./modal/InfoModal";
+import { useBooleanState } from "@toss/react";
+import TabletLogoutWarning from "./TabletLogoutWarning";
+import tabletListState from "@libraries/recoil/settings/tabletList";
+import EditTableInfoModal from "./modal/EditTabletInfoModal";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -32,20 +32,23 @@ interface TabletManagementTableProps {
 
 const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [area, setArea] = useState<string[]>([""]);
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
+  const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
+
+  const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
+  const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
 
   const setIsEditing = useSetRecoilState(tabletEditingState);
   const isEditing = useRecoilValue(tabletEditingState);
+  const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const { data: wardTabletList, isLoading: wardTabletLoading } = useGetWardTabletList({
+  const { data: wardTabletList } = useGetWardTabletList({
     myArea: false,
     page: currentPage - 1,
     size: 20,
   });
-  const { data: areaList, isLoading: areaLoading } = useGetAreaList();
-  const { mutate: changeTabletArea } = useChangeTabletArea();
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -60,30 +63,19 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     }
   };
 
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = event.target.value;
-    const areaId = areaList?.find(item => item.name === value)?.id as number;
-    console.log(areaId);
-    console.log(id);
-    changeTabletArea(
-      {
-        userIds: [id],
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
   //@ts-ignore
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
-    console.log(page);
+  };
+
+  const handleEditTablet = (tabletId: number) => {
+    setSelectedTabletId(tabletId);
+    openTabletEditModal();
+  };
+
+  const handleTabletLogout = (tabletId: number) => {
+    setSelectedTabletId(tabletId);
+    openLogoutModal();
   };
 
   useEffect(() => {
@@ -102,17 +94,32 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   }, [selectIndex, setIsEditing]);
 
   useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map(item => item.name));
-    }
-  }, [areaList]);
-
-  if (wardTabletLoading && areaLoading) {
-    return <div>로딩 중..</div>;
-  }
+    const index = selectIndex.map(item => wardTabletList?.data[item].tabletId) as number[];
+    setSelectTabletList(index);
+  }, [setSelectTabletList, selectIndex, wardTabletList]);
 
   return (
     <>
+      {/* 태블릿 로그아웃 설정 모달/ */}
+      <InfoModal
+        open={isLogoutModalOpen}
+        onClose={closeLogoutModal}
+        modalType="checkDelete"
+        leftText="취소"
+        rightText="중단"
+        userType={"WARD"}
+        onConfirm={() => null}
+        message={<TabletLogoutWarning />}
+      />
+
+      {/* 태블릿 정보 변경 설정 모달 */}
+      <EditTableInfoModal
+        open={isTabletEditModalOpen}
+        onClose={closeTabletEditModal}
+        tabletId={selectedTabletId as number}
+        tabletData={selectedTabletData as WardTabledListType}
+      />
+
       {wardTabletList?.data.length === 0 ? (
         <></>
       ) : (
@@ -153,12 +160,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
             <tbody>
               {wardTabletList?.data.map((row, index) => {
                 return (
-                  <tr
-                    key={index}
-                    style={{
-                      backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                    }}
-                  >
+                  <StyledTr key={index} isSelected={selectIndex.includes(index)}>
                     <td>
                       <ShortComBoxLayout>
                         <Checkbox
@@ -191,16 +193,14 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <CComboBox
-                          placeholder={"구역"}
-                          options={area}
+                        <CInput
+                          variant={"outlined"}
+                          placeholder={"구역 정보"}
+                          onChange={() => null}
                           value={row.areaName}
-                          onChange={e => handleChangeArea(e, row.tabletId)}
-                          // allowCustomInput={true}
-                          // onCustomInputAdd={newValue => {
-                          //   setOptions([...options, newValue]);
-                          // }}
-                        />
+                          disabled={true}
+                          id={""}
+                        ></CInput>
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -210,12 +210,9 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                           placeholder={"태블릿이름"}
                           onChange={() => null}
                           value={row.tabletName}
-                          disabled={false}
+                          disabled={true}
                           id={""}
                         ></CInput>
-                        <TabletButtonLayout>
-                          <Alert />
-                        </TabletButtonLayout>
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -230,7 +227,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                           placeholder={"환자 이름"}
                           onChange={() => null}
                           value={row.patientName}
-                          disabled={false}
+                          disabled={true}
                           id={""}
                         ></CInput>
                       </LongComBoxLayout>
@@ -244,10 +241,20 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                     </td>
                     <td>
                       <ShortComBoxLayout>
-                        <Leave />
+                        <Edit
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            handleEditTablet(row.tabletId);
+                            setSelectedTabletData(row);
+                          }}
+                        />
+                        <Leave
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleTabletLogout(row.tabletId)}
+                        />
                       </ShortComBoxLayout>
                     </td>
-                  </tr>
+                  </StyledTr>
                 );
               })}
             </tbody>
@@ -268,12 +275,15 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
 
 export default TabletManagementTable;
 
+/** styles */
+
 const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
 `;
 
 const StTable = styled.table`
+  cursor: pointer;
   min-width: 100%;
   width: max-content;
   border-collapse: collapse;
@@ -289,6 +299,7 @@ const StTable = styled.table`
   }
   & tbody {
     width: 100%;
+
     & tr > td {
       padding-bottom: 11.52px;
       padding-top: 11.52px;
@@ -298,28 +309,31 @@ const StTable = styled.table`
   }
 `;
 
+const StyledTr = styled.tr<{ isSelected: boolean }>`
+  background-color: ${props => (props.isSelected ? "#EFF0F8" : "white")};
+  &:hover {
+    background-color: #eff0f8;
+  }
+`;
+
 const ShortComBoxLayout = styled.div`
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 138px;
   height: 36px;
   margin: 0 auto;
+  gap: 20px;
 `;
 
 const LongComBoxLayout = styled.div`
+  cursor: pointer;
   position: relative;
+  padding: 0 20px;
   width: 224px;
   height: 36px;
   margin: 0 auto;
-`;
-
-const TabletButtonLayout = styled.div`
-  position: absolute;
-  top: 7px;
-  right: -35px;
-  display: flex;
-  gap: 5px;
 `;
 
 const PaginationContainer = styled.div`

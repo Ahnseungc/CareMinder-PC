@@ -20,6 +20,7 @@ export default function useUpdateAreaInfo() {
       console.log("구역 정보 변경 완료");
       queryClient.invalidateQueries({ queryKey: ["staffList"] });
       queryClient.invalidateQueries({ queryKey: ["areaList"] });
+      queryClient.invalidateQueries({ queryKey: ["ward-tablet-list"] });
     },
     onError: error => {
       console.error("구역 정보 변경 실패", error);

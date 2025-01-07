@@ -9,7 +9,6 @@ import { useRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
-// import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Lock } from "@/assets/completedRequests/Interface essential/Lock.svg";
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
@@ -22,12 +21,6 @@ import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
-
-// import { CComboBox } from "@components/common/atom/C-ComboBox";
-// import { OPTIONS } from "@components/settings/const/index";
-// import { toast } from "react-toastify";
-// import useChangeStaffRole from "@hooks/mutation/useChangeRole";
-// import useChangeStaffArea from "@hooks/mutation/useChangeArea";
 
 interface SettingButtonProps {
   isClick?: boolean;
@@ -53,8 +46,6 @@ export const StaffAccount = () => {
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
-  // const { mutate: changeStaffRole } = useChangeStaffRole();
-  // const { mutate: changeStaffArea } = useChangeStaffArea();
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
@@ -125,48 +116,6 @@ export const StaffAccount = () => {
         break;
     }
   };
-
-  // const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = event.target.value;
-  //   const staffRole = OPTIONS.find(item => item.value === value)?.role as string;
-
-  //   changeStaffRole(
-  //     {
-  //       userIds: selectStaffList[0],
-  //       staffRole: staffRole,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setIsClear(true);
-  //         toast.success("직업 변경이 완료되었습니다");
-  //       },
-  //       onError: () => {
-  //         toast.error("직업 변경을 실패했습니다");
-  //       },
-  //     },
-  //   );
-  // };
-
-  // const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = event.target.value;
-  //   const areaId = areaList?.find(item => item.name === value)?.id as number;
-  //   console.log(areaId);
-  //   changeStaffArea(
-  //     {
-  //       userIds: selectStaffList[0],
-  //       areaId: areaId,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setIsClear(true);
-  //         toast.success("구역 변경이 완료되었습니다");
-  //       },
-  //       onError: () => {
-  //         toast.error("구역 변경을 실패했습니다");
-  //       },
-  //     },
-  //   );
-  // };
 
   const handleAllLock = () => {
     const lockData = {
@@ -247,20 +196,10 @@ export const StaffAccount = () => {
               />
             </div> */}
             <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
-              <span
-                style={
-                  {
-                    // color: selectStaffList[0].length === 1 ? "#C4C5CC" : "",
-                    // cursor: selectStaffList[0].length === 1 ? "not-allowed" : "pointer",
-                  }
-                }
-              >
+              <span>
                 <Edit
                   onClick={() => {
                     openPWChangeModal();
-                    // if (selectStaffList[0].length !== 1) {
-                    //   openPWChangeModal();
-                    // }
                   }}
                 />
               </span>
