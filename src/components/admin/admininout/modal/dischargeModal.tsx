@@ -5,7 +5,7 @@ import { Box } from "@mui/system";
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
   subTitle: string | React.ReactNode;
-  onDisCharge: (e: React.FormEvent<HTMLFormElement>) => void;
+  onDisCharge: any;
 }
 
 const DischargeModal = ({
@@ -22,10 +22,10 @@ const DischargeModal = ({
       title={modalTitle}
       footer={
         <>
-          <ModalActionButton color="success" onClick={onClose}>
+          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onClose}>
             취소하기
           </ModalActionButton>
-          <ModalActionButton color="secondary" onClick={onDisCharge}>
+          <ModalActionButton hoverColor="#19181813" color="secondary" onClick={onDisCharge}>
             퇴원하기
           </ModalActionButton>
         </>

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import axiosInstance from "@utils/axios/axiosInstance";
+import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
@@ -12,7 +12,6 @@ export type GetAreaListResponse = {
 
 export type getAreaListRequest = {
   type: string;
-  token?: string;
 };
 
 export const getAreaList = async ({ type }: getAreaListRequest) => {
@@ -21,10 +20,9 @@ export const getAreaList = async ({ type }: getAreaListRequest) => {
     return res.data;
   } else if (type === "STAFF") {
     const res = await axiosInstance.get("/areas", {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
-      },
-    });
+      headers: { Authorization: `Bearer ${Cookies.get("accessTokenWard")}` },
+      customHeader: true,
+    } as CustomAxiosRequestConfig);
     return res.data;
   }
 };
@@ -36,9 +34,9 @@ export const useGetAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosErr
   });
 };
 
-export const useGetStaffAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
+export const useGetStaffAreaList = () => {
   return useQuery({
-    queryKey: ["areaList"],
+    queryKey: ["areaListStaff"],
     retry: 3,
     retryDelay: 1000,
     queryFn: () => getAreaList({ type: "STAFF" }),

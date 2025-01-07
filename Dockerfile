@@ -3,18 +3,6 @@
 # FROM node:16-alpine AS build
 FROM oven/bun:latest AS build
 
-
-# # curl과 bash 설치
-# RUN apk add --no-cache curl bash
-
-# # Bun 설치
-# # bun 설치 및 버전 확인
-# RUN curl -fsSL https://bun.sh/install | bash
-
-# # bun 경로를 환경 변수로 설정하고 bun 버전 확인
-# ENV BUN_INSTALL="/root/.bun"
-# ENV PATH="$BUN_INSTALL/bin:$PATH"
-
 # bun 버전 확인
 RUN bun --version
 
@@ -40,11 +28,10 @@ RUN rm -rf /etc/nginx/sites-enabled/default.conf
 # nginx에 serving할 html의 설정파일을 복사한다.
 COPY nginx.conf /etc/nginx/conf.d/
 
-
 COPY --from=build /code/dist /usr/share/nginx/html
 
 # frontend Port를 설정한다.
-EXPOSE 5050
+EXPOSE 6060
 
 #container 종료 될때 정상 종료 유도
 STOPSIGNAL SIGTERM

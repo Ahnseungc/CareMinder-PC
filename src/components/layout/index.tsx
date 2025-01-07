@@ -14,14 +14,18 @@ import modalState from "@libraries/recoil/modal";
 import { useAutoLogout } from "@utils/useAutoLogout";
 import InfoModal from "@components/settings/modal/InfoModal";
 import AutoLogoutMessage from "@components/common/AutoLogout/AutoLogoutMessage";
+import Cookies from "js-cookie";
 
 export default function AuthenticatedLayout() {
   const navigate = useNavigate();
 
   const user = useRecoilValue(userState);
+  const setUser = useSetRecoilState(userState);
   const isModal = useRecoilValue(modalState);
   const setIsModalOpen = useSetRecoilState(modalState);
   const userType = useRecoilValue(userState)?.type;
+  const accessTokenWard = Cookies.get("accessTokenWard");
+  const refreshTokenWard = Cookies.get("refreshTokenWard");
 
   const [isChecking, setIsChecking] = useState(true);
   const [isOpen, openModal, closeModal] = useBooleanState();
@@ -32,6 +36,12 @@ export default function AuthenticatedLayout() {
     console.error("로그인이 필요한 서비스입니다.");
     navigate(RoutePath.Signin);
   }, []);
+
+  useEffect(() => {
+    if (!accessTokenWard || !refreshTokenWard) {
+      setUser(null);
+    }
+  }, [accessTokenWard, refreshTokenWard]);
 
   useEffect(() => {
     if (user) {
