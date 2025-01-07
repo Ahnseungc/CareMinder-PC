@@ -39,7 +39,9 @@ export default function AuthenticatedLayout() {
 
   useEffect(() => {
     if (!accessTokenWard || !refreshTokenWard) {
-      setUser(null);
+      if (user?.type !== "ADMIN") {
+        setUser(null);
+      }
     }
   }, [accessTokenWard, refreshTokenWard]);
 

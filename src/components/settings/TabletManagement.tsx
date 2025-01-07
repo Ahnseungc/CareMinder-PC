@@ -72,6 +72,9 @@ export const TabletManagement = () => {
   }, []);
 
   useEffect(() => {
+    if (window.scrollY > 190) {
+      setIsSticky(true);
+    }
     if (isEditing.length === 0) {
       setIsSticky(false);
     }
