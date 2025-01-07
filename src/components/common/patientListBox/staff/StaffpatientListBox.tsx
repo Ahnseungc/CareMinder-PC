@@ -233,20 +233,6 @@ const Check = styled("div")<{ color: string }>`
   font-weight: 900;
   cursor: pointer;
 `;
-// const SmallCheck = styled("div")<{ color: string }>`
-//   background-color: ${({ color }) => color};
-//   border-radius: 50%;
-//   width: 20px;
-//   height: 20px;
-//   display: flex;
-//   padding-top: 2px;
-//   justify-content: center;
-//   margin-right: 6px;
-//   font-size: 13px;
-//   color: ${({ theme }) => theme.palette.primary.contrastText};
-//   font-weight: 900;
-//   margin-bottom: 2px;
-// `;
 
 const ChatContainer = styled("div")`
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
