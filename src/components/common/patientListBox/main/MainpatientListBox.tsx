@@ -4,6 +4,7 @@ import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { MainListBoxProps } from "@models/home";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import getPrevTimes from "@utils/getPrevTimes";
+import getNewRequest from "@utils/getNewRequest";
 
 function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
@@ -13,6 +14,9 @@ function MainPatientListBox({ isAccept, data, onMutates }: MainListBoxProps) {
       <Title color={roleColorPick.dark}>
         {data.areaSimple.areaName} | {data.patientSimple.patientName} (
         {data.tabletSimple.tabletName})
+        {isAccept
+          ? data.unreadCount !== 0 && <New>new</New>
+          : getNewRequest(data.createdAt) && <New>new</New>}
       </Title>
       <Bottom>
         <TxtBox>
@@ -52,6 +56,8 @@ const Title = styled("div")<{ color: string }>`
   font-size: 14px;
   color: ${({ color }) => color};
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
 `;
 const TxtBox = styled("div")`
   border-radius: 6px;
@@ -92,20 +98,14 @@ const Check = styled("div")<{ color: string }>`
   margin-left: 12px;
   font-weight: 900;
 `;
-
-//새로운 요청 표시 즉, N을 의미
-// const SmallCheck = styled("div")<{ color: string }>`
-//   background-color: ${({ color }) => color};
-//   border-radius: 50%;
-//   width: 20px;
-//   height: 20px;
-//   display: flex;
-//   justify-content: center;
-//   padding-top: 1px;
-//   margin-bottom: 2px;
-//   margin-right: 6px;
-//   font-size: 13px;
-//   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-//   font-weight: 900;
-//   color: ${({ theme }) => theme.palette.primary.contrastText};
-// `;
+const New = styled("div")`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.palette.error.main};
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+  color: ${({ theme }) => theme.palette.primary.contrastText};
+`;
