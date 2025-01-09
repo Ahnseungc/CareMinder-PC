@@ -134,7 +134,7 @@ export const TabletManagement = () => {
                   p: "2px 4px",
                   display: "flex",
                   alignItems: "center",
-                  width: 400,
+                  width: 300,
                   border: "1px solid #ECECEC",
                   borderRadius: "6px",
                   boxShadow: "none",
@@ -262,7 +262,8 @@ const TextContainer = styled(Box)({
 
 const SearchBarContainer = styled(Box)({
   position: "absolute",
-  left: 130,
+  top: "45px",
+  left: "30px",
 });
 
 const EditMenuText = styled(Typography)({
@@ -307,8 +308,8 @@ const ModeInfoContainer = styled(Box)({
 
 const ModeInfoText = styled(Typography)`
   position: absolute;
-  top: 260px;
-  right: 240px;
+  top: 60px;
+  right: 180px;
   font-size: 16px;
   font-weight: 500;
   color: #7c7c7c;
@@ -372,8 +373,8 @@ const ModeInfoHideContent = styled(Box)`
 
 const StaffButtonContainer = styled(Box)`
   position: absolute;
-  top: 250px;
-  right: 80px;
+  top: 54px;
+  right: 10px;
   display: flex;
   gap: 20px;
   width: 146px;

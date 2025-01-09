@@ -294,7 +294,7 @@ const BodyTitleContainer = styled(Box)({
 
 const StaffButtonContainer = styled(Box)({
   position: "absolute",
-  right: 0,
+  right: 10,
   display: "flex",
   gap: "20px",
   width: "146px",
