@@ -113,7 +113,11 @@ export const TabletManagement = () => {
 
       <BodyTitleContainer>
         {isEditing.length !== 0 ? (
-          <EditContainer ref={editContainerRef} isSticky={isSticky}>
+          <EditContainer
+            ref={editContainerRef}
+            isSticky={isSticky}
+            isVisible={isEditing.length !== 0}
+          >
             <X style={{ cursor: "pointer" }} onClick={handleClear} />
             <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
             <EditMenuBox>
@@ -200,23 +204,55 @@ const BodyTitleContainer = styled(Box)({
 });
 
 const EditContainer = styled(Box, {
-  shouldForwardProp: prop => prop !== "isSticky",
-})<{ isSticky: boolean }>(({ theme, isSticky }) => ({
-  position: isSticky ? "fixed" : "relative",
-  top: isSticky ? "70px" : "auto",
-  minWidth: "827px",
-  width: isSticky ? "calc(100% - 200px)" : "100%",
-  display: "flex",
-  justifyContent: "start",
-  alignItems: "center",
-  gap: "20px",
-  height: "60px",
-  padding: "15px 12px",
-  border: "2px solid #5D6DBE",
-  borderRadius: "100px",
-  color: theme.palette.text.dark,
-  backgroundColor: "#FFFFFF",
-  zIndex: 10,
+  shouldForwardProp: prop => !["isSticky", "isVisible"].includes(prop as string),
+})<{ isSticky: boolean; isVisible: boolean }>(({ theme, isSticky, isVisible }) => ({
+  "position": isSticky ? "fixed" : "relative",
+  "top": isSticky ? "70px" : "auto",
+  "minWidth": "827px",
+  "width": isSticky ? "calc(100% - 200px)" : "100%",
+  "display": "flex",
+  "justifyContent": "start",
+  "alignItems": "center",
+  "gap": "20px",
+  "height": "60px",
+  "padding": "15px 12px",
+  "border": "2px solid #5D6DBE",
+  "borderRadius": "100px",
+  "color": theme.palette.text.dark,
+  "backgroundColor": "#FFFFFF",
+  "zIndex": 10,
+
+  "transition": "all 0.3s ease-in-out",
+  "opacity": isVisible ? 1 : 0,
+  "transform": isVisible ? "translateY(0)" : "translateY(-3px)",
+  "visibility": isVisible ? "visible" : "hidden",
+  "animation": isVisible
+    ? "slideDown 0.5s ease-in-out forwards"
+    : "slideUp 0.5s ease-in-out forwards",
+  "@keyframes slideDown": {
+    "0%": {
+      opacity: 0,
+      transform: "translateY(-3px)",
+      visibility: "visible",
+    },
+    "100%": {
+      opacity: 1,
+      transform: "translateY(0)",
+      visibility: "visible",
+    },
+  },
+  "@keyframes slideUp": {
+    "0%": {
+      opacity: 1,
+      transform: "translateY(0)",
+      visibility: "visible",
+    },
+    "100%": {
+      opacity: 0,
+      transform: "translateY(-3px)",
+      visibility: "hidden",
+    },
+  },
 }));
 
 const TextContainer = styled(Box)({

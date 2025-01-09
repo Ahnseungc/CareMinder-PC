@@ -253,7 +253,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
                     수 있습니다:
                     <br />
                     <br />
-                    위탁받는 자:  (위탁 업체 명시)
+                    위탁받는 자: (위탁 업체 명시)
                     <br />
                     <br />
                     위탁하는 업무의 내용: 서버 관리 및 유지보수, 고객 상담 지원 등.
@@ -275,7 +275,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
                     조치합니다.
                     <br />
                     <br />
-                    문의처:  (문의처 정보 명시)
+                    문의처: (문의처 정보 명시)
                     <br />
                     <br />
                   </Typography>
