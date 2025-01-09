@@ -218,13 +218,7 @@ const StaffAccountSettingsTable = ({
               {staffList &&
                 staffList.data.map((row, index) => {
                   return (
-                    <tr
-                      key={index}
-                      style={{
-                        backgroundColor: `${selectIndex.includes(index) ? "#EFF0F8" : "white"}`,
-                        opacity: `${row.accountLocked ? 0.5 : 1}`,
-                      }}
-                    >
+                    <StyledTr key={index} isSelected={selectIndex.includes(index)}>
                       <td>
                         <Checkbox
                           {...label}
@@ -392,7 +386,7 @@ const StaffAccountSettingsTable = ({
                           />
                         </AccountMenuLayout>
                       </td>
-                    </tr>
+                    </StyledTr>
                   );
                 })}
             </tbody>
@@ -419,6 +413,7 @@ const TableContainer = styled.div`
 `;
 
 const StTable = styled.table`
+  cursor: pointer;
   min-width: 100%;
   width: max-content;
   border-collapse: collapse;
@@ -427,6 +422,7 @@ const StTable = styled.table`
   & thead {
     width: 100%;
     height: 20%;
+
     & th {
       position: relative;
       padding-bottom: 11.52px;
@@ -436,12 +432,20 @@ const StTable = styled.table`
   }
   & tbody {
     width: 100%;
+
     & tr > td {
       padding-bottom: 11.52px;
       padding-top: 11.52px;
       text-align: center;
       border-bottom: 1px solid ${palette.divider};
     }
+  }
+`;
+
+const StyledTr = styled.tr<{ isSelected: boolean }>`
+  background-color: ${props => (props.isSelected ? "#EFF0F8" : "white")};
+  &:hover {
+    background-color: #eff0f8;
   }
 `;
 
@@ -498,18 +502,21 @@ const ShortComBoxLayout = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 15px;
   width: 138px;
   height: 36px;
   margin: 0 auto;
 `;
 
 const LongComBoxLayout = styled.div`
+  padding: 0 15px;
   width: 224px;
   height: 36px;
   margin: 0 auto;
 `;
 
 const AccountMenuLayout = styled(ShortComBoxLayout)`
+  width: 200px;
   cursor: pointer;
   color: #c4c5cc;
   gap: 28px;

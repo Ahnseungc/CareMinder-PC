@@ -53,12 +53,8 @@ export const TabletManagement = () => {
     const handleScroll = () => {
       if (editContainerRef.current) {
         const rect = editContainerRef.current.getBoundingClientRect();
-        // console.log(rect.top);
         const initialPosition = editContainerRef.current.offsetTop;
-        // console.log("초기 위치:", initialPosition, "스크롤위치:", window.scrollY);
-
         setIsSticky(rect.top <= 70 && window.scrollY > initialPosition - 70);
-
         if (initialPosition === 70 && window.scrollY < 155) {
           setIsSticky(false);
         }
@@ -150,9 +146,11 @@ export const TabletManagement = () => {
                 </IconButton>
               </Paper>
             </SearchBarContainer>
+
             <MainTitleContainer>
               <Title variant="h1">태블릿 병상 관리</Title>
             </MainTitleContainer>
+
             <ModeInfoText>
               현재 <span>전체가능</span> 모드입니다. 4시간 후 강제종료 모드로 전환됩니다.
             </ModeInfoText>

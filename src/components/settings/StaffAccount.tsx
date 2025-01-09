@@ -1,6 +1,6 @@
 import { Box, styled } from "@mui/system";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
-import { Typography } from "@mui/material";
+import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 import { useEffect, useRef, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
@@ -14,6 +14,7 @@ import { ReactComponent as Lock } from "@/assets/completedRequests/Interface ess
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
+import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
@@ -69,7 +70,10 @@ export const StaffAccount = () => {
       if (editContainerRef.current) {
         const rect = editContainerRef.current.getBoundingClientRect();
         const initialPosition = editContainerRef.current.offsetTop;
-        setIsSticky(rect.top <= 70 && window.scrollY > initialPosition);
+        setIsSticky(rect.top <= 70 && window.scrollY > initialPosition - 70);
+        if (initialPosition === 70 && window.scrollY < 155) {
+          setIsSticky(false);
+        }
       }
     };
 
@@ -78,6 +82,15 @@ export const StaffAccount = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (window.scrollY > 190) {
+      setIsSticky(true);
+    }
+    if (isEditing.length === 0) {
+      setIsSticky(false);
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     if (areaList) {
@@ -168,74 +181,52 @@ export const StaffAccount = () => {
         {isEditing.length !== 0 ? (
           <EditContainer
             ref={editContainerRef}
-            style={{
-              position: isSticky ? "fixed" : "relative",
-              top: isSticky ? "70px" : "auto",
-              zIndex: isSticky ? 10 : "auto",
-              width: isSticky ? "calc(100% - 200px)" : "100%",
-            }}
+            isSticky={isSticky}
+            isVisible={isEditing.length !== 0}
           >
             <X style={{ cursor: "pointer" }} onClick={handleClear} />
-            <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
-              {isEditing.length}개 항목 선택됨
-            </EditMenu>
-            {/* <div style={{ width: "138px", height: "36px" }}>
-              <CComboBox
-                placeholder={"직업"}
-                options={OPTIONS.map(option => option.value)}
-                value={""}
-                onChange={handleChangeRole}
+            <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+            <EditMenuBox>
+              <Edit
+                onClick={() => {
+                  openPWChangeModal();
+                }}
               />
-            </div>
-            <div style={{ width: "224px", height: "36px" }}>
-              <CComboBox
-                placeholder={"구역"}
-                options={area}
-                value={""}
-                onChange={handleChangeArea}
-              />
-            </div> */}
-            <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
-              <span>
-                <Edit
-                  onClick={() => {
-                    openPWChangeModal();
-                  }}
-                />
-              </span>
               <Lock onClick={handleAllLock} />
               <UnLock onClick={handleAllUnLock} />
               <Delete />
-            </div>
+            </EditMenuBox>
           </EditContainer>
         ) : (
-          <>
-            {/* <Paper
-              component="form"
-              sx={{
-                position: "absolute",
-                left: 0,
-                p: "2px 4px",
-                display: "flex",
-                alignItems: "center",
-                width: 400,
-                border: "1px solid #ECECEC",
-                borderRadius: "6px",
-                boxShadow: "none",
-              }}
-            >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder="검색할 내용을 입력해주세요."
-                inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
-              />
-              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper> */}
-            <div>
+          <TextContainer>
+            <SearchBarContainer>
+              <Paper
+                component="form"
+                sx={{
+                  p: "2px 4px",
+                  display: "flex",
+                  alignItems: "center",
+                  width: 300,
+                  border: "1px solid #ECECEC",
+                  borderRadius: "6px",
+                  boxShadow: "none",
+                }}
+              >
+                <InputBase
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="검색할 내용을 입력해주세요."
+                  inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                />
+                <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                  <Search />
+                </IconButton>
+              </Paper>
+            </SearchBarContainer>
+
+            <MainTitleContainer>
               <Title variant="h1">스태프 계정 수정</Title>
-            </div>
+            </MainTitleContainer>
+
             <StaffButtonContainer>
               <div ref={settingRef} style={{ position: "relative" }}>
                 <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
@@ -268,16 +259,14 @@ export const StaffAccount = () => {
                 )}
               </div>
             </StaffButtonContainer>
-          </>
+          </TextContainer>
         )}
       </BodyTitleContainer>
-      <>
-        <StaffAccountSettingsTable
-          onManage={handleInfoModal}
-          isClear={isClear}
-          setIsClear={setIsClear}
-        />
-      </>
+      <StaffAccountSettingsTable
+        onManage={handleInfoModal}
+        isClear={isClear}
+        setIsClear={setIsClear}
+      />
     </>
   );
 };
@@ -285,7 +274,6 @@ export const StaffAccount = () => {
 /** styles */
 
 const BodyTitleContainer = styled(Box)({
-  position: "relative",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -301,6 +289,23 @@ const StaffButtonContainer = styled(Box)({
   zIndex: 10,
 });
 
+const MainTitleContainer = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});
+
+const SearchBarContainer = styled(Box)({
+  position: "absolute",
+  top: "45px",
+  left: "30px",
+});
+
+const TextContainer = styled(Box)({
+  width: "100%",
+  height: "60px",
+});
+
 const Title = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
   textTransform: "uppercase",
@@ -308,29 +313,68 @@ const Title = styled(Typography)(({ theme }) => ({
   letterSpacing: "-3%",
 }));
 
-const EditContainer = styled(Box)(({ theme }) => ({
-  position: "sticky",
-  minWidth: "827px",
-  width: "100%",
+const EditContainer = styled(Box, {
+  shouldForwardProp: prop => !["isSticky", "isVisible"].includes(prop as string),
+})<{ isSticky: boolean; isVisible: boolean }>(({ theme, isSticky, isVisible }) => ({
+  "position": isSticky ? "fixed" : "relative",
+  "top": isSticky ? "70px" : "auto",
+  "minWidth": "827px",
+  "width": isSticky ? "calc(100% - 200px)" : "100%",
+  "display": "flex",
+  "justifyContent": "start",
+  "alignItems": "center",
+  "gap": "20px",
+  "height": "60px",
+  "padding": "15px 12px",
+  "border": "2px solid #5D6DBE",
+  "borderRadius": "100px",
+  "color": theme.palette.text.dark,
+  "backgroundColor": "#FFFFFF",
+  "zIndex": 10,
 
-  display: "flex",
-  justifyContent: "start",
-  alignItems: "center",
-  gap: "20px",
-
-  height: "60px",
-  padding: "15px 12px",
-
-  border: "2px solid #5D6DBE",
-  borderRadius: "100px",
-
-  color: theme.palette.text.dark,
-  backgroundColor: "#FFFFFF",
-  zIndex: 10,
+  "transition": "all 0.3s ease-in-out",
+  "opacity": isVisible ? 1 : 0,
+  "transform": isVisible ? "translateY(0)" : "translateY(-3px)",
+  "visibility": isVisible ? "visible" : "hidden",
+  "animation": isVisible
+    ? "slideDown 0.5s ease-in-out forwards"
+    : "slideUp 0.5s ease-in-out forwards",
+  "@keyframes slideDown": {
+    "0%": {
+      opacity: 0,
+      transform: "translateY(-3px)",
+      visibility: "visible",
+    },
+    "100%": {
+      opacity: 1,
+      transform: "translateY(0)",
+      visibility: "visible",
+    },
+  },
+  "@keyframes slideUp": {
+    "0%": {
+      opacity: 1,
+      transform: "translateY(0)",
+      visibility: "visible",
+    },
+    "100%": {
+      opacity: 0,
+      transform: "translateY(-3px)",
+      visibility: "hidden",
+    },
+  },
 }));
 
-const EditMenu = styled(Typography)({
-  textDecoration: "underline",
+const EditMenuText = styled(Typography)({
+  textDecoration: "none",
+  marginRight: "30px",
+});
+
+const EditMenuBox = styled(Box)({
+  color: "#21262B",
+  display: "flex",
+  gap: "20px",
+  cursor: "pointer",
 });
 
 const SettingButton = styled(Box, {

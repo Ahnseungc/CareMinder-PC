@@ -288,9 +288,11 @@ const StTable = styled.table`
   width: max-content;
   border-collapse: collapse;
   margin-bottom: 20px;
+
   & thead {
     width: 100%;
     height: 20%;
+
     & th {
       padding-bottom: 11.52px;
       color: ${palette.text.primary};
