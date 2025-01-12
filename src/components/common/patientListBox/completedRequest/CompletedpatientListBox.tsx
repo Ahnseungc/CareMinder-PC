@@ -2,17 +2,19 @@ import { Stack, styled } from "@mui/material";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import { bottomScroll, roleColor } from "@utils/homePage";
 import { useEffect, useState } from "react";
-import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
 import { StaffListBoxProps } from "@models/home";
 import getPrevTimes from "@utils/getPrevTimes";
 import ChatBox from "@components/chat/chatBox";
 import { LoadChatHistory } from "@components/chat/chattingModel";
 import { Message } from "@models/staff";
+import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
+import MemoBox from "../MemoBox/MemoBox";
 
 function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
+  const [isMemo, setIsMemo] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
@@ -37,31 +39,36 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
   }, [data]);
 
   return (
-    <InnerContainer
-      color={data.patientRequestId === roomId ? roleColorPick.dark : roleColorPick.light}
-    >
-      <Title
-        color={data.patientRequestId === roomId ? "white" : roleColorPick.dark}
-        tabIndex={0}
-        onBlur={() => setIsOptions(false)}
-      >
+    <InnerContainer color={roleColorPick.light}>
+      <LeftLine color={roleColorPick.dark}></LeftLine>
+      <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <div>
-          {data.areaSimple?.areaName}
-          {data.patientSimple
-            ? ` (${data.tabletSimple?.tabletName}) |  ${data.patientSimple?.patientName}`
-            : ""}
+          <div>
+            {data.areaSimple?.areaName} ({data.tabletSimple?.tabletName})
+          </div>
+          <span> | </span>
+          <div>{data.patientSimple.patientName}</div>
         </div>
-        <div>
-          {!isAccept && (
-            <MoreHorizRoundedIcon
-              onClick={onOptionOnOff}
-              sx={{
-                color: data.patientRequestId === roomId ? "white" : "#C4C5CC",
-                cursor: "pointer",
-              }}
-            />
-          )}
+        <TitleRight
+          onClick={e => {
+            e.stopPropagation(), setIsMemo(prev => !prev);
+          }}
+        >
+          <Vector isMemo={isMemo}>
+            <VectorIcon />
+          </Vector>
+          메모
+        </TitleRight>
+      </Title>
+      {isMemo && <MemoBox color={roleColorPick.light} patientId={data.patientSimple.patientId} />}
 
+      <Bottom>
+        <TxtBox color={roleColorPick.light}>
+          <TxtBoxLeft>{data.content}</TxtBoxLeft>
+          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
+        </TxtBox>
+        <Dot onClick={onOptionOnOff}>
+          <MoreHorizRoundedIcon />
           {isOptions && (
             <Options>
               <Option onClick={e => onMutates(e, data.patientRequestId, "accept")}>복원하기</Option>
@@ -71,22 +78,9 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
               </Option>
             </Options>
           )}
-        </div>
-      </Title>
-      <Bottom>
-        <TxtBox>
-          <TxtBoxLeft>
-            {data.isNew && <SmallCheck color={roleColorPick.dark}>N</SmallCheck>}
-            {data.content}
-          </TxtBoxLeft>
-          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
-        </TxtBox>
-        {isAccept && (
-          <Check color={roleColorPick.dark}>
-            <CheckIcon />
-          </Check>
-        )}
+        </Dot>
       </Bottom>
+
       {isAccept && (
         <div>
           <ChatContainer id="top" color={roleColorPick.dark}>
@@ -118,33 +112,48 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
 export default CompletedPatientListBox;
 
 const InnerContainer = styled(Stack)<{ color: string }>`
-  border-radius: 12px;
-  background-color: ${({ color }) => color};
+  position: relative;
   width: 100%;
-  padding: 16px 20px;
+  padding: 0 13px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
-  cursor: pointer;
+  margin-bottom: 30px;
 `;
-
+const LeftLine = styled("div")<{ color: string }>`
+  width: 4px;
+  height: 100%;
+  border-radius: 4px;
+  background-color: ${({ color }) => color};
+  position: absolute;
+  left: 0;
+`;
 const Title = styled("div")<{ color: string }>`
   font-weight: 700;
-  font-size: 14px;
-  color: ${({ color }) => color};
+  font-size: 16px;
+  color: #000000;
   margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  padding-right: 5px;
-  position: relative;
+  margin-right: 30px;
+  & > div {
+    display: flex;
+  }
+  & > div > span {
+    margin: 0 5px;
+  }
 `;
-const TxtBox = styled("div")`
+const TitleRight = styled("div")`
+  font-size: 14px;
+  color: ${({ theme }) => theme.palette.text.primary};
+  cursor: pointer;
+`;
+const TxtBox = styled("div")<{ color: string }>`
   border-radius: 6px;
   width: 100%;
-  background-color: ${({ theme }) => theme.palette.primary.contrastText};
+  border: 3px solid ${({ color }) => color};
   padding: 6px 16px 6px 16px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   color: ${({ theme }) => theme.palette.primary.dark};
   display: flex;
   justify-content: space-between;
@@ -152,6 +161,10 @@ const TxtBox = styled("div")`
 const TxtBoxLeft = styled("div")`
   display: flex;
   align-items: center;
+`;
+const Vector = styled("div")<{ isMemo: boolean }>`
+  transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
+  margin-right: 8px;
 `;
 const TxtBoxRight = styled("div")`
   color: ${({ theme }) => theme.palette.text.primary};
@@ -161,23 +174,36 @@ const TxtBoxRight = styled("div")`
 const Bottom = styled("div")`
   display: flex;
   width: 100%;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
+  position: relative;
 `;
-
-const SmallCheck = styled("div")<{ color: string }>`
+const Check = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
   border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px;
+  font-weight: 900;
+  cursor: pointer;
+`;
+
+const Dot = styled("div")`
+  cursor: pointer;
   width: 20px;
   height: 20px;
   display: flex;
-  padding-top: 2px;
+  margin-left: 6px;
+  align-items: center;
   justify-content: center;
-  margin-right: 6px;
-  font-size: 13px;
-  color: ${({ theme }) => theme.palette.primary.contrastText};
-  font-weight: 900;
-  margin-bottom: 2px;
+`;
+const ChatWrapper = styled("div")<{ color: string }>`
+  background-color: ${({ color }) => color};
+  margin-top: 8px;
+  border-radius: 12px;
 `;
 
 const ChatContainer = styled("div")<{ color: string }>`
@@ -225,17 +251,6 @@ const Option = styled("div")`
   }
 `;
 
-const Check = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 12px;
-  font-weight: 900;
-`;
 const InputWrapper = styled("div")`
   margin-top: 26px;
   width: 100%;
