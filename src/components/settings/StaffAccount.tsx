@@ -22,6 +22,7 @@ import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
+import DeleteWarning from "./areaManage/DeleteWarning";
 
 interface SettingButtonProps {
   isClick?: boolean;
@@ -34,6 +35,7 @@ export const StaffAccount = () => {
   const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
   const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
+  const [isOpenCheckLockModal, openCheckLockModal, closeCheckLockModal] = useBooleanState(false);
 
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
@@ -121,7 +123,7 @@ export const StaffAccount = () => {
         unLockAccount(lockData);
         break;
       case "unlock":
-        lockAccount(lockData);
+        openCheckLockModal();
         break;
       case "delete":
         setIsModalType("checkDeleteStaff");
@@ -130,12 +132,21 @@ export const StaffAccount = () => {
     }
   };
 
+  const handleLock = () => {
+    lockAccount(
+      { userIds: selectStaffList[0], accountType: "STAFF" },
+      { onSuccess: () => closeCheckLockModal() },
+    );
+  };
+
   const handleAllLock = () => {
     const lockData = {
       userIds: selectStaffList[0],
       accountType: "STAFF",
     };
-    lockAccount(lockData);
+    lockAccount(lockData, {
+      onSuccess: () => closeCheckLockModal(),
+    });
     setIsClear(true);
   };
 
@@ -177,6 +188,18 @@ export const StaffAccount = () => {
         isMultiEdit={selectStaffList[0].length === 1 ? false : true}
       />
 
+      {/* 계정 잠금 경고 모달 */}
+      <InfoModal
+        open={isOpenCheckLockModal}
+        onClose={closeCheckLockModal}
+        modalType="checkDelete"
+        leftText="취소"
+        rightText="잠금"
+        userType="WARD"
+        onConfirm={selectStaffList[0].length === 1 ? handleLock : handleAllLock}
+        message={<DeleteWarning isLock={true} />}
+      />
+
       <BodyTitleContainer>
         {isEditing.length !== 0 ? (
           <EditContainer
@@ -192,7 +215,7 @@ export const StaffAccount = () => {
                   openPWChangeModal();
                 }}
               />
-              <Lock onClick={handleAllLock} />
+              <Lock onClick={openCheckLockModal} />
               <UnLock onClick={handleAllUnLock} />
               <Delete />
             </EditMenuBox>

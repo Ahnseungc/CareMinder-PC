@@ -374,7 +374,12 @@ const StaffAccountSettingsTable = ({
                           ) : (
                             <UnLock
                               onClick={() => {
-                                row.accountLocked ? null : onManage("unlock", [row.staffId]);
+                                if (row.accountLocked) {
+                                  return null;
+                                } else {
+                                  onManage("unlock", [row.staffId]);
+                                  setSelectStaffList([row.staffId]);
+                                }
                               }}
                             />
                           )}
