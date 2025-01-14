@@ -9,7 +9,7 @@ export type NewStaffInfo = {
 };
 
 const changeStaffInfo = async (newStaffInfo: NewStaffInfo) => {
-  const res = await axiosInstance.put("/staffs", newStaffInfo);
+  const res = await axiosInstance.patch("/wards/staffs", newStaffInfo);
   return res.data;
 };
 

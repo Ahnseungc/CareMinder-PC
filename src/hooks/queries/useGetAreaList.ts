@@ -34,8 +34,8 @@ export const useGetAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosErr
   });
 };
 
-export const useGetStaffAreaList = () => {
-  return useQuery({
+export const useGetStaffAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
+  return useQuery<GetAreaListResponse[], AxiosError>({
     queryKey: ["areaListStaff"],
     retry: 3,
     retryDelay: 1000,

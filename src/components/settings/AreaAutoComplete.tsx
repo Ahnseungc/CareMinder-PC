@@ -3,13 +3,14 @@ import { Autocomplete, Checkbox, ListItem, TextField } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import styled from "@emotion/styled";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { useSetRecoilState } from "recoil";
 import { selectAreaState } from "@libraries/recoil";
 import { Areas } from "@hooks/queries/useGetStaffList";
 
 interface AreaAutoCompleteProp {
   value: Areas[];
+  type?: "WARD" | "STAFF";
 }
 
 const ComboBoxLayout = styled.div`
@@ -43,8 +44,12 @@ const InfoMessage = styled.p`
   letter-spacing: -0.03em;
 `;
 
-const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
-  const { data: areaList } = useGetAreaList();
+const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
+  const { data: wardAreaList } = useGetAreaList();
+  const { data: staffAreaList } = useGetStaffAreaList();
+
+  const areaList = type === "WARD" ? wardAreaList : staffAreaList;
+
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -93,7 +98,7 @@ const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
+                  style={{ marginRight: 8, color: type === "STAFF" ? "#30B4FF" : "#5D6DBE" }}
                   checked={selected}
                 />
                 {option}
@@ -102,12 +107,15 @@ const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
             renderInput={params => (
               <TextField
                 {...params}
-                placeholder="구역을 선택해주세요"
+                placeholder={selectedAreas.length === 0 ? "구역을 선택해주세요" : ""}
                 error={selectedAreas.length === 0}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
                       borderColor: selectedAreas.length === 0 ? "red" : undefined,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: type === "STAFF" ? "#30B4FF" : "#5D6DBE",
                     },
                   },
                 }}
@@ -133,7 +141,7 @@ const AreaAutoComplete = ({ value }: AreaAutoCompleteProp) => {
                   <Checkbox
                     icon={icon}
                     checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
+                    style={{ marginRight: 8, color: type === "STAFF" ? "#30B4FF" : "#5D6DBE" }}
                     checked={areaList.length === selectedAreas.length}
                   />
                   전체 선택
