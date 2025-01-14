@@ -386,7 +386,12 @@ const StaffAccountSettingsTable = ({
 
                           <Delete
                             onClick={() => {
-                              row.accountLocked ? null : onManage("delete", [row.staffId]);
+                              if (row.accountLocked) {
+                                return null;
+                              } else {
+                                onManage("delete", [row.staffId]);
+                                setSelectStaffList([row.staffId]);
+                              }
                             }}
                           />
                         </AccountMenuLayout>

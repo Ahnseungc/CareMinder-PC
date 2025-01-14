@@ -23,6 +23,7 @@ import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
+import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
 
 interface SettingButtonProps {
   isClick?: boolean;
@@ -49,6 +50,7 @@ export const StaffAccount = () => {
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
+  const { mutate: deleteStaff } = useDeleteStaff();
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
@@ -159,6 +161,14 @@ export const StaffAccount = () => {
     setIsClear(true);
   };
 
+  const handleDeleteStaff = () => {
+    console.log(selectStaffList[0]);
+    deleteStaff(
+      { userIds: selectStaffList[0], accountType: "STAFF" },
+      { onSuccess: () => closeInfoModal() },
+    );
+  };
+
   return (
     <>
       {/* 약관 동의 모달 */}
@@ -175,7 +185,11 @@ export const StaffAccount = () => {
         open={isInfoModalOpen}
         onClose={closeInfoModal}
         modalType={isModalType}
-        onConfirm={() => null}
+        onConfirm={() => {
+          if (isModalType === "checkDeleteStaff") {
+            handleDeleteStaff();
+          }
+        }}
       />
 
       {/* 비밀번호 편집 모달 */}
@@ -217,7 +231,7 @@ export const StaffAccount = () => {
               />
               <Lock onClick={openCheckLockModal} />
               <UnLock onClick={handleAllUnLock} />
-              <Delete />
+              <Delete onClick={openInfoModal} />
             </EditMenuBox>
           </EditContainer>
         ) : (
