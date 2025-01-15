@@ -7,21 +7,20 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-// const options = [
-//   { label: "조무사", id: 1 },
-//   { label: "의사", id: 1 },
-//   { label: "직원", id: 1 },
-// ];
-
 export default function SigninPage() {
   const user = useRecoilValue(userState);
   const accessToken = Cookies.get("accessTokenWard");
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   if (user && accessToken) {
+  //     console.error(`접근이 불가능한 경로입니다.`);
+  //     navigate(-1);
+  //   }
+  // }, []);
   useEffect(() => {
     if (user && accessToken) {
-      console.error(`접근이 불가능한 경로입니다.`);
-      navigate(-1);
+      navigate("/");
     }
   }, []);
 
