@@ -29,14 +29,6 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   }, []);
 
   useEffect(() => {
-    //병동 페이지
-    // if (!user && accessTokenWard === "") {
-    //   navigate("/sign-in");
-    // }
-    // if (!accessTokenWard) {
-    //   navigate("/sign-in");
-    // }
-
     //스태프 페이지
     if (pathname.includes("staff") && !accessTokenStaff) {
       if (user?.type === "STAFF") {
@@ -59,10 +51,6 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
         setIsChecking(true);
       }
     }
-
-    // if (pathname.includes("admin") && !accessTokenAdmin) {
-    //   setIsChecking(true);
-    // }
 
     if (user) {
       //병동 권한 충족

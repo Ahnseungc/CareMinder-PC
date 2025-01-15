@@ -1,29 +1,32 @@
 import { Thumbnail, SigninLayout } from "@components/signin";
 import { userState } from "@libraries/recoil";
-import { Grid, Link } from "@mui/material";
+import { Box, CircularProgress, Grid, Link } from "@mui/material";
 import RoutePath from "@routes/routePath";
 import Cookies from "js-cookie";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-
-// const options = [
-//   { label: "조무사", id: 1 },
-//   { label: "의사", id: 1 },
-//   { label: "직원", id: 1 },
-// ];
 
 export default function SigninPage() {
   const user = useRecoilValue(userState);
   const accessToken = Cookies.get("accessTokenWard");
   const navigate = useNavigate();
+  const [isCheck, setIsCheck] = useState(true);
 
   useEffect(() => {
     if (user && accessToken) {
-      console.error(`접근이 불가능한 경로입니다.`);
-      navigate(-1);
+      navigate("/");
+    } else {
+      setIsCheck(false); // 확인 완료 시 로딩 종료
     }
   }, []);
+  if (isCheck) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" padding="30px">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Grid container>

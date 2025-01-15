@@ -2,7 +2,6 @@ import CSwitch from "@components/common/atom/C-Switch";
 import { styled } from "@mui/material";
 import { useState } from "react";
 import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
-import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
@@ -63,7 +62,6 @@ export default function CompletedRequestsPage() {
                 <Person key={el.createdAt}>
                   <PersonIcon />
                   <div>{el.patientSimple?.patientName} </div>
-                  <HamburgerIcon />
                 </Person>
 
                 {el.patientRequests.map((element: any) => (
