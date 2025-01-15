@@ -4,7 +4,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { UserType } from "@models/user";
 import { userState } from "@libraries/recoil";
 import { Box, CircularProgress } from "@mui/material";
-import { useCallbackOnce } from "@toss/react";
+// import { useCallbackOnce } from "@toss/react";
 import Cookies from "js-cookie";
 import modalState from "@libraries/recoil/modal";
 
