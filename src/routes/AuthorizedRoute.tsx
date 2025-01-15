@@ -23,10 +23,10 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const setUser = useSetRecoilState(userState);
   const setIsModalOpen = useSetRecoilState(modalState);
 
-  const navigatePrev = useCallbackOnce(() => {
-    console.error(`접근이 불가능한 경로입니다. (접근 경로: ${pathname}, 권한: ${user?.type})`);
-    navigate(-1);
-  }, []);
+  // const navigatePrev = useCallbackOnce(() => {
+  //   console.error(`접근이 불가능한 경로입니다. (접근 경로: ${pathname}, 권한: ${user?.type})`);
+  //   navigate(-1);
+  // }, []);
 
   useEffect(() => {
     //스태프 페이지
@@ -83,7 +83,7 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
         setIsModalOpen(true);
       }
     }
-  }, [user, allowedRoles, pathname, accessTokenStaff, accessTokenWard, navigatePrev, navigate]);
+  }, [user, allowedRoles, pathname, accessTokenStaff, accessTokenWard, navigate]);
 
   if (isChecking) {
     return (
