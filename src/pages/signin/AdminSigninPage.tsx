@@ -7,10 +7,12 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import InfoModal from "@components/settings/modal/InfoModal";
+import adminPendingState from "@libraries/recoil/adminPending";
 
 export default function AdminSigninPage() {
   const user = useRecoilValue(userState);
   const [adminPopup, setAdminPopup] = useRecoilState(adminPopupState);
+  const [adminPending, setAdminPending] = useRecoilState(adminPendingState);
   const accessToken = Cookies.get("accessTokenAdmin");
 
   const navigate = useNavigate();
@@ -24,11 +26,12 @@ export default function AdminSigninPage() {
 
   return (
     <>
-      <InfoModal
-        open={adminPopup}
-        onClose={() => setAdminPopup(false)}
-        modalType={"adminPopup"}
-      ></InfoModal>
+      {/* 어드민 페이지 첫 경고 안내 모달 */}
+      <InfoModal open={adminPopup} onClose={() => setAdminPopup(false)} modalType={"adminPopup"} />
+
+      {/* 어드민 계정 승인 대기 모달 */}
+      <InfoModal open={adminPending} onClose={() => setAdminPending(false)} modalType={"waiting"} />
+
       <Grid container>
         <Thumbnail isAdmin />
         <SigninLayout

@@ -21,7 +21,7 @@ const MODAL_CONTEXTS = {
   },
   createSuccess: { title: "계정 생성 완료되었습니다.", controlAccount: false },
   noResult: { title: "존재하지 않는 계정입니다.", controlAccount: false },
-  waiting: { title: "회사에서 검토 후 계정 생성될 예정입니다.", controlAccount: false },
+  waiting: { title: "(주)케어마인더의 승인 요청 대기중입니다.", controlAccount: false },
   checkDelete: { title: "", controlAccount: true },
   checkAddStaff: { title: "스태프를 정말로 추가하시겠습니까?", controlAccount: true },
   checkDeleteStaff: { title: "스태프를 정말로 제거하시겠습니까?", controlAccount: true },
