@@ -1,5 +1,5 @@
 import { Box, Input, styled } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "./const/useDebounce";
 import { ListBoxProps, SearchInputProps } from "@models/search";
 
@@ -8,7 +8,6 @@ import { ReactComponent as User } from "@/assets/serachIcons/user.svg";
 import { ReactComponent as DownArrow } from "@/assets/serachIcons/DownArrow.svg";
 import { ReactComponent as UpArrow } from "@/assets/serachIcons/UpArrow.svg";
 
-//staff
 import { ReactComponent as UserStaff } from "@/assets/serachIcons/user-staff.svg";
 import { ReactComponent as UserSearch } from "@/assets/serachIcons/search-staff.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -58,20 +57,33 @@ export default function SearchBox() {
     setNurses(filteredNurses);
   };
 
-  const toggleList = () => {
+  const toggleList = useCallback(() => {
     if (!isOpen && staffList?.data) {
       setNurses(staffList.data);
     }
     setIsOpen(prev => !prev);
-  };
+  }, [isOpen, staffList?.data]);
 
-  const selectNurse = (nurseName: string) => {
-    setSelectedNurse(nurseName);
-    setIsOpen(false);
-    setQuery("");
-    setIsModalOpen(true);
-    setAutoCompleteId(nurses.find(nurse => nurse.name === nurseName)?.loginId as string);
-  };
+  const selectNurse = useCallback(
+    (nurseName: string) => {
+      setSelectedNurse(nurseName);
+      setIsOpen(false);
+      setQuery("");
+      setIsModalOpen(true);
+      setAutoCompleteId(nurses.find(nurse => nurse.name === nurseName)?.loginId as string);
+    },
+    [nurses, setIsModalOpen, setAutoCompleteId],
+  );
+
+  const handleFocus = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 200);
+  }, []);
 
   const fetchNurses = async (query: string): Promise<StaffSimpleListType[]> => {
     return nurses.filter(nurse => nurse.name.includes(query));
@@ -84,7 +96,6 @@ export default function SearchBox() {
       }
       setSearching(true);
       if (debouncedQuery) {
-        // console.log(debouncedQuery);
         const fetchedNurses = await fetchNurses(debouncedQuery);
         setNurses(fetchedNurses);
       } else {
@@ -104,12 +115,8 @@ export default function SearchBox() {
           type="search"
           value={query}
           onChange={searchHandler}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => {
-            setTimeout(() => {
-              setIsOpen(false);
-            }, 200);
-          }}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           placeholder="스태프 선택"
           disableUnderline={true}
           startAdornment={
