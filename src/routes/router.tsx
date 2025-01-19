@@ -16,12 +16,21 @@ import {
   StaffNoticePage,
   StaffSettingsPage,
 } from "@pages/index";
-import MainHomePage from "@pages/user/MainHomePage";
-import StaffHomePage from "@pages/staff/StaffHomePage";
-import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
-import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
-import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";
-import SuperAdminPage from "@pages/superAdmin/SuperAdminPage";
+// import MainHomePage from "@pages/user/MainHomePage";
+// import StaffHomePage from "@pages/staff/StaffHomePage";
+// import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
+// import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
+// import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";
+// import SuperAdminPage from "@pages/superAdmin/SuperAdminPage";
+import { lazy } from "react";
+
+const MainHomePage = lazy(() => import("@pages/user/MainHomePage"));
+const StaffHomePage = lazy(() => import("@pages/staff/StaffHomePage"));
+
+const AdminCreateWardPage = lazy(() => import("@pages/admin/AdminCreateWardPage"));
+const AdminWardManagementPage = lazy(() => import("@pages/admin/AdminWardManagementPage"));
+const AdminStaffManagementPage = lazy(() => import("@pages/admin/AdminStaffManagementPage"));
+const SuperAdminPage = lazy(() => import("@pages/superAdmin/SuperAdminPage"));
 
 const routes: RouteObject[] = [
   {
