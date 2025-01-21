@@ -1,21 +1,18 @@
 import { Stack, styled } from "@mui/material";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
-import { bottomScroll, roleColor } from "@utils/homePage";
-import { useEffect, useState } from "react";
-import { StaffListBoxProps } from "@models/home";
+import { roleColor } from "@utils/homePage";
+import { useState } from "react";
+import { StaffGroupListBoxProps } from "@models/home";
 import getPrevTimes from "@utils/getPrevTimes";
-import ChatBox from "@components/chat/chatBox";
-import { LoadChatHistory } from "@components/chat/chattingModel";
-import { Message } from "@models/staff";
+
 import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 import MemoBox from "../MemoBox/MemoBox";
 
-function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffListBoxProps) {
+function CompletedPatientListBox({ data, onMutates, roomId, setRoomId }: StaffGroupListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
 
   const [isOptions, setIsOptions] = useState(false);
   const [isMemo, setIsMemo] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
 
   const onOptionOnOff = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -25,18 +22,6 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
       setIsOptions(true);
     }
   };
-
-  const getHistoryChatting = async () => {
-    const history = await LoadChatHistory(data.patientRequestId);
-    setMessages(history);
-    bottomScroll();
-  };
-
-  useEffect(() => {
-    if (isAccept) {
-      getHistoryChatting();
-    }
-  }, [data]);
 
   return (
     <InnerContainer color={roleColorPick.light}>
@@ -67,7 +52,7 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
           <TxtBoxLeft>{data.content}</TxtBoxLeft>
           <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
         </TxtBox>
-        <Dot onClick={onOptionOnOff}>
+        <Dot onClick={onOptionOnOff} color={roleColorPick.dark}>
           <MoreHorizRoundedIcon />
           {isOptions && (
             <Options>
@@ -80,32 +65,6 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
           )}
         </Dot>
       </Bottom>
-
-      {isAccept && (
-        <div>
-          <ChatContainer id="top" color={roleColorPick.dark}>
-            {messages.map((el, idx) => (
-              <ChatBox key={idx} data={el} color={roleColorPick.normal} />
-            ))}
-          </ChatContainer>
-          <RestoreWrapper>
-            <Restore
-              color={roleColorPick.dark}
-              onClick={e => onMutates(e, data.patientRequestId, "accept")}
-            >
-              요청 복원하기
-            </Restore>
-          </RestoreWrapper>
-          <InputWrapper>
-            <Input
-              type="text"
-              placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
-              disabled={true}
-            />
-            <SendButton></SendButton>
-          </InputWrapper>
-        </div>
-      )}
     </InnerContainer>
   );
 }
@@ -178,20 +137,8 @@ const Bottom = styled("div")`
   justify-content: space-between;
   position: relative;
 `;
-const Check = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 12px;
-  font-weight: 900;
-  cursor: pointer;
-`;
 
-const Dot = styled("div")`
+const Dot = styled("div")<{ color: string }>`
   cursor: pointer;
   width: 20px;
   height: 20px;
@@ -199,29 +146,9 @@ const Dot = styled("div")`
   margin-left: 6px;
   align-items: center;
   justify-content: center;
-`;
-const ChatWrapper = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  margin-top: 8px;
-  border-radius: 12px;
+  color: ${({ color }) => color};
 `;
 
-const ChatContainer = styled("div")<{ color: string }>`
-  border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
-  margin-top: 12px;
-  max-height: 400px;
-  overflow: auto;
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: ${({ color }) => color};
-    border-radius: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: rgba(220, 20, 60, 0.1);
-  }
-`;
 const Options = styled("div")`
   background-color: ${({ theme }) => theme.palette.primary.contrastText};
   position: absolute;
@@ -238,6 +165,7 @@ const Options = styled("div")`
     font-weight: 700;
     color: ${({ theme }) => theme.palette.primary.dark};
   }
+  z-index: 100;
 `;
 const Option = styled("div")`
   font-size: 13px;
@@ -249,38 +177,4 @@ const Option = styled("div")`
   :hover {
     color: ${({ theme }) => theme.palette.primary.main};
   }
-`;
-
-const InputWrapper = styled("div")`
-  margin-top: 26px;
-  width: 100%;
-  background-color: white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-`;
-const Input = styled("input")`
-  width: 100%;
-  border: none;
-  padding: 10px;
-  border-radius: 10px 0 0 10px;
-  background-color: transparent;
-`;
-const SendButton = styled("div")`
-  padding: 4px 10px 0 10px;
-  border-radius: 0 10px 10px 0;
-  cursor: pointer;
-`;
-const Restore = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  text-align: center;
-  padding: 6px 0;
-  border-radius: 6px;
-  width: 98px;
-  font-weight: 600;
-`;
-const RestoreWrapper = styled("div")`
-  display: flex;
-  justify-content: center;
-  margin-top: 26px;
 `;

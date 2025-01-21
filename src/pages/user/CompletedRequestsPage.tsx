@@ -16,6 +16,7 @@ import { bottomScroll, roleColor } from "@utils/homePage";
 import { LoadChatHistory } from "@components/chat/chattingModel";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
+import CompletedGroupList from "@components/common/patientListBox/completedRequest/CompletedGroupList";
 
 export default function CompletedRequestsPage() {
   const setlayoutState = useSetRecoilState(layoutState);
@@ -79,12 +80,7 @@ export default function CompletedRequestsPage() {
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
-            <S.FilterBox
-              // onClick={() =>
-              //   setIsPatient(prev => !prev))
-              // }
-              isTrue={isPatient}
-            >
+            <S.FilterBox isTrue={isPatient} onClick={() => setIsPatient(prev => !prev)}>
               환자별
             </S.FilterBox>
             <S.FilterBox isTrue={false}>구역</S.FilterBox>
@@ -103,7 +99,18 @@ export default function CompletedRequestsPage() {
               />
             </div>
           ))}
-        {isPatient && <div>dd</div>}
+        {isPatient &&
+          getCompletedGroup?.map(el => (
+            <CompletedGroupList
+              key={el.patientSimple.patientId}
+              data={el}
+              onMutates={onMutates}
+              roomId={1}
+              setRoomId={() => {
+                return;
+              }}
+            />
+          ))}
       </S.LeftSection>
 
       <S.RightSection>

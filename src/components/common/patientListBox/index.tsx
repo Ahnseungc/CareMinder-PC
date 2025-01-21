@@ -46,9 +46,6 @@ export default function PatientBox({
               roomId={roomId}
             />
           ),
-          completedRequestFocus: (
-            <CompletedPatientListBox isAccept={true} data={data} onMutates={onMutates!} />
-          ),
         }}
       />
     </>
