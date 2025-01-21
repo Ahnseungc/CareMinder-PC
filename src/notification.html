@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Notification</title>
+    <style>
+      body {
+        z-index: 1004;
+        margin: 0;
+        padding: 0;
+        /* background-color: white; */
+        height: 100vh; /* 화면 높이를 100%로 */
+        width: 100vw; /* 화면 너비를 100%로 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        /* background-color: transparent; */
+      }
+
+      .notification {
+        background-color: white;
+        width: 100%;
+        max-width: 232px; /* 알림창 최대 너비 */
+        position: fixed; /* 알림창을 화면에 고정 */
+        padding: 20px; /* 내부 여백 */
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+        box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.12);
+        color: black;
+        font-size: 16px;
+        z-index: 1000; /* 알림창이 다른 요소 위에 오도록 */
+        animation: slideInRight 0.5s ease-out forwards; /* 초기 애니메이션 */
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+
+      .notification.hide {
+        animation: slideOutRight 0.5s ease-out forwards; /* 사라질 때 애니메이션 */
+      }
+
+      .notification h2 {
+        margin: 0 0 10px 0; /* 제목 아래 여백 추가 */
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .notification p {
+        margin: 0; /* 여백 제거 */
+        line-height: 1.5; /* 줄 간격 조정 */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="notification" class="notification">
+      <h2 id="title">
+        <span id="areaName"></span>
+        |
+        <span id="patientName"></span>
+      </h2>
+      <p id="content"></p>
+    </div>
+    <script>
+      const getMessage = async () => {
+        const sound = new Audio("/alarm.wav");
+        sound.play();
+        const notification = await window.electron.getNotification();
+        console.log(notification);
+        const notificationJson = JSON.parse(notification);
+        document.getElementById("content").textContent = notificationJson.content.requestContent;
+        document.getElementById("areaName").textContent = notificationJson.content.areaName;
+        document.getElementById("patientName").textContent = notificationJson.content.patientName;
+      };
+      getMessage();
+
+      setTimeout(() => {
+        const notificationElement = document.getElementById("notification");
+        notificationElement.classList.add("hide");
+      }, 5000); // 4초 후 알림 사라짐
+    </script>
+  </body>
+</html>
