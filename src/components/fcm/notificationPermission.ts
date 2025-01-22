@@ -2,8 +2,6 @@ import { getToken } from "firebase/messaging";
 import axiosInstance from "@utils/axios/axiosInstance";
 import { messaging } from "./initFirebase";
 import { registerServiceWorker } from "./serviceWorker";
-import { ipcRenderer } from "electron";
-import { useEffect } from "react";
 
 export async function handleAllowNotification() {
   try {

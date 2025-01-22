@@ -11,7 +11,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "electron-dev": "concurrently \"bun run dev\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron-dev": "electron .",
     "electron-pack": "NODE_ENV=production electron-builder"
   },
   "dependencies": {
@@ -119,5 +119,6 @@
       "buildResources": "./build/",
       "output": "./dist/"
     }
-  }
+  },
+  "packageManager": "yarn@4.2.2+sha512.c44e283c54e02de9d1da8687025b030078c1b9648d2895a65aab8e64225bfb7becba87e1809fc0b4b6778bbd47a1e2ab6ac647de4c5e383a53a7c17db6c3ff4b"
 }

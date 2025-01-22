@@ -54,7 +54,6 @@ export default function useSignin() {
 
       if (res.currentUser) {
         const userType: UserType = res.currentUser?.role;
-
         switch (userType) {
           case "ADMIN":
             navigate("/admin");

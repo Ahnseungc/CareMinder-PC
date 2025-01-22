@@ -1,11 +1,12 @@
 import { config } from "dotenv";
-import { app, BrowserWindow, ipcMain, screen } from "electron";
+import { app, BrowserWindow, ipcMain, screen, session } from "electron";
 import { join } from "path";
 import { fileURLToPath, format } from "url";
 import Store from "electron-store";
 import { register, listen } from "push-receiver-v2";
 import path from "path";
 import sound from "sound-play";
+
 const firebaseConfig = {
   firebase: {
     apiKey: "AIzaSyDr2aG0diglJe-A-lC9VqpfLnoEz1Baj4I",
@@ -24,16 +25,39 @@ config({ path: join(__dirname, "../.env") });
 const isDev = process.env.VITE_IS_DEV === "true";
 const store = new Store();
 
+function createSplashWindow() {
+  const splashWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    frame: false, // 기본 윈도우 프레임 숨기기
+    transparent: true, // 배경 투명화 (스플래시 화면에 적합)
+    alwaysOnTop: true, // 항상 위에 표시
+    webPreferences: {
+      allowRunningInsecureContent: true,
+      nodeIntegration: true, // 노드 통합을 사용하여 HTML에서 노드 기능을 사용할 수 있게 함
+    },
+  });
+  splashWindow.loadFile(path.join(__dirname, "loading.html"));
+  return splashWindow;
+}
+
 async function createWindow() {
+  const splashWindow = createSplashWindow(); // 스플래시 윈도우 생성 및 참조
+
   const win = new BrowserWindow({
     width: 1920,
     height: 1080,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, "preload.mjs"),
+      enableRemoteModule: false,
+      allowRunningInsecureContent: true,
+      // preload: path.join("file:", __dirname, "preload.mjs"),
+      preload: path.resolve(__dirname, "preload.js"),
     },
   });
+
+  console.log("HTML File Path:", path.resolve(__dirname, "../dist/index.html"));
 
   const credentials = await register(firebaseConfig);
   console.log(credentials);
@@ -42,8 +66,13 @@ async function createWindow() {
   console.log("Retrieved FCM Token:", savedFcmToken);
   await listen({ ...credentials }, onNotification);
 
-  win.loadURL("https://careflow.co.kr");
   // win.loadURL("http://localhost:5173");
+  win.loadFile(path.resolve(__dirname, "../dist/index.html"));
+
+  win.webContents.on("did-finish-load", () => {
+    console.log("Main window has finished loading.");
+    splashWindow.close(); // 로딩 창을 닫음
+  });
 }
 
 let persistentIds = [];
@@ -76,6 +105,7 @@ function displayNotification(notification) {
     y: y, // y 좌표 설정
     webPreferences: {
       nodeIntegration: true,
+      allowRunningInsecureContent: true,
       preload: path.join(__dirname, "preload.mjs"),
     },
   });
@@ -99,6 +129,7 @@ ipcMain.handle("get-notification", (event, key) => {
 });
 
 app.whenReady().then(async () => {
+  // createSplashWindow();
   createWindow();
   ipcMain.handle("get-fcm", (event, key) => {
     const value = store.get("fcm_token"); // 데이터 읽기

@@ -11,4 +11,8 @@ export default defineConfig({
   define: {
     global: {},
   },
+  base: "./", // 상대 경로로 설정
+  build: {
+    outDir: "dist", // 빌드 디렉토리
+  },
 });

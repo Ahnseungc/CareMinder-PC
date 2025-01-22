@@ -1,7 +1,8 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
 import RoutePath from "@routes/routePath";
 import AuthenticatedLayout from "@components/layout";
 import AuthorizedRoute from "@routes/AuthorizedRoute";
+import { createHashRouter } from "react-router-dom";
 import {
   AdminSigninPage,
   StaffWardInoutManagementPage,
@@ -61,11 +62,10 @@ const routes: RouteObject[] = [
   },
   { path: RoutePath.Signin, element: <SigninPage /> },
   { path: RoutePath.SuperAdmin, element: <SuperAdminPage /> },
-
   { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },
   { path: "*", element: <>Not found page</> },
 ];
 
-const Router = createBrowserRouter(routes);
+const Router = createHashRouter(routes);
 
 export default Router;
