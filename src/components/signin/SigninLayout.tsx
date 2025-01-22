@@ -17,7 +17,7 @@ import { SwitchCase, useBooleanState } from "@toss/react";
 
 type SigninLayoutProps = {
   type: UserType;
-  footer?: ReactElement;
+  footer?: ReactElement | boolean;
   options?: ReactElement;
 };
 
@@ -86,7 +86,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         {footer && (
           <Footer divider={<Divider orientation="vertical" />}>
             {/* Todo */}
-            <Link href={RoutePath.FindAccount} variant="h3">
+            <Link href={`${RoutePath.FindAccount}?type=${type}`} variant="h3">
               ID / PW 찾기
             </Link>
             {footer}

@@ -21,7 +21,7 @@ import StaffHomePage from "@pages/staff/StaffHomePage";
 import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
 import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
 import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";
-import SuperAdminPage from "@pages/superAdmin/SuperAdminPage";
+import FindAccountPage from "@pages/find_account/FindAccountPage";
 
 const routes: RouteObject[] = [
   {
@@ -60,10 +60,9 @@ const routes: RouteObject[] = [
     ],
   },
 
-  { path: RoutePath.SuperAdmin, element: <SuperAdminPage /> },
-
   { path: RoutePath.Signin, element: <SigninPage /> },
   { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },
+  { path: RoutePath.FindAccount, element: <FindAccountPage /> },
   { path: "*", element: <>Not found page</> },
 ];
 

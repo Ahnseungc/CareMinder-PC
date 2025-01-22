@@ -65,7 +65,8 @@ export default function AccountActiveField({ field, form }: AccountActiveFieldPr
   const [verifyCode, setVerifyCode] = useState<string>("");
   const [showVerifyCode, setShowVerifyCode] = useState<boolean>(false);
 
-  const [validState, setValidState] = useState<{
+  //@ts-ignore
+  const [_, setValidState] = useState<{
     phoneNumber?: {
       isValid: boolean;
       message?: string;
