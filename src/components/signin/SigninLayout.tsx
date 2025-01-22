@@ -1,21 +1,23 @@
-import AccountActiveModal from "@components/settings/modal/AccountActive";
-import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
-import StopAccountActiveModal from "@components/settings/modal/StopAccountActive";
 import { SigninHeader } from "@components/signin";
 import SigninForm from "@components/signin/SigninForm";
 import UserTypeTag from "@components/signin/UserTypeTag";
 import { useSignin } from "@hooks/mutation";
 import { SigninFormData } from "@models/signin";
 import { UserType } from "@models/user";
-import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
+
 import RoutePath from "@routes/routePath";
-import { SwitchCase, useBooleanState } from "@toss/react";
-import { ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ReactElement, useEffect, useState } from "react";
+
+import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
+
+import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
+
+import { SwitchCase, useBooleanState } from "@toss/react";
 
 type SigninLayoutProps = {
   type: UserType;
-  footer?: ReactElement;
+  footer?: ReactElement | boolean;
   options?: ReactElement;
 };
 
@@ -23,9 +25,6 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
   const form = useForm<SigninFormData>();
   const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
-
-  const [isopenAccountModal, onOpenAccountModal, closeAccountModal] = useBooleanState(); // 계정 활성화 Modal
-  const [openStopModal, onOpenStopModal, closeStopModal] = useBooleanState(); // 계정 활성화 중단 Modal
 
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
@@ -43,8 +42,14 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
           setIsModalType("valueError");
         } else {
           /** 계정 잠김 에러 핸들링 */
-          setIsModalType("waiting");
-          onOpenAccountModal();
+          if (type === "WARD") {
+            setErrorMessage("계정이 잠겼습니다. 관리자에게 문의하세요.");
+            setIsModalType("accountLock");
+          } else if (type === "STAFF") {
+            // onOpenAccountModal();
+            setErrorMessage("계정이 잠겼습니다. 관리자에게 문의하세요.");
+            setIsModalType("accountLock");
+          }
         }
         // @ts-ignore
       } else if (error?.response.data.statusCode === "404") {
@@ -59,35 +64,11 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
 
   const onSubmit = signin;
 
-  const onCloseAccountModal = (type: string) => {
-    if (type === "취소") {
-      return onOpenStopModal();
-    }
-
-    if (type === "중단하기") {
-      closeStopModal();
-      return closeAccountModal();
-    }
-  };
-
   return (
     <>
-      <AccountActiveModal
-        open={isopenAccountModal}
-        onClose={closeAccountModal}
-        onCloseAccountModal={onCloseAccountModal}
-      />
-      <StopAccountActiveModal
-        open={openStopModal}
-        onClose={closeStopModal}
-        onCloseAccountModal={onCloseAccountModal}
-      />
-      <InfoModal
-        open={open}
-        onClose={closeModal}
-        modalType={isModalType}
-        message={errorMessage}
-      ></InfoModal>
+      {/* 비밀번호 오류, 계정 잠금, 존재하지 않는 계정 에러 표시 모달 */}
+      <InfoModal open={open} onClose={closeModal} modalType={isModalType} message={errorMessage} />
+
       <Container item xs>
         <SwitchCase
           value={type}
@@ -105,7 +86,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
         {footer && (
           <Footer divider={<Divider orientation="vertical" />}>
             {/* Todo */}
-            <Link href={RoutePath.FindAccount} variant="h3">
+            <Link href={`${RoutePath.FindAccount}?type=${type}`} variant="h3">
               ID / PW 찾기
             </Link>
             {footer}

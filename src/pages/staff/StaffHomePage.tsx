@@ -18,14 +18,23 @@ import { useBooleanState } from "@toss/react";
 import { isFindRole } from "@utils/homePage";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { OPTIONS } from "@components/settings/const";
+import AccountActiveModal from "@components/settings/modal/AccountActive";
+import accountActiveState from "@libraries/recoil/accountActive";
+import StopAccountActiveModal from "@components/settings/modal/StopAccountActive";
+import useSignOut from "@hooks/mutation/useSignout";
+import { UserType } from "@models/user";
 
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
   const [userStatus] = useRecoilState(userState);
   const [reqChangePWStatus] = useRecoilState(reqChangePWState);
+  const [isAccountActive, setIsAccountActive] = useRecoilState(accountActiveState);
+  const userType = useRecoilValue(userState)?.type;
+
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
+  const [isStopAccountActive, openStopAccountActive, closeStopAccountActive] = useBooleanState();
   const navigate = useNavigate();
 
   const [staffWaitIsMine, setStaffWaitIsMine] = useState<boolean>(false); //대기중인 내 환자 보기
@@ -52,6 +61,7 @@ export default function StaffHomePage() {
 
   const { mutate: postAccept } = useStaffAccept(refetchProps);
   const { mutate: patchComplete } = useStaffComplete(refetchProps);
+  const { mutate: signOut } = useSignOut(userType as UserType);
 
   const onMutates = (e: React.MouseEvent, id: number, type: string) => {
     e.stopPropagation();
@@ -85,6 +95,7 @@ export default function StaffHomePage() {
 
   return (
     <>
+      {/* 비밀번호 변경 요청 모달 */}
       <ChangeModal
         open={isRequestModalOpen}
         onClose={closeRequestModal}
@@ -99,6 +110,20 @@ export default function StaffHomePage() {
         rightText={"변경하기"}
         isPasswordChange={true}
       />
+
+      {/* 계정 활성화 모달 */}
+      <AccountActiveModal
+        open={isAccountActive}
+        onClose={openStopAccountActive}
+        onConfirm={() => setIsAccountActive(false)}
+      />
+
+      <StopAccountActiveModal
+        open={isStopAccountActive}
+        onClose={closeStopAccountActive}
+        onConfirm={() => signOut()}
+      />
+
       <LeftSection>
         <Title>대기중인 환자</Title>
         <SubTitle>

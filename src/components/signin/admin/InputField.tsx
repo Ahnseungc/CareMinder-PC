@@ -362,11 +362,30 @@ export default function InputField({ field, form }: InputFieldProps) {
                     {...field}
                     id={name}
                     placeholder={placeholder}
-                    type={inputTypes[name] || "text"}
+                    type={inputTypes[name]}
                     error={Boolean(errors[name])}
                     onChange={e => {
-                      field.onChange(e);
-                      setPhoneNumber(e.target.value);
+                      const inputValue = e.target.value;
+                      const isDeleting = inputValue.length < phoneNumber.length;
+
+                      let value = inputValue.replace(/[^0-9]/g, "");
+
+                      if (isDeleting && phoneNumber.endsWith("-")) {
+                        value = value.slice(0, -1);
+                      }
+
+                      let formattedValue = value;
+                      if (value.length >= 3) {
+                        formattedValue = value.slice(0, 3) + "-" + value.slice(3);
+                      }
+                      if (value.length >= 7) {
+                        formattedValue = formattedValue.slice(0, 8) + "-" + value.slice(7);
+                      }
+
+                      formattedValue = formattedValue.slice(0, 13);
+
+                      field.onChange({ ...e, target: { ...e.target, value: formattedValue } });
+                      setPhoneNumber(formattedValue);
                       setVerifyPhone(false);
                       setValidState(prev => ({ ...prev, phoneNumber: undefined }));
                     }}
@@ -475,7 +494,7 @@ const inputTypes: { [key in keyof NewAdminUser]: string } = {
   username: "text",
   password: "password",
   confirmPassword: "password",
-  phoneNumber: "tel",
+  phoneNumber: "text",
   email: "email",
 };
 

@@ -18,7 +18,6 @@ export default function Modal({
   titleColor,
   ...props
 }: PropsWithChildren<ModalProps>) {
-  console.log(titleColor);
   return (
     <StyledDialog
       maxWidth="xs"

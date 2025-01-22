@@ -9,6 +9,9 @@ import { UserType } from "@models/user";
 import { SEVER_URL } from "@constants/baseUrl";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
 import { handleAllowNotification } from "@components/fcm/notificationPermission";
+import adminPendingState from "@libraries/recoil/adminPending";
+import wardState from "@libraries/recoil/ward";
+import accountActiveState from "@libraries/recoil/accountActive";
 
 const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
@@ -36,7 +39,11 @@ const signin = async (useInfo: SigninFormData) => {
 export default function useSignin() {
   const navigate = useNavigate();
   const setUserState = useSetRecoilState(userState);
+  const setWardState = useSetRecoilState(wardState);
+  const setAccountActiveState = useSetRecoilState(accountActiveState);
   const setReqChangePWState = useSetRecoilState(reqChangePWState);
+  const setAdminPending = useSetRecoilState(adminPendingState);
+
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -45,6 +52,13 @@ export default function useSignin() {
       queryClient.invalidateQueries({ queryKey: ["useGetWardPatientPending"] });
       console.log("로그인 성공");
       console.log(res);
+      if (res.currentUser.role === "WARD") {
+        setWardState({
+          id: res.currentUser?.accountId,
+          name: res.currentUser?.name,
+          type: res.currentUser?.role,
+        });
+      }
       // 추가 응답 API 개발 완료 후
       setUserState({
         id: res.currentUser?.accountId,
@@ -53,6 +67,18 @@ export default function useSignin() {
       });
 
       if (res.currentUser) {
+        /** 어드민 계정 생성 직후 케어마인더 측 계정 승인 전 핸들링 */
+        if (res.currentUser.requestStatus === "PENDING") {
+          setAdminPending(true);
+          return;
+        }
+
+        // /** 스태프 계정 생성 후 비활성화 상태 핸들링 */
+        // if (res.currentUser.role === "STAFF" && res.currentUser.accountStatus === "INACTIVE") {
+        //   console.log("비활성화 계정");
+        //   setAccountActiveState(true);
+        // }
+
         const userType: UserType = res.currentUser?.role;
 
         switch (userType) {
@@ -61,6 +87,7 @@ export default function useSignin() {
             break;
           case "STAFF":
             setReqChangePWState(res.currentUser?.passwordChangeRequested);
+            setAccountActiveState(res.currentUser?.accountStatus === "INACTIVE");
             navigate("/staff");
             handleAllowNotification();
             break;

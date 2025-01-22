@@ -1,13 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 import { useNavigate } from "react-router-dom";
 import { SEVER_URL } from "@constants/baseUrl";
 import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 import { logoutServiceWorker } from "@components/fcm/serviceWorker";
+import wardState from "@libraries/recoil/ward";
 
 const signOut = async (type: UserType) => {
   let token;
@@ -46,6 +47,7 @@ const signOut = async (type: UserType) => {
 
 export default function useSignOut(type: UserType) {
   const setUserState = useSetRecoilState(userState);
+  const [wardStateData, setWardState] = useRecoilState(wardState);
   const setAutoCompleteId = useSetRecoilState(autoCompleteIdState);
   const navigate = useNavigate();
 
@@ -55,20 +57,21 @@ export default function useSignOut(type: UserType) {
       console.log("로그아웃 성공");
       if (type === "STAFF") {
         setUserState(prev => {
-          if (!prev) {
+          if (!prev || !wardStateData) {
             return { id: 0, name: "", type: "WARD" };
           }
           return {
             ...prev,
             type: "WARD",
-            id: prev.id,
-            name: prev.name,
+            id: wardStateData.id as number,
+            name: wardStateData.name as string,
           };
         });
 
         navigate("/");
       } else {
         setUserState(null);
+        setWardState(null);
         logoutServiceWorker();
         navigate("/sign-in");
       }
