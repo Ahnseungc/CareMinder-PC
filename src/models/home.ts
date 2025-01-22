@@ -74,7 +74,7 @@ export type RequestsData = {
   createdAt: string;
   aiRole: Exclude<isRoleType, null>;
   patientRequestId: number;
-
+  unreadCount?: number;
   //임시
   place?: string;
   isNew?: boolean;
