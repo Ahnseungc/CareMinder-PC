@@ -118,5 +118,5 @@
   },
   "resolutions": {
     "rollup": "npm:@rollup/wasm-node"
-  },
+  }
 }
