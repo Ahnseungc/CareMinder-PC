@@ -61,6 +61,7 @@ const routes: RouteObject[] = [
   },
 
   { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },
+  { path: RoutePath.Signin, element: <SigninPage /> },
   { path: RoutePath.FindAccount, element: <FindAccountPage /> },
   { path: "*", element: <>Not found page</> },
 ];
