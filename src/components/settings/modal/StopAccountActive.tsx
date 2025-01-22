@@ -1,18 +1,26 @@
-import { CMModal, ModalActionButton } from "@components/common";
+import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { Box, styled } from "@mui/material";
 import { ReactComponent as StopIcon } from "@assets/stop.svg";
 
-export default function StopAccountActiveModal({ onClose, onCloseAccountModal, ...props }: any) {
+interface StopAccountActiveModalProps extends CMModalProps {
+  onConfirm: () => void;
+}
+
+export default function StopAccountActiveModal({
+  onClose,
+  onConfirm,
+  ...props
+}: StopAccountActiveModalProps) {
   return (
     <>
       <CMModal
         onClose={onClose}
         footer={
           <>
-            <ModalActionButton color="success" onClick={onClose}>
+            <ModalActionButton hoverColor="#19181813" color="secondary" onClick={onClose}>
               취소하기
             </ModalActionButton>
-            <ModalActionButton color="secondary" onClick={() => onCloseAccountModal("중단하기")}>
+            <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onConfirm}>
               중단하기
             </ModalActionButton>
           </>

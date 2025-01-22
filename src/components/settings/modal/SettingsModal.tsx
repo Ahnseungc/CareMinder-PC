@@ -35,6 +35,9 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
           //@ts-ignore
           if (error.response.data === "비밀번호가 일치하지 않습니다.") {
             openModal();
+            //@ts-ignore
+          } else if (error.response.data === "비밀번호를 입력해주세요.") {
+            /** 비밀번호 입력 x 에러 핸들링  */
           }
         },
       },

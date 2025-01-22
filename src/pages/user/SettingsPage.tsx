@@ -24,7 +24,9 @@ export default function SettingsPage() {
   }, []);
 
   const handleCloseModal = () => {
-    setIsModalOpen(true);
+    setTimeout(() => {
+      setIsModalOpen(true);
+    }, 100);
   };
 
   const handleTabClick = (value: string) => {
@@ -77,7 +79,23 @@ export default function SettingsPage() {
           </TabContainer>
           <div style={{ width: "131.37px" }}></div>
         </HeadContainer>
-        <BodyContainer>{renderContent()}</BodyContainer>
+        <BodyContainer>
+          <>
+            {!isModalOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: "20",
+                  backdropFilter: "saturate(180%) blur(6px)",
+                }}
+              />
+            )}
+          </>
+          {renderContent()}
+        </BodyContainer>
       </Container>
     </>
   );
@@ -106,6 +124,7 @@ const TabContainer = styled(Box)(({ theme }) => ({
 }));
 
 const BodyContainer = styled(Box)({
+  position: "relative",
   marginBottom: "32px",
 });
 

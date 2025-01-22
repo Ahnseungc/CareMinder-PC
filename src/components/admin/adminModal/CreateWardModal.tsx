@@ -242,7 +242,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       회사는 원활한 서비스 운영을 위해 개인정보 처리 업무를 다음과 같이 외부에
                       위탁할 수 있습니다: <br />
                       <br />
-                      위탁받는 자:  (위탁 업체 명시) <br />
+                      위탁받는 자: (위탁 업체 명시) <br />
                       <br />
                       위탁하는 업무의 내용: 서버 관리 및 유지보수, 고객 상담 지원 등. <br />
                       <br />
@@ -260,7 +260,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       조치합니다.
                       <br />
                       <br />
-                      문의처:  (문의처 정보 명시) <br />
+                      문의처: (문의처 정보 명시) <br />
                       <br />
                     </Typography>
                     <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
