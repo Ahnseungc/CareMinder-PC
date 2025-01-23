@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { app, BrowserWindow, ipcMain, screen, session } from "electron";
+import { app, BrowserWindow, ipcMain, screen, session, protocol } from "electron";
 import { join } from "path";
 import { fileURLToPath, format } from "url";
 import Store from "electron-store";
@@ -128,9 +128,19 @@ function displayNotification(notification) {
 ipcMain.handle("get-notification", (event, key) => {
   return message;
 });
-ipcMain.handle("store:set", (event, key, value) => {
+ipcMain.handle("store:set", async (event, key, value) => {
   store.set(key, value);
-  console.log(`Stored value for key "${key}":`, store.get(key));
+  console.log(key, store.get(key));
+  // if (key === "accessToken" || key === "refreshToken") {
+  //   console.log(`Stored value for key "${key}":`, store.get(key));
+  //   session.defaultSession.cookies.set({
+  //     url: "", // 기본적으로 입력 해주어야함
+  //     name: "name",
+  //     value: "test",
+  //     httpOnly: false, // client에서 쿠키를 접근함을 방지하기위해 설정 ( 보안 설정 )
+  //     expriationDtae: 60, // 쿠키 만료 시간 설정
+  //   });
+  // }
   return true;
 });
 

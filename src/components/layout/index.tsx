@@ -20,14 +20,16 @@ export default function AuthenticatedLayout() {
   const navigate = useNavigate();
 
   // const user = useRecoilValue(userState);
-  //@ts-ignore
-  const [user, setUser] = useState<any>();
   // const setUser = useSetRecoilState(userState);
   const isModal = useRecoilValue(modalState);
   const setIsModalOpen = useSetRecoilState(modalState);
   const userType = useRecoilValue(userState)?.type;
-  const accessTokenWard = Cookies.get("accessTokenWard");
-  const refreshTokenWard = Cookies.get("refreshTokenWard");
+  // const accessTokenWard = Cookies.get("accessTokenWard");
+  // const refreshTokenWard = Cookies.get("refreshTokenWard");
+  let user = "";
+  let accessTokenWard = "";
+  let refreshTokenWard = "";
+
   //@ts-ignore
   const [isChecking, setIsChecking] = useState(true);
   const [isOpen, openModal, closeModal] = useBooleanState();
@@ -42,15 +44,20 @@ export default function AuthenticatedLayout() {
   useEffect(() => {
     const userSet = async () => {
       //@ts-ignore
-      setUser(await window.electronStore.get("userType"));
+      user = await window.electronStore.get("userType");
+      //@ts-ignore
+      accessTokenWard = await window.electronStore.get("accessToken");
+      //@ts-ignore
+      refreshTokenWard = await window.electronStore.get("refreshToken");
     };
     userSet();
   }, []);
+  console.log("Fetched Data:", { user, accessTokenWard, refreshTokenWard });
 
   useEffect(() => {
     if (!accessTokenWard || !refreshTokenWard) {
       if (user?.type !== "ADMIN") {
-        setUser(null);
+        // setUser(null);
       }
     }
   }, [accessTokenWard, refreshTokenWard]);
