@@ -27,6 +27,10 @@ const signin = async (useInfo: SigninFormData) => {
       case "WARD":
         Cookies.set("accessTokenWard", res.data.jwtResponse.accessToken);
         Cookies.set("refreshTokenWard", res.data.jwtResponse.refreshToken);
+        //@ts-ignore
+        await window.electronStore.set("accessToken", res.data.jwtResponse.accessToken);
+        //@ts-ignore
+        await window.electronStore.set("refreshToken", res.data.jwtResponse.refreshToken);
         break;
     }
   }
@@ -41,11 +45,17 @@ export default function useSignin() {
 
   return useMutation({
     mutationFn: signin,
-    onSuccess: res => {
+    onSuccess: async res => {
       queryClient.invalidateQueries({ queryKey: ["useGetWardPatientPending"] });
       console.log("로그인 성공");
       console.log(res);
       // 추가 응답 API 개발 완료 후
+      //@ts-ignore
+      await window.electronStore.set("userType", {
+        id: res.currentUser?.accountId,
+        name: res.currentUser?.name,
+        type: res.currentUser?.role,
+      });
       setUserState({
         id: res.currentUser?.accountId,
         name: res.currentUser?.name,

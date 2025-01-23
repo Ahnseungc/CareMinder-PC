@@ -19,14 +19,16 @@ import Cookies from "js-cookie";
 export default function AuthenticatedLayout() {
   const navigate = useNavigate();
 
-  const user = useRecoilValue(userState);
-  const setUser = useSetRecoilState(userState);
+  // const user = useRecoilValue(userState);
+  //@ts-ignore
+  const [user, setUser] = useState<any>();
+  // const setUser = useSetRecoilState(userState);
   const isModal = useRecoilValue(modalState);
   const setIsModalOpen = useSetRecoilState(modalState);
   const userType = useRecoilValue(userState)?.type;
   const accessTokenWard = Cookies.get("accessTokenWard");
   const refreshTokenWard = Cookies.get("refreshTokenWard");
-
+  //@ts-ignore
   const [isChecking, setIsChecking] = useState(true);
   const [isOpen, openModal, closeModal] = useBooleanState();
 
@@ -35,6 +37,14 @@ export default function AuthenticatedLayout() {
   const navigateSignin = useCallbackOnce(() => {
     console.error("로그인이 필요한 서비스입니다.");
     navigate(RoutePath.Signin);
+  }, []);
+
+  useEffect(() => {
+    const userSet = async () => {
+      //@ts-ignore
+      setUser(await window.electronStore.get("userType"));
+    };
+    userSet();
   }, []);
 
   useEffect(() => {

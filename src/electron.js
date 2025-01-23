@@ -43,10 +43,10 @@ function createSplashWindow() {
 
 async function createWindow() {
   const splashWindow = createSplashWindow(); // 스플래시 윈도우 생성 및 참조
-
   const win = new BrowserWindow({
     width: 1920,
     height: 1080,
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -72,6 +72,7 @@ async function createWindow() {
   win.webContents.on("did-finish-load", () => {
     console.log("Main window has finished loading.");
     splashWindow.close(); // 로딩 창을 닫음
+    win.show();
   });
 }
 
@@ -106,7 +107,7 @@ function displayNotification(notification) {
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: true,
-      preload: path.join(__dirname, "preload.mjs"),
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -127,9 +128,22 @@ function displayNotification(notification) {
 ipcMain.handle("get-notification", (event, key) => {
   return message;
 });
+ipcMain.handle("store:set", (event, key, value) => {
+  store.set(key, value);
+  console.log(`Stored value for key "${key}":`, store.get(key));
+  return true;
+});
+
+ipcMain.handle("store:get", (event, key) => {
+  return store.get(key);
+});
+
+ipcMain.handle("store:delete", (event, key) => {
+  store.delete(key);
+  return true;
+});
 
 app.whenReady().then(async () => {
-  // createSplashWindow();
   createWindow();
   ipcMain.handle("get-fcm", (event, key) => {
     const value = store.get("fcm_token"); // 데이터 읽기
