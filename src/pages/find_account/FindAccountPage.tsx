@@ -137,8 +137,9 @@ interface TabProps {
 
 const Container = styled(Stack)({
   alignItems: "center",
-  height: "100vh",
+  height: "100%",
   justifyContent: "center",
+  marginTop: "50px",
 });
 
 const TabContainer = styled(Box)(({ theme }) => ({
