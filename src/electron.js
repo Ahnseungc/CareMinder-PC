@@ -60,8 +60,6 @@ async function createWindow() {
   console.log("HTML File Path:", path.resolve(__dirname, "../dist/index.html"));
 
   const credentials = await register(firebaseConfig);
-  console.log(credentials);
-  store.set("fcm_token", credentials.fcm.token); // 데이터 저장
   const savedFcmToken = store.get("fcm_token");
   console.log("Retrieved FCM Token:", savedFcmToken);
   await listen({ ...credentials }, onNotification);
@@ -128,14 +126,9 @@ function displayNotification(notification) {
   }, 5500);
 }
 
-ipcMain.handle("get-notification", (event, key) => {
-  return message;
-});
-
 app.whenReady().then(async () => {
   createWindow();
   ipcMain.handle("get-fcm", (event, key) => {
-    console.log("접근");
     const value = store.get("fcm_token"); // 데이터 읽기
     console.log(`Data retrieved: ${key} = ${value}`);
     return value;
@@ -157,6 +150,9 @@ app.whenReady().then(async () => {
     const accessToken = store.get("accessTokenWard");
     const refreshToken = store.get("refreshTokenWard");
     return { accessToken, refreshToken };
+  });
+  ipcMain.handle("get-notification", (event, key) => {
+    return message;
   });
 });
 

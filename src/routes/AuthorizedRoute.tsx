@@ -19,8 +19,8 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const [isChecking, setIsChecking] = useState(true);
   // const accessTokenWard = Cookies.get("accessTokenWard");
   const [accessTokenWard, setAccessTokenWard] = useState<string | null>(null);
-
-  const accessTokenStaff = Cookies.get("accessTokenStaff");
+  const [accessTokenStaff, setAccessTokenStaff] = useState<string | null>(null);
+  // const accessTokenStaff = Cookies.get("accessTokenStaff");
   const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const setUser = useSetRecoilState(userState);
   const setIsModalOpen = useSetRecoilState(modalState);
@@ -34,9 +34,11 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
     const getTokens = async () => {
       //@ts-ignore
       const token = await window.tokenAPI.getTokens();
-      console.log(token);
+      //@ts-ignore
+      const staffToken = await window.electronStore.get("accessTokenStaff");
       if (token) {
         setAccessTokenWard(token.accessToken);
+        setAccessTokenStaff(staffToken);
       }
     };
     getTokens();
@@ -100,16 +102,18 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
       };
       isCheckPermission();
 
-      // if (
-      //   (allowedRoles.includes(user.type) && accessTokenWard) ||
-      //   (allowedRoles.includes(user.type) && accessTokenStaff) ||
-      //   (allowedRoles.includes(user.type) && accessTokenAdmin)
-      // ) {
-      //   setIsChecking(false);
-      //   setIsModalOpen(false);
-      // }
+      if (
+        (allowedRoles.includes(user.type) && accessTokenWard) ||
+        (allowedRoles.includes(user.type) && accessTokenStaff) ||
+        (allowedRoles.includes(user.type) && accessTokenAdmin)
+      ) {
+        setIsChecking(false);
+        setIsModalOpen(false);
+      }
       //스태프 페이지 접근
-      if (pathname.includes("staff") && accessTokenWard && !accessTokenStaff) {
+      console.log("accessTokenStaff", accessTokenStaff);
+      console.log("accessTokenWard", accessTokenWard);
+      if (pathname.includes("staff") && accessTokenWard) {
         setIsModalOpen(true);
       }
     }

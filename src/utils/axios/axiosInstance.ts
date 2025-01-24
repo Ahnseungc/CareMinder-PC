@@ -112,8 +112,10 @@ axiosInstance.interceptors.request.use(
         token = tokens.accessToken;
         break;
       case "STAFF":
-        token = Cookies.get("accessTokenStaff") as string;
-
+        //@ts-ignore
+        const staffTokens = await window.electronStore.get("accessTokenStaff");
+        console.log("staffToken", staffTokens);
+        token = staffTokens;
         break;
       case "ADMIN":
         token = Cookies.get("accessTokenAdmin") as string;

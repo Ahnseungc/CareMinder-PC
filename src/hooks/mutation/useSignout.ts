@@ -20,12 +20,20 @@ const signOut = async (type: UserType) => {
     console.log("병동" + token);
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");
+    //@ts-expect-error
+    await window.electronStore.delete("accessTokenWard");
+    //@ts-expect-error
+    await window.electronStore.delete("refreshTokenWard");
   }
   if (type === "STAFF") {
-    token = Cookies.get("accessTokenStaff");
-    console.log("스태프" + token);
-    Cookies.set("accessTokenStaff", "");
-    Cookies.set("refreshTokenStaff", "");
+    //@ts-expect-error
+    const accessTokenStaff = await window.electronStore.get("accessTokenStaff");
+    token = accessTokenStaff;
+    console.log("스태프" + accessTokenStaff);
+    //@ts-expect-error
+    await window.electronStore.delete("accessTokenStaff");
+    //@ts-expect-error
+    await window.electronStore.delete("refreshTokenStaff");
   }
   if (type === "ADMIN") {
     token = Cookies.get("accessTokenAdmin");

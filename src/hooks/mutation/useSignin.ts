@@ -21,8 +21,12 @@ const signin = async (useInfo: SigninFormData) => {
         Cookies.set("refreshTokenAdmin", res.data.jwtResponse.refreshToken);
         break;
       case "STAFF":
-        Cookies.set("accessTokenStaff", res.data.jwtResponse.accessToken);
-        Cookies.set("refreshTokenStaff", res.data.jwtResponse.refreshToken);
+        //@ts-ignore
+        await window.electronStore.set("accessTokenStaff", res.data.jwtResponse.accessToken);
+        //@ts-ignore
+        await window.electronStore.set("refreshTokenStaff", res.data.jwtResponse.refreshToken);
+        // Cookies.set("accessTokenStaff", res.data.jwtResponse.accessToken);
+        // Cookies.set("refreshTokenStaff", res.data.jwtResponse.refreshToken);
         break;
       case "WARD":
         //@ts-ignore
@@ -69,7 +73,7 @@ export default function useSignin() {
           case "STAFF":
             setReqChangePWState(res.currentUser?.passwordChangeRequested);
             navigate("/staff");
-            handleAllowNotification();
+            // handleAllowNotification();
             break;
           case "WARD":
             navigate("/");
