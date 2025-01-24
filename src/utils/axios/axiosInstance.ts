@@ -84,7 +84,7 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use(
-  (config: CustomAxiosRequestConfig) => {
+  async (config: CustomAxiosRequestConfig) => {
     let token = "";
 
     if (config.customHeader) {
@@ -92,6 +92,8 @@ axiosInstance.interceptors.request.use(
     }
 
     const userState = localStorage.getItem("recoil-persist");
+
+    console.log(userState);
 
     // const userType = userStateObj.userState.type;
     let userType = "";
@@ -102,7 +104,10 @@ axiosInstance.interceptors.request.use(
 
     switch (userType) {
       case "WARD":
-        token = Cookies.get("accessTokenWard") as string;
+        // token = Cookies.get("accessTokenWard") as string;
+        //@ts-ignore
+        token = await window.tokenAPI.getTokens().accessToken;
+        console.log(token);
         break;
       case "STAFF":
         token = Cookies.get("accessTokenStaff") as string;

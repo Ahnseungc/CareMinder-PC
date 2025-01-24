@@ -15,9 +15,11 @@ export type GetStaffSimpleListResponse = {
 };
 
 export const getStaffSimpleList = async () => {
+  //@ts-ignore
+  const token = await window.tokenAPI.getTokens();
   const res = await axiosInstance.get("/wards/staff-simple-list", {
     headers: {
-      Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
+      Authorization: `Bearer ${token.accessToken}`,
     },
     customHeader: true,
   } as CustomAxiosRequestConfig);

@@ -67,7 +67,16 @@ async function createWindow() {
   await listen({ ...credentials }, onNotification);
 
   // win.loadURL("http://localhost:5173");
-  win.loadFile(path.resolve(__dirname, "../dist/index.html"));
+  const filePath = path.resolve(__dirname, "../dist/index.html");
+  win.loadFile(filePath);
+
+  // if (store.get("accessToken") || store.get("refreshToken")) {
+  //   const accessToken = store.get("accessToken");
+  //   const refreshToken = store.get("refreshToken");
+  //   ipcMain.handle("get-tokens", () => {
+  //     return { accessToken, refreshToken };
+  //   });
+  // }
 
   win.webContents.on("did-finish-load", () => {
     console.log("Main window has finished loading.");
@@ -144,21 +153,27 @@ ipcMain.handle("store:set", async (event, key, value) => {
   return true;
 });
 
-ipcMain.handle("store:get", (event, key) => {
-  return store.get(key);
-});
-
-ipcMain.handle("store:delete", (event, key) => {
-  store.delete(key);
-  return true;
-});
-
 app.whenReady().then(async () => {
   createWindow();
   ipcMain.handle("get-fcm", (event, key) => {
+    console.log("접근");
     const value = store.get("fcm_token"); // 데이터 읽기
     console.log(`Data retrieved: ${key} = ${value}`);
     return value;
+  });
+  ipcMain.handle("store:get", (event, key) => {
+    return store.get(key);
+  });
+
+  ipcMain.handle("store:delete", (event, key) => {
+    store.delete(key);
+    return true;
+  });
+  ipcMain.handle("get-tokens", () => {
+    const accessToken = store.get("accessToken");
+    const refreshToken = store.get("refreshToken");
+    console.log("access", accessToken, "refresh", refreshToken);
+    return { accessToken, refreshToken };
   });
 });
 

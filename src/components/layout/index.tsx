@@ -19,16 +19,15 @@ import Cookies from "js-cookie";
 export default function AuthenticatedLayout() {
   const navigate = useNavigate();
 
-  // const user = useRecoilValue(userState);
-  // const setUser = useSetRecoilState(userState);
+  const user = useRecoilValue(userState);
+  const setUser = useSetRecoilState(userState);
   const isModal = useRecoilValue(modalState);
   const setIsModalOpen = useSetRecoilState(modalState);
   const userType = useRecoilValue(userState)?.type;
   // const accessTokenWard = Cookies.get("accessTokenWard");
   // const refreshTokenWard = Cookies.get("refreshTokenWard");
-  let user = "";
-  let accessTokenWard = "";
-  let refreshTokenWard = "";
+  const [accessTokenWard, setAccessTokenWard] = useState("");
+  const [refreshTokenWard, setRefreshTokenWard] = useState("");
 
   //@ts-ignore
   const [isChecking, setIsChecking] = useState(true);
@@ -40,19 +39,6 @@ export default function AuthenticatedLayout() {
     console.error("로그인이 필요한 서비스입니다.");
     navigate(RoutePath.Signin);
   }, []);
-
-  useEffect(() => {
-    const userSet = async () => {
-      //@ts-ignore
-      user = await window.electronStore.get("userType");
-      //@ts-ignore
-      accessTokenWard = await window.electronStore.get("accessToken");
-      //@ts-ignore
-      refreshTokenWard = await window.electronStore.get("refreshToken");
-    };
-    userSet();
-  }, []);
-  console.log("Fetched Data:", { user, accessTokenWard, refreshTokenWard });
 
   useEffect(() => {
     if (!accessTokenWard || !refreshTokenWard) {
@@ -111,7 +97,6 @@ export default function AuthenticatedLayout() {
 
       {/* 스태프 로그인 모달 */}
       <StaffSigninModal onClose={handleOnClose} open={isModal} />
-
       <Header />
       <Body>
         <Sidebar />

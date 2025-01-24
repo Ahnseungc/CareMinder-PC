@@ -11,3 +11,11 @@ contextBridge.exposeInMainWorld("electronStore", {
   get: key => ipcRenderer.invoke("store:get", key),
   delete: key => ipcRenderer.invoke("store:delete", key),
 });
+
+contextBridge.exposeInMainWorld("Fcm", {
+  getFcmData: key => ipcRenderer.invoke(key),
+});
+
+contextBridge.exposeInMainWorld("tokenAPI", {
+  getTokens: async () => await ipcRenderer.invoke("get-tokens"), // 토큰 가져오기
+});

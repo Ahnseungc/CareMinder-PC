@@ -28,9 +28,9 @@ const signin = async (useInfo: SigninFormData) => {
         Cookies.set("accessTokenWard", res.data.jwtResponse.accessToken);
         Cookies.set("refreshTokenWard", res.data.jwtResponse.refreshToken);
         //@ts-ignore
-        await window.electronStore.set("accessToken", res.data.jwtResponse.accessToken);
+        await window.electronStore.set("accessTokenWard", res.data.jwtResponse.accessToken);
         //@ts-ignore
-        await window.electronStore.set("refreshToken", res.data.jwtResponse.refreshToken);
+        await window.electronStore.set("refreshTokenWard", res.data.jwtResponse.refreshToken);
         break;
     }
   }

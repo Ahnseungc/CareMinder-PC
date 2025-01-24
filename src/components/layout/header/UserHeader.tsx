@@ -25,7 +25,7 @@ export default function UserHeader() {
     const getData = async () => {
       const key = "get-fcm";
       //@ts-ignore
-      const token = await window.electron.getFcmData(key); // 프리로드를 통해 메인 프로세스와 통신
+      const token = await window.Fcm.getFcmData(key);
       console.log(`Retrieved data: ${key} = ${token}`);
 
       if (token) {

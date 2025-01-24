@@ -17,7 +17,9 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   const { pathname } = useLocation();
   const user = useRecoilValue(userState);
   const [isChecking, setIsChecking] = useState(true);
-  const accessTokenWard = Cookies.get("accessTokenWard");
+  // const accessTokenWard = Cookies.get("accessTokenWard");
+  const [accessTokenWard, setAccessTokenWard] = useState<string | null>(null);
+
   const accessTokenStaff = Cookies.get("accessTokenStaff");
   const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const setUser = useSetRecoilState(userState);
@@ -27,6 +29,18 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
   //   console.error(`접근이 불가능한 경로입니다. (접근 경로: ${pathname}, 권한: ${user?.type})`);
   //   navigate(-1);
   // }, []);
+
+  useEffect(() => {
+    const getTokens = async () => {
+      //@ts-ignore
+      const token = await window.tokenAPI.getTokens();
+      console.log(token);
+      if (token) {
+        setAccessTokenWard(token.accessToken);
+      }
+    };
+    getTokens();
+  }, []);
 
   useEffect(() => {
     //스태프 페이지
@@ -69,15 +83,31 @@ export default function AuthorizedRoute({ allowedRoles }: AuthorizedRouteProps) 
             navigate("/");
         }
       }
+      const isCheckPermission = async () => {
+        //@ts-ignore
+        const token = await window.tokenAPI.getTokens();
+        console.log("접근");
+        console.log(token);
+        console.log(user);
+        if (
+          (allowedRoles.includes(user.type) && token.accessToken) ||
+          (allowedRoles.includes(user.type) && accessTokenStaff) ||
+          (allowedRoles.includes(user.type) && accessTokenAdmin)
+        ) {
+          setIsChecking(false);
+          setIsModalOpen(false);
+        }
+      };
+      isCheckPermission();
 
-      if (
-        (allowedRoles.includes(user.type) && accessTokenWard) ||
-        (allowedRoles.includes(user.type) && accessTokenStaff) ||
-        (allowedRoles.includes(user.type) && accessTokenAdmin)
-      ) {
-        setIsChecking(false);
-        setIsModalOpen(false);
-      }
+      // if (
+      //   (allowedRoles.includes(user.type) && accessTokenWard) ||
+      //   (allowedRoles.includes(user.type) && accessTokenStaff) ||
+      //   (allowedRoles.includes(user.type) && accessTokenAdmin)
+      // ) {
+      //   setIsChecking(false);
+      //   setIsModalOpen(false);
+      // }
       //스태프 페이지 접근
       if (pathname.includes("staff") && accessTokenWard && !accessTokenStaff) {
         setIsModalOpen(true);
