@@ -70,17 +70,11 @@ async function createWindow() {
   const filePath = path.resolve(__dirname, "../dist/index.html");
   win.loadFile(filePath);
 
-  // if (store.get("accessToken") || store.get("refreshToken")) {
-  //   const accessToken = store.get("accessToken");
-  //   const refreshToken = store.get("refreshToken");
-  //   ipcMain.handle("get-tokens", () => {
-  //     return { accessToken, refreshToken };
-  //   });
-  // }
-
   win.webContents.on("did-finish-load", () => {
     console.log("Main window has finished loading.");
-    splashWindow.close(); // 로딩 창을 닫음
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.destroy(); // close() 대신 destroy() 사용
+    }
     win.show();
   });
 }
@@ -137,21 +131,6 @@ function displayNotification(notification) {
 ipcMain.handle("get-notification", (event, key) => {
   return message;
 });
-ipcMain.handle("store:set", async (event, key, value) => {
-  store.set(key, value);
-  console.log(key, store.get(key));
-  // if (key === "accessToken" || key === "refreshToken") {
-  //   console.log(`Stored value for key "${key}":`, store.get(key));
-  //   session.defaultSession.cookies.set({
-  //     url: "", // 기본적으로 입력 해주어야함
-  //     name: "name",
-  //     value: "test",
-  //     httpOnly: false, // client에서 쿠키를 접근함을 방지하기위해 설정 ( 보안 설정 )
-  //     expriationDtae: 60, // 쿠키 만료 시간 설정
-  //   });
-  // }
-  return true;
-});
 
 app.whenReady().then(async () => {
   createWindow();
@@ -160,6 +139,11 @@ app.whenReady().then(async () => {
     const value = store.get("fcm_token"); // 데이터 읽기
     console.log(`Data retrieved: ${key} = ${value}`);
     return value;
+  });
+  ipcMain.handle("store:set", async (event, key, value) => {
+    store.set(key, value);
+    console.log(key, store.get(key));
+    return true;
   });
   ipcMain.handle("store:get", (event, key) => {
     return store.get(key);
@@ -170,9 +154,8 @@ app.whenReady().then(async () => {
     return true;
   });
   ipcMain.handle("get-tokens", () => {
-    const accessToken = store.get("accessToken");
-    const refreshToken = store.get("refreshToken");
-    console.log("access", accessToken, "refresh", refreshToken);
+    const accessToken = store.get("accessTokenWard");
+    const refreshToken = store.get("refreshTokenWard");
     return { accessToken, refreshToken };
   });
 });

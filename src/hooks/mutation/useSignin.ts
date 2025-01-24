@@ -25,8 +25,6 @@ const signin = async (useInfo: SigninFormData) => {
         Cookies.set("refreshTokenStaff", res.data.jwtResponse.refreshToken);
         break;
       case "WARD":
-        Cookies.set("accessTokenWard", res.data.jwtResponse.accessToken);
-        Cookies.set("refreshTokenWard", res.data.jwtResponse.refreshToken);
         //@ts-ignore
         await window.electronStore.set("accessTokenWard", res.data.jwtResponse.accessToken);
         //@ts-ignore

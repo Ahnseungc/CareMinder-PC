@@ -13,7 +13,10 @@ const signOut = async (type: UserType) => {
   let token;
 
   if (type === "WARD") {
-    token = Cookies.get("accessTokenWard");
+    //@ts-ignore
+    const tokens = await window.tokenAPI.getTokens();
+    token = tokens.accessToken;
+
     console.log("병동" + token);
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");

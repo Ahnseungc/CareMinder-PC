@@ -14,27 +14,12 @@
         background-color: #ffffff;
         margin: 0;
         font-family: Arial, sans-serif;
-      }
-      .loader {
-        border: 16px solid #f3f3f3;
-        border-top: 16px solid #3498db;
-        border-radius: 50%;
-        width: 120px;
-        height: 120px;
-        animation: spin 2s linear infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
+        background-image: url("../public/CareFlow-icon.png"); /* 상대 경로로 수정 */
+        background-size: cover; /* 이미지를 화면 크기에 맞게 조정 */
+        background-position: center; /* 이미지를 중앙에 배치 */
+        background-repeat: no-repeat; /* 이미지 반복 방지 */
       }
     </style>
   </head>
-  <body>
-    <img src="/CareFlow-icon.png" alt="" />
-    <div class="loader"></div>
-  </body>
+  <body></body>
 </html>

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { Link, Stack, styled, SvgIcon, SxProps, Theme, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { Stack, styled, SvgIcon, SxProps, Theme, Typography } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
@@ -14,6 +14,7 @@ type PageButtonProps = {
 
 export default function MenuLayout({ pageName, routePath, icon }: PageButtonProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isActive = pathname === routePath;
   const user = useRecoilValue(userState);
 
@@ -33,9 +34,9 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
 
   return (
     <Container>
-      <Link href={routePath} sx={menuButtonStyle}>
+      <MenuButton onClick={() => navigate(routePath)} sx={menuButtonStyle}>
         <SvgIcon component={icon} inheritViewBox />
-      </Link>
+      </MenuButton>
       <Typography variant="h5" sx={getTypographyStyles(isActive, user?.type!)}>
         {pageName}
       </Typography>
@@ -93,3 +94,13 @@ const Container = styled(Stack)({
   alignItems: "center",
   gap: "6px",
 });
+
+const MenuButton = styled("button")(({ theme }) => ({
+  "border": "none",
+  "cursor": "pointer",
+  "padding": 0,
+  "background": "none",
+  "&:hover": {
+    opacity: 0.8,
+  },
+}));

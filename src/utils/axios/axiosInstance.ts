@@ -52,12 +52,17 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
+        //@ts-ignore
+        const token = await window.tokenAPI.getTokens();
         const response = await axios.post(
           refreshEndpoint,
           {},
           {
+            // headers: {
+            //   Authorization: `Bearer ${Cookies.get(token)}`,
+            // },
             headers: {
-              Authorization: `Bearer ${Cookies.get(refreshTokenKey)}`,
+              Authorization: `Bearer ${token.refreshToken}`,
             },
           },
         );
@@ -93,8 +98,6 @@ axiosInstance.interceptors.request.use(
 
     const userState = localStorage.getItem("recoil-persist");
 
-    console.log(userState);
-
     // const userType = userStateObj.userState.type;
     let userType = "";
     if (userState) {
@@ -104,13 +107,13 @@ axiosInstance.interceptors.request.use(
 
     switch (userType) {
       case "WARD":
-        // token = Cookies.get("accessTokenWard") as string;
         //@ts-ignore
-        token = await window.tokenAPI.getTokens().accessToken;
-        console.log(token);
+        const tokens = await window.tokenAPI.getTokens();
+        token = tokens.accessToken;
         break;
       case "STAFF":
         token = Cookies.get("accessTokenStaff") as string;
+
         break;
       case "ADMIN":
         token = Cookies.get("accessTokenAdmin") as string;
