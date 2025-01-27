@@ -1,10 +1,17 @@
 import { SwitchCase } from "@toss/react";
-
-import StaffPatientListBox from "./staff/StaffpatientListBox";
-import MainPatientListBox from "./main/MainpatientListBox";
-import CompletedPatientListBox from "./completedRequest/CompletedpatientListBox";
 import { UserTypes } from "@models/home";
 
+import MainPatientListBox from "./main/MainpatientListBox";
+import StaffPatientListBox from "./staff/StaffpatientListBox";
+import CompletedPatientListBox from "./completedRequest/CompletedpatientListBox";
+
+/*
+ * user // mainwait, mainAccept, staffWait 등등으로 분리
+ * data // 응답 데이터
+ * roomId // 포커스 roomId
+ * setRoomId // 상태관리 id
+ * refetchProps // react-query refetch함수
+ */
 export default function PatientBox({
   user,
   data,
@@ -20,6 +27,7 @@ export default function PatientBox({
         caseBy={{
           mainWait: <MainPatientListBox isAccept={false} data={data} onMutates={onMutates!} />,
           mainAccept: <MainPatientListBox isAccept={true} data={data} onMutates={onMutates!} />,
+
           staffWait: (
             <StaffPatientListBox
               isAccept={false}
@@ -28,6 +36,7 @@ export default function PatientBox({
               refetchProps={refetchProps}
             />
           ),
+
           staffAccept: (
             <StaffPatientListBox
               isAccept={true}
@@ -38,12 +47,13 @@ export default function PatientBox({
               refetchProps={refetchProps}
             />
           ),
+
           completedRequest: (
             <CompletedPatientListBox
-              isAccept={false}
               data={data}
               onMutates={onMutates!}
               roomId={roomId}
+              setRoomId={setRoomId}
             />
           ),
         }}

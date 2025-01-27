@@ -1,8 +1,6 @@
-import CSwitch from "@components/common/atom/C-Switch";
 import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
-import { ReactComponent as HamburgerIcon } from "@/assets/completedRequests/hamburger.svg";
+// import { ReactComponent as PersonIcon } from "@/assets/completedRequests/person.svg";
 import PatientBox from "@components/common/patientListBox";
 import { RequestsData } from "@models/home";
 import useGetCompleted from "@hooks/queries/useGetCompleted";
@@ -17,24 +15,27 @@ import { LoadChatHistory } from "@components/chat/chattingModel";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import CompletedGroupList from "@components/common/patientListBox/completedRequest/CompletedGroupList";
+// import StaffSearchBox from "@components/common/SearachBox/StaffSearchBox";
 
 export default function CompletedRequestsPage() {
   const setlayoutState = useSetRecoilState(layoutState);
 
-  const [isPatient, setIsPatient] = useState<boolean>(false);
+  const [isGroup, setIsGroup] = useState<boolean>(false);
   const [isFocusPatientData, setIsFocusPatientData] = useState<null | RequestsData>();
+  const [isRoomId, setRoomId] = useState<null | number>(null);
+
   const [myArea, setMyArea] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { data: getCompleted, refetch: refetchComplete } = useGetCompleted(myArea, isPatient);
+  const { data: getCompleted, refetch: refetchComplete } = useGetCompleted(myArea, isGroup);
   const { data: getCompletedGroup, refetch: refetchCompletedGroup } = useGetCompletedGroup(
     myArea,
-    isPatient,
+    isGroup,
   );
   const refetchProps = {
     refetchComplete,
     refetchCompletedGroup,
-    isPatient,
+    isGroup,
   };
   const { mutate: mutateAccept } = useCompleteAccept(refetchProps);
   const { mutate: mutateDischarge } = useCompleteDischargeByWeb(refetchProps);
@@ -51,7 +52,7 @@ export default function CompletedRequestsPage() {
   };
 
   const getHistoryChatting = async () => {
-    const history = await LoadChatHistory(isFocusPatientData?.patientRequestId!);
+    const history = await LoadChatHistory(isRoomId!);
     setMessages(history);
     bottomScroll();
   };
@@ -72,7 +73,7 @@ export default function CompletedRequestsPage() {
 
   return (
     <>
-      <S.LeftSection>
+      <LeftSection>
         <S.TitleWrapper>
           <S.Title>완료 요청 히스토리</S.Title>
           <S.SearchBoxWrapper>{/* <StaffSearchBox /> */}</S.SearchBoxWrapper>
@@ -80,26 +81,34 @@ export default function CompletedRequestsPage() {
         <S.SubTitle>
           <S.SubTitleLeft>
             <div>필터</div>
-            <S.FilterBox isTrue={isPatient} onClick={() => setIsPatient(prev => !prev)}>
+            <S.FilterBox isTrue={isGroup} onClick={() => setIsGroup(prev => !prev)}>
               환자별
             </S.FilterBox>
-            <S.FilterBox isTrue={false}>구역</S.FilterBox>
+            <S.FilterBox isTrue={myArea} onClick={() => setMyArea(prev => !prev)}>
+              구역
+            </S.FilterBox>
             <S.FilterBox isTrue={false}>직종</S.FilterBox>
           </S.SubTitleLeft>
         </S.SubTitle>
-        {!isPatient &&
+        {!isGroup &&
           getCompleted?.map(el => (
-            <div key={el.patientRequestId} onClick={() => setIsFocusPatientData(el)}>
+            <div
+              key={el.patientRequestId}
+              onClick={() => {
+                setIsFocusPatientData(el), setRoomId(el.patientRequestId);
+              }}
+            >
               <PatientBox
                 key={el.patientRequestId}
                 user="completedRequest"
                 data={el}
                 roomId={isFocusPatientData?.patientRequestId}
+                setRoomId={setRoomId}
                 onMutates={onMutates}
               />
             </div>
           ))}
-        {isPatient &&
+        {isGroup &&
           getCompletedGroup?.map(el => (
             <CompletedGroupList
               key={el.patientSimple.patientId}
@@ -111,39 +120,71 @@ export default function CompletedRequestsPage() {
               }}
             />
           ))}
-      </S.LeftSection>
+      </LeftSection>
 
-      <S.RightSection>
-        <ChatWrapper>
-          <ChatContainer id="top" color={roleColorPick.dark}>
-            {messages.map((el, idx) => (
-              <ChatBox key={idx} data={el} color={roleColorPick.normal} />
-            ))}
-          </ChatContainer>
-          <RestoreWrapper>
-            <Restore
-              color={roleColorPick.dark}
-              onClick={e => onMutates(e, isFocusPatientData!.patientRequestId, "accept")}
-            >
-              요청 복원하기
-            </Restore>
-          </RestoreWrapper>
-          <InputWrapper>
-            <Input
-              type="text"
-              placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
-              disabled={true}
-            />
-            <SendButton></SendButton>
-          </InputWrapper>
-        </ChatWrapper>
-      </S.RightSection>
+      <RightSection color={isFocusPatientData ? roleColorPick.light : "white"}>
+        {isFocusPatientData && (
+          <>
+            <S.TitleWrapper>
+              <Title color={roleColorPick.dark}>
+                {isFocusPatientData.areaSimple?.areaName} (
+                {isFocusPatientData.tabletSimple?.tabletName})<span> | </span>
+                <span>{isFocusPatientData.patientSimple.patientName}</span>
+              </Title>
+              <S.SearchBoxWrapper>{/* <StaffSearchBox /> */}</S.SearchBoxWrapper>
+            </S.TitleWrapper>
+
+            <ChatWrapper>
+              <ChatContainer id="top" color={roleColorPick.dark}>
+                {messages.map((el, idx) => (
+                  <ChatBox key={idx} data={el} color={roleColorPick.normal} />
+                ))}
+              </ChatContainer>
+            </ChatWrapper>
+            <RestoreWrapper>
+              <Restore
+                color={roleColorPick.dark}
+                onClick={e => onMutates(e, isFocusPatientData!.patientRequestId, "accept")}
+              >
+                요청 복원하기
+              </Restore>
+
+              <InputWrapper>
+                <Input
+                  type="text"
+                  placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
+                  disabled={true}
+                />
+                <SendButton></SendButton>
+              </InputWrapper>
+            </RestoreWrapper>
+          </>
+        )}
+      </RightSection>
     </>
   );
 }
 
-const ChatWrapper = styled("div")``;
+const LeftSection = styled(S.SectionBase)({
+  // 왼쪽 컨테이너에 스타일 적용
+});
 
+export const RightSection = styled(S.SectionBase)<{ color: string }>`
+  background-color: ${({ color }) => color};
+  position: relative;
+  max-height: 88vh;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px -200px 36px -28px inset;
+`;
+
+const ChatWrapper = styled("div")`
+  height: 63vh;
+`;
+
+const Title = styled("div")<{ color: string }>`
+  font-size: 20px;
+  color: ${({ color }) => color};
+  font-weight: 700;
+`;
 const Input = styled("input")`
   width: 100%;
   border: none;
@@ -163,11 +204,13 @@ const Restore = styled("div")<{ color: string }>`
   border-radius: 6px;
   width: 98px;
   font-weight: 600;
+  cursor: pointer;
 `;
 const RestoreWrapper = styled("div")`
   display: flex;
-  justify-content: center;
-  margin-top: 26px;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 26px;
 `;
 const InputWrapper = styled("div")`
   margin-top: 26px;
@@ -178,10 +221,11 @@ const InputWrapper = styled("div")`
   align-items: center;
 `;
 const ChatContainer = styled("div")<{ color: string }>`
-  background-color: red;
   border-top: 1px solid ${({ theme }) => theme.palette.primary.contrastText};
   margin-top: 12px;
-  max-height: 400px;
+  /* max-height: 600px; */
+  max-height: 60vh;
+  height: 100%;
   overflow: auto;
   ::-webkit-scrollbar {
     width: 8px;
@@ -193,54 +237,4 @@ const ChatContainer = styled("div")<{ color: string }>`
   ::-webkit-scrollbar-track {
     background: rgba(220, 20, 60, 0.1);
   }
-`;
-const Wrapper = styled("div")`
-  min-height: 80vh;
-`;
-const Container = styled("div")`
-  display: flex;
-  background-color: red;
-`;
-const LeftWrapper = styled("div")`
-  width: 100%;
-  margin-right: 8px;
-`;
-const RightWrapper = styled("div")`
-  width: 100%;
-  margin-left: 8px;
-  background-color: red;
-`;
-const Title = styled("div")`
-  font-weight: 700;
-  font-size: 24px;
-  color: #000000;
-  margin-bottom: 26px;
-`;
-const SubTitle = styled("div")`
-  font-weight: 500;
-  font-size: 18px;
-  color: #000000;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  & > * {
-    margin-right: 17px;
-  }
-`;
-const Person = styled("div")`
-  margin: 33px 0 15px 0;
-  display: flex;
-  align-items: center;
-  & > div {
-    font-size: 18px;
-    font-weight: 700;
-    color: #000000;
-    margin: 0 7px 0 17px;
-    margin-top: 5px;
-  }
-`;
-const PatientList = styled("div")``;
-const Empty = styled("div")`
-  margin-top: 81px;
-  background-color: red;
 `;
