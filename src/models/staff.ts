@@ -37,7 +37,7 @@ export type RefetchProps = {
 export type CompleteRefetchProps = {
   refetchComplete: VoidFn;
   refetchCompletedGroup: VoidFn;
-  isPatient: boolean;
+  isGroup: boolean;
 };
 
 export type Message = {

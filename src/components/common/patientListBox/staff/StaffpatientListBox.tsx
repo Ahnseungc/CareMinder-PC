@@ -1,20 +1,25 @@
-import { Stack, styled } from "@mui/material";
+import { useState } from "react";
+
+import { styled } from "@mui/material";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import { bottomScroll, roleColor } from "@utils/homePage";
 import { ReactComponent as MoreHorizRoundedIcon } from "@/assets/homeIcons/Dot.svg";
 import { ReactComponent as VectorIcon } from "@/assets/homeIcons/Dark_Vector.svg";
 import { ReactComponent as CheckIcon } from "@/assets/homeIcons/check.svg";
-import { useState } from "react";
+
+import { bottomScroll, roleColor } from "@utils/homePage";
+import getPrevTimes from "@utils/getPrevTimes";
+
 import { MainListBoxProps } from "@models/home";
+import { Message } from "@models/staff";
+
 import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chattingModel";
 import ChatInput from "@components/chat/chatInput";
+import ChatBox from "@components/chat/chatBox";
 // import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
 import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
-import { Message } from "@models/staff";
-import ChatBox from "@components/chat/chatBox";
-import getPrevTimes from "@utils/getPrevTimes";
 import MemoBox from "../MemoBox/MemoBox";
+import * as S from "../Style/listBox.style";
 
 function StaffPatientListBox({
   isAccept,
@@ -91,12 +96,12 @@ function StaffPatientListBox({
   // }, [messages]);
 
   return (
-    <InnerContainer
+    <S.InnerContainer
       color={roleColorPick.light}
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
-      <LeftLine color={roleColorPick.dark}></LeftLine>
-      <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
+      <S.LeftLine color={roleColorPick.dark}></S.LeftLine>
+      <S.Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <div>
           <div>
             {data.areaSimple.areaName} ({data.tabletSimple.tabletName})
@@ -104,45 +109,45 @@ function StaffPatientListBox({
           <span> | </span>
           <div>{data.patientSimple.patientName}</div>
         </div>
-        <TitleRight
+        <S.TitleRight
           onClick={e => {
             e.stopPropagation(), setIsMemo(prev => !prev);
           }}
         >
-          <Vector isMemo={isMemo}>
+          <S.Vector isMemo={isMemo}>
             <VectorIcon />
-          </Vector>
+          </S.Vector>
           메모
-        </TitleRight>
-      </Title>
+        </S.TitleRight>
+      </S.Title>
       {isMemo && <MemoBox color={roleColorPick.light} patientId={data.patientSimple.patientId} />}
-      <Bottom>
-        <TxtBox color={roleColorPick.light}>
-          <TxtBoxLeft>{data.content}</TxtBoxLeft>
-          <TxtBoxRight>{getPrevTimes(data.createdAt)}</TxtBoxRight>
-        </TxtBox>
-        <Dot onClick={onOptionOnOff}>
+      <S.Bottom>
+        <S.TxtBox color={roleColorPick.light}>
+          <S.TxtBoxLeft>{data.content}</S.TxtBoxLeft>
+          <S.TxtBoxRight>{getPrevTimes(data.createdAt)}</S.TxtBoxRight>
+        </S.TxtBox>
+        <S.Dot onClick={onOptionOnOff}>
           <MoreHorizRoundedIcon />
           {isOptions && (
-            <Options>
+            <S.Options>
               {isAccept ? (
-                <Option onClick={el => onCancelAccept(el)}>요청 수락 취소하기</Option>
+                <S.Option onClick={el => onCancelAccept(el)}>요청 수락 취소하기</S.Option>
               ) : (
-                <Option
+                <S.Option
                   onMouseDown={e => {
                     e.stopPropagation(), setIsEdit(true);
                   }}
                 >
                   담당직종 변경
-                </Option>
+                </S.Option>
               )}
-              <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
+              <S.Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
                 퇴원 처리하기
-              </Option>
-            </Options>
+              </S.Option>
+            </S.Options>
           )}
           {isEdit && (
-            <Options tabIndex={0}>
+            <S.Options tabIndex={0}>
               <span>담당직종 변경</span>
               {/* <BoxWrapper>
                 <CComboBox
@@ -152,16 +157,16 @@ function StaffPatientListBox({
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper> */}
-            </Options>
+            </S.Options>
           )}
-        </Dot>
-        <Check
+        </S.Dot>
+        <S.Check
           color={roleColorPick.dark}
           onClick={e => onMutates(e, data.patientRequestId, isAccept ? "accept" : "wait")}
         >
           {isAccept ? <CheckIcon /> : <ArrowForwardRoundedIcon style={{ color: "white" }} />}
-        </Check>
-      </Bottom>
+        </S.Check>
+      </S.Bottom>
       {isAccept && data.patientRequestId === roomId && (
         <ChatWrapper color={roleColorPick.light}>
           <ChatContainer id="top">
@@ -182,100 +187,11 @@ function StaffPatientListBox({
           />
         </ChatWrapper>
       )}
-    </InnerContainer>
+    </S.InnerContainer>
   );
 }
 export default StaffPatientListBox;
 
-const InnerContainer = styled(Stack)<{ color: string }>`
-  position: relative;
-  width: 100%;
-  padding: 0 13px;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-`;
-const LeftLine = styled("div")<{ color: string }>`
-  width: 4px;
-  height: 100%;
-  border-radius: 4px;
-  background-color: ${({ color }) => color};
-  position: absolute;
-  left: 0;
-`;
-const Title = styled("div")<{ color: string }>`
-  font-weight: 700;
-  font-size: 16px;
-  color: #000000;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  margin-right: 30px;
-  & > div {
-    display: flex;
-  }
-  & > div > span {
-    margin: 0 5px;
-  }
-`;
-const TitleRight = styled("div")`
-  font-size: 14px;
-  color: ${({ theme }) => theme.palette.text.primary};
-  cursor: pointer;
-`;
-const TxtBox = styled("div")<{ color: string }>`
-  border-radius: 6px;
-  width: 100%;
-  border: 3px solid ${({ color }) => color};
-  padding: 6px 16px 6px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.palette.primary.dark};
-  display: flex;
-  justify-content: space-between;
-`;
-const TxtBoxLeft = styled("div")`
-  display: flex;
-  align-items: center;
-`;
-const Vector = styled("div")<{ isMemo: boolean }>`
-  transform: ${({ isMemo }) => isMemo && "rotate(-90deg)"};
-  margin-right: 8px;
-`;
-const TxtBoxRight = styled("div")`
-  color: ${({ theme }) => theme.palette.text.primary};
-  min-width: 60px;
-  text-align: end;
-`;
-const Bottom = styled("div")`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-`;
-const Check = styled("div")<{ color: string }>`
-  background-color: ${({ color }) => color};
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 12px;
-  font-weight: 900;
-  cursor: pointer;
-`;
-
-const Dot = styled("div")`
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  margin-left: 6px;
-  align-items: center;
-  justify-content: center;
-`;
 const ChatWrapper = styled("div")<{ color: string }>`
   background-color: ${({ color }) => color};
   margin-top: 8px;
@@ -290,37 +206,3 @@ const ChatContainer = styled("div")`
   margin-bottom: 10px;
   padding: 0 7px;
 `;
-const Options = styled("div")`
-  background-color: ${({ theme }) => theme.palette.primary.contrastText};
-  position: absolute;
-  right: 0px;
-  top: 40px;
-  padding: 11px;
-  box-shadow: 0px 4px 12px 0px #89898e4d;
-  border-radius: 8px;
-  & > div:first-of-type {
-    border-bottom: 1px solid ${({ theme }) => theme.palette.divider};
-  }
-  & > span {
-    font-size: 13px;
-    font-weight: 700;
-    color: ${({ theme }) => theme.palette.primary.dark};
-  }
-  z-index: 100;
-`;
-const Option = styled("div")`
-  font-size: 13px;
-  color: ${({ theme }) => theme.palette.primary.dark};
-  font-weight: 500;
-  padding: 8px 0;
-  cursor: pointer;
-  width: 100%;
-  :hover {
-    color: ${({ theme }) => theme.palette.primary.main};
-  }
-`;
-// const BoxWrapper = styled("div")`
-//   height: 39px;
-//   width: 130px;
-//   margin-top: 8px;
-// `;

@@ -6,11 +6,11 @@ const getCompletedGroup = async (myArea: boolean) => {
   return res.data.data;
 };
 
-export default function useGetCompletedGroup(myArea: boolean, isPatient: boolean) {
+export default function useGetCompletedGroup(myArea: boolean, isGroup: boolean) {
   const { data, refetch } = useQuery<any[], boolean>({
-    queryKey: ["useGetCompletedGroup", myArea, isPatient],
+    queryKey: ["useGetCompletedGroup", myArea, isGroup],
     queryFn: () => getCompletedGroup(myArea),
-    enabled: isPatient,
+    enabled: isGroup,
   });
   return { data, refetch };
 }
