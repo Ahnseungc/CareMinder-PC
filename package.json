@@ -29,7 +29,6 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
-    "electron": "^34.0.0",
     "eslint-plugin-prettier": "5.2.1",
     "event-source-polyfill": "^1.0.31",
     "firebase": "^10.8.0",
@@ -78,46 +77,5 @@
     "vite-plugin-babel-macros": "^1.0.6",
     "vite-tsconfig-paths": "^4.3.1",
     "wait-on": "^7.2.0"
-  },
-  "build": {
-    "build": {
-      "productName": "NB",
-      "appId": "com.nb.electron",
-      "asar": true,
-      "mac": {
-        "target": [
-          "default"
-        ],
-        "icon": "build/icons/icon.icns"
-      },
-      "dmg": {
-        "title": "NB",
-        "icon": "build/icons/icon.icns"
-      },
-      "win": {
-        "target": [
-          "nsis"
-        ],
-        "icon": "build/icons/icon.ico"
-      },
-      "nsis": {
-        "oneClick": false,
-        "allowToChangeInstallationDirectory": false,
-        "createDesktopShortcut": true,
-        "perMachine": true,
-        "language": 1042,
-        "installerIcon": "build/icons/icon.ico",
-        "shortcutName": "NB",
-        "artifactName": "NB-${version}.${ext}",
-        "uninstallDisplayName": "NB"
-      },
-      "directories": {
-        "buildResources": "./build/",
-        "output": "./dist/"
-      }
-    }
-  },
-  "resolutions": {
-    "rollup": "npm:@rollup/wasm-node"
   }
 }
