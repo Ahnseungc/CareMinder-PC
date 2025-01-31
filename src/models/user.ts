@@ -4,6 +4,7 @@ export type User = {
   id: number;
   name: string;
   type: UserType;
+  wardId?: number;
 };
 
 export type AdminUser = {

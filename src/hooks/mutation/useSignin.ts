@@ -59,6 +59,14 @@ export default function useSignin() {
           type: res.currentUser?.role,
         });
       }
+      if (res.currentUser.role === "STAFF") {
+        setWardState({
+          id: res.currentUser?.accountId,
+          name: res.currentUser?.name,
+          type: res.currentUser?.role,
+          wardId: res.currentUser?.wardId,
+        });
+      }
       // 추가 응답 API 개발 완료 후
       setUserState({
         id: res.currentUser?.accountId,
