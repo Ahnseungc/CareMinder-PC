@@ -3,9 +3,9 @@
 // export const SW_SEVER_URL = "http://223.130.141.162:8000/ws";
 
 /** 개발 서버 주소 */
-// export const SEVER_URL = "https://dev.careflow.co.kr/api";
-// export const SW_SEVER_URL = "https://dev.careflow.co.kr/ws";
+export const SEVER_URL = "https://dev.careflow.co.kr/api";
+export const SW_SEVER_URL = "https://dev.careflow.co.kr/ws";
 
 /** 메인 서버 주소 */
-export const SEVER_URL = "https://careflow.co.kr/api";
-export const SW_SEVER_URL = "https://careflow.co.kr/ws";
+// export const SEVER_URL = "https://careflow.co.kr/api";
+// export const SW_SEVER_URL = "https://careflow.co.kr/ws";
