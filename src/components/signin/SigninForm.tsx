@@ -6,6 +6,7 @@ import CButton from "@components/common/atom/C-Button";
 import { userState } from "@libraries/recoil";
 import { useRecoilValue } from "recoil";
 import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
+import wardState from "@libraries/recoil/ward";
 
 type SigninFormProps = {
   form: UseFormReturn<SigninFormData>;
@@ -16,6 +17,7 @@ type SigninFormProps = {
 export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const { handleSubmit, watch } = form;
   const user = useRecoilValue(userState);
+  const ward = useRecoilValue(wardState);
   const autoCompleteId = useRecoilValue(autoCompleteIdState);
 
   const userType = type === user?.type ? user?.type : type;
@@ -24,7 +26,7 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
     const updatedData = {
       ...data,
       accountType: userType,
-      wardId: user?.type === "WARD" ? user?.id : user?.type === "STAFF" ? user.wardId : undefined,
+      wardId: user?.type === "WARD" ? user?.id : user?.type === "STAFF" ? ward?.wardId : undefined,
     };
     onSubmit(updatedData);
   };
