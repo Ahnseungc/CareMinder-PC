@@ -26,8 +26,7 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
     const updatedData = {
       ...data,
       accountType: userType,
-      wardId:
-        user?.type === "WARD" ? user?.id : user?.type === "STAFF" ? wardInfo?.wardId : undefined,
+      wardId: user?.type === "WARD" || user?.type === "STAFF" ? wardInfo?.id : undefined,
     };
     onSubmit(updatedData);
   };
