@@ -21,11 +21,10 @@ export default function SigninForm({ form, onSubmit, type }: SigninFormProps) {
   const userType = type === user?.type ? user?.type : type;
 
   const handleFormSubmit = (data: SigninFormData) => {
-    console.log(user);
     const updatedData = {
       ...data,
       accountType: userType,
-      wardId: user?.type === "WARD" ? user.id : undefined,
+      wardId: user?.type === "WARD" || user?.type === "STAFF" ? user?.id : undefined,
     };
     onSubmit(updatedData);
   };
