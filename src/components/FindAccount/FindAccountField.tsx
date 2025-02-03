@@ -221,8 +221,12 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                         {...field}
                         id={name}
                         placeholder={placeholder}
-                        value={""}
-                        onChange={() => null}
+                        onChange={e => {
+                          field.onChange({
+                            ...e,
+                            target: { ...e.target, value: e.target.value },
+                          });
+                        }}
                         error={Boolean(errors[name])}
                         sx={{ width: "420px", display: field.name === "id" ? "none" : "flex" }}
                       />

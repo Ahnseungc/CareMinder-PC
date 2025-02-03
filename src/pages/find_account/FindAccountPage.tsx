@@ -9,18 +9,27 @@ import { useRecoilValue } from "recoil";
 
 import HelpSection from "@components/FindAccount/HelpSection";
 import { useSearchParams } from "react-router-dom";
+import FindIdModal from "@components/FindAccount/Modal/findIdModal";
+import FindInputPwModal from "@components/FindAccount/Modal/findInputPwModal";
+import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";
+type FindModalType = "IdModal" | "PwInputModal" | "PwSecondModal" | undefined;
 type Account = "어드민" | "병동" | "스태프";
 
 export default function FindAccountPage() {
   const [activeTab, setActiveTab] = useState<FindAccountType>("아이디 찾기");
+  const [isOpenModal, setIsOpenModal] = useState<FindModalType>(undefined);
   const [type, setType] = useState<Account>();
 
   const verifyPhone = useRecoilValue(verifyPhoneState);
 
   const [searchParams] = useSearchParams();
   const userType = searchParams.get("type");
+
+  const onCloseModal = () => {
+    setIsOpenModal(undefined);
+  };
 
   useEffect(() => {
     switch (userType) {
@@ -49,6 +58,7 @@ export default function FindAccountPage() {
 
   /** api 생성 후  */
   const onSubmit: SubmitHandler<FindAccount> = data => {
+    console.log("데이터");
     console.log(data);
   };
 
@@ -80,7 +90,6 @@ export default function FindAccountPage() {
               ),
               "비밀번호 찾기": (
                 <>
-                  {" "}
                   {findAccountField.map(field => (
                     <FindAccountField
                       key={field.name}
@@ -105,6 +114,23 @@ export default function FindAccountPage() {
         </CButton>
       </CButtonContainer>
       <HelpSection />
+      {isOpenModal === "IdModal" && (
+        <FindIdModal
+          onClose={onCloseModal}
+          setActiveTab={setActiveTab}
+          type={type!}
+          id={"careminder"}
+        />
+      )}
+      {isOpenModal === "PwInputModal" && (
+        <FindInputPwModal
+          onClose={onCloseModal}
+          setActiveTab={setActiveTab}
+          type={type!}
+          id={"careminder"}
+        />
+      )}
+      {isOpenModal === "PwSecondModal" && <FindPwSecond onClose={onCloseModal} type={type!} />}
     </Container>
   );
 }
