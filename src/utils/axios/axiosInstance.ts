@@ -7,8 +7,6 @@ export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
-console.log(SEVER_URL);
-
 const axiosInstance = axios.create({
   baseURL: SEVER_URL,
   headers: {
