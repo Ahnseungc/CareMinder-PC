@@ -24,7 +24,7 @@ import verifyPhoneState from "@libraries/recoil/verifyPhone";
 type InputFieldProps = { form: UseFormReturn<NewWard>; field: NewWardField };
 
 const INITIAL_TIMER_SECONDS = 180; // 인증번호 타이머
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function NewWardInputField({ field, form }: InputFieldProps) {
   const { name, label, placeholder } = field;
@@ -115,7 +115,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
       return;
     } else {
       try {
-        const res = await axios.get(`${serverUrl}/wards/check-ward-name`, {
+        const res = await axios.get(`${SEVER_URL}/wards/check-ward-name`, {
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
           },
@@ -164,7 +164,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
           loginId: username,
           accountType: "WARD",
         };
-        const res = await axios.post(`${serverUrl}/users/check-login-id`, doubleCheck);
+        const res = await axios.post(`${SEVER_URL}/users/check-login-id`, doubleCheck);
         if (res.data === "사용 가능한 아이디입니다.") {
           setDoubleCheck(true);
           form.clearErrors("loginId");
@@ -223,7 +223,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
     try {
       resetTimer();
       const _phoneNumber = phoneNumber.replace(/-/g, "");
-      const res = await axios.post(`${serverUrl}/sms/send`, {
+      const res = await axios.post(`${SEVER_URL}/sms/send`, {
         phoneNumber: _phoneNumber,
       });
       console.log(res.data);
@@ -236,7 +236,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
   const handleCheckVerifyCode = async () => {
     try {
       const _phoneNumber = phoneNumber.replace(/-/g, "");
-      const res = await axios.post(`${serverUrl}/sms/verify`, {
+      const res = await axios.post(`${SEVER_URL}/sms/verify`, {
         phoneNumber: _phoneNumber,
         verifyCode: verifyCode,
       });

@@ -91,8 +91,9 @@
 import { useEffect, useState } from "react";
 import { EventSourcePolyfill, MessageEvent } from "event-source-polyfill";
 import Cookies from "js-cookie";
+import { isElectron } from "./isElectron";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const SERVER_URL = import.meta.env.VITE_SEVER_URL;
 
 type SSEMessageType = {
   content: {
@@ -143,13 +144,17 @@ export function useSSE({ checkType, userType }: { checkType: string; userType: s
     eventSource.addEventListener(checkType, (event: MessageEvent) => {
       const jsonData = JSON.parse(event.data);
       console.log("📩 SSE 이벤트 수신:", jsonData);
-      setMessage(jsonData);
-      console.debug(
-        JSON.stringify({
-          type: "Notification",
-          data: `${JSON.stringify(jsonData)}`,
-        }),
-      );
+
+      if (isElectron()) {
+        console.debug(
+          JSON.stringify({
+            type: "Notification",
+            data: `${JSON.stringify(jsonData)}`,
+          }),
+        );
+      } else {
+        setMessage(jsonData);
+      }
       const audio = new Audio("alarm.wav"); // public 폴더 내 파일
       audio.play().catch(error => console.error("🔇 알림 소리 재생 실패:", error));
     });
