@@ -6,13 +6,13 @@ import { useRecoilValue } from "recoil";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import { userState } from "@libraries/recoil";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import Cookies from "js-cookie";
 
 interface AccountActiveModalProps extends CMModalProps {
   onConfirm: () => void;
 }
 
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 export default function AccountActiveModal({
   onClose,
   onConfirm,

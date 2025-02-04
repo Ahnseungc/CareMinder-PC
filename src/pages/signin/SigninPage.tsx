@@ -13,25 +13,6 @@ export default function SigninPage() {
   const navigate = useNavigate();
   const [isCheck, setIsCheck] = useState(true);
 
-  //electron
-  // const setUserState = useSetRecoilState(userState);
-  // useEffect(() => {
-  //   const handleMessage = (event: MessageEvent) => {
-  //     console.log("Electron 받은 메세지 :", event.data);
-  //     const userInfo = event.data;
-  //     setUserState(userInfo.user);
-  //     if (userInfo.type === "WARD") {
-  //       Cookies.set("accessTokenWard", userInfo.token.accessToken);
-  //       Cookies.set("refreshTokenWard", userInfo.token.refreshToken);
-  //       window.location.reload();
-  //     }
-  //   };
-  //   window.addEventListener("message", handleMessage);
-  //   return () => {
-  //     window.removeEventListener("message", handleMessage);
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (user && accessToken) {
       navigate("/");

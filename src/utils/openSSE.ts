@@ -1,6 +1,7 @@
 import { EventSourcePolyfill, MessageEvent } from "event-source-polyfill";
-import { SEVER_URL } from "@constants/baseUrl"; // Fixed typo in SERVER_URL
 import Cookies from "js-cookie";
+
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export const openSSE = async ({
   checkType,
