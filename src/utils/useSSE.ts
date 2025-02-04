@@ -139,6 +139,7 @@ export function useSSE({ checkType, userType }: { checkType: string; userType: s
     };
 
     // ✅ 이벤트 리스너
+    //@ts-ignore
     eventSource.addEventListener(checkType, (event: MessageEvent) => {
       const jsonData = JSON.parse(event.data);
       console.log("📩 SSE 이벤트 수신:", jsonData);
