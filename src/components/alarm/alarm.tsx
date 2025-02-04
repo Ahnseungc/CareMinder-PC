@@ -1,24 +1,24 @@
 import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { onMessage } from "firebase/messaging";
-import { messaging } from "@components/fcm/initFirebase";
-import alarmSound from "@/assets/audio/alarmEx.mp3";
+// import { onMessage } from "firebase/messaging";
+// import { messaging } from "@components/fcm/initFirebase";
+// import alarmSound from "@/assets/audio/alarmEx.mp3";
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
 import { useSSE } from "@utils/useSSE";
 
-type MessageType = {
-  content: {
-    areaName: string;
-    patientName: string;
-    patientRequestId: number;
-    requestTitle?: string;
-    message?: string;
-    requestContent?: string;
-  };
-  notificationId: string;
-  type: string;
-};
+// type MessageType = {
+//   content: {
+//     areaName: string;
+//     patientName: string;
+//     patientRequestId: number;
+//     requestTitle?: string;
+//     message?: string;
+//     requestContent?: string;
+//   };
+//   notificationId: string;
+//   type: string;
+// };
 export default function Alarm() {
   // const [message, setMessage] = useState<MessageType | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
