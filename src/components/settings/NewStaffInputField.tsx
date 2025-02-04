@@ -12,7 +12,6 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
@@ -27,6 +26,7 @@ const options = [
   { label: "NURSE_ASSISTANT", value: "조무사" },
   { label: "WORKER", value: "직원" },
 ];
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function NewStaffInputField({ field, form }: InputFieldProps) {
   const { data: areaList } = useGetAreaList();

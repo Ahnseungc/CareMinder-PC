@@ -6,10 +6,6 @@ import {
   AdminSigninPage,
   StaffWardInoutManagementPage,
   CompletedRequestsPage,
-  // DietPage,
-  // NoticePage,
-  // PatientManagementPage,
-  // RequestsPage,
   SettingsPage,
   SigninPage,
   StaffNoticeWritePage,
@@ -22,6 +18,7 @@ import AdminCreateWardPage from "@pages/admin/AdminCreateWardPage";
 import AdminWardManagementPage from "@pages/admin/AdminWardManagementPage";
 import AdminStaffManagementPage from "@pages/admin/AdminStaffManagementPage";
 import FindAccountPage from "@pages/find_account/FindAccountPage";
+import AuthenticatedSignIn from "./AuthorizedSignIn";
 
 const routes: RouteObject[] = [
   {
@@ -60,8 +57,13 @@ const routes: RouteObject[] = [
     ],
   },
 
-  { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },
-  { path: RoutePath.Signin, element: <SigninPage /> },
+  {
+    element: <AuthenticatedSignIn />,
+    children: [
+      { path: RoutePath.AdminSignin, element: <AdminSigninPage /> },
+      { path: RoutePath.Signin, element: <SigninPage /> },
+    ],
+  },
   { path: RoutePath.FindAccount, element: <FindAccountPage /> },
   { path: "*", element: <>Not found page</> },
 ];

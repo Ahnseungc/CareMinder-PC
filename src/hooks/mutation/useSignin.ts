@@ -6,16 +6,16 @@ import { useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
 import { UserType } from "@models/user";
-import { SEVER_URL } from "@constants/baseUrl";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
 import { handleAllowNotification } from "@components/fcm/notificationPermission";
 import adminPendingState from "@libraries/recoil/adminPending";
 import wardState from "@libraries/recoil/ward";
 import accountActiveState from "@libraries/recoil/accountActive";
 
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
+
 const signin = async (useInfo: SigninFormData) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
-
   if (res.data.currentUser) {
     const userType: UserType = res.data.currentUser.role;
     switch (userType) {

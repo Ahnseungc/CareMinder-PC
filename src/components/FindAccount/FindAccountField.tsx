@@ -14,7 +14,6 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import useTimer from "@utils/useTimer";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import { FindAccount, FindAccountFieldType } from "@pages/find_account/FindAccountPage";
 import { SwitchCase } from "@toss/react";
 
@@ -25,6 +24,8 @@ type FindAccountProps = {
 };
 
 const INITIAL_TIMER_SECONDS = 180; // 인증번호 타이머
+
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function FindAccountField({ field, form, type }: FindAccountProps) {
   const { name, label, placeholder } = field;

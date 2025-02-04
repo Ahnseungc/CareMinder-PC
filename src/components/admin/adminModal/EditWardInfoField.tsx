@@ -5,7 +5,6 @@ import { FormControl, FormHelperText, InputLabel, TextField } from "@mui/materia
 import { useEffect, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { wardNameCheckState } from "@libraries/recoil/idDoubleCheck";
@@ -69,7 +68,7 @@ export default function EditWardInfoField({ field, form, wardData }: InputFieldP
     } else {
       try {
         setWardNameDoubleCheck(true);
-        const res = await axios.get(`${SEVER_URL}/wards/check-ward-name`, {
+        const res = await axios.get(`${process.env.SERVER_URL}/wards/check-ward-name`, {
           headers: {
             Authorization: `Bearer ${Cookies.get("accessTokenAdmin")}`,
           },
