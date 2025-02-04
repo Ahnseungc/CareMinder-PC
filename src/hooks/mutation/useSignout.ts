@@ -18,6 +18,12 @@ const signOut = async (type: UserType) => {
     console.log("병동" + token);
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");
+    console.debug(
+      JSON.stringify({
+        type: "sendAuth",
+        action: "logoutWard",
+      }),
+    );
   }
   if (type === "STAFF") {
     token = Cookies.get("accessTokenStaff");
