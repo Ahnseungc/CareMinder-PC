@@ -1,6 +1,6 @@
 import { userState } from "@libraries/recoil";
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import Cookies from "js-cookie";
 import { Box, CircularProgress } from "@mui/material";
@@ -11,7 +11,7 @@ const AuthenticatedSignIn = () => {
   const setUserState = useSetRecoilState(userState);
   const setWardState = useSetRecoilState(wardState);
   const [isChecking, setIsChecking] = useState(true);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     console.log(isElectron());
