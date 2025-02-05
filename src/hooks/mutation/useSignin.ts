@@ -2,10 +2,10 @@ import { SigninFormData } from "@models/signin";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
-import { UserType } from "@models/user";
+import { User, UserType } from "@models/user";
 import reqChangePWState from "@libraries/recoil/reqChangePW";
 import { handleAllowNotification } from "@components/fcm/notificationPermission";
 import adminPendingState from "@libraries/recoil/adminPending";
@@ -14,7 +14,7 @@ import accountActiveState from "@libraries/recoil/accountActive";
 
 const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
-const signin = async (useInfo: SigninFormData) => {
+const signin = async (useInfo: SigninFormData, currentUserState: User) => {
   const res = await axios.post(`${SEVER_URL}/users/login`, useInfo);
   if (res.data.currentUser) {
     const userType: UserType = res.data.currentUser.role;
@@ -24,6 +24,19 @@ const signin = async (useInfo: SigninFormData) => {
         Cookies.set("refreshTokenAdmin", res.data.jwtResponse.refreshToken);
         break;
       case "STAFF":
+        if (currentUserState?.type === "STAFF") {
+          const accessTokenStaff = Cookies.get("accessTokenStaff");
+          const res = await axios.post(
+            `${SEVER_URL}/users/logout`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${accessTokenStaff}`,
+              },
+            },
+          );
+          console.log("로그아웃 성공", res);
+        }
         Cookies.set("accessTokenStaff", res.data.jwtResponse.accessToken);
         Cookies.set("refreshTokenStaff", res.data.jwtResponse.refreshToken);
         break;
@@ -38,6 +51,7 @@ const signin = async (useInfo: SigninFormData) => {
 
 export default function useSignin() {
   const navigate = useNavigate();
+  const currentUserState = useRecoilValue(userState);
   const setUserState = useSetRecoilState(userState);
   const setWardState = useSetRecoilState(wardState);
   const setAccountActiveState = useSetRecoilState(accountActiveState);
@@ -47,7 +61,7 @@ export default function useSignin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: signin,
+    mutationFn: (userInfo: SigninFormData) => signin(userInfo, currentUserState as User),
     onSuccess: res => {
       queryClient.invalidateQueries({ queryKey: ["useGetWardPatientPending"] });
       console.log("로그인 성공");
