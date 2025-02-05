@@ -1,6 +1,6 @@
 import { userState } from "@libraries/recoil";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import Cookies from "js-cookie";
 import { Box, CircularProgress } from "@mui/material";
@@ -11,18 +11,30 @@ const AuthenticatedSignIn = () => {
   const setUserState = useSetRecoilState(userState);
   const setWardState = useSetRecoilState(wardState);
   const [isChecking, setIsChecking] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(isElectron());
     if (isElectron()) {
       const handleMessage = (event: MessageEvent) => {
         console.log("Electron 받은 메세지 :", event.data);
         const userInfo = event.data;
-        setUserState(userInfo.user);
-        setWardState(userInfo.wardState);
         if (userInfo.type === "WARD") {
+          setUserState(userInfo.user);
+          setWardState(userInfo.wardState);
           Promise.all([
             Cookies.set("accessTokenWard", userInfo.token.accessToken),
             Cookies.set("refreshTokenWard", userInfo.token.refreshToken),
+          ]).then(() => {
+            setIsChecking(false);
+          });
+        }
+        if (userInfo.type === "ADMIN") {
+          console.log("관리자 로그인");
+          setUserState(userInfo.user);
+          Promise.all([
+            Cookies.set("accessTokenAdmin", userInfo.token.accessToken),
+            Cookies.set("refreshTokenAdmin", userInfo.token.refreshToken),
           ]).then(() => {
             setIsChecking(false);
           });

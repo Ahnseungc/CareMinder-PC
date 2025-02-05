@@ -2,6 +2,7 @@ import { Thumbnail, SigninLayout } from "@components/signin";
 import { userState } from "@libraries/recoil";
 import { Box, CircularProgress, Grid, Link } from "@mui/material";
 import RoutePath from "@routes/routePath";
+import { isElectron } from "@utils/isElectron";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,14 +11,24 @@ import { useRecoilValue } from "recoil";
 export default function SigninPage() {
   const user = useRecoilValue(userState);
   const accessToken = Cookies.get("accessTokenWard");
+  const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const navigate = useNavigate();
   const [isCheck, setIsCheck] = useState(true);
 
   useEffect(() => {
-    if (user && accessToken) {
-      navigate("/");
+    if (isElectron()) {
+      if (accessTokenAdmin && user?.type === "ADMIN") {
+        navigate("/sign-in/admin");
+      }
+      if (accessToken && user?.type === "WARD") {
+        navigate("/");
+      }
     } else {
-      setIsCheck(false); // 확인 완료 시 로딩 종료
+      if (user && accessToken) {
+        navigate("/");
+      } else {
+        setIsCheck(false);
+      }
     }
   }, []);
   if (isCheck) {
