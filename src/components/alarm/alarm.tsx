@@ -1,25 +1,16 @@
 import { styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { onMessage } from "firebase/messaging";
-import { messaging } from "@components/fcm/initFirebase";
-import alarmSound from "@/assets/audio/alarmEx.mp3";
+import { useRecoilValue } from "recoil";
+import { userState } from "@libraries/recoil";
+import { useSSE } from "@utils/useSSE";
 
-type MessageType = {
-  content: {
-    areaName: string;
-    patientName: string;
-    patientRequestId: number;
-    requestTitle?: string;
-    message?: string;
-    requestContent?: string;
-  };
-  notificationId: string;
-  type: string;
-};
 export default function Alarm() {
-  const [message, setMessage] = useState<MessageType | undefined>(undefined);
   const [isOpen, setIsOpen] = useState<boolean | undefined>(undefined);
-  let audio = new Audio(alarmSound);
+  const userType = useRecoilValue(userState)?.type;
+  const { message, isConnected } = useSSE({
+    checkType: "notification",
+    userType: userType as string,
+  });
 
   const NURSE = {
     dark: "#04B300",
@@ -27,26 +18,17 @@ export default function Alarm() {
   };
 
   useEffect(() => {
-    onMessage(messaging, payload => {
-      setMessage(JSON.parse(payload!.data!.data));
-      audio.play();
+    if (isConnected) {
       setIsOpen(true);
-
       const slideOutTimer = setTimeout(() => {
         setIsOpen(false);
-
-        const clearNoticeTimer = setTimeout(() => {
-          setMessage(undefined);
-        }, 500);
-        return () => clearTimeout(clearNoticeTimer);
       }, 5000);
 
       return () => clearTimeout(slideOutTimer);
-    });
-  }, []);
+    }
+  }, [message]);
 
   if (isOpen === undefined) return <></>;
-  // if (isOpen === false) return <></>;
 
   if (message?.content.message)
     return (

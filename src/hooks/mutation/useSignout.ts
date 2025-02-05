@@ -5,11 +5,11 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { userState } from "@libraries/recoil";
 import { UserType } from "@models/user";
 import { useNavigate } from "react-router-dom";
-import { SEVER_URL } from "@constants/baseUrl";
 import autoCompleteIdState from "@libraries/recoil/autoCompleteId";
 import { logoutServiceWorker } from "@components/fcm/serviceWorker";
 import wardState from "@libraries/recoil/ward";
 
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 const signOut = async (type: UserType) => {
   let token;
 
@@ -18,6 +18,12 @@ const signOut = async (type: UserType) => {
     console.log("병동" + token);
     Cookies.set("accessTokenWard", "");
     Cookies.set("refreshTokenWard", "");
+    console.debug(
+      JSON.stringify({
+        type: "sendAuth",
+        action: "logoutWard",
+      }),
+    );
   }
   if (type === "STAFF") {
     token = Cookies.get("accessTokenStaff");

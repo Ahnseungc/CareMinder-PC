@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 // import axiosInstance from "@utils/axios/axiosInstance";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import { useState } from "react";
 // import { validateBusinessNumber } from "@utils/signin";
 import { Controller, UseFormReturn } from "react-hook-form";
@@ -29,6 +28,7 @@ import useTimer from "@utils/useTimer";
 type InputFieldProps = { form: UseFormReturn<NewAdminUser>; field: AdminUserField };
 
 const INITIAL_TIMER_SECONDS = 180; // 인증번호 타이머
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function InputField({ field, form }: InputFieldProps) {
   const setDoubleCheck = useSetRecoilState(doubleCheckState);

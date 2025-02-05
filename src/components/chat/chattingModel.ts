@@ -1,4 +1,3 @@
-import { SW_SEVER_URL } from "@constants/baseUrl";
 import { Message } from "@models/staff";
 import { Client, IMessage } from "@stomp/stompjs";
 import axiosInstance from "@utils/axios/axiosInstance";
@@ -6,6 +5,7 @@ import { bottomScroll } from "@utils/homePage";
 import Cookies from "js-cookie";
 
 let Clients: any = null;
+const SW_SEVER_URL = import.meta.env.VITE_SW_SEVER_URL;
 
 export const LoadChatHistory = async (roomId: number) => {
   try {

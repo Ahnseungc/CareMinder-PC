@@ -1,10 +1,11 @@
 import axios, { InternalAxiosRequestConfig, AxiosHeaders, AxiosError } from "axios";
 import Cookies from "js-cookie";
-import { SEVER_URL } from "@/constants/baseUrl";
 
 export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   customHeader?: boolean; // customHeader 속성 추가
 }
+
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 const axiosInstance = axios.create({
   baseURL: SEVER_URL,

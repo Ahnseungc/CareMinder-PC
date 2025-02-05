@@ -17,7 +17,6 @@ import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import axios from "axios";
-import { SEVER_URL } from "@constants/baseUrl";
 import Cookies from "js-cookie";
 import useTimer from "@utils/useTimer";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
@@ -25,6 +24,7 @@ import verifyPhoneState from "@libraries/recoil/verifyPhone";
 type InputFieldProps = { form: UseFormReturn<NewWard>; field: NewWardField };
 
 const INITIAL_TIMER_SECONDS = 180; // 인증번호 타이머
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function NewWardInputField({ field, form }: InputFieldProps) {
   const { name, label, placeholder } = field;
