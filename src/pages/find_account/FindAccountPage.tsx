@@ -12,6 +12,8 @@ import { useSearchParams } from "react-router-dom";
 import FindIdModal from "@components/FindAccount/Modal/findIdModal";
 import FindInputPwModal from "@components/FindAccount/Modal/findInputPwModal";
 import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
+import { SEVER_URL } from "@constants/baseUrl";
+import axios from "axios";
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";
 type FindModalType = "IdModal" | "PwInputModal" | "PwSecondModal" | undefined;
@@ -20,6 +22,7 @@ type Account = "어드민" | "병동" | "스태프";
 export default function FindAccountPage() {
   const [activeTab, setActiveTab] = useState<FindAccountType>("아이디 찾기");
   const [isOpenModal, setIsOpenModal] = useState<FindModalType>(undefined);
+  const [resId, setResId] = useState("");
   const [type, setType] = useState<Account>();
 
   const verifyPhone = useRecoilValue(verifyPhoneState);
@@ -57,9 +60,16 @@ export default function FindAccountPage() {
   const { handleSubmit } = form;
 
   /** api 생성 후  */
-  const onSubmit: SubmitHandler<FindAccount> = data => {
+  const onSubmit: SubmitHandler<FindAccount> = async data => {
     console.log("데이터");
     console.log(data);
+    try {
+      const res = await axios.post(`${SEVER_URL}/users/find-login-id`, data);
+      setResId(res);
+      setIsOpenModal("IdModal");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -115,12 +125,7 @@ export default function FindAccountPage() {
       </CButtonContainer>
       <HelpSection />
       {isOpenModal === "IdModal" && (
-        <FindIdModal
-          onClose={onCloseModal}
-          setActiveTab={setActiveTab}
-          type={type!}
-          id={"careminder"}
-        />
+        <FindIdModal onClose={onCloseModal} setActiveTab={setActiveTab} type={type!} id={resId} />
       )}
       {isOpenModal === "PwInputModal" && (
         <FindInputPwModal
