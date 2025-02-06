@@ -21,7 +21,7 @@ export default function SettingsPage() {
     return () => {
       setIsModalOpen(true);
     };
-  }, []);
+  }, [setIsModalOpen]);
 
   const handleCloseModal = () => {
     setTimeout(() => {

@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/system";
+import styled from "@emotion/styled";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
@@ -24,10 +24,7 @@ import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
 import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
-
-interface SettingButtonProps {
-  isClick?: boolean;
-}
+import { motion } from "framer-motion";
 
 export const StaffAccount = () => {
   const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
@@ -54,20 +51,6 @@ export const StaffAccount = () => {
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
-  const settingRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
-        setIsSetting(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -265,36 +248,40 @@ export const StaffAccount = () => {
             </MainTitleContainer>
 
             <StaffButtonContainer>
-              <div ref={settingRef} style={{ position: "relative" }}>
-                <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
-                  <span>설정</span>
-                  <span style={{ position: "absolute", right: "10px" }}>
-                    <DownArrow style={{ transform: isSetting ? "rotate(180deg)" : "none" }} />
-                  </span>
-                </SettingButton>
-                {isSetting && (
-                  <SettingDropdown>
-                    <div
-                      style={{ padding: "10px", textAlign: "center" }}
-                      onClick={() => {
-                        setIsSetting(false);
-                        openAreaManageModal();
-                      }}
-                    >
-                      구역 관리하기
-                    </div>
-                    <div
-                      style={{ padding: "10px", textAlign: "center" }}
-                      onClick={() => {
-                        setIsSetting(false);
-                        openTOSModal();
-                      }}
-                    >
-                      스태프 계정 생성하기
-                    </div>
-                  </SettingDropdown>
-                )}
-              </div>
+              <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
+                <span>설정</span>
+                <motion.span
+                  initial={{ rotate: 0 }}
+                  animate={{ rotate: isSetting ? "180deg" : 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ position: "absolute", right: "10px" }}
+                >
+                  <DownArrow />
+                </motion.span>
+              </SettingButton>
+              <SettingDropdown
+                initial={{ opacity: 0, translateY: "-10px" }}
+                animate={{ opacity: isSetting ? 1 : 0, translateY: isSetting ? 0 : -10 }}
+              >
+                <div
+                  style={{ padding: "10px", textAlign: "center" }}
+                  onClick={() => {
+                    setIsSetting(false);
+                    openAreaManageModal();
+                  }}
+                >
+                  구역 관리하기
+                </div>
+                <div
+                  style={{ padding: "10px", textAlign: "center" }}
+                  onClick={() => {
+                    setIsSetting(false);
+                    openTOSModal();
+                  }}
+                >
+                  스태프 계정 생성하기
+                </div>
+              </SettingDropdown>
             </StaffButtonContainer>
           </TextContainer>
         )}
@@ -310,147 +297,149 @@ export const StaffAccount = () => {
 
 /** styles */
 
-const BodyTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "60px 0 40px 0",
-});
+interface SettingButtonProps {
+  isClick?: boolean;
+}
 
-const StaffButtonContainer = styled(Box)({
-  position: "absolute",
-  right: 10,
-  display: "flex",
-  gap: "20px",
-  width: "146px",
-  zIndex: 10,
-});
+export const BodyTitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60px 0 40px 0;
+`;
 
-const MainTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
+export const TextContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 60px;
+`;
 
-const SearchBarContainer = styled(Box)({
-  position: "absolute",
-  top: "45px",
-  left: "30px",
-});
+export const SearchBarContainer = styled.div`
+  position: absolute;
+  top: -5px;
+`;
 
-const TextContainer = styled(Box)({
-  width: "100%",
-  height: "60px",
-});
+export const MainTitleContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-const Title = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-  textTransform: "uppercase",
-  lineHeight: "24px",
-  letterSpacing: "-3%",
-}));
+export const StaffButtonContainer = styled.div`
+  position: absolute;
+  top: -5px;
+  right: 0;
+  width: 146px;
+  z-index: 10;
+`;
 
-const EditContainer = styled(Box, {
-  shouldForwardProp: prop => !["isSticky", "isVisible"].includes(prop as string),
-})<{ isSticky: boolean; isVisible: boolean }>(({ theme, isSticky, isVisible }) => ({
-  "position": isSticky ? "fixed" : "relative",
-  "top": isSticky ? "70px" : "auto",
-  "minWidth": "827px",
-  "width": isSticky ? "calc(100% - 200px)" : "100%",
-  "display": "flex",
-  "justifyContent": "start",
-  "alignItems": "center",
-  "gap": "20px",
-  "height": "60px",
-  "padding": "15px 12px",
-  "border": "2px solid #5D6DBE",
-  "borderRadius": "100px",
-  "color": theme.palette.text.dark,
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 10,
+export const Title = styled(Typography)`
+  color: #000000;
+  text-transform: uppercase;
+  line-height: 24px;
+  letter-spacing: -3%;
+`;
 
-  "transition": "all 0.3s ease-in-out",
-  "opacity": isVisible ? 1 : 0,
-  "transform": isVisible ? "translateY(0)" : "translateY(-3px)",
-  "visibility": isVisible ? "visible" : "hidden",
-  "animation": isVisible
-    ? "slideDown 0.5s ease-in-out forwards"
-    : "slideUp 0.5s ease-in-out forwards",
-  "@keyframes slideDown": {
-    "0%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-  },
-  "@keyframes slideUp": {
-    "0%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "hidden",
-    },
-  },
-}));
+export const EditContainer = styled.div<{ isSticky: boolean; isVisible: boolean }>`
+  position: ${props => (props.isSticky ? "fixed" : "relative")};
+  top: ${props => (props.isSticky ? "70px" : "auto")};
+  min-width: 827px;
+  width: ${props => (props.isSticky ? "calc(100% - 200px)" : "100%")};
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 20px;
+  height: 60px;
+  padding: 15px 12px;
+  border: 2px solid #5d6dbe;
+  border-radius: 100px;
+  color: #000000;
+  background-color: #ffffff;
+  z-index: 10;
 
-const EditMenuText = styled(Typography)({
-  textDecoration: "none",
-  marginRight: "30px",
-});
+  transition: all 0.3s ease-in-out;
+  opacity: ${props => (props.isVisible ? 1 : 0)};
+  transform: ${props => (props.isVisible ? "translateY(0)" : "translateY(-3px)")};
+  visibility: ${props => (props.isVisible ? "visible" : "hidden")};
+  animation: ${props =>
+    props.isVisible ? "slideDown 0.5s ease-in-out forwards" : "slideUp 0.5s ease-in-out forwards"};
 
-const EditMenuBox = styled(Box)({
-  color: "#21262B",
-  display: "flex",
-  gap: "20px",
-  cursor: "pointer",
-});
+  @keyframes slideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-3px);
+      visibility: visible;
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+  }
 
-const SettingButton = styled(Box, {
-  shouldForwardProp: prop => prop !== "isClick",
-})<SettingButtonProps>(({ isClick }) => ({
-  "position": "relative",
-  "display": "flex",
-  "justifyContent": "center",
-  "alignItems": "center",
-  "cursor": "pointer",
-  "width": "148px",
-  "height": "36px",
-  "border": "1px solid #5D6DBE",
-  "borderRadius": isClick ? "5px 5px 0 0" : "5px",
-  "color": "#5D6DBE",
-  "fontWeight": 700,
-  "fontSize": "16px",
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 21,
-  "&:hover": {
-    backgroundColor: "#F5F6FF",
-  },
-}));
+  @keyframes slideUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-3px);
+      visibility: hidden;
+    }
+  }
+`;
 
-const SettingDropdown = styled(Box)({
-  "position": "absolute",
-  "top": "100%",
-  "right": 0,
-  "width": "148px",
-  "backgroundColor": "#FFFFFF",
-  "border": "1px solid #5D6DBE",
-  "borderTop": "none",
-  "borderBottomLeftRadius": "5px",
-  "borderBottomRightRadius": "5px",
-  "boxShadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
-  "& > div": {
-    "cursor": "pointer",
-    "&:hover": {
-      backgroundColor: "#F5F6FF",
-    },
-  },
-});
+export const EditMenuText = styled(Typography)`
+  text-decoration: none;
+  margin-right: 30px;
+`;
+
+export const EditMenuBox = styled.div`
+  color: #21262b;
+  display: flex;
+  gap: 20px;
+  cursor: pointer;
+`;
+
+export const SettingButton = styled.div<SettingButtonProps>`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 148px;
+  height: 36px;
+  border: 1px solid #5d6dbe;
+  border-radius: ${props => (props.isClick ? "5px 5px 0 0" : "5px")};
+  color: #5d6dbe;
+  font-weight: 700;
+  font-size: 16px;
+  background-color: #ffffff;
+  z-index: 21;
+
+  &:hover {
+    background-color: #f5f6ff;
+  }
+`;
+
+export const SettingDropdown = styled(motion.div)`
+  position: absolute;
+
+  width: 148px;
+  background-color: #ffffff;
+  border: 1px solid #5d6dbe;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  & > div {
+    cursor: pointer;
+    &:hover {
+      background-color: #f5f6ff;
+    }
+  }
+`;
