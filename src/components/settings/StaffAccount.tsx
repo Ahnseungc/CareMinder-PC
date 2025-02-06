@@ -19,7 +19,7 @@ import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+// import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
@@ -37,13 +37,13 @@ export const StaffAccount = () => {
 
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
-  const [_, setArea] = useState<string[]>([""]);
+  // const [_, setArea] = useState<string[]>([""]);
   const [isSetting, setIsSetting] = useState<boolean>(false);
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
   const selectStaffList = useRecoilState(staffListState);
 
-  const { data: areaList } = useGetAreaList();
+  // const { data: areaList } = useGetAreaList();
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
@@ -79,11 +79,11 @@ export const StaffAccount = () => {
     }
   }, [isEditing]);
 
-  useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map(item => item.name));
-    }
-  }, [areaList]);
+  // useEffect(() => {
+  //   if (areaList) {
+  //     setArea(areaList.map(item => item.name));
+  //   }
+  // }, [areaList]);
 
   const handleClear = () => {
     setIsEditing([]);
