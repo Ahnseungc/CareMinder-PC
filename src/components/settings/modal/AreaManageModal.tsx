@@ -27,7 +27,9 @@ export default function AreaManageModal({
   const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
 
   const { data: areaList, isLoading: areaListLoading } = useGetAreaList();
-  const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists();
+  const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists({
+    enabled: isAdmin,
+  });
   const { mutate: updateAreaInfo } = useUpdateAreaInfo();
   const { mutate: updateWardAreaLists } = useUpdateWardAreaLists();
 
@@ -43,15 +45,14 @@ export default function AreaManageModal({
     });
   };
 
-  if (!areaList) {
-    return;
-  }
-
-  if (!wardAreaLists) {
-    return;
+  if (!areaList && !wardAreaLists) {
+    return null;
   }
 
   const handleUpdateWardAreaList = () => {
+    if (!wardAreaLists) {
+      return null;
+    }
     if (Object.keys(editedWardNames).length > 0 && areaData.length === 0) {
       const filteredData = wardAreaLists
         .filter(ward => editedWardNames[ward.wardId])

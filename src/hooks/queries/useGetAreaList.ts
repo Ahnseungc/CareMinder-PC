@@ -10,11 +10,11 @@ export type GetAreaListResponse = {
   memo: string;
 };
 
-export type getAreaListRequest = {
+export type GetAreaListRequest = {
   type: string;
 };
 
-export const getAreaList = async ({ type }: getAreaListRequest) => {
+export const getAreaList = async ({ type }: GetAreaListRequest) => {
   if (type === "WARD") {
     const res = await axiosInstance.get("/areas");
     return res.data;
