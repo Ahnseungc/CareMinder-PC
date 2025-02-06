@@ -6,8 +6,9 @@ import CInput from "@components/common/atom/C-Input";
 import { Box, CircularProgress, SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
+import { ReactComponent as Pencil } from "@/assets/pencil.svg";
+import { ReactComponent as HomeIcon } from "@/assets/home.svg";
 import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-icon.svg";
-import CButton from "@components/common/atom/C-Button";
 import { formatDateDash } from "@utils/getDateform";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 //@ts-ignore
@@ -17,10 +18,11 @@ import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
+import { SelectedItem } from "../../../pages/staff/StaffWardInoutManagementPage";
 
 const columnsHeader = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
-  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "11.08%" },
+  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "14.08%" },
   {
     id: 2,
     field: "TableName",
@@ -36,7 +38,8 @@ const columnsHeader = [
     width: "8.54%",
   },
   { id: 4, field: "TableName", headerName: "메모 보기", width: "8.69%" },
-  { id: 5, field: "TableName", headerName: "퇴원 처리 하기", width: "11.14%" },
+  { id: 5, field: "TableName", headerName: "환자 정보 수정하기", width: "8.69%" },
+  { id: 6, field: "TableName", headerName: "퇴원 처리 하기", width: "8.14%" },
 ];
 
 interface AdminTableProps {
@@ -53,6 +56,7 @@ interface AdminTableProps {
   area: Array<string>;
   onDisCharge: (tabletId: number) => void;
   handleMemoModal: (patientId: number, patientName: string) => void;
+  setEditSelectList: (data: SelectedItem[]) => void;
 }
 
 const AdminTable: FC<AdminTableProps> = ({
@@ -65,6 +69,7 @@ const AdminTable: FC<AdminTableProps> = ({
   areaList,
   area,
   handleMemoModal,
+  setEditSelectList,
 }) => {
   const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { mutate: changeTabletInfo } = useChangeTabletInfo();
@@ -202,7 +207,7 @@ const AdminTable: FC<AdminTableProps> = ({
             {tabletData?.map(tablet => {
               return (
                 <InoutTableBodyTr
-                  key={tablet.serialNumber || tablet.tabletId}
+                  key={tablet.tabletId}
                   isSelected={selected?.some(item => item.id === tablet.tabletId)}
                 >
                   <InoutTableBodyTd width="1.62%">
@@ -261,14 +266,24 @@ const AdminTable: FC<AdminTableProps> = ({
                     />
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[5].width}>
-                    <CButton
-                      buttontype={"impactRed"}
+                    <Pencil
+                      onClick={() => {
+                        setEditSelectList([
+                          {
+                            id: tablet.tabletId,
+                            name: tablet.patientName,
+                            areaName: tablet.areaName,
+                          },
+                        ]);
+                      }}
+                    />
+                  </InoutTableBodyTd>
+                  <InoutTableBodyTd width={columnsHeader[6].width}>
+                    <HomeIcon
                       onClick={() => {
                         onDisCharge(tablet.tabletId);
                       }}
-                    >
-                      환자 퇴원 처리
-                    </CButton>
+                    />
                   </InoutTableBodyTd>
                 </InoutTableBodyTr>
               );
@@ -303,13 +318,15 @@ const StTable = styled.table`
   }
 `;
 
-export const ComBoxLayout = styled.div<{ width: string }>`
+export const ComBoxLayout = styled.div<{ width?: string; border?: true }>`
   width: ${props => props.width || "100%"};
   height: 36px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   gap: 13px;
+  border: ${props => props.border && "1px solid rgb(212, 213, 218)"};
+  border-radius: 8px;
 `;
 
 const InoutTableHedaerTr = styled.tr`
