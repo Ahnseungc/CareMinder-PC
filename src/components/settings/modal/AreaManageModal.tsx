@@ -26,7 +26,9 @@ export default function AreaManageModal({
   const [areaData, setAreaData] = useState<AreaInfo[]>([]);
   const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
 
-  const { data: areaList, isLoading: areaListLoading } = useGetAreaList();
+  const { data: areaList, isLoading: areaListLoading } = useGetAreaList({
+    enabled: !isAdmin,
+  });
   const { data: wardAreaLists, isLoading: wardAreaListsLoading } = useGetWardAreaLists({
     enabled: isAdmin,
   });
@@ -44,10 +46,6 @@ export default function AreaManageModal({
       },
     });
   };
-
-  if (!areaList && !wardAreaLists) {
-    return null;
-  }
 
   const handleUpdateWardAreaList = () => {
     if (!wardAreaLists) {
@@ -113,6 +111,15 @@ export default function AreaManageModal({
     );
   };
 
+  if (!isAdmin && !areaList) {
+    return null;
+  }
+  if (isAdmin && !wardAreaLists) {
+    return null;
+  }
+
+  const tableData = isAdmin ? wardAreaLists : areaList;
+
   return (
     <CMModal
       maxWidth="xl"
@@ -121,6 +128,7 @@ export default function AreaManageModal({
         onClose();
         setEditedWardNames({});
       }}
+      sx={{ maxHeight: "80%", margin: "auto" }}
       footer={
         <>
           <ModalActionButton
@@ -161,11 +169,14 @@ export default function AreaManageModal({
           <br />
           해당 메모는 현 팝업(구역 관리하기)에서만 확인이 가능합니다.
         </Typography>
-        <AreaManageTable
-          onUpdate={setAreaData}
-          areaList={isAdmin ? wardAreaLists : areaList}
-          isLoading={isAdmin ? wardAreaListsLoading : areaListLoading}
-        />
+        {tableData && (
+          <AreaManageTable
+            onUpdate={setAreaData}
+            areaList={tableData}
+            isLoading={isAdmin ? wardAreaListsLoading : areaListLoading}
+            isAdmin={isAdmin}
+          />
+        )}
       </ContentWrapper>
     </CMModal>
   );

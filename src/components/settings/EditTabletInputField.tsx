@@ -1,10 +1,19 @@
 import { Controller, UseFormReturn } from "react-hook-form";
 import { EditTablet, EditTabletField } from "./modal/EditTabletInfoModal";
-import { Box, FormControl, FormHelperText, InputLabel, styled, TextField } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  styled,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { useEffect, useState } from "react";
 import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
+import palette from "@styles/palette";
 
 type InputFieldProps = {
   form: UseFormReturn<EditTablet>;
@@ -76,7 +85,15 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
         },
       }}
     >
-      <InputLabel htmlFor={name} required>
+      <InputLabel
+        htmlFor={name}
+        required
+        sx={{
+          marginTop: field.name === "patientName" ? "28px" : 0,
+          fontWeight: 600,
+          fontSize: "14px",
+        }}
+      >
         {label}
       </InputLabel>
       <Controller
@@ -93,6 +110,9 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
                   value={area}
                   onChange={handleChangeArea}
                 />
+                <Typography variant="body2" color={palette.primary.main} sx={{ marginTop: "8px" }}>
+                  간호사가 진행 중인 요청은 수정과 상관 없이 유지됩니다.
+                </Typography>
               </CComboBoxLayout>
             ) : (
               <TextField
@@ -100,6 +120,7 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
                 id={name}
                 placeholder={placeholder}
                 value={field.name === "patientName" ? patientName : tabletName}
+                disabled={field.name === "patientName"}
                 onChange={e => handleChangeName(e, field.name)}
                 error={Boolean(errors[name])}
               />

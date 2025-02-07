@@ -27,10 +27,13 @@ export const getAreaList = async ({ type }: GetAreaListRequest) => {
   }
 };
 
-export const useGetAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
+export const useGetAreaList = (options?: {
+  enabled?: boolean;
+}): UseQueryResult<GetAreaListResponse[], AxiosError> => {
   return useQuery<GetAreaListResponse[], AxiosError>({
     queryKey: ["areaList"],
     queryFn: () => getAreaList({ type: "WARD" }),
+    enabled: options?.enabled,
   });
 };
 

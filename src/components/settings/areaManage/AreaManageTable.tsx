@@ -20,6 +20,7 @@ interface AreaManageTableProps {
   onUpdate: React.Dispatch<SetStateAction<AreaInfo[]>>;
   areaList: GetAreaListResponse[] | GetWardAreaListsResponse[];
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 type EditedFields = {
@@ -39,8 +40,13 @@ export function isAreasType(row: GetAreaListResponse | AreasType): row is AreasT
   return "areaId" in row;
 }
 
-export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaManageTableProps) {
-  const { data: wardInfo, isLoading: isGetWardInfoLoading } = useGetWardInfo();
+export default function AreaManageTable({
+  onUpdate,
+  areaList,
+  isLoading,
+  isAdmin,
+}: AreaManageTableProps) {
+  const { data: wardInfo, isLoading: isGetWardInfoLoading } = useGetWardInfo({ enabled: !isAdmin });
   const [isAllList, setIsAllList] = useState<boolean>(false);
 
   useEffect(() => {
@@ -188,8 +194,10 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
     openDeleteModal();
   };
 
-  if (!wardInfo) {
-    return;
+  if (!isAdmin) {
+    if (!wardInfo) {
+      return;
+    }
   }
 
   if (areaList && isLoading && wardInfo && isGetWardInfoLoading) {
@@ -216,7 +224,7 @@ export default function AreaManageTable({ onUpdate, areaList, isLoading }: AreaM
       />
       {!isAllList ? (
         <>
-          <TableHeader isAdmin={false}>{wardInfo.wardName}</TableHeader>
+          {wardInfo && <TableHeader isAdmin={false}>{wardInfo.wardName}</TableHeader>}
           <TableWrapper isAdmin={false}>
             <Table>
               <tbody>

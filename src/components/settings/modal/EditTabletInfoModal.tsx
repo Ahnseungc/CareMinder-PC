@@ -1,17 +1,28 @@
-import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Stack } from "@mui/material";
+import styled from "@emotion/styled";
 import EditTabletInputField from "../EditTabletInputField";
 import useUpdateTabletInfo from "@hooks/mutation/useUpdateTabletInfo";
-import { useRecoilValue } from "recoil";
 import tabletListState from "@libraries/recoil/settings/tabletList";
+import palette from "@styles/palette";
+import CSwitch from "@components/common/atom/C-Switch";
+
+import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Divider, Stack, Typography } from "@mui/material";
+import { useRecoilValue } from "recoil";
 import { toast } from "react-toastify";
 import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
+
+import TabletSelect from "../tabletManage/TabletSelect";
+import TabletTimeInput from "../tabletManage/TabletTimeInput";
+import { useState } from "react";
 
 interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;
   tabletData: WardTabledListType | null;
 }
+
+const TABLET_STATUS = ["강제종료", "요청만 가능", "전체가능"];
+const LIMIT_SETTING = ["강제종료", "요청만 가능"];
 
 export default function EditTableInfoModal({
   onClose,
@@ -20,6 +31,12 @@ export default function EditTableInfoModal({
   ...props
 }: EditTabletInfoModalProps) {
   const isSelectedTablet = useRecoilValue(tabletListState);
+  const [switchState, setSwitchState] = useState<boolean>(false);
+
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSwitchState(event.target.checked);
+  };
+
   const form = useForm<EditTablet>({
     defaultValues: {
       area: 0,
@@ -61,7 +78,14 @@ export default function EditTableInfoModal({
           reset();
         }}
         maxWidth="sm"
-        title={"태블릿 병상 정보 수정하기"}
+        sx={{
+          "height": "80%",
+          "margin": "auto",
+          "& .MuiDialog-paper": {
+            overflowY: "hidden",
+          },
+        }}
+        title={"태블릿 관리"}
         footer={
           <>
             <ModalActionButton
@@ -77,7 +101,7 @@ export default function EditTableInfoModal({
           </>
         }
       >
-        <Stack gap={"24px"} sx={{ margin: "20px 88px" }}>
+        <Stack gap={"20px"} sx={{ margin: "20px 88px" }}>
           {fields.map(field => (
             <EditTabletInputField
               key={field.name}
@@ -86,6 +110,44 @@ export default function EditTableInfoModal({
               tabletData={tabletData}
             />
           ))}
+
+          <Divider component="div" sx={{ marginTop: "10px", marginBottom: "10px" }} />
+
+          <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
+            태블릿 상태
+          </Typography>
+
+          <TabletSelect option={TABLET_STATUS} />
+
+          <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
+            수면제한
+          </Typography>
+
+          <SleepModeContainer>
+            <SleepControlBox>
+              <SleepMenuText>사용</SleepMenuText>
+              <CSwitch checked={switchState} onChange={handleSwitchChange} onText="" offText="" />
+            </SleepControlBox>
+
+            {switchState && (
+              <>
+                <SleepControlBox>
+                  <SleepMenuText>시작 시간</SleepMenuText>
+                  <TabletTimeInput />
+                </SleepControlBox>
+                <SleepControlBox>
+                  <SleepMenuText>종료 시간</SleepMenuText>
+                  <TabletTimeInput />
+                </SleepControlBox>
+                <SleepControlBox>
+                  <SleepMenuText>제한 설정</SleepMenuText>
+                  <div style={{ width: "300px", height: "40px" }}>
+                    <TabletSelect option={LIMIT_SETTING} />
+                  </div>
+                </SleepControlBox>
+              </>
+            )}
+          </SleepModeContainer>
         </Stack>
       </CMModal>
     </>
@@ -95,9 +157,9 @@ export default function EditTableInfoModal({
 /** utils */
 
 export type EditTablet = {
+  tabletName: string;
   area: number;
   patientName: string;
-  tabletName: string;
 };
 
 export type EditTabletField = {
@@ -107,7 +169,29 @@ export type EditTabletField = {
 };
 
 const fields: EditTabletField[] = [
+  { name: "tabletName", label: "태블릿 이름", placeholder: "태블릿 이름을 입력해주세요." },
   { name: "area", label: "구역", placeholder: "구역 정보를 입력해주세요." },
   { name: "patientName", label: "환자 이름", placeholder: "환자 이름을 입력해주세요." },
-  { name: "tabletName", label: "태블릿 이름", placeholder: "태블릿 이름을 입력해주세요." },
 ];
+
+/** styles */
+
+const SleepModeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 66px;
+`;
+
+const SleepControlBox = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const SleepMenuText = styled.p`
+  width: 64px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #949599;
+`;
