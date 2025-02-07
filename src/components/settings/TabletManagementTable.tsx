@@ -253,10 +253,18 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                     </td>
                     <td>
                       <ShortComBoxLayout>
-                        <Leave
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleTabletLogout(row.tabletId)}
-                        />
+                        <span
+                          style={{
+                            color: row.patientName
+                              ? `${palette.primary.main}`
+                              : `${palette.action.disabled}`,
+                          }}
+                        >
+                          <Leave
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleTabletLogout(row.tabletId)}
+                          />
+                        </span>
                       </ShortComBoxLayout>
                     </td>
                   </StyledTr>

@@ -14,7 +14,7 @@ import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 
 import TabletSelect from "../tabletManage/TabletSelect";
 import TabletTimeInput from "../tabletManage/TabletTimeInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;
@@ -101,6 +101,15 @@ export default function EditTableInfoModal({
           </>
         }
       >
+        {isSelectedTablet.length > 1 && (
+          <Typography
+            variant="body2"
+            sx={{ textAlign: "center", color: `${palette.primary.main}`, fontWeight: 600 }}
+          >
+            {isSelectedTablet.length}명 선택됨
+          </Typography>
+        )}
+
         <Stack gap={"20px"} sx={{ margin: "20px 88px" }}>
           {fields.map(field => (
             <EditTabletInputField

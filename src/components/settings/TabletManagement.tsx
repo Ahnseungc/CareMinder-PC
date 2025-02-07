@@ -6,7 +6,6 @@ import { useBooleanState } from "@toss/react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { ReactComponent as X } from "@/assets/x-Icon.svg";
-import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 
@@ -15,6 +14,7 @@ import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 import InfoModal from "./modal/InfoModal";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
+import palette from "@styles/palette";
 
 //태블릿 병상 관리
 
@@ -99,7 +99,7 @@ export const TabletManagement = () => {
               <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
               <EditMenuBox>
                 <Edit onClick={openTabletEditModal} />
-                <Leave onClick={openLogoutModal} />
+                <LogoutButton onClick={openLogoutModal}>환자로그아웃</LogoutButton>
               </EditMenuBox>
             </EditContainer>
           ) : (
@@ -197,10 +197,23 @@ const EditMenuText = styled(Typography)`
 `;
 
 const EditMenuBox = styled.div`
-  color: #21262b;
+  color: ${palette.primary.main};
   display: flex;
+  align-items: center;
   gap: 20px;
   cursor: pointer;
+`;
+
+const LogoutButton = styled.div`
+  padding: 8px 20px;
+  border-radius: 100px;
+  background-color: ${palette.primary.main};
+  color: ${palette.secondary.contrastText};
+  font-weight: 700;
+  &:hover {
+    opacity: 0.9;
+    transition: ease-in 0.2s;
+  }
 `;
 
 const MainTitleContainer = styled.div`
