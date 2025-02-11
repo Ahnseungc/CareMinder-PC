@@ -74,6 +74,7 @@ export default function FindAccountPage() {
         });
         setResId(res.data);
         setIsOpenModal("IdModal");
+        form.reset();
       } catch (error) {
         console.log(error);
       }
