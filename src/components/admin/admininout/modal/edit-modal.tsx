@@ -1,14 +1,25 @@
-import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
+import { CMModal, ModalActionButton } from "@components/common";
 import { styled, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ComBoxLayout } from "../adminTable";
+import { ReactComponent as GrayCalendar } from "@assets/calendar/calendar-gray.svg";
+
+import CustomEditCalendar from "./edit-calendar";
+import { useState } from "react";
+import { formatDate } from "@utils/getDateform";
+
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: any) => {
-  const queryClient = useQueryClient();
+  const [isOpenCalendar, setIsOpenCalendar] = useState(false);
+  const [selectCalendar, setSelectCalendar] = useState<Value>(new Date());
   const data = isGroup ? selectList : editSelectList;
   const pickLength = data.length;
+
+  console.log(editSelectList);
 
   return (
     <CMModal
@@ -44,7 +55,7 @@ const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: a
           <Text>이름</Text>
           <TextField
             placeholder={"이름"}
-            value={""}
+            value={editSelectList.length === 1 ? editSelectList[0].name : "2명 이상 선택중"}
             onChange={() => null}
             sx={{
               "& .MuiInputBase-root": { height: "40px", borderRadius: "6px", marginBottom: "28px" },
@@ -71,14 +82,16 @@ const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: a
             }}
           />
           <Text>입원 일자</Text>
-          <TextField
-            placeholder={"입원 일자"}
-            value={""}
-            onChange={() => null}
-            sx={{
-              "& .MuiInputBase-root": { height: "40px", borderRadius: "6px", marginBottom: "28px" },
-            }}
-          />
+          <CalendarField>
+            {selectCalendar instanceof Date && formatDate(selectCalendar)}
+            <GrayCalendar
+              style={{ cursor: "pointer" }}
+              onClick={() => setIsOpenCalendar(prev => !prev)}
+            />
+          </CalendarField>
+          {isOpenCalendar && (
+            <CustomEditCalendar value={selectCalendar} setState={setSelectCalendar} />
+          )}
         </Box>
       </View>
     </CMModal>
@@ -99,10 +112,24 @@ const View = styled(Box)(() => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  position: "relative",
 }));
 const GroupSelect = styled(Box)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontWeight: "600",
+}));
+
+const CalendarField = styled("div")(({ theme }) => ({
+  position: "relative",
+  width: "100%",
+  height: "40px",
+  borderRadius: "6px",
+  marginBottom: "28px",
+  display: "flex",
+  alignItems: "center",
+  padding: "0 20px",
+  justifyContent: "space-between",
+  border: `1px solid ${theme.palette.action.disabled}`,
 }));
 
 export default EditModal;
