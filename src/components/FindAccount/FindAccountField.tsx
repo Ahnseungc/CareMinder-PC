@@ -97,6 +97,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
   const verifyPhoneNumber = async () => {
     const inputName = getValues("name");
     const phoneNumber = getValues("phoneNumber");
+    const loginId = getValues("id");
 
     if (!inputName) {
       form.setError("name", {
@@ -125,11 +126,20 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     try {
       resetTimer();
       const _phoneNumber = phoneNumber.replace(/-/g, "");
-      const res = await axios.post(`${SEVER_URL}/sms/send-find-id`, {
-        phoneNumber: _phoneNumber,
-        accountType: userType,
-        name: inputName,
-      });
+      const res =
+        type === "id"
+          ? await axios.post(`${SEVER_URL}/sms/send-find-id`, {
+              phoneNumber: _phoneNumber,
+              accountType: userType,
+              name: inputName,
+            })
+          : await axios.post(`${SEVER_URL}/sms/send-find-pw`, {
+              phoneNumber: _phoneNumber,
+              accountType: userType,
+              name: inputName,
+              loginId: loginId,
+            });
+
       setShowVerifyCode(true);
       console.log(res.data);
     } catch (err: any) {
@@ -284,6 +294,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
             }}
             onChange={e => setVerifyCode(e.target.value)}
           />
+
           {!verifyPhone && <Timer>{formatTime()}</Timer>}
           <VerifyCodeButtonWrapper>
             <CButton

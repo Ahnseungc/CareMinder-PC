@@ -26,6 +26,12 @@ function FindInputPwModal({ onClose, setActiveTab, type, id, ...props }: ModalPr
     mode: "onChange",
   });
 
+  const { handleSubmit } = form;
+
+  const onSubmit = async (data: any) => {
+    console.log(data);
+  };
+
   const fields: NewPassWordField[] = [
     { name: "password", label: "신규 비밀번호", placeholder: "비밀번호를 입력해주세요." },
     {
@@ -52,7 +58,7 @@ function FindInputPwModal({ onClose, setActiveTab, type, id, ...props }: ModalPr
           >
             취소
           </ModalActionButton>
-          <ModalActionButton onClick={() => null} color={"primary"}>
+          <ModalActionButton onClick={handleSubmit(onSubmit)} color={"primary"}>
             완료하기
           </ModalActionButton>
         </>

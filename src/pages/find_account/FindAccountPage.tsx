@@ -80,15 +80,18 @@ export default function FindAccountPage() {
       }
     }
     if (activeTab === "비밀번호 찾기") {
+      const _phoneNumber = data.phoneNumber.replace(/-/g, "");
       try {
-        const res = await axios.post(`${SEVER_URL}/users/find-login-id`, {
+        const res = await axios.post(`${SEVER_URL}/users/find-password`, {
           name: data.name,
           loginId: data.id,
-          phoneNumber: data.phoneNumber,
+          phoneNumber: _phoneNumber,
           accountType: userType,
         });
-        setResId(res);
-        setIsOpenModal("IdModal");
+
+        console.log(res);
+        // setResId(res);
+        setIsOpenModal("PwInputModal");
       } catch (error) {
         console.log(error);
       }
