@@ -65,13 +65,14 @@ export default function FindAccountPage() {
     console.log("데이터");
     console.log(data);
     if (activeTab === "아이디 찾기") {
+      const _phoneNumber = data.phoneNumber.replace(/-/g, "");
       try {
         const res = await axios.post(`${SEVER_URL}/users/find-login-id`, {
           name: data.name,
-          phoneNumber: data.phoneNumber,
+          phoneNumber: _phoneNumber,
           accountType: userType,
         });
-        setResId(res);
+        setResId(res.data);
         setIsOpenModal("IdModal");
       } catch (error) {
         console.log(error);

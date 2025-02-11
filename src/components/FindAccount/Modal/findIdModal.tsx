@@ -1,5 +1,7 @@
 import { CMModal, ModalActionButton } from "@components/common";
 import styled from "@emotion/styled";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type ModalProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -9,7 +11,22 @@ type ModalProps = {
 };
 
 function FindIdModal({ onClose, setActiveTab, type, id, ...props }: ModalProps) {
-  console.log(props);
+  const navigate = useNavigate();
+  const [prevType, setPrevType] = useState<
+    "/sign-in" | "/sign-in/admin" | "/staff/inout" | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (type === "병동") {
+      setPrevType("/sign-in");
+    } else if (type === "스태프") {
+      setPrevType("/staff/inout");
+    } else {
+      setPrevType("/sign-in/admin");
+    }
+  }, [type]);
+
+  console.log(prevType);
 
   return (
     <CMModal
@@ -28,7 +45,7 @@ function FindIdModal({ onClose, setActiveTab, type, id, ...props }: ModalProps) 
           >
             비밀번호 찾기
           </ModalActionButton>
-          <ModalActionButton onClick={() => null} color={"primary"}>
+          <ModalActionButton onClick={() => navigate(prevType!)} color={"primary"}>
             로그인 하러가기
           </ModalActionButton>
         </>
