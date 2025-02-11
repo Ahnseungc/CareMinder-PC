@@ -23,7 +23,7 @@ import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
 import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const StaffAccount = () => {
   const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
@@ -188,93 +188,105 @@ export const StaffAccount = () => {
       />
 
       <BodyTitleContainer>
-        {isEditing.length !== 0 ? (
-          <EditContainer
-            ref={editContainerRef}
-            isSticky={isSticky}
-            isVisible={isEditing.length !== 0}
-          >
-            <X style={{ cursor: "pointer" }} onClick={handleClear} />
-            <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
-            <EditMenuBox>
-              <Edit
-                onClick={() => {
-                  openPWChangeModal();
-                }}
-              />
-              <Lock onClick={openCheckLockModal} />
-              <UnLock onClick={handleAllUnLock} />
-              <Delete onClick={openInfoModal} />
-            </EditMenuBox>
-          </EditContainer>
-        ) : (
-          <TextContainer>
-            <SearchBarContainer>
-              <Paper
-                component="form"
-                sx={{
-                  p: "2px 4px",
-                  display: "flex",
-                  alignItems: "center",
-                  width: 300,
-                  border: "1px solid #ECECEC",
-                  borderRadius: "6px",
-                  boxShadow: "none",
-                }}
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="검색할 내용을 입력해주세요."
-                  inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+        <AnimatePresence mode="wait">
+          {isEditing.length !== 0 ? (
+            <EditContainer
+              key="edit-container"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              ref={editContainerRef}
+              isSticky={isSticky}
+            >
+              <X style={{ cursor: "pointer" }} onClick={handleClear} />
+              <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+              <EditMenuBox>
+                <Edit
+                  onClick={() => {
+                    openPWChangeModal();
+                  }}
                 />
-                <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                  <Search />
-                </IconButton>
-              </Paper>
-            </SearchBarContainer>
-
-            <MainTitleContainer>
-              <Title variant="h1">스태프 계정 수정</Title>
-            </MainTitleContainer>
-
-            <StaffButtonContainer>
-              <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
-                <span>설정</span>
-                <motion.span
-                  initial={{ rotate: 0 }}
-                  animate={{ rotate: isSetting ? "180deg" : 0 }}
-                  transition={{ duration: 0.25 }}
-                  style={{ position: "absolute", right: "10px" }}
-                >
-                  <DownArrow />
-                </motion.span>
-              </SettingButton>
-              <SettingDropdown
-                initial={{ opacity: 0, translateY: "-10px" }}
-                animate={{ opacity: isSetting ? 1 : 0, translateY: isSetting ? 0 : -10 }}
-              >
-                <div
-                  style={{ padding: "10px", textAlign: "center" }}
-                  onClick={() => {
-                    setIsSetting(false);
-                    openAreaManageModal();
+                <Lock onClick={openCheckLockModal} />
+                <UnLock onClick={handleAllUnLock} />
+                <Delete onClick={openInfoModal} />
+              </EditMenuBox>
+            </EditContainer>
+          ) : (
+            <TextContainer
+              key="text-container"
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <SearchBarContainer>
+                <Paper
+                  component="form"
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: 300,
+                    border: "1px solid #ECECEC",
+                    borderRadius: "6px",
+                    boxShadow: "none",
                   }}
                 >
-                  구역 관리하기
-                </div>
-                <div
-                  style={{ padding: "10px", textAlign: "center" }}
-                  onClick={() => {
-                    setIsSetting(false);
-                    openTOSModal();
-                  }}
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="검색할 내용을 입력해주세요."
+                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                  />
+                  <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                    <Search />
+                  </IconButton>
+                </Paper>
+              </SearchBarContainer>
+
+              <MainTitleContainer>
+                <Title variant="h1">스태프 계정 수정</Title>
+              </MainTitleContainer>
+
+              <StaffButtonContainer>
+                <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
+                  <span>설정</span>
+                  <motion.span
+                    initial={{ rotate: 0 }}
+                    animate={{ rotate: isSetting ? "180deg" : 0 }}
+                    transition={{ duration: 0.25 }}
+                    style={{ position: "absolute", right: "10px" }}
+                  >
+                    <DownArrow />
+                  </motion.span>
+                </SettingButton>
+                <SettingDropdown
+                  initial={{ opacity: 0, translateY: "-10px" }}
+                  animate={{ opacity: isSetting ? 1 : 0, translateY: isSetting ? 0 : -10 }}
                 >
-                  스태프 계정 생성하기
-                </div>
-              </SettingDropdown>
-            </StaffButtonContainer>
-          </TextContainer>
-        )}
+                  <div
+                    style={{ padding: "10px", textAlign: "center" }}
+                    onClick={() => {
+                      setIsSetting(false);
+                      openAreaManageModal();
+                    }}
+                  >
+                    구역 관리하기
+                  </div>
+                  <div
+                    style={{ padding: "10px", textAlign: "center" }}
+                    onClick={() => {
+                      setIsSetting(false);
+                      openTOSModal();
+                    }}
+                  >
+                    스태프 계정 생성하기
+                  </div>
+                </SettingDropdown>
+              </StaffButtonContainer>
+            </TextContainer>
+          )}
+        </AnimatePresence>
       </BodyTitleContainer>
       <StaffAccountSettingsTable
         onManage={handleInfoModal}
@@ -291,32 +303,32 @@ interface SettingButtonProps {
   isClick?: boolean;
 }
 
-export const BodyTitleContainer = styled.div`
+const BodyTitleContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 60px 0 40px 0;
 `;
 
-export const TextContainer = styled.div`
+const TextContainer = styled(motion.div)`
   position: relative;
   width: 100%;
   height: 60px;
 `;
 
-export const SearchBarContainer = styled.div`
+const SearchBarContainer = styled.div`
   position: absolute;
   top: -5px;
 `;
 
-export const MainTitleContainer = styled.div`
+const MainTitleContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-export const StaffButtonContainer = styled.div`
+const StaffButtonContainer = styled.div`
   position: absolute;
   top: -5px;
   right: 0;
@@ -324,14 +336,14 @@ export const StaffButtonContainer = styled.div`
   z-index: 10;
 `;
 
-export const Title = styled(Typography)`
+const Title = styled(Typography)`
   color: #000000;
   text-transform: uppercase;
   line-height: 24px;
   letter-spacing: -3%;
 `;
 
-export const EditContainer = styled.div<{ isSticky: boolean; isVisible: boolean }>`
+const EditContainer = styled(motion.div)<{ isSticky: boolean }>`
   position: ${props => (props.isSticky ? "fixed" : "relative")};
   top: ${props => (props.isSticky ? "70px" : "auto")};
   min-width: 827px;
@@ -347,54 +359,21 @@ export const EditContainer = styled.div<{ isSticky: boolean; isVisible: boolean 
   color: #000000;
   background-color: #ffffff;
   z-index: 10;
-
-  transition: all 0.3s ease-in-out;
-  opacity: ${props => (props.isVisible ? 1 : 0)};
-  transform: ${props => (props.isVisible ? "translateY(0)" : "translateY(-3px)")};
-  visibility: ${props => (props.isVisible ? "visible" : "hidden")};
-  animation: ${props =>
-    props.isVisible ? "slideDown 0.5s ease-in-out forwards" : "slideUp 0.5s ease-in-out forwards"};
-
-  @keyframes slideDown {
-    0% {
-      opacity: 0;
-      transform: translateY(-3px);
-      visibility: visible;
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-      visibility: visible;
-    }
-  }
-
-  @keyframes slideUp {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-      visibility: visible;
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-3px);
-      visibility: hidden;
-    }
-  }
 `;
 
-export const EditMenuText = styled(Typography)`
+const EditMenuText = styled(Typography)`
   text-decoration: none;
   margin-right: 30px;
 `;
 
-export const EditMenuBox = styled.div`
+const EditMenuBox = styled.div`
   color: #21262b;
   display: flex;
   gap: 20px;
   cursor: pointer;
 `;
 
-export const SettingButton = styled.div<SettingButtonProps>`
+const SettingButton = styled.div<SettingButtonProps>`
   position: relative;
   display: flex;
   justify-content: center;
@@ -415,7 +394,7 @@ export const SettingButton = styled.div<SettingButtonProps>`
   }
 `;
 
-export const SettingDropdown = styled(motion.div)`
+const SettingDropdown = styled(motion.div)`
   position: absolute;
 
   width: 148px;

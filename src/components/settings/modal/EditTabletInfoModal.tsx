@@ -14,7 +14,7 @@ import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 
 import TabletSelect from "../tabletManage/TabletSelect";
 import TabletTimeInput from "../tabletManage/TabletTimeInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;

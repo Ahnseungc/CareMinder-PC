@@ -148,7 +148,7 @@ export const TabletManagement = () => {
 
 /** styles */
 
-interface StyledContainerProps {
+export interface StyledContainerProps {
   isSticky?: boolean;
 }
 
@@ -173,7 +173,7 @@ const SearchBarContainer = styled.div`
   left: 0;
 `;
 
-const EditContainer = styled(motion.div)<StyledContainerProps>`
+export const EditContainer = styled(motion.div)<StyledContainerProps>`
   position: ${props => (props.isSticky ? "fixed" : "absolute")};
   top: ${props => (props.isSticky ? "70px" : "0")};
   min-width: 827px;

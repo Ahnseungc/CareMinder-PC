@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Info } from "@assets/alert.svg";
+import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
+import { ReactComponent as Array } from "@/assets/filter-vertical-icon.svg";
 
 import { useBooleanState } from "@toss/react";
 import { useGetWardTabletList, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
@@ -17,18 +19,12 @@ import InfoModal from "./modal/InfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
+import CFilter from "@components/common/Filter/Filter";
 
-const columns = [
-  { field: "Check", headerName: "" },
-  { field: "Section", headerName: "구역" },
-  { field: "TabletName", headerName: "태블릿 이름" },
-  { field: "PatientName", headerName: "환자이름" },
-  { field: "AdmissionDate", headerName: "입원 일자" },
-  { field: "TabletStatus", headerName: "태블릿 상태" },
-  { field: "SleepModeControl", headerName: "수면제한" },
-  { field: "TabletManageMent", headerName: "태블릿 관리" },
-  { field: "Logout", headerName: "환자 로그아웃" },
-];
+export type Columns = {
+  field: string;
+  headerName: React.ReactNode;
+};
 
 interface TabletManagementTableProps {
   isClear: boolean;
@@ -41,6 +37,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -68,6 +65,10 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     }
   };
 
+  const handleFilter = () => {
+    setIsFilterOpen(prev => !prev);
+  };
+
   //@ts-ignore
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
@@ -82,6 +83,50 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     setSelectedTabletId(tabletId);
     openLogoutModal();
   };
+
+  const columns: Columns[] = [
+    { field: "check", headerName: "" },
+    {
+      field: "Section",
+      headerName: (
+        <ColumnName onClick={handleFilter}>
+          <span>구역</span>
+          <Filter />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "TabletName",
+      headerName: (
+        <ColumnName>
+          <span>태블릿 이름</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "PatientName",
+      headerName: (
+        <ColumnName>
+          <span>환자 이름</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "AdmissionDate",
+      headerName: (
+        <ColumnName onClick={() => null}>
+          <span>입원 일자</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    { field: "TabletStatus", headerName: "태블릿 상태" },
+    { field: "SleepModeControl", headerName: "수면제한" },
+    { field: "TabletManageMent", headerName: "태블릿 관리" },
+    { field: "Logout", headerName: "환자 로그아웃" },
+  ];
 
   useEffect(() => {
     if (isClear) {
@@ -155,6 +200,11 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                           indeterminate={selectedItems > 0 && selectedItems < totalItems}
                           onClick={handleSelectAll}
                         />
+                        {isFilterOpen && (
+                          <div style={{ position: "absolute", zIndex: 10 }}>
+                            <CFilter />
+                          </div>
+                        )}
                       </th>
                     );
                   }
@@ -289,6 +339,13 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
 export default TabletManagementTable;
 
 /** styles */
+
+const ColumnName = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+`;
 
 const TableContainer = styled.div`
   width: 100%;
