@@ -14,17 +14,25 @@ import FindInputPwModal from "@components/FindAccount/Modal/findInputPwModal";
 import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
 import { SEVER_URL } from "@constants/baseUrl";
 import axios from "axios";
+import useFindChangePassword from "@hooks/mutation/useFindChangePassword";
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";
 type FindModalType = "IdModal" | "PwInputModal" | "PwSecondModal" | undefined;
 type Account = "어드민" | "병동" | "스태프";
+export type PasswordType = {
+  password: string;
+  confirmPassword: string;
+};
 
 export default function FindAccountPage() {
   const [activeTab, setActiveTab] = useState<FindAccountType>("아이디 찾기");
+  const [isAccessToken, setIsAccessToken] = useState<string | undefined>(undefined);
   const [isOpenModal, setIsOpenModal] = useState<FindModalType>(undefined);
   const [findPWLevel, setFindPWLevel] = useState<1 | 2>(1);
   const [resId, setResId] = useState("");
   const [type, setType] = useState<Account>();
+
+  const { mutate: changePW } = useFindChangePassword();
 
   const verifyPhone = useRecoilValue(verifyPhoneState);
 
@@ -62,8 +70,6 @@ export default function FindAccountPage() {
 
   /** api 생성 후  */
   const onSubmit: SubmitHandler<FindAccount> = async data => {
-    console.log("데이터");
-    console.log(data);
     if (activeTab === "아이디 찾기") {
       const _phoneNumber = data.phoneNumber.replace(/-/g, "");
       try {
@@ -89,7 +95,7 @@ export default function FindAccountPage() {
           accountType: userType,
         });
 
-        console.log(res);
+        setIsAccessToken(res.data.jwtResponse.accessToken);
         // setResId(res);
         setIsOpenModal("PwInputModal");
       } catch (error) {
@@ -116,6 +122,20 @@ export default function FindAccountPage() {
         setFindPWLevel(2);
       }
     }
+  };
+
+  const onChangePW = (inputData: PasswordType) => {
+    if (inputData.password !== inputData.confirmPassword) return;
+    const data = { newPassword: inputData.password, accessToken: isAccessToken! };
+    changePW(data, {
+      onSuccess: () => {
+        setIsOpenModal("PwSecondModal");
+        setIsAccessToken(undefined);
+      },
+      onError: error => {
+        console.error(error);
+      },
+    });
   };
 
   return (
@@ -195,7 +215,7 @@ export default function FindAccountPage() {
           onClose={onCloseModal}
           setActiveTab={setActiveTab}
           type={type!}
-          id={"careminder"}
+          onChangePW={onChangePW}
         />
       )}
       {isOpenModal === "PwSecondModal" && <FindPwSecond onClose={onCloseModal} type={type!} />}
@@ -223,7 +243,11 @@ const findAccountField: FindAccountFieldType[] = [
   { name: "phoneNumber", label: "전화번호", placeholder: "010-0000-0000" },
 ];
 
-const findPWLevelOne = { name: "id", label: "아이디", placeholder: "아이디를 입력해주세요." };
+const findPWLevelOne: FindAccountFieldType = {
+  name: "id",
+  label: "아이디",
+  placeholder: "아이디를 입력해주세요.",
+};
 
 interface TabProps {
   isActive?: boolean;

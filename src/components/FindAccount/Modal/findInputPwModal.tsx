@@ -4,18 +4,17 @@ import styled from "@emotion/styled";
 import { Stack } from "@mui/system";
 import { NewPassWordField } from "@models/ward";
 import { NewPassword } from "@models/ward";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { PasswordType } from "@pages/find_account/FindAccountPage";
 
 type ModalProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
   setActiveTab: React.Dispatch<React.SetStateAction<"아이디 찾기" | "비밀번호 찾기">>;
   type: "어드민" | "병동" | "스태프";
-  id: string;
+  onChangePW: (propsData: PasswordType) => void;
 };
 
-function FindInputPwModal({ onClose, setActiveTab, type, id, ...props }: ModalProps) {
-  console.log(props);
-
+function FindInputPwModal({ onClose, setActiveTab, type, onChangePW, ...props }: ModalProps) {
   const defaultValuesPW: NewPassword = {
     password: "",
     confirmPassword: "",
@@ -28,8 +27,8 @@ function FindInputPwModal({ onClose, setActiveTab, type, id, ...props }: ModalPr
 
   const { handleSubmit } = form;
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: PasswordType) => {
+    onChangePW(data);
   };
 
   const fields: NewPassWordField[] = [
