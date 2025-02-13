@@ -10,11 +10,10 @@ import { PasswordType } from "@pages/find_account/FindAccountPage";
 type ModalProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
   setActiveTab: React.Dispatch<React.SetStateAction<"아이디 찾기" | "비밀번호 찾기">>;
-  type: "어드민" | "병동" | "스태프";
   onChangePW: (propsData: PasswordType) => void;
 };
 
-function FindInputPwModal({ onClose, setActiveTab, type, onChangePW, ...props }: ModalProps) {
+function FindInputPwModal({ onClose, setActiveTab, onChangePW }: ModalProps) {
   const defaultValuesPW: NewPassword = {
     password: "",
     confirmPassword: "",

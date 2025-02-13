@@ -7,7 +7,7 @@ type ModalProps = {
   type: "어드민" | "병동" | "스태프";
 };
 
-function FindPwSecond({ onClose, type, ...props }: ModalProps) {
+function FindPwSecond({ onClose, type }: ModalProps) {
   const navigate = useNavigate();
   const [prevType, setPrevType] = useState<
     "/sign-in" | "/sign-in/admin" | "/staff/inout" | undefined

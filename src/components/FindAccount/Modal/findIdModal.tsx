@@ -1,7 +1,7 @@
 import { CMModal, ModalActionButton } from "@components/common";
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type ModalProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -10,7 +10,7 @@ type ModalProps = {
   id: string;
 };
 
-function FindIdModal({ onClose, setActiveTab, type, id, ...props }: ModalProps) {
+function FindIdModal({ onClose, setActiveTab, type, id }: ModalProps) {
   const navigate = useNavigate();
   const [prevType, setPrevType] = useState<
     "/sign-in" | "/sign-in/admin" | "/staff/inout" | undefined
@@ -63,6 +63,6 @@ const Title = styled("div")({
   textAlign: "center",
   margin: "10px 0",
 });
-const Point = styled("span")(({ theme }) => ({
-  color: theme.palette.primary.main,
-}));
+const Point = styled("span")({
+  color: "#5D6DBE",
+});

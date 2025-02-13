@@ -105,18 +105,18 @@ export default function FindAccountPage() {
   };
 
   const onCheckId: SubmitHandler<FindAccount> = async data => {
-    console.log(data);
-
     try {
       const res = await axios.post(`${SEVER_URL}/users/check-login-id`, {
         loginId: data.id,
         accountType: userType,
       });
 
-      form.setError("id", {
-        type: "required",
-        message: "존재하지 않는 아이디입니다. 다시 확인해주세요.",
-      });
+      if (res.status === 200) {
+        form.setError("id", {
+          type: "required",
+          message: "존재하지 않는 아이디입니다. 다시 확인해주세요.",
+        });
+      }
     } catch (err: any) {
       if (err.status === 409) {
         setFindPWLevel(2);
@@ -214,7 +214,6 @@ export default function FindAccountPage() {
         <FindInputPwModal
           onClose={onCloseModal}
           setActiveTab={setActiveTab}
-          type={type!}
           onChangePW={onChangePW}
         />
       )}
