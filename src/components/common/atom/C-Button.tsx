@@ -12,7 +12,9 @@ export type CustomButtonProps = {
     | "primarySpaureLong"
     | "impactRed"
     | "primarySecond"
-    | "primarySquareWhiteSecond";
+    | "primarySquareWhiteSecond"
+    | "primarySquareWhiteAdmin"
+    | "primarySquareWhiteStaff";
   icon?: React.ReactNode;
 } & ButtonProps;
 
@@ -137,6 +139,18 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) =
     backgroundColor: theme.palette.primary.contrastText,
     color: "#949599",
     border: `1px solid ${theme.palette.divider}`,
+    width: "100%",
+  }),
+  ...(buttontype === "primarySquareWhiteAdmin" && {
+    backgroundColor: theme.palette.primary.contrastText,
+    color: "#5DACBE",
+    border: "1px solid #5DACBE",
+    width: "100%",
+  }),
+  ...(buttontype === "primarySquareWhiteStaff" && {
+    backgroundColor: theme.palette.primary.contrastText,
+    color: `${theme.palette.secondary.main}`,
+    border: `1px solid ${theme.palette.secondary.main}`,
     width: "100%",
   }),
 }));

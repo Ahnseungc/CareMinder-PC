@@ -31,6 +31,23 @@ interface TabletManagementTableProps {
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const OPTIONS_1 = ["잠금", "잠금 해제"];
+
+const OPTIONS_2 = [
+  "잠금",
+  "잠금 해제",
+  "간호사",
+  "간호조무사",
+  "의사",
+  "직원",
+  "간호사1",
+  "간호조무사1",
+  "의사1",
+  "직원1",
+];
+
+const OPTIONS_3 = ["잠금", "잠금 해제", "간호사", "간호조무사"];
+
 const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
@@ -46,7 +63,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const { data: wardTabletList } = useGetWardTabletList({
+  const { data: wardTabletList, isLoading } = useGetWardTabletList({
     myArea: false,
     page: currentPage - 1,
     size: 20,
@@ -148,6 +165,10 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     setSelectTabletList(index);
   }, [setSelectTabletList, selectIndex, wardTabletList]);
 
+  if (isLoading) {
+    return <div>로딩 중</div>;
+  }
+
   return (
     <>
       {/* 태블릿 로그아웃 설정 모달/ */}
@@ -202,7 +223,9 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                         />
                         {isFilterOpen && (
                           <div style={{ position: "absolute", zIndex: 10 }}>
-                            <CFilter />
+                            <CFilter options={OPTIONS_1} type={"ADMIN"} />
+                            <CFilter options={OPTIONS_2} type={"WARD"} />
+                            <CFilter options={OPTIONS_3} type={"STAFF"} />
                           </div>
                         )}
                       </th>
