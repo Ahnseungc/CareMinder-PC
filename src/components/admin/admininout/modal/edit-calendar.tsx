@@ -24,7 +24,7 @@ const CustomEditCalendar: FC<MyCalendarProps> = ({ value, setState }) => {
     >
       <Calendar
         onChange={setState}
-        value={value}
+        value={value ? value : new Date()}
         view="month"
         minDetail="month"
         //@ts-ignore

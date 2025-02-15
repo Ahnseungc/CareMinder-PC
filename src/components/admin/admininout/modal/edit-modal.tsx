@@ -1,25 +1,64 @@
 import { CMModal, ModalActionButton } from "@components/common";
 import { styled, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { useQueryClient } from "@tanstack/react-query";
+
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ComBoxLayout } from "../adminTable";
 import { ReactComponent as GrayCalendar } from "@assets/calendar/calendar-gray.svg";
 
 import CustomEditCalendar from "./edit-calendar";
 import { useState } from "react";
-import { formatDate } from "@utils/getDateform";
+import { formatDateDash } from "@utils/getDateform";
+import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
+import useEditTabletData from "@hooks/mutation/useEditTabletData";
+import { toast } from "react-toastify";
 
 type ValuePiece = Date | null;
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+export type Value = ValuePiece | [ValuePiece, ValuePiece];
+type EditData = { areaId?: number; tabletName?: string; patientName?: string };
 
-const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: any) => {
-  const [isOpenCalendar, setIsOpenCalendar] = useState(false);
-  const [selectCalendar, setSelectCalendar] = useState<Value>(new Date());
-  const data = isGroup ? selectList : editSelectList;
+const EditModal = ({ onClose, selectList, areaList, refetch, ...props }: any) => {
+  const { mutate: editData } = useEditTabletData();
+  const data = selectList;
   const pickLength = data.length;
 
-  console.log(editSelectList);
+  const [isOpenCalendar, setIsOpenCalendar] = useState(false);
+  const [selectCalendar, setSelectCalendar] = useState<Value>(
+    pickLength > 1 ? null : new Date(selectList[0].admissionDate),
+  );
+  const [putEditData, setPutEditData] = useState<EditData>({});
+
+  console.log(selectCalendar);
+
+  const handleChangeArea = (name: string) => {
+    const areaId = areaList?.find((item: GetAreaListResponse) => item.name === name)?.id;
+    setPutEditData(prev => ({ ...prev, areaId }));
+  };
+
+  const findAreaName = (areaId: number) => {
+    const areaName = areaList?.find((item: GetAreaListResponse) => item.id === areaId)?.name;
+    return areaName;
+  };
+
+  const onEditData = () => {
+    const tabletIds = selectList.map((el: { id: number }) => el.id);
+    const admissionDate = selectCalendar ? formatDateDash(selectCalendar) : undefined;
+
+    const data = {
+      tabletIds,
+      ...(admissionDate && { admissionDate }),
+      ...putEditData,
+    };
+    editData(data, {
+      onSuccess: () => {
+        refetch();
+        onClose();
+      },
+      onError: () => {
+        toast.error("정보 수정을 실패하였습니다.");
+      },
+    });
+  };
 
   return (
     <CMModal
@@ -33,7 +72,7 @@ const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: a
             취소
           </ModalActionButton>
 
-          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={() => null}>
+          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onEditData}>
             변경
           </ModalActionButton>
         </>
@@ -55,8 +94,8 @@ const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: a
           <Text>이름</Text>
           <TextField
             placeholder={"이름"}
-            value={editSelectList.length === 1 ? editSelectList[0].name : "2명 이상 선택중"}
-            onChange={() => null}
+            value={putEditData?.patientName === undefined ? data[0].name : putEditData?.patientName}
+            onChange={e => setPutEditData(prev => ({ ...prev, patientName: e.target.value }))}
             sx={{
               "& .MuiInputBase-root": { height: "40px", borderRadius: "6px", marginBottom: "28px" },
             }}
@@ -66,24 +105,37 @@ const EditModal = ({ onClose, selectList, editSelectList, isGroup, ...props }: a
           <ComBoxLayout border={true}>
             <CComboBox
               placeholder={"구역"}
-              options={["test", "test"]}
+              options={areaList.map((el: GetAreaListResponse) => el.name)}
               isStaff={false}
-              value={"dd" as string}
-              onChange={() => null}
+              value={
+                putEditData?.areaId === undefined
+                  ? findAreaName(data[0].areaId)
+                  : findAreaName(putEditData.areaId)
+              }
+              onChange={e => handleChangeArea(e.target.value)}
             />
           </ComBoxLayout>
           <Text sx={{ marginTop: "30px" }}>태블릿 이름</Text>
           <TextField
             placeholder={"태블릿 이름"}
-            value={""}
-            onChange={() => null}
+            value={
+              putEditData?.tabletName === undefined ? data[0].tabletName : putEditData?.tabletName
+            }
+            onChange={e => setPutEditData(prev => ({ ...prev, tabletName: e.target.value }))}
             sx={{
               "& .MuiInputBase-root": { height: "40px", borderRadius: "6px", marginBottom: "28px" },
             }}
           />
           <Text>입원 일자</Text>
           <CalendarField>
-            {selectCalendar instanceof Date && formatDate(selectCalendar)}
+            {Array.isArray(selectCalendar)
+              ? selectCalendar[0]
+                ? formatDateDash(selectCalendar[0])
+                : "입원 일자"
+              : selectCalendar
+                ? formatDateDash(selectCalendar)
+                : "입원 일자"}
+
             <GrayCalendar
               style={{ cursor: "pointer" }}
               onClick={() => setIsOpenCalendar(prev => !prev)}

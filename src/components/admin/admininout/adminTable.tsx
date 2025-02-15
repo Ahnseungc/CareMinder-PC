@@ -1,8 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
-import CInput from "@components/common/atom/C-Input";
 import { Box, CircularProgress, SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
@@ -12,13 +10,12 @@ import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-i
 import { formatDateDash } from "@utils/getDateform";
 import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 //@ts-ignore
-import { Area, useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
 import CCheckBox from "@components/common/atom/C-CheckBox";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
-import { SelectedItem } from "../../../pages/staff/StaffWardInoutManagementPage";
 
 const columnsHeader = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
@@ -43,20 +40,25 @@ const columnsHeader = [
 ];
 
 interface AdminTableProps {
+  isLoading: boolean;
   getTablet: Array<WardTabletType>;
-  onChangeSelected: (tabletId: number, patientName: string, areaName: string) => void;
+  onChangeSelected: (
+    tabletId: number,
+    patientName: string,
+    areaId: number,
+    tabletName: string,
+    admissionDate: string,
+  ) => void;
   onChangeSelectAll: any;
   selected: Array<{
     name: string;
     id: number;
-    areaName: string;
+    areaId: number;
   }>;
-  isLoading: boolean;
-  areaList: any;
-  area: Array<string>;
+  areaList: GetAreaListResponse[];
   onDisCharge: (tabletId: number) => void;
   handleMemoModal: (patientId: number, patientName: string) => void;
-  setEditSelectList: (data: SelectedItem[]) => void;
+  handleEditPatient: any;
 }
 
 const AdminTable: FC<AdminTableProps> = ({
@@ -67,9 +69,8 @@ const AdminTable: FC<AdminTableProps> = ({
   isLoading,
   onDisCharge,
   areaList,
-  area,
   handleMemoModal,
-  setEditSelectList,
+  handleEditPatient,
 }) => {
   const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { mutate: changeTabletInfo } = useChangeTabletInfo();
@@ -78,7 +79,7 @@ const AdminTable: FC<AdminTableProps> = ({
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const value = event.target.value;
-    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
+    const areaId = areaList?.find((item: GetAreaListResponse) => item.name === value)?.id as number;
     changeTabletArea(
       {
         userIds: [id],
@@ -213,48 +214,25 @@ const AdminTable: FC<AdminTableProps> = ({
                   <InoutTableBodyTd width="1.62%">
                     <CCheckBox
                       onChange={() =>
-                        onChangeSelected(tablet.tabletId, tablet.patientName, tablet.areaName)
+                        onChangeSelected(
+                          tablet.tabletId,
+                          tablet.patientName,
+                          tablet.areaName,
+                          tablet.tabletName,
+                          tablet.createdAt,
+                        )
                       }
                       checked={selected?.some(item => item.id === tablet.tabletId)}
                     />
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[0].width}>
-                    <div style={{ width: "100%", height: "36px" }}>
-                      <label htmlFor="section"></label>
-                      <CInput
-                        focusColorType="STAFF"
-                        placeholder={"환자 이름"}
-                        value={tablet.patientName}
-                        onChange={e => onChangeData(e, tablet.tabletId, "patientName")}
-                        variant={"outlined"}
-                        disabled={false}
-                        id={"section"}
-                      />
-                    </div>
+                    {tablet.patientName}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[1].width}>
-                    <ComBoxLayout width={"100%"}>
-                      <CComboBox
-                        placeholder={"구역"}
-                        options={area}
-                        isStaff={true}
-                        value={tablet.areaName}
-                        onChange={e => handleChangeArea(e, tablet.tabletId)}
-                      />
-                    </ComBoxLayout>
+                    {tablet.areaName}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[2].width}>
-                    <ComBoxLayout width={"100%"}>
-                      <CInput
-                        focusColorType="STAFF"
-                        variant={"outlined"}
-                        placeholder={"태블릿 이름"}
-                        onChange={e => onChangeData(e, tablet.tabletId, "tabletName")}
-                        value={tablet.tabletName}
-                        disabled={false}
-                        id={""}
-                      ></CInput>
-                    </ComBoxLayout>
+                    {tablet.tabletName}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[3].width}>
                     {formatDateDash(new Date(tablet.createdAt))}
@@ -268,13 +246,14 @@ const AdminTable: FC<AdminTableProps> = ({
                   <InoutTableBodyTd width={columnsHeader[5].width}>
                     <Pencil
                       onClick={() => {
-                        setEditSelectList([
-                          {
-                            id: tablet.tabletId,
-                            name: tablet.patientName,
-                            areaName: tablet.areaName,
-                          },
-                        ]);
+                        onChangeSelected(
+                          tablet.tabletId,
+                          tablet.patientName,
+                          tablet.areaId,
+                          tablet.tabletName,
+                          tablet.createdAt,
+                        );
+                        handleEditPatient();
                       }}
                     />
                   </InoutTableBodyTd>

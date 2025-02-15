@@ -99,8 +99,8 @@ function StaffPatientListBox({
     >
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <TitleLeft>
-          {data.areaSimple.areaName} | {data.patientSimple.patientName} (
-          {data.tabletSimple.tabletName})
+          {data?.areaSimple?.areaName} | {data?.patientSimple?.patientName} (
+          {data?.tabletSimple?.tabletName})
           {isAccept
             ? data.unreadCount !== 0 && <New>new</New>
             : getNewRequest(data.createdAt) && <New>new</New>}

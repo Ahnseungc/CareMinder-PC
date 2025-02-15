@@ -15,24 +15,20 @@ import { ComBoxLayout } from "@components/admin/admininout/adminTable";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
 import { ReactComponent as Pencil } from "@/assets/pencil2.svg";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
-// import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
-// import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
-// import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
 import { Value } from "@components/common/atom/Calendar/C-Calendar";
-// import { formatDateYYYYMMDD } from "@utils/getDateform";
 import { debounce } from "lodash";
 import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeSuccessModal";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
-import { useQueryClient } from "@tanstack/react-query";
 import MemoModal from "@components/admin/admininout/modal/memo-modal";
 import EditModal from "@components/admin/admininout/modal/edit-modal";
 
 export type SelectedItem = {
   name: string;
   id: number;
-  areaName: string;
+  areaId: number;
+  tabletName: string;
+  admissionDate: string;
 };
 
 const StaffWardInoutManagementPage = () => {
@@ -49,6 +45,8 @@ const StaffWardInoutManagementPage = () => {
   const [isEditModal, setIsEditModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [isMemoModal, setIsMemoModal] = useState(false);
+  const [selected, setSelected] = useState<Array<SelectedItem>>([]);
+  const [memoData, setMemoData] = useState<{ patientName: string; patientId: number }>();
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
@@ -70,9 +68,6 @@ const StaffWardInoutManagementPage = () => {
   }, [currentPage]);
 
   const { mutate } = useDischargePatients();
-  const [selected, setSelected] = useState<Array<SelectedItem>>([]);
-  const [editSelected, setEditSelected] = useState<SelectedItem[]>([]);
-  const [memoData, setMemoData] = useState<{ patientName: string; patientId: number }>();
 
   const onChangeSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -81,6 +76,8 @@ const StaffWardInoutManagementPage = () => {
           name: tablet.patientName,
           id: tablet.tabletId,
           areaName: tablet.areaName,
+          tabletName: tablet.tabletName,
+          admissionDate: tablet.createdAt,
         })),
       );
     } else {
@@ -89,14 +86,30 @@ const StaffWardInoutManagementPage = () => {
   };
 
   const onChangeSelected = useCallback(
-    (tabletId: number, patientName: string, areaName: string) => {
+    (
+      tabletId: number,
+      patientName: string,
+      areaId: number,
+      tabletName: string,
+      createdAt: string,
+    ) => {
       setSelected(prev => {
         if (prev.some(item => item.id === tabletId)) {
           return prev.filter(item => item.id !== tabletId);
         } else {
-          return [...prev, { name: patientName, id: tabletId, areaName: areaName }];
+          return [
+            ...prev,
+            {
+              name: patientName,
+              id: tabletId,
+              areaId: areaId,
+              tabletName: tabletName,
+              admissionDate: createdAt,
+            },
+          ];
         }
       });
+      // setSelected([{ name: patientName, id: tabletId, areaId: areaId, tabletName: tabletName }]);
     },
     [selected],
   );
@@ -166,38 +179,7 @@ const StaffWardInoutManagementPage = () => {
     );
   };
 
-  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { data: areaList } = useGetStaffAreaList();
-  const queryClient = useQueryClient();
-
-  const [area, setArea] = useState<string[]>([""]);
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
-    const userIds = selected?.map(item => item.id);
-    changeTabletArea(
-      {
-        userIds: userIds,
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          setSelected([]);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
-  useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map((item: any) => item.name));
-    }
-  }, [areaList]);
 
   const onDisCharge = handleDischarge(updateDischarge);
 
@@ -218,34 +200,8 @@ const StaffWardInoutManagementPage = () => {
   };
 
   const handleEditPatient = () => {
-    console.log("dd");
     setIsEditModal(true);
   };
-
-  const mostFrequentAreaName = useMemo(() => {
-    if (!selected || selected.length === 0) return null;
-
-    const frequencyMap: Record<string, number> = {};
-
-    // selectedList에서 areaName 빈도수 계산
-    selected?.forEach(item => {
-      if (frequencyMap[item.areaName]) {
-        frequencyMap[item.areaName] += 1;
-      } else {
-        frequencyMap[item.areaName] = 1;
-      }
-    });
-
-    let maxFrequency = 0;
-    let mostFrequentArea = null;
-    for (const [areaName, frequency] of Object.entries(frequencyMap)) {
-      if (frequency > maxFrequency) {
-        maxFrequency = frequency;
-        mostFrequentArea = areaName;
-      }
-    }
-    return mostFrequentArea;
-  }, [selected, getTablet]);
 
   useEffect(() => {
     setSelectSingle([]);
@@ -278,15 +234,16 @@ const StaffWardInoutManagementPage = () => {
           open={isSuccessModal}
         />
       )}
-      {(isEditModal || editSelected.length !== 0) && (
+      {isEditModal && (
         <EditModal
           onClose={() => {
-            isEditModal && setIsEditModal(false), editSelected && setEditSelected([]);
+            isEditModal && setIsEditModal(false);
+            setSelected([]);
           }}
           selectList={selected}
-          editSelectList={editSelected}
-          isGroup={editSelected ? true : false}
-          open={isEditModal || editSelected.length !== 0}
+          open={isEditModal}
+          areaList={areaList}
+          refetch={refetch}
         />
       )}
 
@@ -311,51 +268,12 @@ const StaffWardInoutManagementPage = () => {
                   </div>
                   <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
                     <ComBoxLayout width={"30px"}>
-                      {/* <CComboBox
-                        placeholder={"구역"}
-                        options={area}
-                        isStaff={false}
-                        value={mostFrequentAreaName as string}
-                        onChange={e => handleChangeArea(e)}
-                      /> */}
                       <MemoIcon style={{ cursor: "pointer" }} />
                     </ComBoxLayout>
                     <ComBoxLayout width={"30px"}>
                       <Pencil style={{ cursor: "pointer" }} onClick={handleEditPatient} />
                     </ComBoxLayout>
-                    {/* <ComBoxLayout width={"160px"}>
-                      <CalendarSelect onClick={handleActive}>
-                        {disChargeDate !== new Date() ? (
-                          <Text
-                            sx={{
-                              fontSize: 14,
-                              lineHeight: 20,
-                              fontWeight: 400,
-                              letterSpacing: "-3%",
-                              opacity: 1,
-                            }}
-                          >
-                            {formatDateYYYYMMDD(disChargeDate as Date)}
-                          </Text>
-                        ) : (
-                          <Text
-                            sx={{
-                              fontSize: 14,
-                              lineHeight: 20,
-                              fontWeight: 400,
-                              letterSpacing: "-3%",
-                              opacity: 0.3,
-                            }}
-                          >
-                            예상 퇴원 날짜
-                          </Text>
-                        )}
-                        <CalendarIcon />
-                        {isAcitve && (
-                          <CCalendar value={disChargeDate} setState={setDisChargeDate} />
-                        )}
-                      </CalendarSelect>
-                    </ComBoxLayout> */}
+
                     <CButton buttontype={"impactRed"} onClick={handleModal}>
                       환자 퇴원처리
                     </CButton>
@@ -394,10 +312,9 @@ const StaffWardInoutManagementPage = () => {
               onChangeSelectAll={onChangeSelectAll}
               onDisCharge={handleDischargeSingle}
               selected={selected}
-              areaList={areaList}
-              area={area}
+              areaList={areaList!}
               handleMemoModal={handleMemoModal}
-              setEditSelectList={setEditSelected}
+              handleEditPatient={handleEditPatient}
             />
           )}
         </TableLayout>
