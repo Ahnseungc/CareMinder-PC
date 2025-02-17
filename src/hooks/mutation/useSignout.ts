@@ -36,6 +36,12 @@ const signOut = async (type: UserType) => {
     console.log("어드민" + token);
     Cookies.set("accessTokenAdmin", "");
     Cookies.set("refreshTokenAdmin", "");
+    console.debug(
+      JSON.stringify({
+        type: "sendAuth",
+        action: "logoutAdmin",
+      }),
+    );
   }
   const res = await axios.post(
     `${SEVER_URL}/users/logout`,

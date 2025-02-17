@@ -8,9 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import InfoModal from "@components/settings/modal/InfoModal";
 import adminPendingState from "@libraries/recoil/adminPending";
+import { isElectron } from "@utils/isElectron";
 
 export default function AdminSigninPage() {
   const user = useRecoilValue(userState);
+  const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const [adminPopup, setAdminPopup] = useRecoilState(adminPopupState);
   const [adminPending, setAdminPending] = useRecoilState(adminPendingState);
   const accessToken = Cookies.get("accessTokenAdmin");
@@ -18,9 +20,18 @@ export default function AdminSigninPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && accessToken) {
-      console.error(`접근이 불가능한 경로입니다.`);
-      navigate(-1);
+    if (isElectron()) {
+      if (accessTokenAdmin && user?.type === "ADMIN") {
+        navigate("/admin");
+      }
+      if (accessToken && user?.type === "WARD") {
+        navigate("/");
+      }
+    } else {
+      if (user && accessToken) {
+        console.error(`접근이 불가능한 경로입니다.`);
+        navigate(-1);
+      }
     }
   }, []);
 
