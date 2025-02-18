@@ -10,5 +10,5 @@ export default defineConfig({
   plugins: [macrosPlugin(), react(), tsconfigPaths(), svgr()],
   define: {
     global: {},
-  },
+  },  
 });
