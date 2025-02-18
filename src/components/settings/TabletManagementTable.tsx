@@ -11,7 +11,11 @@ import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
 import { ReactComponent as Array } from "@/assets/filter-vertical-icon.svg";
 
 import { useBooleanState } from "@toss/react";
-import { useGetWardTabletList, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
+import {
+  TableStatus,
+  useGetWardTabletList,
+  WardTabledListType,
+} from "@hooks/queries/useGetWardTabletList";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import PaginationComponent from "@components/common/pagination";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
@@ -20,6 +24,7 @@ import TabletLogoutWarning from "./TabletLogoutWarning";
 import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
+import { formatTimeRange } from "@utils/formatSleepModeTime";
 
 export type Columns = {
   field: string;
@@ -31,9 +36,7 @@ interface TabletManagementTableProps {
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OPTIONS_1 = ["잠금", "잠금 해제"];
-
-const OPTIONS_2 = [
+const OPTIONS = [
   "잠금",
   "잠금 해제",
   "간호사",
@@ -45,8 +48,6 @@ const OPTIONS_2 = [
   "의사1",
   "직원1",
 ];
-
-const OPTIONS_3 = ["잠금", "잠금 해제", "간호사", "간호조무사"];
 
 const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -223,9 +224,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                         />
                         {isFilterOpen && (
                           <div style={{ position: "absolute", zIndex: 10 }}>
-                            <CFilter options={OPTIONS_1} type={"ADMIN"} />
-                            <CFilter options={OPTIONS_2} type={"WARD"} />
-                            <CFilter options={OPTIONS_3} type={"STAFF"} />
+                            <CFilter options={OPTIONS} type={"WARD"} />
                           </div>
                         )}
                       </th>
@@ -299,18 +298,42 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                     <td>
                       <LongComBoxLayout>
                         <Typography variant="body2">
-                          {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
+                          {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
                         </Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography>태블릿 상태</Typography>
+                        <TabletTypography status={row.featureRestrictionType}>
+                          {row.featureRestrictionType === "FULL_ACCESS"
+                            ? "● 전체가능"
+                            : row.featureRestrictionType === "REQUEST_ONLY"
+                              ? "● 요청가능"
+                              : "● 강제종료"}
+                        </TabletTypography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography>수면 제한</Typography>
+                        <TabletTypography
+                          status={row.featureRestrictionType}
+                          sx={{ marginRight: "8px" }}
+                        >
+                          {" "}
+                          {row.featureRestrictionType === "FULL_ACCESS"
+                            ? "● 전체가능"
+                            : row.featureRestrictionType === "REQUEST_ONLY"
+                              ? "● 요청가능"
+                              : "● 강제종료"}
+                        </TabletTypography>
+                        <span>
+                          {formatTimeRange({
+                            startHour: row.sleepModeSimple.startHour,
+                            startMinute: row.sleepModeSimple.startMinute,
+                            endHour: row.sleepModeSimple.endHour,
+                            endMinute: row.sleepModeSimple.endMinute,
+                          })}
+                        </span>
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -457,6 +480,15 @@ const SerialNumber = styled(motion.div)`
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
+`;
+
+const TabletTypography = styled(Typography)<{ status: TableStatus }>`
+  color: ${props =>
+    props.status === "FULL_ACCESS"
+      ? palette.tablet.main
+      : props.status === "REQUEST_ONLY"
+        ? palette.tablet.light
+        : palette.tablet.dark};
 `;
 
 const PaginationContainer = styled.div`

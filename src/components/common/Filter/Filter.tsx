@@ -79,6 +79,7 @@ export default function CFilter({ options, type }: CFilterProps) {
         open
         options={options}
         disableCloseOnSelect
+        disableListWrap
         value={selectFilter}
         onChange={handleSelectionChange}
         PaperComponent={({ children }) => <Paper elevation={0}>{children}</Paper>}

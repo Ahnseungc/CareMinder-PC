@@ -3,6 +3,15 @@ import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
+export type SleepModeSimple = {
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
+};
+
+export type TableStatus = "FULL_ACCESS" | "REQUEST_ONLY" | "FORCE_TERMINATE";
+
 export type WardTabledListType = {
   areaId: number;
   areaName: string;
@@ -11,7 +20,9 @@ export type WardTabledListType = {
   serialNumber: string;
   patientId: number;
   patientName: string;
-  createdAt: string;
+  admissionAt: string;
+  featureRestrictionType: TableStatus;
+  sleepModeSimple: SleepModeSimple;
 };
 
 export type GetWardTabletListResponse = {
