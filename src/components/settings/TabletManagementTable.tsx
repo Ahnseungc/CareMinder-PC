@@ -87,8 +87,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     setIsFilterOpen(prev => !prev);
   };
 
-  //@ts-ignore
-  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handleChangePage = (_: React.ChangeEvent<unknown> | null, page: number) => {
     setCurrentPage(page);
   };
 
@@ -168,6 +167,10 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
 
   if (isLoading) {
     return <div>로딩 중</div>;
+  }
+
+  if (!wardTabletList) {
+    return null;
   }
 
   return (
@@ -315,25 +318,30 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <TabletTypography
-                          status={row.featureRestrictionType}
-                          sx={{ marginRight: "8px" }}
-                        >
-                          {" "}
-                          {row.featureRestrictionType === "FULL_ACCESS"
-                            ? "● 전체가능"
-                            : row.featureRestrictionType === "REQUEST_ONLY"
-                              ? "● 요청가능"
-                              : "● 강제종료"}
-                        </TabletTypography>
-                        <span>
-                          {formatTimeRange({
-                            startHour: row.sleepModeSimple.startHour,
-                            startMinute: row.sleepModeSimple.startMinute,
-                            endHour: row.sleepModeSimple.endHour,
-                            endMinute: row.sleepModeSimple.endMinute,
-                          })}
-                        </span>
+                        {row.sleepModeSimple.type === null ? (
+                          "사용 안함"
+                        ) : (
+                          <>
+                            <TabletTypography
+                              status={row.sleepModeSimple.type}
+                              sx={{ marginRight: "8px" }}
+                            >
+                              {row.sleepModeSimple.type === "FULL_ACCESS"
+                                ? "● 전체가능"
+                                : row.sleepModeSimple.type === "REQUEST_ONLY"
+                                  ? "● 요청가능"
+                                  : "● 강제종료"}
+                            </TabletTypography>
+                            <span>
+                              {formatTimeRange({
+                                startHour: row.sleepModeSimple.startHour,
+                                startMinute: row.sleepModeSimple.startMinute,
+                                endHour: row.sleepModeSimple.endHour,
+                                endMinute: row.sleepModeSimple.endMinute,
+                              })}
+                            </span>
+                          </>
+                        )}
                       </LongComBoxLayout>
                     </td>
                     <td>

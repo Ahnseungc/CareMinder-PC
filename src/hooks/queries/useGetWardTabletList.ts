@@ -3,14 +3,15 @@ import axiosInstance from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
+export type TableStatus = "FULL_ACCESS" | "REQUEST_ONLY" | "FORCE_TERMINATE" | null;
+
 export type SleepModeSimple = {
   startHour: number;
   startMinute: number;
   endHour: number;
   endMinute: number;
+  type: TableStatus;
 };
-
-export type TableStatus = "FULL_ACCESS" | "REQUEST_ONLY" | "FORCE_TERMINATE";
 
 export type WardTabledListType = {
   areaId: number;

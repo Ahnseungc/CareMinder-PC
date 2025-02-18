@@ -1,14 +1,33 @@
 import { Autocomplete, Paper, styled, TextField } from "@mui/material";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
 import { Hours, Minutes } from "../const";
+import React from "react";
 
-export default function TabletTimeInput() {
+interface TabletTimeInputProps {
+  hourValue: number;
+  minuteValue: number;
+  onHourChange: React.Dispatch<React.SetStateAction<number>>;
+  onMinuteChange: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export default function TabletTimeInput({
+  hourValue,
+  minuteValue,
+  onHourChange,
+  onMinuteChange,
+}: TabletTimeInputProps) {
   return (
     <>
       <Autocomplete
         disablePortal
         disableClearable
         popupIcon={<DownArrow />}
+        value={Hours.find(hour => hour.label === String(hourValue).padStart(2, "0"))}
+        onChange={(_, value) => {
+          if (value && value.label) {
+            onHourChange(parseInt(value.label, 10));
+          }
+        }}
         options={Hours}
         PaperComponent={CustomPaper}
         ListboxProps={{
@@ -30,6 +49,12 @@ export default function TabletTimeInput() {
         disablePortal
         disableClearable
         popupIcon={<DownArrow />}
+        value={Minutes.find(minute => minute.label === String(minuteValue).padStart(2, "0"))}
+        onChange={(_, value) => {
+          if (value && value.label) {
+            onMinuteChange(parseInt(value.label, 10));
+          }
+        }}
         options={Minutes}
         PaperComponent={CustomPaper}
         ListboxProps={{

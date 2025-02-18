@@ -25,7 +25,9 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
   const { data: areaList } = useGetAreaList();
 
   const [area, setArea] = useState<string>(tabletData ? tabletData.areaName : "");
-  const [patientName, setPatientName] = useState<string>(tabletData ? tabletData.patientName : "");
+  const [patientName, setPatientName] = useState<string>(
+    tabletData ? tabletData.patientName : "Mixed",
+  );
   const [tabletName, setTabletName] = useState<string>(tabletData ? tabletData.tabletName : "");
 
   const { name, label, placeholder } = field;
@@ -44,12 +46,12 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
     setValue("area", areaList?.find(area => area.name === tabletData.areaName)?.id as number);
     setValue("patientName", tabletData.patientName);
     setValue("tabletName", tabletData.tabletName);
-  }, []);
+  }, [areaList, tabletData, setValue]);
 
   const validationRules = {
-    area: { required: "구역을 선택해주세요" },
-    patientName: { required: "정보가 입력되지 않았습니다." },
-    tabletName: { required: "정보가 입력되지 않았습니다." },
+    area: {},
+    patientName: {},
+    tabletName: {},
   };
 
   if (!areaList) {

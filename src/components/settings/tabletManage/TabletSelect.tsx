@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
 import palette from "@styles/palette";
+import { TableStatus } from "@hooks/queries/useGetWardTabletList";
 
 const OPTION_COLORS = {
   "강제종료": "#ff4a4a",
@@ -11,17 +12,22 @@ const OPTION_COLORS = {
 } as const;
 
 interface TabletSelectProps {
+  value: TableStatus;
   option: string[];
+  onSelect: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function TabletSelect({ option }: TabletSelectProps) {
-  const [selectOption, setSelectOption] = useState<string>(option[option.length - 1]);
+export default function TabletSelect({ value, option, onSelect }: TabletSelectProps) {
+  const [selectOption, setSelectOption] = useState<string>(
+    value === "FULL_ACCESS" ? "전체가능" : value === "REQUEST_ONLY" ? "요청만 가능" : "강제종료",
+  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const handleChangeOption = (option: string) => {
     setSelectOption(option);
     setIsOpen(false);
+    onSelect(option);
   };
 
   useEffect(() => {

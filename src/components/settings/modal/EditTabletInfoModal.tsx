@@ -14,7 +14,7 @@ import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 
 import TabletSelect from "../tabletManage/TabletSelect";
 import TabletTimeInput from "../tabletManage/TabletTimeInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;
@@ -32,6 +32,19 @@ export default function EditTableInfoModal({
 }: EditTabletInfoModalProps) {
   const isSelectedTablet = useRecoilValue(tabletListState);
   const [switchState, setSwitchState] = useState<boolean>(false);
+  const [tabletStatus, setTabletStatus] = useState<string>("");
+  const [sleepSimpleMode, setSleepSimpleMode] = useState<string>("");
+  const [startHour, setStartHour] = useState<number>(0);
+  const [startMinute, setStartMinute] = useState<number>(0);
+  const [endHour, setEndHour] = useState<number>(0);
+  const [endMinute, setEndMinute] = useState<number>(0);
+
+  useEffect(() => {
+    if (!tabletData) {
+      return;
+    }
+    setSwitchState(tabletData.sleepModeSimple.type === null ? false : true);
+  }, [tabletData, onClose]);
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSwitchState(event.target.checked);
@@ -50,12 +63,39 @@ export default function EditTableInfoModal({
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
 
   const onSubmit: SubmitHandler<EditTablet> = data => {
+    if (!tabletData) {
+      return;
+    }
+
+    const tabletStatusType =
+      tabletStatus === "강제종료"
+        ? "FORCE_TERMINATE"
+        : tabletStatus === "요청만 가능"
+          ? "REQUEST_ONLY"
+          : "FULL_ACCESS";
+
+    const sleepSimpleModeType =
+      sleepSimpleMode === "강제종료"
+        ? "FORCE_TERMINATE"
+        : sleepSimpleMode === "요청만 가능"
+          ? "REQUEST_ONLY"
+          : null;
+
     updateTabletInfo(
       {
         tabletIds: tabletId === undefined ? isSelectedTablet : [tabletId],
         areaId: data.area,
         tabletName: data.tabletName,
         patientName: data.patientName,
+        featureRestrictionType: tabletStatusType,
+        sleepModeSimple: {
+          startHour: startHour,
+          startMinute: startMinute,
+          endHour: endHour,
+          endMinute: endMinute,
+          type: sleepSimpleModeType,
+        },
+        admissionDate: tabletData?.admissionAt,
       },
       {
         onSuccess: () => {
@@ -69,12 +109,17 @@ export default function EditTableInfoModal({
     );
   };
 
+  if (!tabletData) {
+    return null;
+  }
+
   return (
     <>
       <CMModal
         {...props}
         onClose={() => {
           onClose();
+          setSwitchState(tabletData?.sleepModeSimple.type === null ? false : true);
           reset();
         }}
         maxWidth="sm"
@@ -92,6 +137,7 @@ export default function EditTableInfoModal({
               color="secondary"
               onClick={() => {
                 onClose();
+                setSwitchState(tabletData?.sleepModeSimple.type === null ? false : true);
                 reset();
               }}
             >
@@ -126,7 +172,11 @@ export default function EditTableInfoModal({
             태블릿 상태
           </Typography>
 
-          <TabletSelect option={TABLET_STATUS} />
+          <TabletSelect
+            value={tabletData?.featureRestrictionType}
+            option={TABLET_STATUS}
+            onSelect={setTabletStatus}
+          />
 
           <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
             수면제한
@@ -142,16 +192,30 @@ export default function EditTableInfoModal({
               <>
                 <SleepControlBox>
                   <SleepMenuText>시작 시간</SleepMenuText>
-                  <TabletTimeInput />
+                  <TabletTimeInput
+                    hourValue={startHour}
+                    minuteValue={startMinute}
+                    onHourChange={setStartHour}
+                    onMinuteChange={setStartMinute}
+                  />
                 </SleepControlBox>
                 <SleepControlBox>
                   <SleepMenuText>종료 시간</SleepMenuText>
-                  <TabletTimeInput />
+                  <TabletTimeInput
+                    hourValue={endHour}
+                    minuteValue={endMinute}
+                    onHourChange={setEndHour}
+                    onMinuteChange={setEndMinute}
+                  />
                 </SleepControlBox>
                 <SleepControlBox>
                   <SleepMenuText>제한 설정</SleepMenuText>
                   <div style={{ width: "300px", height: "40px" }}>
-                    <TabletSelect option={LIMIT_SETTING} />
+                    <TabletSelect
+                      value={tabletData.sleepModeSimple.type}
+                      option={LIMIT_SETTING}
+                      onSelect={setSleepSimpleMode}
+                    />
                   </div>
                 </SleepControlBox>
               </>

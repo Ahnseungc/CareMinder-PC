@@ -1,3 +1,4 @@
+import { SleepModeSimple, TableStatus } from "@hooks/queries/useGetWardTabletList";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
 
@@ -6,6 +7,9 @@ export type TabletInfo = {
   areaId: number;
   tabletName: string;
   patientName: string;
+  featureRestrictionType: TableStatus;
+  sleepModeSimple: SleepModeSimple;
+  admissionDate: string;
 };
 
 const updateTabletInfo = async (newTabletInfo: TabletInfo) => {

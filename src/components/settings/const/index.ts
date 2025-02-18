@@ -42,7 +42,7 @@ export const Hours = [
   { label: "21" },
   { label: "22" },
   { label: "23" },
-] as const;
+];
 
 export const Minutes = [
   { label: "00" },
@@ -105,4 +105,4 @@ export const Minutes = [
   { label: "57" },
   { label: "58" },
   { label: "59" },
-] as const;
+];
