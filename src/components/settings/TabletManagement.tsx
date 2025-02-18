@@ -25,6 +25,7 @@ export const TabletManagement = () => {
 
   const [isSticky, setIsSticky] = useState(false);
   const [isClear, setIsClear] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -112,7 +113,6 @@ export const TabletManagement = () => {
             >
               <SearchBarContainer>
                 <Paper
-                  component="form"
                   sx={{
                     p: "2px 4px",
                     display: "flex",
@@ -127,6 +127,15 @@ export const TabletManagement = () => {
                     sx={{ ml: 1, flex: 1 }}
                     placeholder="검색할 내용을 입력해주세요."
                     inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    value={searchValue}
+                    onChange={e => {
+                      setSearchValue(e.target.value);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        console.log(searchValue);
+                      }
+                    }}
                   />
                   <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
                     <Search />
@@ -141,7 +150,7 @@ export const TabletManagement = () => {
           )}
         </AnimatePresence>
       </BodyTitleContainer>
-      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} />
+      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} searchValue={searchValue} />
     </>
   );
 };

@@ -34,6 +34,7 @@ export type Columns = {
 interface TabletManagementTableProps {
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
+  searchValue: string;
 }
 
 const OPTIONS = [
@@ -49,7 +50,11 @@ const OPTIONS = [
   "직원1",
 ];
 
-const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
+const TabletManagementTable = ({
+  isClear,
+  setIsClear,
+  searchValue,
+}: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -65,6 +70,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
   const { data: wardTabletList, isLoading } = useGetWardTabletList({
+    patientName: searchValue,
     myArea: false,
     page: currentPage - 1,
     size: 20,

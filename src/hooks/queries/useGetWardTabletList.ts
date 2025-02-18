@@ -35,17 +35,24 @@ export type GetWardTabletListResponse = {
 };
 
 export type GetWardTabletListProps = {
+  patientName: string;
   myArea: boolean;
   page: number;
   size: number;
 };
 
-export const getWardTabledList = async ({ myArea = false, page, size }: GetWardTabletListProps) => {
+export const getWardTabledList = async ({
+  patientName = "",
+  myArea = false,
+  page,
+  size,
+}: GetWardTabletListProps) => {
   const res = await axiosInstance.get("/wards/tablet-list", {
     headers: {
       Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
     },
     params: {
+      patientName: patientName,
       myArea: myArea,
       page: page,
       size: size,
@@ -55,12 +62,13 @@ export const getWardTabledList = async ({ myArea = false, page, size }: GetWardT
 };
 
 export const useGetWardTabletList = ({
+  patientName = "",
   myArea = false,
   page,
   size,
 }: GetWardTabletListProps): UseQueryResult<GetWardTabletListResponse, AxiosError> => {
   return useQuery<GetWardTabletListResponse, AxiosError>({
-    queryKey: ["ward-tablet-list", page],
-    queryFn: () => getWardTabledList({ myArea, page, size }),
+    queryKey: ["ward-tablet-list", page, patientName],
+    queryFn: () => getWardTabledList({ patientName, myArea, page, size }),
   });
 };
