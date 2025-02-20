@@ -29,7 +29,7 @@ const HeaderContainer = styled(Box)({
   gap: "20px",
 });
 
-const SearchBoxWrapper = styled(Box)({
-  position: "relative",
-  height: "36px",
-});
+// const SearchBoxWrapper = styled(Box)({
+//   position: "relative",
+//   height: "36px",
+// });
