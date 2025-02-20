@@ -13,7 +13,10 @@ export type TabButtonProps = {
 export default function SettingsPage() {
   // 병동 설정 페이지 진입 시 재로그인 모달
   const [isModalOpen, setIsModalOpen] = useRecoilState(settingsLoginState);
-  const [activeTab, setActiveTab] = useState<string>("스태프 계정 수정");
+
+  //베드로 병원
+  // const [activeTab, setActiveTab] = useState<string>("스태프 계정 수정"); // 기존
+  const [activeTab, setActiveTab] = useState<string>("태블릿 병상 관리"); // 변경
 
   useEffect(() => {
     setIsModalOpen(false);
@@ -62,13 +65,15 @@ export default function SettingsPage() {
             >
               태블릿 컨텐츠 수정
             </TabButton> */}
-            <TabButton
+
+            {/* 베드로 병원 */}
+            {/* <TabButton
               isActive={activeTab === "스태프 계정 수정"}
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
               스태프 계정 관리
-            </TabButton>
+            </TabButton> */}
             <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
               value={"태블릿 병상 관리"}
