@@ -1,6 +1,6 @@
 import { userState } from "@libraries/recoil";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import Cookies from "js-cookie";
 import { Box, CircularProgress } from "@mui/material";
@@ -11,7 +11,7 @@ const AuthenticatedSignIn = () => {
   const setUserState = useSetRecoilState(userState);
   const setWardState = useSetRecoilState(wardState);
   const [isChecking, setIsChecking] = useState(true);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(isElectron());
@@ -27,6 +27,16 @@ const AuthenticatedSignIn = () => {
             Cookies.set("refreshTokenWard", userInfo.token.refreshToken),
           ]).then(() => {
             setIsChecking(false);
+          });
+        }
+        if (userInfo.type === "STAFF") {
+          setUserState(userInfo.user);
+          Promise.all([
+            Cookies.set("accessTokenStaff", userInfo.token.accessToken),
+            Cookies.set("refreshTokenStaff", userInfo.token.refreshToken),
+          ]).then(() => {
+            setIsChecking(false);
+            navigate("/staff");
           });
         }
         if (userInfo.type === "ADMIN") {
