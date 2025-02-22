@@ -18,7 +18,10 @@ const AuthenticatedSignIn = () => {
     if (isElectron()) {
       const handleMessage = (event: MessageEvent) => {
         console.log("Electron 받은 메세지 :", event.data);
+        
         const userInfo = event.data;
+        console.log(userInfo.tokensStaff);
+          console.log(userInfo.tokensWard);
         if (userInfo.type === "WARD") {
           setUserState(userInfo.user);
           setWardState(userInfo.wardState);
@@ -33,7 +36,8 @@ const AuthenticatedSignIn = () => {
           console.log("스태프 로그인");
           setUserState(userInfo.user);
           console.log(userInfo.tokensStaff);
-          console.log(userInfo.tokensWard)
+          console.log(userInfo.tokensWard);
+          setWardState(userInfo.wardState);
           Promise.all([
             Cookies.set("accessTokenWard", userInfo.tokensWard.accessToken),
             Cookies.set("refreshTokenWard", userInfo.tokensWard.refreshToken),
