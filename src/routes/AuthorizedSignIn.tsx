@@ -18,7 +18,6 @@ const AuthenticatedSignIn = () => {
     if (isElectron()) {
       const handleMessage = (event: MessageEvent) => {
         console.log("Electron 받은 메세지 :", event.data);
-        
         const userInfo = event.data;
         console.log(userInfo.tokensStaff);
           console.log(userInfo.tokensWard);
