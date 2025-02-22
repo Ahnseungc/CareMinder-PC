@@ -30,6 +30,7 @@ const AuthenticatedSignIn = () => {
           });
         }
         if (userInfo.type === "STAFF") {
+          console.log("스태프 로그인");
           setUserState(userInfo.user);
           console.log(userInfo.tokensStaff);
           console.log(userInfo.tokensWard)
