@@ -31,6 +31,8 @@ const AuthenticatedSignIn = () => {
         }
         if (userInfo.type === "STAFF") {
           setUserState(userInfo.user);
+          console.log(userInfo.tokensStaff);
+          console.log(userInfo.tokensWard)
           Promise.all([
             Cookies.set("accessTokenWard", userInfo.tokensWard.accessToken),
             Cookies.set("refreshTokenWard", userInfo.tokensWard.refreshToken),
