@@ -1,8 +1,10 @@
-import SearchBox from "@components/common/SearachBox/SearchBox";
-import SignOutButton from "./SignOutButton";
+// import SearchBox from "@components/common/SearachBox/SearchBox";
+// import SignOutButton from "./SignOutButton";
 import { Box, styled, Typography } from "@mui/material";
 import { ReactComponent as Logo } from "@assets/full-logo.svg";
 import Alarm from "@components/alarm/alarm.tsx";
+
+// 베드로 병원
 
 export default function UserHeader() {
   return (
@@ -10,10 +12,10 @@ export default function UserHeader() {
       <Logo />
       <Typography>
         <HeaderContainer>
-          <SearchBoxWrapper>
+          {/* <SearchBoxWrapper>
             <SearchBox />
           </SearchBoxWrapper>
-          <SignOutButton />
+          <SignOutButton /> */}
         </HeaderContainer>
       </Typography>
       <Alarm />
@@ -27,7 +29,7 @@ const HeaderContainer = styled(Box)({
   gap: "20px",
 });
 
-const SearchBoxWrapper = styled(Box)({
-  position: "relative",
-  height: "36px",
-});
+// const SearchBoxWrapper = styled(Box)({
+//   position: "relative",
+//   height: "36px",
+// });
