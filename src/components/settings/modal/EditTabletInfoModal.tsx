@@ -12,7 +12,6 @@ interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;
   tabletData: WardTabledListType | null;
 }
-
 export default function EditTableInfoModal({
   onClose,
   tabletId,
@@ -27,11 +26,10 @@ export default function EditTableInfoModal({
       tabletName: "",
     },
     mode: "onChange",
-  });
+  });    
   const { handleSubmit, reset } = form;
 
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
-
   const onSubmit: SubmitHandler<EditTablet> = data => {
     updateTabletInfo(
       {
