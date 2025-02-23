@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "@utils/axios/axiosInstance";
+import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
+import Cookies from "js-cookie";
 
 export type TabletInfo = {
   tabletIds: number[];
@@ -9,7 +10,11 @@ export type TabletInfo = {
 };
 
 const updateTabletInfo = async (newTabletInfo: TabletInfo) => {
-  const res = await axiosInstance.put("/tablets/list", newTabletInfo);
+  // const res = await axiosInstance.put("/tablets/list", newTabletInfo);
+  const res = await axiosInstance.put("/tablets/list", newTabletInfo, {
+    headers: { Authorization: `Bearer ${Cookies.get("accessTokenWard")}` },
+    customHeader: true,
+  } as CustomAxiosRequestConfig);
   return res.data;
 };
 
