@@ -1,6 +1,7 @@
 import { Controller, UseFormReturn } from "react-hook-form";
 import { EditTablet, EditTabletField } from "./modal/EditTabletInfoModal";
 import { Box, FormControl, FormHelperText, InputLabel, styled, TextField } from "@mui/material";
+//@ts-ignore
 import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { useEffect, useState } from "react";
