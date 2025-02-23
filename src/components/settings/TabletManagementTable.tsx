@@ -22,7 +22,7 @@ const columns = [
   { field: "identificationNum", headerName: "식별번호" },
   { field: "PatientName", headerName: "환자이름" },
   { field: "AdmissionDate", headerName: "입원 일자" },
-  { field: "Logout", headerName: "환자 로그아웃" },
+  { field: "Logout", headerName: "병상 정보수정" },
 ];
 
 interface TabletManagementTableProps {
