@@ -57,7 +57,7 @@ export default function SettingsPage() {
           <div>
             <Title variant="h1">병동 계정 설정</Title>
           </div>
-          <TabContainer>
+          {/* <TabContainer> */}
             {/* <TabButton
               isActive={activeTab === "태블릿 컨텐츠 수정"}
               value={"태블릿 컨텐츠 수정"}
@@ -74,14 +74,14 @@ export default function SettingsPage() {
             >
               스태프 계정 관리
             </TabButton> */}
-            <TabButton
+            {/* <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
               value={"태블릿 병상 관리"}
               onClick={() => handleTabClick("태블릿 병상 관리")}
             >
               태블릿 병상 관리
-            </TabButton>
-          </TabContainer>
+            </TabButton> */}
+          {/* </TabContainer> */}
           <div style={{ width: "131.37px" }}></div>
         </HeadContainer>
         <BodyContainer>
