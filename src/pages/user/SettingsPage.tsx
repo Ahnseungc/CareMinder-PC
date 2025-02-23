@@ -1,4 +1,5 @@
 import { SettingsModal } from "@components/settings";
+//@ts-ignore
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -16,6 +17,7 @@ export default function SettingsPage() {
 
   //베드로 병원
   // const [activeTab, setActiveTab] = useState<string>("스태프 계정 수정"); // 기존
+  //@ts-ignore
   const [activeTab, setActiveTab] = useState<string>("태블릿 병상 관리"); // 변경
 
   useEffect(() => {
@@ -32,9 +34,9 @@ export default function SettingsPage() {
     }, 100);
   };
 
-  const handleTabClick = (value: string) => {
-    setActiveTab(value);
-  };
+  // const handleTabClick = (value: string) => {
+  //   setActiveTab(value);
+  // };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -117,34 +119,34 @@ const HeadContainer = styled(Stack)({
   justifyContent: "space-between",
 });
 
-const TabContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  backgroundColor: theme.palette.success.main,
-  width: "402px",
-  height: "44px",
-  borderRadius: "100px",
-  padding: "4px",
-}));
+// const TabContainer = styled(Box)(({ theme }) => ({
+//   display: "flex",
+//   justifyContent: "center",
+//   alignItems: "center",
+//   backgroundColor: theme.palette.success.main,
+//   width: "402px",
+//   height: "44px",
+//   borderRadius: "100px",
+//   padding: "4px",
+// }));
 
 const BodyContainer = styled(Box)({
   position: "relative",
   marginBottom: "32px",
 });
 
-const TabButton = styled(Button, {
-  shouldForwardProp: prop => prop !== "isActive",
-})<TabButtonProps>(({ theme, isActive }) => ({
-  "width": "50%",
-  "backgroundColor": isActive ? theme.palette.primary.contrastText : theme.palette.success.main,
-  "color": isActive ? theme.palette.text.primary : theme.palette.text.disabled,
-  "borderRadius": "100px",
-  "&:hover": {
-    backgroundColor: isActive ? theme.palette.primary.contrastText : theme.palette.background,
-    color: theme.palette.primary.dark,
-  },
-}));
+// const TabButton = styled(Button, {
+//   shouldForwardProp: prop => prop !== "isActive",
+// })<TabButtonProps>(({ theme, isActive }) => ({
+//   "width": "50%",
+//   "backgroundColor": isActive ? theme.palette.primary.contrastText : theme.palette.success.main,
+//   "color": isActive ? theme.palette.text.primary : theme.palette.text.disabled,
+//   "borderRadius": "100px",
+//   "&:hover": {
+//     backgroundColor: isActive ? theme.palette.primary.contrastText : theme.palette.background,
+//     color: theme.palette.primary.dark,
+//   },
+// }));
 
 const Title = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
