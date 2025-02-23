@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import CInput from "@components/common/atom/C-Input";
-import { ReactComponent as Leave } from "@/assets/Leave.svg";
+// import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { Checkbox, Typography } from "@mui/material";
 import { useGetWardTabletList, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
@@ -37,6 +37,7 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
 
+  //@ts-ignore
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
 
@@ -73,10 +74,10 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     openTabletEditModal();
   };
 
-  const handleTabletLogout = (tabletId: number) => {
-    setSelectedTabletId(tabletId);
-    openLogoutModal();
-  };
+  // const handleTabletLogout = (tabletId: number) => {
+  //   setSelectedTabletId(tabletId);
+  //   openLogoutModal();
+  // };
 
   useEffect(() => {
     if (isClear) {
@@ -248,10 +249,10 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                             setSelectedTabletData(row);
                           }}
                         />
-                        <Leave
+                        {/* <Leave
                           style={{ cursor: "pointer" }}
                           onClick={() => handleTabletLogout(row.tabletId)}
-                        />
+                        /> */}
                       </ShortComBoxLayout>
                     </td>
                   </StyledTr>
