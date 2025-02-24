@@ -7,13 +7,14 @@ import { userState } from "@libraries/recoil";
 import { useNavigate } from "react-router";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import RoutePath from "@routes/routePath";
+//@ts-ignore
 import { useBooleanState, useCallbackOnce } from "@toss/react";
 import InnerContainer from "./inner/InnerContainer";
 import StaffSigninModal from "@components/signin/staff/StaffSigninModal";
 import modalState from "@libraries/recoil/modal";
-import { useAutoLogout } from "@utils/useAutoLogout";
-import InfoModal from "@components/settings/modal/InfoModal";
-import AutoLogoutMessage from "@components/common/AutoLogout/AutoLogoutMessage";
+// import { useAutoLogout } from "@utils/useAutoLogout";
+// import InfoModal from "@components/settings/modal/InfoModal";
+// import AutoLogoutMessage from "@components/common/AutoLogout/AutoLogoutMessage";
 import Cookies from "js-cookie";
 
 export default function AuthenticatedLayout() {
@@ -28,9 +29,9 @@ export default function AuthenticatedLayout() {
   const refreshTokenWard = Cookies.get("refreshTokenWard");
 
   const [isChecking, setIsChecking] = useState(true);
-  const [isOpen, openModal, closeModal] = useBooleanState();
+  // const [isOpen, openModal, closeModal] = useBooleanState();
 
-  const { remaining, reset } = useAutoLogout();
+  // const { remaining, reset } = useAutoLogout();
 
   const navigateSignin = useCallbackOnce(() => {
     console.error("로그인이 필요한 서비스입니다.");
@@ -53,18 +54,18 @@ export default function AuthenticatedLayout() {
     }
   }, [user, navigate, navigateSignin]);
 
-  useEffect(() => {
-    if (remaining) {
-      if (remaining < 10000) {
-        openModal();
-      }
-    }
-  }, [remaining, openModal]);
+  // useEffect(() => {
+  //   if (remaining) {
+  //     if (remaining < 10000) {
+  //       openModal();
+  //     }
+  //   }
+  // }, [remaining, openModal]);
 
-  const loginExtension = () => {
-    closeModal();
-    reset();
-  };
+  // const loginExtension = () => {
+  //   closeModal();
+  //   reset();
+  // };
 
   const handleOnClose = () => {
     navigate(-1);
@@ -81,7 +82,7 @@ export default function AuthenticatedLayout() {
   return (
     <Container>
       {/* 자동 로그아웃 경고 모달 */}
-      <InfoModal
+      {/* <InfoModal
         open={isOpen}
         onClose={closeModal}
         modalType="checkDelete"
@@ -90,7 +91,7 @@ export default function AuthenticatedLayout() {
         onConfirm={loginExtension}
         userType={userType}
         message={<AutoLogoutMessage userType={userType} />}
-      />
+      /> */}
 
       {/* 스태프 로그인 모달 */}
       <StaffSigninModal onClose={handleOnClose} open={isModal} />

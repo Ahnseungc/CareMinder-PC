@@ -120,6 +120,7 @@ export default function CFilter({ options, type }: CFilterProps) {
           ),
         }}
         renderOption={(props, option, { selected }) => {
+          //@ts-ignore
           const { key, ...optionProps } = props;
           return (
             <li
