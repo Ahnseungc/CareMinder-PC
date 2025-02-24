@@ -62,9 +62,11 @@ export default function EditTableInfoModal({
 
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
   const onSubmit: SubmitHandler<EditTablet> = data => {
-    if (!tabletData) {
-      return;
-    }
+    // if (!tabletData) {
+    //   console.log(isSelectedTablet);
+    //   console.log(data);
+    //   return;
+    // }
 
     const tabletStatusType =
       tabletStatus === "강제종료"
@@ -94,7 +96,7 @@ export default function EditTableInfoModal({
           endMinute: endMinute,
           type: sleepSimpleModeType,
         },
-        admissionDate: tabletData?.admissionAt,
+        admissionDate: tabletData ? tabletData.admissionAt : "",
       },
       {
         onSuccess: () => {
@@ -108,9 +110,9 @@ export default function EditTableInfoModal({
     );
   };
 
-  if (!tabletData) {
-    return null;
-  }
+  // if (!tabletData) {
+  //   return null;
+  // }
 
   return (
     <>
@@ -171,11 +173,15 @@ export default function EditTableInfoModal({
             태블릿 상태
           </Typography>
 
-          <TabletSelect
-            value={tabletData?.featureRestrictionType}
-            option={TABLET_STATUS}
-            onSelect={setTabletStatus}
-          />
+          {tabletData ? (
+            <TabletSelect
+              value={tabletData?.featureRestrictionType}
+              option={TABLET_STATUS}
+              onSelect={setTabletStatus}
+            />
+          ) : (
+            <TabletSelect value={"FULL_ACCESS"} option={TABLET_STATUS} onSelect={setTabletStatus} />
+          )}
 
           <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
             수면제한
@@ -210,11 +216,19 @@ export default function EditTableInfoModal({
                 <SleepControlBox>
                   <SleepMenuText>제한 설정</SleepMenuText>
                   <div style={{ width: "300px", height: "40px" }}>
-                    <TabletSelect
-                      value={tabletData.sleepModeSimple.type}
-                      option={LIMIT_SETTING}
-                      onSelect={setSleepSimpleMode}
-                    />
+                    {tabletData ? (
+                      <TabletSelect
+                        value={tabletData.sleepModeSimple.type}
+                        option={LIMIT_SETTING}
+                        onSelect={setSleepSimpleMode}
+                      />
+                    ) : (
+                      <TabletSelect
+                        value={"REQUEST_ONLY"}
+                        option={LIMIT_SETTING}
+                        onSelect={setSleepSimpleMode}
+                      />
+                    )}
                   </div>
                 </SleepControlBox>
               </>

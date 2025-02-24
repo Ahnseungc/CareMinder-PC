@@ -23,7 +23,7 @@ import InfoModal from "./modal/InfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
-import CFilter from "@components/common/Filter/Filter";
+// import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 
 export type Columns = {
@@ -37,18 +37,18 @@ interface TabletManagementTableProps {
   searchValue: string;
 }
 
-const OPTIONS = [
-  "잠금",
-  "잠금 해제",
-  "간호사",
-  "간호조무사",
-  "의사",
-  "직원",
-  "간호사1",
-  "간호조무사1",
-  "의사1",
-  "직원1",
-];
+// const OPTIONS = [
+//   "잠금",
+//   "잠금 해제",
+//   "간호사",
+//   "간호조무사",
+//   "의사",
+//   "직원",
+//   "간호사1",
+//   "간호조무사1",
+//   "의사1",
+//   "직원1",
+// ];
 
 const TabletManagementTable = ({
   isClear,
@@ -60,7 +60,7 @@ const TabletManagementTable = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  // const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -89,9 +89,9 @@ const TabletManagementTable = ({
     }
   };
 
-  const handleFilter = () => {
-    setIsFilterOpen(prev => !prev);
-  };
+  // const handleFilter = () => {
+  //   setIsFilterOpen(prev => !prev);
+  // };
 
   const handleChangePage = (_: React.ChangeEvent<unknown> | null, page: number) => {
     setCurrentPage(page);
@@ -112,7 +112,7 @@ const TabletManagementTable = ({
     {
       field: "Section",
       headerName: (
-        <ColumnName onClick={handleFilter}>
+        <ColumnName /**onClick={handleFilter}*/ onClick={() => null}>
           <span>구역</span>
           <Filter />
         </ColumnName>
@@ -231,11 +231,12 @@ const TabletManagementTable = ({
                           indeterminate={selectedItems > 0 && selectedItems < totalItems}
                           onClick={handleSelectAll}
                         />
-                        {isFilterOpen && (
+                        {/* 필터 기능 완성 후 주석 해제 */}
+                        {/* {isFilterOpen && (
                           <div style={{ position: "absolute", zIndex: 10 }}>
                             <CFilter options={OPTIONS} type={"WARD"} />
                           </div>
-                        )}
+                        )} */}
                       </th>
                     );
                   }
