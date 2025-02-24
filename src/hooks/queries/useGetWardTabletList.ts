@@ -3,6 +3,16 @@ import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInsta
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 
+export type TableStatus = "FULL_ACCESS" | "REQUEST_ONLY" | "FORCE_TERMINATE" | null;
+
+export type SleepModeSimple = {
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
+  type: TableStatus;
+};
+
 export type WardTabledListType = {
   areaId: number;
   areaName: string;
@@ -11,7 +21,9 @@ export type WardTabledListType = {
   serialNumber: string;
   patientId: number;
   patientName: string;
-  createdAt: string;
+  admissionAt: string;
+  featureRestrictionType: TableStatus;
+  sleepModeSimple: SleepModeSimple;
 };
 
 export type GetWardTabletListResponse = {
@@ -23,18 +35,25 @@ export type GetWardTabletListResponse = {
 };
 
 export type GetWardTabletListProps = {
+  patientName: string;
   myArea: boolean;
   page: number;
   size: number;
 };
 
-export const getWardTabledList = async ({ myArea = false, page, size }: GetWardTabletListProps) => {
+export const getWardTabledList = async ({
+  patientName = "",
+  myArea = false,
+  page,
+  size,
+}: GetWardTabletListProps) => {
   const res = await axiosInstance.get("/wards/tablet-list", {
     headers: {
       Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
     },
     customHeader: true,
     params: {
+      patientName: patientName,
       myArea: myArea,
       page: page,
       size: size,
@@ -44,12 +63,13 @@ export const getWardTabledList = async ({ myArea = false, page, size }: GetWardT
 };
 
 export const useGetWardTabletList = ({
+  patientName = "",
   myArea = false,
   page,
   size,
 }: GetWardTabletListProps): UseQueryResult<GetWardTabletListResponse, AxiosError> => {
   return useQuery<GetWardTabletListResponse, AxiosError>({
-    queryKey: ["ward-tablet-list", page],
-    queryFn: () => getWardTabledList({ myArea, page, size }),
+    queryKey: ["ward-tablet-list", page, patientName],
+    queryFn: () => getWardTabledList({ patientName, myArea, page, size }),
   });
 };

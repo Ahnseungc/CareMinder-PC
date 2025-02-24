@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/system";
+import styled from "@emotion/styled";
 import StaffAccountSettingsTable from "@components/settings/StaffAccountSettingsTable";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
@@ -19,15 +19,11 @@ import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
 import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal";
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
 import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
 import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
-
-interface SettingButtonProps {
-  isClick?: boolean;
-}
+import { AnimatePresence, motion } from "framer-motion";
 
 export const StaffAccount = () => {
   const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
@@ -40,13 +36,11 @@ export const StaffAccount = () => {
 
   const [isClear, setIsClear] = useState<boolean>(false);
   const [isModalType, setIsModalType] = useState<ModalType>("checkDeleteStaff");
-  const [_, setArea] = useState<string[]>([""]);
   const [isSetting, setIsSetting] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const [isEditing, setIsEditing] = useRecoilState(editingState);
   const selectStaffList = useRecoilState(staffListState);
-
-  const { data: areaList } = useGetAreaList();
 
   const { mutate: lockAccount } = useLockAccount();
   const { mutate: unLockAccount } = useUnLockAccount();
@@ -54,20 +48,6 @@ export const StaffAccount = () => {
 
   const [isSticky, setIsSticky] = useState(false);
   const editContainerRef = useRef<HTMLDivElement>(null);
-  const settingRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
-        setIsSetting(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,12 +75,6 @@ export const StaffAccount = () => {
       setIsSticky(false);
     }
   }, [isEditing]);
-
-  useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map(item => item.name));
-    }
-  }, [areaList]);
 
   const handleClear = () => {
     setIsEditing([]);
@@ -215,89 +189,112 @@ export const StaffAccount = () => {
       />
 
       <BodyTitleContainer>
-        {isEditing.length !== 0 ? (
-          <EditContainer
-            ref={editContainerRef}
-            isSticky={isSticky}
-            isVisible={isEditing.length !== 0}
-          >
-            <X style={{ cursor: "pointer" }} onClick={handleClear} />
-            <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
-            <EditMenuBox>
-              <Edit
-                onClick={() => {
-                  openPWChangeModal();
-                }}
-              />
-              <Lock onClick={openCheckLockModal} />
-              <UnLock onClick={handleAllUnLock} />
-              <Delete onClick={openInfoModal} />
-            </EditMenuBox>
-          </EditContainer>
-        ) : (
-          <TextContainer>
-            <SearchBarContainer>
-              <Paper
-                component="form"
-                sx={{
-                  p: "2px 4px",
-                  display: "flex",
-                  alignItems: "center",
-                  width: 300,
-                  border: "1px solid #ECECEC",
-                  borderRadius: "6px",
-                  boxShadow: "none",
-                }}
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="검색할 내용을 입력해주세요."
-                  inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+        <AnimatePresence mode="wait">
+          {isEditing.length !== 0 ? (
+            <EditContainer
+              key="edit-container"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              ref={editContainerRef}
+              isSticky={isSticky}
+            >
+              <X style={{ cursor: "pointer" }} onClick={handleClear} />
+              <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+              <EditMenuBox>
+                <Edit
+                  onClick={() => {
+                    openPWChangeModal();
+                  }}
                 />
-                <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                  <Search />
-                </IconButton>
-              </Paper>
-            </SearchBarContainer>
+                <Lock onClick={openCheckLockModal} />
+                <UnLock onClick={handleAllUnLock} />
+                <Delete onClick={openInfoModal} />
+              </EditMenuBox>
+            </EditContainer>
+          ) : (
+            <TextContainer
+              key="text-container"
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <SearchBarContainer>
+                <Paper
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: 300,
+                    border: "1px solid #ECECEC",
+                    borderRadius: "6px",
+                    boxShadow: "none",
+                  }}
+                >
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="검색할 내용을 입력해주세요."
+                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    value={searchValue}
+                    onChange={e => setSearchValue(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        console.log(searchValue);
+                      }
+                    }}
+                  />
+                  <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                    <Search />
+                  </IconButton>
+                </Paper>
+              </SearchBarContainer>
 
-            <MainTitleContainer>
-              <Title variant="h1">스태프 계정 수정</Title>
-            </MainTitleContainer>
+              <MainTitleContainer>
+                <Title variant="h1">스태프 계정 수정</Title>
+              </MainTitleContainer>
 
-            <StaffButtonContainer>
-              <div ref={settingRef} style={{ position: "relative" }}>
+              <StaffButtonContainer>
                 <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
                   <span>설정</span>
-                  <span style={{ position: "absolute", right: "10px" }}>
-                    <DownArrow style={{ transform: isSetting ? "rotate(180deg)" : "none" }} />
-                  </span>
+                  <motion.span
+                    initial={{ rotate: 0 }}
+                    animate={{ rotate: isSetting ? "180deg" : 0 }}
+                    transition={{ duration: 0.25 }}
+                    style={{ position: "absolute", right: "10px" }}
+                  >
+                    <DownArrow />
+                  </motion.span>
                 </SettingButton>
-                {isSetting && (
-                  <SettingDropdown>
-                    <div
-                      style={{ padding: "10px", textAlign: "center" }}
-                      onClick={() => {
-                        setIsSetting(false);
-                        openAreaManageModal();
-                      }}
-                    >
-                      구역 관리하기
-                    </div>
-                    <div
-                      style={{ padding: "10px", textAlign: "center" }}
-                      onClick={() => {
-                        setIsSetting(false);
-                        openTOSModal();
-                      }}
-                    >
-                      스태프 계정 생성하기
-                    </div>
-                  </SettingDropdown>
-                )}
-              </div>
-            </StaffButtonContainer>
-          </TextContainer>
-        )}
+                <SettingDropdown
+                  initial={{ opacity: 0, translateY: "-10px" }}
+                  animate={{ opacity: isSetting ? 1 : 0, translateY: isSetting ? 0 : -10 }}
+                >
+                  <div
+                    style={{ padding: "10px", textAlign: "center" }}
+                    onClick={() => {
+                      setIsSetting(false);
+                      openAreaManageModal();
+                    }}
+                  >
+                    구역 관리하기
+                  </div>
+                  <div
+                    style={{ padding: "10px", textAlign: "center" }}
+                    onClick={() => {
+                      setIsSetting(false);
+                      openTOSModal();
+                    }}
+                  >
+                    스태프 계정 생성하기
+                  </div>
+                </SettingDropdown>
+              </StaffButtonContainer>
+            </TextContainer>
+          )}
+        </AnimatePresence>
       </BodyTitleContainer>
       <StaffAccountSettingsTable
         onManage={handleInfoModal}
@@ -310,147 +307,116 @@ export const StaffAccount = () => {
 
 /** styles */
 
-const BodyTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "60px 0 40px 0",
-});
+interface SettingButtonProps {
+  isClick?: boolean;
+}
 
-const StaffButtonContainer = styled(Box)({
-  position: "absolute",
-  right: 10,
-  display: "flex",
-  gap: "20px",
-  width: "146px",
-  zIndex: 10,
-});
+const BodyTitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60px 0 40px 0;
+`;
 
-const MainTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
+const TextContainer = styled(motion.div)`
+  position: relative;
+  width: 100%;
+  height: 60px;
+`;
 
-const SearchBarContainer = styled(Box)({
-  position: "absolute",
-  top: "45px",
-  left: "30px",
-});
+const SearchBarContainer = styled.div`
+  position: absolute;
+  top: -5px;
+`;
 
-const TextContainer = styled(Box)({
-  width: "100%",
-  height: "60px",
-});
+const MainTitleContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-const Title = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-  textTransform: "uppercase",
-  lineHeight: "24px",
-  letterSpacing: "-3%",
-}));
+const StaffButtonContainer = styled.div`
+  position: absolute;
+  top: -5px;
+  right: 0;
+  width: 146px;
+  z-index: 10;
+`;
 
-const EditContainer = styled(Box, {
-  shouldForwardProp: prop => !["isSticky", "isVisible"].includes(prop as string),
-})<{ isSticky: boolean; isVisible: boolean }>(({ theme, isSticky, isVisible }) => ({
-  "position": isSticky ? "fixed" : "relative",
-  "top": isSticky ? "70px" : "auto",
-  "minWidth": "827px",
-  "width": isSticky ? "calc(100% - 200px)" : "100%",
-  "display": "flex",
-  "justifyContent": "start",
-  "alignItems": "center",
-  "gap": "20px",
-  "height": "60px",
-  "padding": "15px 12px",
-  "border": "2px solid #5D6DBE",
-  "borderRadius": "100px",
-  "color": theme.palette.text.dark,
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 10,
+const Title = styled(Typography)`
+  color: #000000;
+  text-transform: uppercase;
+  line-height: 24px;
+  letter-spacing: -3%;
+`;
 
-  "transition": "all 0.3s ease-in-out",
-  "opacity": isVisible ? 1 : 0,
-  "transform": isVisible ? "translateY(0)" : "translateY(-3px)",
-  "visibility": isVisible ? "visible" : "hidden",
-  "animation": isVisible
-    ? "slideDown 0.5s ease-in-out forwards"
-    : "slideUp 0.5s ease-in-out forwards",
-  "@keyframes slideDown": {
-    "0%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-  },
-  "@keyframes slideUp": {
-    "0%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "hidden",
-    },
-  },
-}));
+const EditContainer = styled(motion.div)<{ isSticky: boolean }>`
+  position: ${props => (props.isSticky ? "fixed" : "relative")};
+  top: ${props => (props.isSticky ? "70px" : "auto")};
+  min-width: 827px;
+  width: ${props => (props.isSticky ? "calc(100% - 200px)" : "100%")};
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 20px;
+  height: 60px;
+  padding: 15px 12px;
+  border: 2px solid #5d6dbe;
+  border-radius: 100px;
+  color: #000000;
+  background-color: #ffffff;
+  z-index: 10;
+`;
 
-const EditMenuText = styled(Typography)({
-  textDecoration: "none",
-  marginRight: "30px",
-});
+const EditMenuText = styled(Typography)`
+  text-decoration: none;
+  margin-right: 30px;
+`;
 
-const EditMenuBox = styled(Box)({
-  color: "#21262B",
-  display: "flex",
-  gap: "20px",
-  cursor: "pointer",
-});
+const EditMenuBox = styled.div`
+  color: #21262b;
+  display: flex;
+  gap: 20px;
+  cursor: pointer;
+`;
 
-const SettingButton = styled(Box, {
-  shouldForwardProp: prop => prop !== "isClick",
-})<SettingButtonProps>(({ isClick }) => ({
-  "position": "relative",
-  "display": "flex",
-  "justifyContent": "center",
-  "alignItems": "center",
-  "cursor": "pointer",
-  "width": "148px",
-  "height": "36px",
-  "border": "1px solid #5D6DBE",
-  "borderRadius": isClick ? "5px 5px 0 0" : "5px",
-  "color": "#5D6DBE",
-  "fontWeight": 700,
-  "fontSize": "16px",
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 21,
-  "&:hover": {
-    backgroundColor: "#F5F6FF",
-  },
-}));
+const SettingButton = styled.div<SettingButtonProps>`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 148px;
+  height: 36px;
+  border: 1px solid #5d6dbe;
+  border-radius: ${props => (props.isClick ? "5px 5px 0 0" : "5px")};
+  color: #5d6dbe;
+  font-weight: 700;
+  font-size: 16px;
+  background-color: #ffffff;
+  z-index: 21;
 
-const SettingDropdown = styled(Box)({
-  "position": "absolute",
-  "top": "100%",
-  "right": 0,
-  "width": "148px",
-  "backgroundColor": "#FFFFFF",
-  "border": "1px solid #5D6DBE",
-  "borderTop": "none",
-  "borderBottomLeftRadius": "5px",
-  "borderBottomRightRadius": "5px",
-  "boxShadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
-  "& > div": {
-    "cursor": "pointer",
-    "&:hover": {
-      backgroundColor: "#F5F6FF",
-    },
-  },
-});
+  &:hover {
+    background-color: #f5f6ff;
+  }
+`;
+
+const SettingDropdown = styled(motion.div)`
+  position: absolute;
+
+  width: 148px;
+  background-color: #ffffff;
+  border: 1px solid #5d6dbe;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  & > div {
+    cursor: pointer;
+    &:hover {
+      background-color: #f5f6ff;
+    }
+  }
+`;

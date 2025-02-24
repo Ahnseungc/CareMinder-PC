@@ -19,6 +19,9 @@ const CMColors = {
   },
   error: "#F24679",
   admin: "#5DB8BE",
+  full_access: "#04B300",
+  request_only: "#B66EF1",
+  force_terminate: "#FF4949",
 } as const;
 
 const palette = {
@@ -55,6 +58,11 @@ const palette = {
     dark: CMColors.status.excute,
   },
   divider: CMColors.border,
+  tablet: {
+    main: CMColors.full_access,
+    light: CMColors.request_only,
+    dark: CMColors.force_terminate,
+  },
 } as const;
 
 export default palette;

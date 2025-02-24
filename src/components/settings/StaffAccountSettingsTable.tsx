@@ -8,8 +8,6 @@ import { ReactComponent as Lock } from "@/assets/completedRequests/Interface ess
 import { ReactComponent as UnLock } from "@/assets/completedRequests/Interface essential/Unlock.svg";
 import { ReactComponent as Delete } from "@/assets/completedRequests/accountDelete.svg";
 import { ReactComponent as EmptyStaff } from "@/assets/EmptyStaff.svg";
-// import { ReactComponent as Filter } from "@/assets/filter.svg";
-// import { ReactComponent as X } from "@/assets/x-Icon.svg";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { editingState, staffListState } from "@libraries/recoil";
 import { StaffListType, useGetStaffList } from "@hooks/queries/useGetStaffList";
@@ -38,11 +36,6 @@ interface StaffAccountSettingsTableProps {
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// interface FilterState {
-//   menu: string;
-//   state: boolean;
-// }
-
 const StaffAccountSettingsTable = ({
   onManage,
   isClear,
@@ -53,15 +46,14 @@ const StaffAccountSettingsTable = ({
   const { data: staffList, isLoading: staffLoading } = useGetStaffList({
     page: currentPage - 1,
     size: 20,
+    areaFilter: [4, 5],
+    staffRoleFilter: ["NURSE"],
   });
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
-  // const [isFilterOpen, setIsFilterOpen] = useState<FilterState>({
-  //   menu: "",
-  //   state: false,
-  // });
+
   const [selectedStaff, setSelectedStaff] = useState<StaffListType>();
 
   const setIsEditing = useSetRecoilState(editingState);
@@ -72,13 +64,6 @@ const StaffAccountSettingsTable = ({
 
   const totalItems = staffList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
-
-  // const handleFilterBox = (menu: string) => {
-  //   setIsFilterOpen(prev => ({
-  //     menu: menu,
-  //     state: prev.menu === menu ? !prev.state : true,
-  //   }));
-  // };
 
   const handleCheckBox = (index: number) => {
     setSelectIndex(prevList => {
