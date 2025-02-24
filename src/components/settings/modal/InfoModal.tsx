@@ -12,6 +12,7 @@ const MODAL_CONTEXTS = {
   valueError: { title: "ID/PW 오류입니다.", controlAccount: false },
   checkTOS: { title: "필수 약관 체크 누락되었습니다.", controlAccount: false },
   successChangePW: { title: "비밀번호가 변경되었습니다.", controlAccount: false },
+  successChangePWReq: { title: "비밀번호가 변경 요청이 전송되었습니다.", controlAccount: false },
   successChangeInfo: { title: "변경 내용이 저장되었습니다.", controlAccount: false },
   successAccountLock: { title: "잠금 처리되었습니다.", controlAccount: false },
   confirmFail: { title: "인증실패되었습니다.", controlAccount: false },
@@ -60,7 +61,9 @@ export default function InfoModal({
       maxWidth="xs"
       onClose={onClose}
       title={
-        modalType === "successChangeInfo" || modalType === "successChangePW"
+        modalType === "successChangeInfo" ||
+        modalType === "successChangePW" ||
+        modalType === "successChangePWReq"
           ? "스태프 정보 수정하기"
           : ""
       }

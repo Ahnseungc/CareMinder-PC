@@ -34,16 +34,28 @@ export type GetStaffListResponse = {
 export type GetStaffListProps = {
   page: number;
   size: number;
+  areaFilter: number[];
+  staffRoleFilter: string[];
 };
 
-export const getStaffList = async ({ page, size }: GetStaffListProps) => {
+export const getStaffList = async ({
+  page,
+  size,
+  areaFilter,
+  staffRoleFilter,
+}: GetStaffListProps) => {
   const res = await axiosInstance.get("/wards/staff-list", {
     headers: {
       Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
     },
     params: {
-      page: page,
-      size: size,
+      page,
+      size,
+      areaFilter,
+      staffRoleFilter,
+    },
+    paramsSerializer: {
+      indexes: null,
     },
   });
   return res.data;
@@ -52,9 +64,11 @@ export const getStaffList = async ({ page, size }: GetStaffListProps) => {
 export const useGetStaffList = ({
   page,
   size,
+  areaFilter,
+  staffRoleFilter,
 }: GetStaffListProps): UseQueryResult<GetStaffListResponse, AxiosError> => {
   return useQuery<GetStaffListResponse, AxiosError>({
     queryKey: ["staffList", page],
-    queryFn: () => getStaffList({ page, size }),
+    queryFn: () => getStaffList({ page, size, areaFilter, staffRoleFilter }),
   });
 };

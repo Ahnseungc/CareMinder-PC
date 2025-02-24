@@ -1,53 +1,34 @@
-import { Box, styled } from "@mui/system";
+import styled from "@emotion/styled";
 import { IconButton, InputBase, Paper, Typography } from "@mui/material";
-import { ReactComponent as X } from "@/assets/x-Icon.svg";
-import { ReactComponent as DownArrow } from "@assets/downarrow-middle-icon.svg";
-import { ReactComponent as Leave } from "@/assets/Leave.svg";
-import { ReactComponent as Alert } from "@/assets/Info_Mode.svg";
-import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
-import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
-import TabletManagementTable from "@components/settings/TabletManagementTable";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
-import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
-import TabletSleepModeModal from "./modal/TabletSleepModeModal";
 import { useBooleanState } from "@toss/react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { ReactComponent as X } from "@/assets/x-Icon.svg";
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { ReactComponent as Search } from "@/assets/serachIcons/search-gray.svg";
+
+import TabletManagementTable from "@components/settings/TabletManagementTable";
+import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 import InfoModal from "./modal/InfoModal";
-import TabletLogoutWarning from "./TabletLogoutWarning";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
+import TabletLogoutWarning from "./TabletLogoutWarning";
+import palette from "@styles/palette";
 
 //태블릿 병상 관리
 
-interface SettingButtonProps {
-  isClick?: boolean;
-}
-
 export const TabletManagement = () => {
-  const settingRef = useRef<HTMLDivElement>(null);
   const editContainerRef = useRef<HTMLDivElement>(null);
 
   const [isEditing, setIsEditing] = useRecoilState(tabletEditingState);
 
-  const [isSetting, setIsSetting] = useState<boolean>(false);
   const [isSticky, setIsSticky] = useState(false);
   const [isClear, setIsClear] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
 
-  const [isModalOpen, openModalOpen, closeModalOpen] = useBooleanState();
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingRef.current && !settingRef.current.contains(event.target as Node)) {
-        setIsSetting(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,9 +65,6 @@ export const TabletManagement = () => {
 
   return (
     <>
-      {/* 수면 모드 설정 모달 */}
-      <TabletSleepModeModal open={isModalOpen} onClose={closeModalOpen} />
-
       {/* 태블릿 로그아웃 설정 모달 */}
       <InfoModal
         open={isLogoutModalOpen}
@@ -100,7 +78,6 @@ export const TabletManagement = () => {
       />
 
       {/* 태블릿 정보 변경 설정 모달 */}
-
       <EditTableInfoModal
         open={isTabletEditModalOpen}
         onClose={closeTabletEditModal}
@@ -108,317 +85,155 @@ export const TabletManagement = () => {
       />
 
       <BodyTitleContainer>
-        {isEditing.length !== 0 ? (
-          <EditContainer
-            ref={editContainerRef}
-            isSticky={isSticky}
-            isVisible={isEditing.length !== 0}
-          >
-            <X style={{ cursor: "pointer" }} onClick={handleClear} />
-            <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
-            <EditMenuBox>
-              <Edit onClick={openTabletEditModal} />
-              <Leave onClick={openLogoutModal} />
-            </EditMenuBox>
-          </EditContainer>
-        ) : (
-          <TextContainer>
-            <SearchBarContainer>
-              <Paper
-                component="form"
-                sx={{
-                  p: "2px 4px",
-                  display: "flex",
-                  alignItems: "center",
-                  width: 300,
-                  border: "1px solid #ECECEC",
-                  borderRadius: "6px",
-                  boxShadow: "none",
-                }}
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="검색할 내용을 입력해주세요."
-                  inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
-                />
-                <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                  <Search />
-                </IconButton>
-              </Paper>
-            </SearchBarContainer>
+        <AnimatePresence mode="wait">
+          {isEditing.length !== 0 ? (
+            <EditContainer
+              key="edit-container"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              ref={editContainerRef}
+              isSticky={isSticky}
+            >
+              <X style={{ cursor: "pointer" }} onClick={handleClear} />
+              <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+              <EditMenuBox>
+                <Edit onClick={openTabletEditModal} />
+                <LogoutButton onClick={openLogoutModal}>환자로그아웃</LogoutButton>
+              </EditMenuBox>
+            </EditContainer>
+          ) : (
+            <TextContainer
+              key="text-container"
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <SearchBarContainer>
+                <Paper
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: 300,
+                    border: "1px solid #ECECEC",
+                    borderRadius: "6px",
+                    boxShadow: "none",
+                  }}
+                >
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="검색할 내용을 입력해주세요."
+                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    value={searchValue}
+                    onChange={e => {
+                      setSearchValue(e.target.value);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        console.log(searchValue);
+                      }
+                    }}
+                  />
+                  <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+                    <Search />
+                  </IconButton>
+                </Paper>
+              </SearchBarContainer>
 
-            <MainTitleContainer>
-              <Title variant="h1">태블릿 병상 관리</Title>
-            </MainTitleContainer>
-
-            <ModeInfoText>
-              현재 <span>전체가능</span> 모드입니다. 4시간 후 강제종료 모드로 전환됩니다.
-            </ModeInfoText>
-
-            <StaffButtonContainer>
-              <SettingBox ref={settingRef}>
-                <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
-                  <span>설정</span>
-                  <DownArrowSpan>
-                    <DownArrow style={{ transform: isSetting ? "rotate(180deg)" : "none" }} />
-                  </DownArrowSpan>
-                </SettingButton>
-                {isSetting && (
-                  <SettingDropdown>
-                    <div
-                      onClick={() => {
-                        setIsSetting(false);
-                        openModalOpen();
-                      }}
-                    >
-                      수면 모드 설정하기
-                    </div>
-                  </SettingDropdown>
-                )}
-                <ModeInfoContainer>
-                  <ModeInfoHideBox>
-                    <Alert />
-                  </ModeInfoHideBox>
-                  <ModeInfoHideContent>
-                    현재 <span>&nbsp;전체가능&nbsp;</span> 모드입니다. 4시간 후 강제종료 모드로
-                    전환됩니다.
-                  </ModeInfoHideContent>
-                </ModeInfoContainer>
-              </SettingBox>
-            </StaffButtonContainer>
-          </TextContainer>
-        )}
+              <MainTitleContainer>
+                <Title variant="h1">태블릿 병상 관리</Title>
+              </MainTitleContainer>
+            </TextContainer>
+          )}
+        </AnimatePresence>
       </BodyTitleContainer>
-      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} />
+      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} searchValue={searchValue} />
     </>
   );
 };
 
-const BodyTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "60px 0 40px 0",
-});
+/** styles */
 
-const EditContainer = styled(Box, {
-  shouldForwardProp: prop => !["isSticky", "isVisible"].includes(prop as string),
-})<{ isSticky: boolean; isVisible: boolean }>(({ theme, isSticky, isVisible }) => ({
-  "position": isSticky ? "fixed" : "relative",
-  "top": isSticky ? "70px" : "auto",
-  "minWidth": "827px",
-  "width": isSticky ? "calc(100% - 200px)" : "100%",
-  "display": "flex",
-  "justifyContent": "start",
-  "alignItems": "center",
-  "gap": "20px",
-  "height": "60px",
-  "padding": "15px 12px",
-  "border": "2px solid #5D6DBE",
-  "borderRadius": "100px",
-  "color": theme.palette.text.dark,
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 10,
+export interface StyledContainerProps {
+  isSticky?: boolean;
+}
 
-  "transition": "all 0.3s ease-in-out",
-  "opacity": isVisible ? 1 : 0,
-  "transform": isVisible ? "translateY(0)" : "translateY(-3px)",
-  "visibility": isVisible ? "visible" : "hidden",
-  "animation": isVisible
-    ? "slideDown 0.5s ease-in-out forwards"
-    : "slideUp 0.5s ease-in-out forwards",
-  "@keyframes slideDown": {
-    "0%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-  },
-  "@keyframes slideUp": {
-    "0%": {
-      opacity: 1,
-      transform: "translateY(0)",
-      visibility: "visible",
-    },
-    "100%": {
-      opacity: 0,
-      transform: "translateY(-3px)",
-      visibility: "hidden",
-    },
-  },
-}));
-
-const TextContainer = styled(Box)({
-  width: "100%",
-  height: "60px",
-});
-
-const SearchBarContainer = styled(Box)({
-  position: "absolute",
-  top: "45px",
-  left: "30px",
-});
-
-const EditMenuText = styled(Typography)({
-  textDecoration: "none",
-  marginRight: "60px",
-});
-
-const EditMenuBox = styled(Box)({
-  color: "#21262B",
-  display: "flex",
-  gap: "20px",
-  cursor: "pointer",
-});
-
-const MainTitleContainer = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const Title = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.dark,
-  textTransform: "uppercase",
-  lineHeight: "24px",
-  letterSpacing: "-3%",
-}));
-
-const SettingBox = styled(Box)({
-  position: "relative",
-});
-
-const DownArrowSpan = styled(Typography)({
-  position: "absolute",
-  right: "10px",
-});
-
-const ModeInfoContainer = styled(Box)({
-  position: "absolute",
-  left: "-250px",
-  top: "18px",
-});
-
-const ModeInfoText = styled(Typography)`
-  position: absolute;
-  top: 60px;
-  right: 180px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #7c7c7c;
-
-  & span {
-    color: #04b300;
-  }
-
-  @media (max-width: 1500px) {
-    font-size: 12px;
-  }
-
-  @media (max-width: 1300px) {
-    display: none;
-  }
-`;
-
-const ModeInfoHideBox = styled(Box)`
+const BodyTitleContainer = styled.div`
   display: flex;
-  align-items: center;
-  visibility: hidden;
-  position: absolute;
-  top: -10px;
-  right: -230px;
-  & :hover {
-    cursor: pointer;
-  }
-  @media (max-width: 1300px) {
-    visibility: visible;
-  }
-
-  &:hover + div {
-    display: flex;
-  }
-`;
-
-const ModeInfoHideContent = styled(Box)`
-  position: absolute;
-  top: 15px;
-  right: -300px;
-  z-index: 9999;
-
-  display: none;
   justify-content: center;
   align-items: center;
-
-  width: 320px;
-  padding: 10px;
-
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-
-  font-size: 12px;
-  font-weight: 500;
-  color: #7c7c7c;
-  & span {
-    color: #04b300;
-  }
+  margin: 60px 0 40px 0;
+  position: relative;
+  min-height: 60px;
 `;
 
-const StaffButtonContainer = styled(Box)`
+const TextContainer = styled(motion.div)`
   position: absolute;
-  top: 54px;
-  right: 10px;
+  width: 100%;
+  height: 60px;
+`;
+
+const SearchBarContainer = styled.div`
+  position: absolute;
+  top: -5;
+  left: 0;
+`;
+
+export const EditContainer = styled(motion.div)<StyledContainerProps>`
+  position: ${props => (props.isSticky ? "fixed" : "absolute")};
+  top: ${props => (props.isSticky ? "70px" : "0")};
+  min-width: 827px;
+  width: ${props => (props.isSticky ? "calc(100% - 200px)" : "100%")};
   display: flex;
+  justify-content: start;
+  align-items: center;
   gap: 20px;
-  width: 146px;
+  height: 60px;
+  padding: 15px 12px;
+  border: 2px solid #5d6dbe;
+  border-radius: 100px;
+  color: #000000;
+  background-color: #ffffff;
   z-index: 10;
 `;
 
-const SettingButton = styled(Box, {
-  shouldForwardProp: prop => prop !== "isClick",
-})<SettingButtonProps>(({ isClick }) => ({
-  "position": "relative",
-  "display": "flex",
-  "justifyContent": "center",
-  "alignItems": "center",
-  "cursor": "pointer",
-  "width": "148px",
-  "height": "36px",
-  "border": "1px solid #5D6DBE",
-  "borderRadius": isClick ? "5px 5px 0 0" : "5px",
-  "color": "#5D6DBE",
-  "fontWeight": 700,
-  "fontSize": "16px",
-  "backgroundColor": "#FFFFFF",
-  "zIndex": 21,
+const EditMenuText = styled(Typography)`
+  text-decoration: none;
+  margin-right: 60px;
+`;
 
-  "&:hover": {
-    backgroundColor: "#F5F6FF",
-  },
-}));
+const EditMenuBox = styled.div`
+  color: ${palette.primary.main};
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+`;
 
-const SettingDropdown = styled(Box)({
-  "position": "absolute",
-  "top": "100%",
-  "right": 0,
-  "width": "148px",
-  "backgroundColor": "#FFFFFF",
-  "border": "1px solid #5D6DBE",
-  "borderTop": "none",
-  "borderBottomLeftRadius": "5px",
-  "borderBottomRightRadius": "5px",
-  "boxShadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
-  "& > div": {
-    "cursor": "pointer",
-    "padding": "10px",
-    "textAlign": "center",
-    "&:hover": {
-      backgroundColor: "#F5F6FF",
-    },
-  },
-});
+const LogoutButton = styled.div`
+  padding: 8px 20px;
+  border-radius: 100px;
+  background-color: ${palette.primary.main};
+  color: ${palette.secondary.contrastText};
+  font-weight: 700;
+  &:hover {
+    opacity: 0.9;
+    transition: ease-in 0.2s;
+  }
+`;
+
+const MainTitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Title = styled(Typography)`
+  color: #000000;
+  text-transform: uppercase;
+  line-height: 24px;
+  letter-spacing: -3%;
+`;

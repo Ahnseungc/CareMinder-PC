@@ -17,10 +17,13 @@ export const getWardInfo = async () => {
   return res.data;
 };
 
-const useGetWardInfo = (): UseQueryResult<GetWardInfoResponse, AxiosError> => {
+const useGetWardInfo = (options?: {
+  enabled?: boolean;
+}): UseQueryResult<GetWardInfoResponse, AxiosError> => {
   return useQuery<GetWardInfoResponse, AxiosError>({
     queryKey: ["wardInfo"],
     queryFn: getWardInfo,
+    enabled: options?.enabled,
   });
 };
 

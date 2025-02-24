@@ -10,11 +10,11 @@ export type GetAreaListResponse = {
   memo: string;
 };
 
-export type getAreaListRequest = {
+export type GetAreaListRequest = {
   type: string;
 };
 
-export const getAreaList = async ({ type }: getAreaListRequest) => {
+export const getAreaList = async ({ type }: GetAreaListRequest) => {
   if (type === "WARD") {
     const res = await axiosInstance.get("/areas");
     return res.data;
@@ -27,10 +27,13 @@ export const getAreaList = async ({ type }: getAreaListRequest) => {
   }
 };
 
-export const useGetAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
+export const useGetAreaList = (options?: {
+  enabled?: boolean;
+}): UseQueryResult<GetAreaListResponse[], AxiosError> => {
   return useQuery<GetAreaListResponse[], AxiosError>({
     queryKey: ["areaList"],
     queryFn: () => getAreaList({ type: "WARD" }),
+    enabled: options?.enabled,
   });
 };
 

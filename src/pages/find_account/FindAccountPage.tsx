@@ -1,5 +1,5 @@
 import CButton from "@components/common/atom/C-Button";
-import FindAccountField from "@components/FindAccount/FindAccountField";
+import FindAccountField from "@components/findAccount/FindAccountField";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
 import { Box, Stack, styled, Typography } from "@mui/material";
 import { SwitchCase } from "@toss/react";
@@ -7,7 +7,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 
-import HelpSection from "@components/FindAccount/HelpSection";
+import HelpSection from "@components/findAccount/HelpSection";
 import { useSearchParams } from "react-router-dom";
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";

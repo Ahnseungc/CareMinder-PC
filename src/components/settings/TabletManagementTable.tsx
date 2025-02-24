@@ -1,43 +1,67 @@
-import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import CInput from "@components/common/atom/C-Input";
-// import { ReactComponent as Leave } from "@/assets/Leave.svg";
-import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { useEffect, useState } from "react";
 import { Checkbox, Typography } from "@mui/material";
-import { useGetWardTabletList, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
-import PaginationComponent from "@components/common/pagination";
+import { motion } from "framer-motion";
+
+import { ReactComponent as Leave } from "@/assets/Leave.svg";
+import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
+import { ReactComponent as Info } from "@assets/alert.svg";
+import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
+import { ReactComponent as Array } from "@/assets/filter-vertical-icon.svg";
+
+import { useBooleanState } from "@toss/react";
+import {
+  TableStatus,
+  useGetWardTabletList,
+  WardTabledListType,
+} from "@hooks/queries/useGetWardTabletList";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import PaginationComponent from "@components/common/pagination";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
 import InfoModal from "./modal/InfoModal";
-import { useBooleanState } from "@toss/react";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
+// import CFilter from "@components/common/Filter/Filter";
+import { formatTimeRange } from "@utils/formatSleepModeTime";
 
-const columns = [
-  { field: "check", headerName: "" },
-  { field: "Section", headerName: "구역" },
-  { field: "TabletName", headerName: "태블릿 이름" },
-  { field: "identificationNum", headerName: "식별번호" },
-  { field: "PatientName", headerName: "환자이름" },
-  { field: "AdmissionDate", headerName: "입원 일자" },
-  { field: "Logout", headerName: "병상 정보수정" },
-];
+export type Columns = {
+  field: string;
+  headerName: React.ReactNode;
+};
 
 interface TabletManagementTableProps {
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
+  searchValue: string;
 }
 
-const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTableProps) => {
+// const OPTIONS = [
+//   "잠금",
+//   "잠금 해제",
+//   "간호사",
+//   "간호조무사",
+//   "의사",
+//   "직원",
+//   "간호사1",
+//   "간호조무사1",
+//   "의사1",
+//   "직원1",
+// ];
+
+const TabletManagementTable = ({
+  isClear,
+  setIsClear,
+  searchValue,
+}: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
+  // const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
-  //@ts-ignore
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
 
@@ -45,7 +69,8 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const { data: wardTabletList } = useGetWardTabletList({
+  const { data: wardTabletList, isLoading } = useGetWardTabletList({
+    patientName: searchValue,
     myArea: false,
     page: currentPage - 1,
     size: 20,
@@ -64,8 +89,11 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     }
   };
 
-  //@ts-ignore
-  const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
+  // const handleFilter = () => {
+  //   setIsFilterOpen(prev => !prev);
+  // };
+
+  const handleChangePage = (_: React.ChangeEvent<unknown> | null, page: number) => {
     setCurrentPage(page);
   };
 
@@ -74,10 +102,54 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     openTabletEditModal();
   };
 
-  // const handleTabletLogout = (tabletId: number) => {
-  //   setSelectedTabletId(tabletId);
-  //   openLogoutModal();
-  // };
+  const handleTabletLogout = (tabletId: number) => {
+    setSelectedTabletId(tabletId);
+    openLogoutModal();
+  };
+
+  const columns: Columns[] = [
+    { field: "check", headerName: "" },
+    {
+      field: "Section",
+      headerName: (
+        <ColumnName /**onClick={handleFilter}*/ onClick={() => null}>
+          <span>구역</span>
+          <Filter />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "TabletName",
+      headerName: (
+        <ColumnName>
+          <span>태블릿 이름</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "PatientName",
+      headerName: (
+        <ColumnName>
+          <span>환자 이름</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    {
+      field: "AdmissionDate",
+      headerName: (
+        <ColumnName onClick={() => null}>
+          <span>입원 일자</span>
+          <Array />
+        </ColumnName>
+      ),
+    },
+    { field: "TabletStatus", headerName: "태블릿 상태" },
+    { field: "SleepModeControl", headerName: "수면제한" },
+    { field: "TabletManageMent", headerName: "태블릿 관리" },
+    { field: "Logout", headerName: "환자 로그아웃" },
+  ];
 
   useEffect(() => {
     if (isClear) {
@@ -98,6 +170,14 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
     const index = selectIndex.map(item => wardTabletList?.data[item].tabletId) as number[];
     setSelectTabletList(index);
   }, [setSelectTabletList, selectIndex, wardTabletList]);
+
+  if (isLoading) {
+    return <div>로딩 중</div>;
+  }
+
+  if (!wardTabletList) {
+    return null;
+  }
 
   return (
     <>
@@ -151,6 +231,12 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                           indeterminate={selectedItems > 0 && selectedItems < totalItems}
                           onClick={handleSelectAll}
                         />
+                        {/* 필터 기능 완성 후 주석 해제 */}
+                        {/* {isFilterOpen && (
+                          <div style={{ position: "absolute", zIndex: 10 }}>
+                            <CFilter options={OPTIONS} type={"WARD"} />
+                          </div>
+                        )} */}
                       </th>
                     );
                   }
@@ -163,81 +249,106 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                 return (
                   <StyledTr key={index} isSelected={selectIndex.includes(index)}>
                     <td>
-                      <ShortComBoxLayout>
-                        <Checkbox
-                          {...label}
-                          sx={{
-                            "&.MuiCheckbox-root": {
-                              color: "#ECECEC",
-                            },
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
                             "& .MuiSvgIcon-root": {
-                              fontSize: 28,
+                              fill: "#B4C0FF",
                             },
-                            "&.Mui-checked": {
-                              "& .MuiSvgIcon-root": {
-                                fill: "#B4C0FF",
-                              },
-                            },
-                          }}
-                          checked={selectIndex.includes(index)}
-                          onClick={() => {
-                            setSelectIndex(prevList => {
-                              if (prevList.includes(index)) {
-                                return prevList.filter(item => item !== index);
-                              } else {
-                                return [...prevList, index];
-                              }
-                            });
-                          }}
-                        />
+                          },
+                        }}
+                        checked={selectIndex.includes(index)}
+                        onClick={() => {
+                          setSelectIndex(prevList => {
+                            if (prevList.includes(index)) {
+                              return prevList.filter(item => item !== index);
+                            } else {
+                              return [...prevList, index];
+                            }
+                          });
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        <Typography variant="body2">{row.areaName}</Typography>
                       </ShortComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"구역 정보"}
-                          onChange={() => null}
-                          value={row.areaName}
-                          disabled={true}
-                          id={""}
-                        ></CInput>
+                        <TabletName>
+                          {row.tabletName}
+                          <SerialNumberContainer whileHover="hover" initial="initial">
+                            <Info />
+                            <SerialNumber
+                              variants={{
+                                initial: { opacity: 0, x: -10 },
+                                hover: { opacity: 1, x: 0 },
+                              }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              {row.serialNumber || "식별번호없음"}
+                            </SerialNumber>
+                          </SerialNumberContainer>
+                        </TabletName>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"태블릿이름"}
-                          onChange={() => null}
-                          value={row.tabletName}
-                          disabled={true}
-                          id={""}
-                        ></CInput>
+                        <Typography variant="body2">{row.patientName || "미배정"}</Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography>{row.serialNumber}</Typography>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <CInput
-                          variant={"outlined"}
-                          placeholder={"환자 이름"}
-                          onChange={() => null}
-                          value={row.patientName}
-                          disabled={true}
-                          id={""}
-                        ></CInput>
-                      </LongComBoxLayout>
-                    </td>
-                    <td>
-                      <LongComBoxLayout>
-                        <Typography>
-                          {row.createdAt ? row.createdAt.substring(0, 10) : row.createdAt}
+                        <Typography variant="body2">
+                          {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
                         </Typography>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        <TabletTypography status={row.featureRestrictionType}>
+                          {row.featureRestrictionType === "FULL_ACCESS"
+                            ? "● 전체가능"
+                            : row.featureRestrictionType === "REQUEST_ONLY"
+                              ? "● 요청가능"
+                              : "● 강제종료"}
+                        </TabletTypography>
+                      </LongComBoxLayout>
+                    </td>
+                    <td>
+                      <LongComBoxLayout>
+                        {row.sleepModeSimple.type === null ? (
+                          "사용 안함"
+                        ) : (
+                          <>
+                            <TabletTypography
+                              status={row.sleepModeSimple.type}
+                              sx={{ marginRight: "8px" }}
+                            >
+                              {row.sleepModeSimple.type === "FULL_ACCESS"
+                                ? "● 전체가능"
+                                : row.sleepModeSimple.type === "REQUEST_ONLY"
+                                  ? "● 요청가능"
+                                  : "● 강제종료"}
+                            </TabletTypography>
+                            <span>
+                              {formatTimeRange({
+                                startHour: row.sleepModeSimple.startHour,
+                                startMinute: row.sleepModeSimple.startMinute,
+                                endHour: row.sleepModeSimple.endHour,
+                                endMinute: row.sleepModeSimple.endMinute,
+                              })}
+                            </span>
+                          </>
+                        )}
                       </LongComBoxLayout>
                     </td>
                     <td>
@@ -249,10 +360,22 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
                             setSelectedTabletData(row);
                           }}
                         />
-                        {/* <Leave
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleTabletLogout(row.tabletId)}
-                        /> */}
+                      </ShortComBoxLayout>
+                    </td>
+                    <td>
+                      <ShortComBoxLayout>
+                        <span
+                          style={{
+                            color: row.patientName
+                              ? `${palette.primary.main}`
+                              : `${palette.action.disabled}`,
+                          }}
+                        >
+                          <Leave
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleTabletLogout(row.tabletId)}
+                          />
+                        </span>
                       </ShortComBoxLayout>
                     </td>
                   </StyledTr>
@@ -277,6 +400,13 @@ const TabletManagementTable = ({ isClear, setIsClear }: TabletManagementTablePro
 export default TabletManagementTable;
 
 /** styles */
+
+const ColumnName = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+`;
 
 const TableContainer = styled.div`
   width: 100%;
@@ -332,11 +462,48 @@ const ShortComBoxLayout = styled.div`
 
 const LongComBoxLayout = styled.div`
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   padding: 0 20px;
   width: 224px;
   height: 36px;
   margin: 0 auto;
+`;
+
+const TabletName = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const SerialNumberContainer = styled(motion.div)`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const SerialNumber = styled(motion.div)`
+  position: absolute;
+  top: 30px;
+  left: -30px;
+  z-index: 10;
+  background-color: #00000099;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+`;
+
+const TabletTypography = styled(Typography)<{ status: TableStatus }>`
+  color: ${props =>
+    props.status === "FULL_ACCESS"
+      ? palette.tablet.main
+      : props.status === "REQUEST_ONLY"
+        ? palette.tablet.light
+        : palette.tablet.dark};
 `;
 
 const PaginationContainer = styled.div`
