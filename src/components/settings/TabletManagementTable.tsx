@@ -62,6 +62,7 @@ const TabletManagementTable = ({
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
+  //@ts-ignore
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
 

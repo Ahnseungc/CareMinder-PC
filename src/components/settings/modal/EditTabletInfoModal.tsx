@@ -61,7 +61,6 @@ export default function EditTableInfoModal({
   const { handleSubmit, reset } = form;
 
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
-
   const onSubmit: SubmitHandler<EditTablet> = data => {
     if (!tabletData) {
       return;

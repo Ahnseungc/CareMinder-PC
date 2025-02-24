@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import axiosInstance from "@utils/axios/axiosInstance";
+import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
+import Cookies from "js-cookie";
 
 type PasswordCheck = {
   password: string;
@@ -7,7 +8,12 @@ type PasswordCheck = {
 };
 
 export const wardCheck = async (passwordCheck: PasswordCheck) => {
-  const response = await axiosInstance.post("/users/check-password", passwordCheck);
+  // const response = await axiosInstance.post("/users/check-password", passwordCheck); 기존
+  // 베드로 병원
+  const response = await axiosInstance.post("/users/check-password", passwordCheck, {
+    headers: { Authorization: `Bearer ${Cookies.get("accessTokenWard")}` },
+    customHeader: true,
+  } as CustomAxiosRequestConfig);
   return response.data;
 };
 

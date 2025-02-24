@@ -13,7 +13,9 @@ export default function SettingsMenu() {
       value={user?.type as UserType}
       caseBy={{
         WARD: <MenuLayout routePath={RoutePath.Settings} pageName="설정" icon={Settings} />,
-        STAFF: <MenuLayout routePath={RoutePath.StaffSettings} pageName="설정" icon={Settings} />,
+        STAFF: (
+          <MenuLayout routePath={RoutePath.StaffSettings} pageName="스태프 설정" icon={Settings} />
+        ),
       }}
     />
   );

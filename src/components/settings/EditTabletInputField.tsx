@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { useEffect, useState } from "react";
 import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
@@ -22,7 +22,8 @@ type InputFieldProps = {
 };
 
 export default function EditTabletInputField({ field, form, tabletData }: InputFieldProps) {
-  const { data: areaList } = useGetAreaList();
+  // const { data: areaList } = useGetAreaList();
+  const { data: areaList } = useGetStaffAreaList();
 
   const [area, setArea] = useState<string>(tabletData ? tabletData.areaName : "");
   const [patientName, setPatientName] = useState<string>(
