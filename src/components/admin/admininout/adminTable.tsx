@@ -252,7 +252,7 @@ const AdminTable: FC<AdminTableProps> = ({
                     </ComBoxLayout>
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[3].width}>
-                    {formatDateDash(new Date(tablet.createdAt))}
+                    {formatDateDash(new Date(tablet.admissionAt))}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[4].width}>
                     <SvgIcon
