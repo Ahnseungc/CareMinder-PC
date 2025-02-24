@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { useEffect, useState } from "react";
 import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
