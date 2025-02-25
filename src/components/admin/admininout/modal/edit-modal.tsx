@@ -24,11 +24,11 @@ const EditModal = ({ onClose, selectList, areaList, refetch, ...props }: any) =>
 
   const [isOpenCalendar, setIsOpenCalendar] = useState(false);
   const [selectCalendar, setSelectCalendar] = useState<Value>(
-    pickLength > 1 ? null : new Date(selectList[0].admissionDate),
+    pickLength > 1 || selectList[0].admissionDate === undefined
+      ? null
+      : new Date(selectList[0].admissionDate),
   );
   const [putEditData, setPutEditData] = useState<EditData>({});
-
-  console.log(selectCalendar);
 
   const handleChangeArea = (name: string) => {
     const areaId = areaList?.find((item: GetAreaListResponse) => item.name === name)?.id;
