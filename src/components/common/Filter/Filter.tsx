@@ -10,16 +10,16 @@ import { ReactComponent as X } from "@assets/x-Icon.svg";
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-type Order = "오름차순" | "내림차순";
-
 interface CFilterProps {
   options: string[];
   type: "ADMIN" | "WARD" | "STAFF";
+  onApply: (selected: string[]) => void;
+  prevFilter: string[];
 }
 
-export default function CFilter({ options, type }: CFilterProps) {
-  const [selectFilter, setSelectFilter] = useState<string[]>([]);
-  const [currentOrder, setCurrentOrder] = useState<Order>("오름차순");
+export default function CFilter({ options, type, onApply, prevFilter }: CFilterProps) {
+  const [selectFilter, setSelectFilter] = useState<string[]>(prevFilter);
+
   const [containerHeight, setContainerHeight] = useState<number>(308);
   const inputRef = useRef<HTMLDivElement>(null);
   const listboxRef = useRef<HTMLUListElement>(null);
@@ -46,7 +46,8 @@ export default function CFilter({ options, type }: CFilterProps) {
     const calculateHeight = () => {
       if (inputRef.current && listboxRef.current) {
         const inputHeight = inputRef.current.offsetHeight;
-        const listboxHeight = Math.min(options.length * 40, 144);
+
+        const listboxHeight = Math.min(options.length * 40, 144) + 40;
         const buttonHeight = 40;
         const padding = 16;
 
@@ -69,6 +70,49 @@ export default function CFilter({ options, type }: CFilterProps) {
 
   const handleSelectionChange = (_: React.SyntheticEvent, newValue: string[]) => {
     setSelectFilter(newValue);
+  };
+
+  const handleSelectAll = () => {
+    if (selectFilter.length === options.length) {
+      setSelectFilter([]);
+    } else {
+      setSelectFilter([...options]);
+    }
+  };
+
+  const CustomListboxWithSelectAll = (props: React.HTMLAttributes<HTMLElement>) => {
+    const { children, ...other } = props;
+    return (
+      <CustomListbox ref={listboxRef} {...other}>
+        <li
+          style={{
+            paddingTop: "8px",
+            paddingBottom: "8px",
+            paddingLeft: "16px",
+            display: "flex",
+            alignItems: "center",
+            borderBottom: "1px solid #f0f0f0",
+          }}
+          onClick={handleSelectAll}
+        >
+          <Checkbox
+            icon={icon}
+            checkedIcon={checkedIcon}
+            checked={selectFilter.length === options.length}
+            onChange={handleSelectAll}
+            sx={{
+              "marginRight": "8px",
+              "cursor": "pointer",
+              "& .MuiSvgIcon-root": {
+                color: typeColors[type].chip,
+              },
+            }}
+          />
+          <span style={{ fontSize: "14px" }}>모두 선택</span>
+        </li>
+        {children}
+      </CustomListbox>
+    );
   };
 
   return (
@@ -158,45 +202,26 @@ export default function CFilter({ options, type }: CFilterProps) {
               }}
               placeholder={selectFilter.length === 0 ? "선택된 항목이 없습니다." : ""}
             />
-            <div
-              style={{
-                position: "absolute",
-                bottom: -30,
-                left: "10px",
-                display: "flex",
-                fontWeight: 400,
-                fontSize: "14px",
-                gap: "8px",
-                height: "20px",
-              }}
-            >
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selectFilter.length === options.length}
-                sx={{
-                  "& .MuiSvgIcon-root": {
-                    color: typeColors[type].chip,
-                  },
-                }}
-              />
-              <span>모두 선택</span>
-            </div>
           </div>
         )}
-        ListboxComponent={CustomListbox}
+        ListboxComponent={CustomListboxWithSelectAll}
         ListboxProps={{
-          ref: listboxRef,
           style: {
-            marginTop: "36px",
             overflowY: "scroll",
             padding: 0,
-            maxHeight: "144px",
+            maxHeight: "184px",
           },
         }}
       />
       <ButtonContainer>
         <CButton
+          buttontype={`${type === "ADMIN" ? "primarySquareWhiteAdmin" : type === "WARD" ? "primarySpaureWhite" : "primarySquareWhiteStaff"}`}
+          onClick={() => onApply(selectFilter)}
+          sx={{ borderRadius: "999px" }}
+        >
+          적용하기
+        </CButton>
+        {/* <CButton
           buttontype={
             currentOrder === "오름차순"
               ? `${type === "ADMIN" ? "primarySquareWhiteAdmin" : type === "WARD" ? "primarySpaureWhite" : "primarySquareWhiteStaff"}`
@@ -217,7 +242,7 @@ export default function CFilter({ options, type }: CFilterProps) {
           sx={{ borderRadius: "999px" }}
         >
           내림차순
-        </CButton>
+        </CButton> */}
       </ButtonContainer>
     </FilterContainer>
   );
@@ -227,7 +252,7 @@ export default function CFilter({ options, type }: CFilterProps) {
 const FilterContainer = styled.div<{ $height: number }>`
   position: relative;
   width: auto;
-  height: calc(${props => props.$height}px + 36px);
+  height: calc(${props => props.$height}px);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -260,8 +285,8 @@ const CustomListbox = styled.ul`
 const ButtonContainer = styled.div`
   position: absolute;
   bottom: 10px;
-  left: 2px;
-  width: 100%;
+  left: 12px;
+  width: 90%;
   display: flex;
   gap: 4px;
 `;

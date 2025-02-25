@@ -125,8 +125,8 @@ export const TabletManagement = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="검색할 내용을 입력해주세요."
-                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    placeholder="환자 이름을 검색해주세요."
+                    inputProps={{ "aria-label": "환자 이름을 검색해주세요." }}
                     value={searchValue}
                     onChange={e => {
                       setSearchValue(e.target.value);

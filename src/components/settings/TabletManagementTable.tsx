@@ -9,13 +9,11 @@ import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Info } from "@assets/alert.svg";
 import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
 import { ReactComponent as Array } from "@/assets/filter-vertical-icon.svg";
+import { ReactComponent as ASC_Array } from "@/assets/ASC_array.svg";
+import { ReactComponent as DESC_Array } from "@/assets/DESC_array.svg";
 
 import { useBooleanState } from "@toss/react";
-import {
-  TableStatus,
-  useGetWardTabletList,
-  WardTabledListType,
-} from "@hooks/queries/useGetWardTabletList";
+import { TableStatus, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import PaginationComponent from "@components/common/pagination";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
@@ -23,8 +21,10 @@ import InfoModal from "./modal/InfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
-// import CFilter from "@components/common/Filter/Filter";
+import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
+import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -37,19 +37,6 @@ interface TabletManagementTableProps {
   searchValue: string;
 }
 
-// const OPTIONS = [
-//   "잠금",
-//   "잠금 해제",
-//   "간호사",
-//   "간호조무사",
-//   "의사",
-//   "직원",
-//   "간호사1",
-//   "간호조무사1",
-//   "의사1",
-//   "직원1",
-// ];
-
 const TabletManagementTable = ({
   isClear,
   setIsClear,
@@ -60,7 +47,8 @@ const TabletManagementTable = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
-  // const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<TabletFilter>({});
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -69,12 +57,43 @@ const TabletManagementTable = ({
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const { data: wardTabletList, isLoading } = useGetWardTabletList({
-    patientName: searchValue,
-    myArea: false,
-    page: currentPage - 1,
-    size: 20,
-  });
+  const {
+    mutate: tabletListsMutation,
+    data: wardTabletList,
+    isPending: isLoading,
+  } = useTabletLists();
+
+  const { data: areaList } = useGetAreaList();
+
+  const removeDefaultFilters = (filter: TabletFilter) => {
+    const filteredObj = { ...filter };
+
+    Object.keys(filteredObj).forEach(key => {
+      const typedKey = key as keyof TabletFilter;
+      const value = filteredObj[typedKey];
+
+      if (value === "DEFAULT" || value === undefined || value === null) {
+        delete filteredObj[typedKey];
+      }
+    });
+
+    return filteredObj;
+  };
+
+  useEffect(() => {
+    const currentFilter: TabletFilter = {
+      ...filter,
+      patientNameFilter: searchValue || undefined,
+    };
+
+    const processedFilter = removeDefaultFilters(currentFilter);
+
+    tabletListsMutation({
+      page: currentPage - 1,
+      size: 20,
+      filter: processedFilter,
+    });
+  }, [tabletListsMutation, currentPage, searchValue, filter]);
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -89,9 +108,9 @@ const TabletManagementTable = ({
     }
   };
 
-  // const handleFilter = () => {
-  //   setIsFilterOpen(prev => !prev);
-  // };
+  const handleFilter = () => {
+    setIsFilterOpen(prev => !prev);
+  };
 
   const handleChangePage = (_: React.ChangeEvent<unknown> | null, page: number) => {
     setCurrentPage(page);
@@ -107,12 +126,55 @@ const TabletManagementTable = ({
     openLogoutModal();
   };
 
+  const handleSort = (field: string) => {
+    let newFilter = { ...filter };
+
+    if (field === "PatientName") {
+      const currentSort = filter.patientNameSort;
+      newFilter = {
+        ...filter,
+        patientNameSort:
+          currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
+      };
+    } else if (field === "TabletName") {
+      const currentSort = filter.tabletNameSort;
+      newFilter = {
+        ...filter,
+        tabletNameSort: currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
+      };
+    } /**else if (field === "AdmissionDate") {
+      const currentSort = filter.admissionDateSort;
+      newFilter = {
+        ...filter,
+        admissionDateSort: currentSort === "ASC" ? "DESC" : "ASC",
+      };
+    }*/
+
+    setFilter(newFilter);
+  };
+
+  const handleAreaFilter = (selectedAreas: string[]) => {
+    const areaIds = areaList
+      ?.filter(area => selectedAreas.includes(area.name))
+      .map(area => area.id) as number[];
+
+    setFilter({
+      ...filter,
+      areaFilter: areaIds.length > 0 ? areaIds : undefined,
+    });
+    setIsFilterOpen(false);
+  };
+
+  useEffect(() => {
+    console.log(filter);
+  }, [filter]);
+
   const columns: Columns[] = [
     { field: "check", headerName: "" },
     {
       field: "Section",
       headerName: (
-        <ColumnName /**onClick={handleFilter}*/ onClick={() => null}>
+        <ColumnName onClick={handleFilter}>
           <span>구역</span>
           <Filter />
         </ColumnName>
@@ -121,27 +183,43 @@ const TabletManagementTable = ({
     {
       field: "TabletName",
       headerName: (
-        <ColumnName>
+        <ColumnName onClick={() => handleSort("TabletName")}>
           <span>태블릿 이름</span>
-          <Array />
+          <span style={{ color: `${palette.primary.main}` }}>
+            {filter.tabletNameSort === "ASC" ? (
+              <ASC_Array />
+            ) : filter.tabletNameSort === "DESC" ? (
+              <DESC_Array />
+            ) : (
+              <Array />
+            )}
+          </span>
         </ColumnName>
       ),
     },
     {
       field: "PatientName",
       headerName: (
-        <ColumnName>
+        <ColumnName onClick={() => handleSort("PatientName")}>
           <span>환자 이름</span>
-          <Array />
+          <span style={{ color: `${palette.primary.main}` }}>
+            {filter.patientNameSort === "ASC" ? (
+              <ASC_Array />
+            ) : filter.patientNameSort === "DESC" ? (
+              <DESC_Array />
+            ) : (
+              <Array />
+            )}
+          </span>
         </ColumnName>
       ),
     },
     {
       field: "AdmissionDate",
       headerName: (
-        <ColumnName onClick={() => null}>
+        <ColumnName /**onClick={() => handleSort("AdmissionDate")}*/>
           <span>입원 일자</span>
-          <Array />
+          {/* <Array /> */}
         </ColumnName>
       ),
     },
@@ -176,6 +254,10 @@ const TabletManagementTable = ({
   }
 
   if (!wardTabletList) {
+    return null;
+  }
+
+  if (!areaList) {
     return null;
   }
 
@@ -232,11 +314,18 @@ const TabletManagementTable = ({
                           onClick={handleSelectAll}
                         />
                         {/* 필터 기능 완성 후 주석 해제 */}
-                        {/* {isFilterOpen && (
+                        {isFilterOpen && (
                           <div style={{ position: "absolute", zIndex: 10 }}>
-                            <CFilter options={OPTIONS} type={"WARD"} />
+                            <CFilter
+                              options={areaList.map(area => area.name)}
+                              type={"WARD"}
+                              onApply={handleAreaFilter}
+                              prevFilter={areaList
+                                .filter(area => filter.areaFilter?.includes(area.id))
+                                .map(area => area.name)}
+                            />
                           </div>
-                        )} */}
+                        )}
                       </th>
                     );
                   }
