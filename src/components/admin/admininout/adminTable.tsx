@@ -15,7 +15,7 @@ import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
 
 const columnsHeader = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
-  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "14.08%" },
+  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "10.08%" },
   {
     id: 2,
     field: "TableName",
@@ -31,7 +31,7 @@ const columnsHeader = [
     width: "8.54%",
   },
   { id: 4, field: "TableName", headerName: "메모 보기", width: "8.69%" },
-  { id: 5, field: "TableName", headerName: "환자 정보 수정하기", width: "8.69%" },
+  { id: 5, field: "TableName", headerName: "환자 정보 수정하기", width: "10.69%" },
   { id: 6, field: "TableName", headerName: "퇴원 처리 하기", width: "8.14%" },
 ];
 
@@ -78,14 +78,34 @@ const AdminTable: FC<AdminTableProps> = ({
               checked={getTablet?.length > 0 && selected?.length === getTablet?.length}
             />
           </th>
-          {columnsHeader.map(column => {
-            return (
-              <InoutTableHeaderTh key={column.id} width={column.width}>
-                <p>{column.headerName}</p>
-                {column.icon ? column.icon : ""}
-              </InoutTableHeaderTh>
-            );
-          })}
+          <InoutTableHeaderTh width={"8.31%"}>
+            <p>환자</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"10.08%"}>
+            <p>구역</p>
+            <FilterIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"11.08%"}>
+            <p>태블릿 이름</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"8.54%"}>
+            <p>입원일자</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"8.69%"}>
+            <p>메모 보기</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"10.69%"}>
+            <p>환자 정보 수정하기</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"8.14%"}>
+            <p>퇴원 처리 하기</p>
+            <FilterVerticalIcon />
+          </InoutTableHeaderTh>
         </InoutTableHedaerTr>
       </thead>
       <tbody>
