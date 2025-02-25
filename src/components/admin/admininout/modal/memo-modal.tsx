@@ -1,57 +1,31 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
-import { CircularProgress, styled, Typography } from "@mui/material";
+import { styled } from "@mui/material";
 import { Box } from "@mui/system";
 import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base/TextareaAutosize";
-import useGetMemo from "@hooks/queries/useGetMemo";
-import useCreateMemo from "@hooks/mutation/useCreateMemo";
-import { useCallback, useState } from "react";
-import { createMemoReqest } from "@hooks/mutation/useCreateMemo";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
-import { formatDateDash } from "@utils/getDateform";
+import { useState } from "react";
+import useGetPatientMemo from "@hooks/queries/useGetPatientMemo";
+import { ReactComponent as Plus } from "@/assets/plus.svg";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
-  subTitle: string | React.ReactNode;
-  patientId: number;
+  selectList: any;
 }
 
-type MemoData = {
-  memoId: number;
-  staffName: string;
-  staffRole: string;
-  content: string;
-  createdAt: string;
-  isMine: true;
-};
+const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalProps) => {
+  const { data: getMemoList, refetch } = useGetPatientMemo(
+    selectList.map((el: { id: number }) => el.id),
+  );
+  const [memo, setMemo] = useState<string>("");
 
-const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: ChargeModalProps) => {
-  const { data, isLoading } = useGetMemo(patientId);
-  const [memo, setMemo] = useState<createMemoReqest>({ patientId: patientId, content: "" });
-  const { mutate: createMemo } = useCreateMemo();
-  const queryClient = useQueryClient();
-
-  const handleCreateMemo = useCallback(() => {
-    createMemo(
-      { patientId: memo?.patientId as number, content: memo?.content as string },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["useGetMemo"]);
-          toast.success("메모가 추가되었습니다.");
-          onClose();
-        },
-        onError: error => {
-          console.error(error);
-          toast.error("메모 추가에 실패했습니다.");
-        },
-      },
-    );
-  }, [memo, patientId]);
+  const onAddMemo = () => {
+    console.log(memo);
+    //mutate 메모 등록
+    //등록하면  메모 조회 다시 들고오기 //    refetch();
+  };
 
   return (
     <CMModal
-      maxWidth="xs"
+      maxWidth="md"
       onClose={onClose}
       title={modalTitle !== null ? modalTitle : "이름 없음"}
       titleColor="#21262B"
@@ -61,95 +35,46 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
             취소
           </ModalActionButton>
 
-          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={handleCreateMemo}>
-            변경
+          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={() => null}>
+            확인
           </ModalActionButton>
         </>
       }
       {...props}
     >
       <View sx={{ width: "100%", paddingLeft: "20px", paddingRight: "20px" }}>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "start",
-            paddingBottom: "10px",
-            paddingTop: "20px",
-          }}
-        >
-          <Text>이전 메모</Text>
-          {isLoading ? (
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress size={5} color="secondary" />
-            </Box>
-          ) : (
-            <Box sx={{ marginTop: 2 }}>
-              {data?.map((memo: MemoData) => {
-                return (
-                  <Box sx={{ marginTop: 1, display: "flex", justifyContent: "space-between" }}>
-                    <Typography
-                      sx={{
-                        maxWidth: "200px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {memo.content}
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Typography>{memo.staffName}</Typography>
-                      <Typography>({formatDateDash(new Date(memo.createdAt))})</Typography>
-                    </Box>
-                  </Box>
-                );
-              })}
-            </Box>
-          )}
+        <Box sx={{ width: "100%", maxHeight: "390px", margin: "16px 0px", overflow: "auto" }}>
+          {getMemoList?.map((memo: any) => (
+            <MemoBox key={memo.patientId}>
+              <Top>
+                <span>name</span>
+                <span>date</span>
+              </Top>
+              <Bottom>{memo.content}</Bottom>
+            </MemoBox>
+          ))}
         </Box>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "start",
-            paddingBottom: "10px",
-            paddingTop: "20px",
-          }}
-        >
-          <Text>메모</Text>
-        </Box>
-        <Textarea
-          maxRows={5}
-          aria-label="memo"
-          placeholder="메모를 입력해주세요."
-          minRows={5}
-          defaultValue={""}
-          onChange={e => {
-            setMemo(prev => ({ ...prev, content: e.target.value }));
-          }}
-        />
+
+        <TextAreaBox>
+          <TextAreaTop>
+            <div>
+              <Plus /> <span> 새 메모</span>
+            </div>
+            <AddBtn onClick={onAddMemo}>완료</AddBtn>
+          </TextAreaTop>
+          <Textarea
+            maxRows={3}
+            aria-label="memo"
+            placeholder="메모를 입력하세요."
+            minRows={3}
+            defaultValue={""}
+            onChange={e => setMemo(e.target.value)}
+          />
+        </TextAreaBox>
       </View>
     </CMModal>
   );
 };
-
-const Text = styled(Typography)(() => ({
-  color: "#000000",
-  fontWeight: 600,
-  fontSize: 14,
-  lineHeight: "19.9px",
-  letterSpacing: "-3%",
-}));
 
 const View = styled(Box)(() => ({
   display: "flex",
@@ -157,11 +82,58 @@ const View = styled(Box)(() => ({
   justifyContent: "center",
   alignItems: "center",
 }));
+
+const MemoBox = styled("div")(() => ({
+  background: "#FAFAFB",
+  borderRadius: "16px",
+  padding: "16px 20px 16px 20px",
+  color: "#5E5F65",
+  marginBottom: "16px",
+  fontSize: "16px",
+}));
+const Top = styled("div")(() => ({
+  "&>span:first-child": {
+    color: "#1F1F1F",
+    marginRight: "6px",
+    fontWeight: "600",
+  },
+  "&>span:last-child": {
+    color: "#949599",
+    fontSize: "14px",
+  },
+}));
+const Bottom = styled("div")(() => ({
+  color: "#5E5F65",
+  fontWeight: "400",
+  fontSize: "14px",
+}));
+const TextAreaBox = styled("div")(() => ({
+  background: "#EAF7FF",
+  width: "100%",
+  padding: "20px 16px",
+  borderRadius: "16px",
+}));
+const TextAreaTop = styled("div")(() => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "6px",
+  color: "#30B4FF",
+  fontSize: "14px",
+}));
+const AddBtn = styled("div")(() => ({
+  background: "#FFFFFF",
+  border: "1px solid #30B4FF",
+  borderRadius: "6px",
+  padding: "3px 5px",
+  cursor: "pointer",
+}));
+
 const Textarea = styled(BaseTextareaAutosize)(
   ({}) => `
     box-sizing: border-box;
     resize:none;
-    width: 376px;
+    width:100%;
     height: 140px;
     border:1px solid #ECECEC;
     font-family: 'IBM Plex Sans', sans-serif;
