@@ -1,7 +1,7 @@
 export type WardTabletType = {
   areaId: number;
   tabletId: number;
-  areaName: string;
+  areaName: any;
   tabletName: string;
   serialNumber: string;
   patientId: number;

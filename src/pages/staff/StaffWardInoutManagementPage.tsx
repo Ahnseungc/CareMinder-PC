@@ -8,7 +8,7 @@ import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
@@ -37,7 +37,7 @@ const StaffWardInoutManagementPage = () => {
   //@ts-ignore
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [isAcitve, setIsActive] = useState(false);
+
   //@ts-ignore
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
   const [debounceValue, setDebounceValue] = useState("");
@@ -46,7 +46,6 @@ const StaffWardInoutManagementPage = () => {
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [isMemoModal, setIsMemoModal] = useState(false);
   const [selected, setSelected] = useState<Array<SelectedItem>>([]);
-  const [memoData, setMemoData] = useState<{ patientName: string; patientId: number }>();
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
@@ -62,10 +61,6 @@ const StaffWardInoutManagementPage = () => {
     myArea: isMyArea,
     page: currentPage,
   });
-
-  useEffect(() => {
-    setSelected([]);
-  }, [currentPage]);
 
   const { mutate } = useDischargePatients();
 
@@ -124,14 +119,6 @@ const StaffWardInoutManagementPage = () => {
     patientName: "",
     createdAt: "",
   };
-  //@ts-ignore
-  const handleActive = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
-      setIsActive(prev => !prev);
-    },
-    [isAcitve],
-  );
 
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -151,14 +138,6 @@ const StaffWardInoutManagementPage = () => {
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
-
-  useEffect(() => {
-    isAcitve && setIsActive(false);
-  }, [disChargeDate]);
-
-  useEffect(() => {
-    selected?.length === 0 && isAcitve && setIsActive(false);
-  }, [selected]);
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
@@ -189,8 +168,7 @@ const StaffWardInoutManagementPage = () => {
     setIsModal(prev => !prev);
   };
 
-  const handleMemoModal = (patientId: number, patientName: string) => {
-    setMemoData(prev => ({ ...prev, patientName: patientName, patientId: patientId }));
+  const handleMemoModal = () => {
     setIsMemoModal(prev => !prev);
   };
 
@@ -211,11 +189,12 @@ const StaffWardInoutManagementPage = () => {
     <>
       {isMemoModal && (
         <MemoModal
-          modalTitle={memoData?.patientName as string}
-          subTitle={undefined}
-          patientId={memoData?.patientId as number}
-          onClose={() => setIsMemoModal(false)}
+          modalTitle={"환자 메모 보기"}
+          onClose={() => {
+            setIsMemoModal(false), setSelected([]);
+          }}
           open={isMemoModal}
+          selectList={selected}
         />
       )}
       {isModal && (
@@ -234,6 +213,7 @@ const StaffWardInoutManagementPage = () => {
           open={isSuccessModal}
         />
       )}
+
       {isEditModal && (
         <EditModal
           onClose={() => {
@@ -268,7 +248,7 @@ const StaffWardInoutManagementPage = () => {
                   </div>
                   <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
                     <ComBoxLayout width={"30px"}>
-                      <MemoIcon style={{ cursor: "pointer" }} />
+                      <MemoIcon style={{ cursor: "pointer" }} onClick={handleMemoModal} />
                     </ComBoxLayout>
                     <ComBoxLayout width={"30px"}>
                       <Pencil style={{ cursor: "pointer" }} onClick={handleEditPatient} />
@@ -312,7 +292,6 @@ const StaffWardInoutManagementPage = () => {
               onChangeSelectAll={onChangeSelectAll}
               onDisCharge={handleDischargeSingle}
               selected={selected}
-              areaList={areaList!}
               handleMemoModal={handleMemoModal}
               handleEditPatient={handleEditPatient}
             />

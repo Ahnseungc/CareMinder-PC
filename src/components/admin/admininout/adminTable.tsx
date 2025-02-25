@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
 import { Box, CircularProgress, SvgIcon } from "@mui/material";
@@ -8,13 +8,9 @@ import { ReactComponent as Pencil } from "@/assets/pencil.svg";
 import { ReactComponent as HomeIcon } from "@/assets/home.svg";
 import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-icon.svg";
 import { formatDateDash } from "@utils/getDateform";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 //@ts-ignore
 import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
 import CCheckBox from "@components/common/atom/C-CheckBox";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
-import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
 
 const columnsHeader = [
@@ -55,7 +51,7 @@ interface AdminTableProps {
     id: number;
     areaId: number;
   }>;
-  areaList: GetAreaListResponse[];
+
   onDisCharge: (tabletId: number) => void;
   handleMemoModal: (patientId: number, patientName: string) => void;
   handleEditPatient: any;
@@ -68,116 +64,10 @@ const AdminTable: FC<AdminTableProps> = ({
   onChangeSelected,
   isLoading,
   onDisCharge,
-  areaList,
+
   handleMemoModal,
   handleEditPatient,
 }) => {
-  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
-  const { mutate: changeTabletInfo } = useChangeTabletInfo();
-  const queryClient = useQueryClient();
-  const [isLaunch, setIsLaunch] = useState(true);
-
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = event.target.value;
-    const areaId = areaList?.find((item: GetAreaListResponse) => item.name === value)?.id as number;
-    changeTabletArea(
-      {
-        userIds: [id],
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
-
-  const [changedColumns, setChangedColumns] = useState<{ [key: number]: boolean }>({});
-  const [tabletData, setTabletData] = useState<any[]>(getTablet);
-  const [isChanging, setIsChanging] = useState(false);
-  const changeTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    setIsLaunch(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isChanging) {
-      setTabletData(getTablet);
-    }
-  }, [getTablet]);
-
-  useEffect(() => {
-    if (!isChanging && !isLaunch) {
-      const tabletIds = Object.keys(changedColumns).map(num => Number(num));
-
-      Promise.all(
-        tabletIds.map(tabletId => {
-          const updateTabletInfo = tabletData?.find(data => data.tabletId === tabletId);
-          return changeTabletInfo({
-            tabletIds: [tabletId],
-            areaId: updateTabletInfo?.areaId,
-            tabletName: updateTabletInfo?.tabletName,
-            patientName: updateTabletInfo?.patientName,
-          });
-        }),
-      )
-        .then(() => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          toast.success("정보 변경이 완료되었습니다.");
-        })
-        .catch(() => {
-          toast.error("정보 변경에 실패하였습니다.");
-        });
-    }
-  }, [isChanging]);
-  useEffect(() => {
-    if (!isChanging) {
-      setTabletData(getTablet);
-    }
-  }, [getTablet]);
-
-  const onChangeData = (e: React.ChangeEvent<HTMLInputElement>, tabletId: number, type: string) => {
-    setIsChanging(true);
-    const { value } = e.currentTarget;
-
-    // 변경된 데이터 추적
-    if (type === "patientName") {
-      setTabletData(prevTabletData =>
-        prevTabletData.map(tablet =>
-          tablet.tabletId === tabletId ? { ...tablet, patientName: value } : tablet,
-        ),
-      );
-    }
-    if (type === "tabletName") {
-      setTabletData(prevTabletData =>
-        prevTabletData.map(tablet =>
-          tablet.tabletId === tabletId ? { ...tablet, tabletName: value } : tablet,
-        ),
-      );
-    }
-
-    setChangedColumns(prev => ({
-      ...prev,
-      [tabletId as number]: true,
-    }));
-
-    if (changeTimerRef.current) {
-      clearTimeout(changeTimerRef.current);
-    }
-
-    changeTimerRef.current = setTimeout(() => {
-      setIsChanging(false);
-    }, 1000);
-  };
-
   return (
     <StTable>
       <thead>
@@ -205,7 +95,7 @@ const AdminTable: FC<AdminTableProps> = ({
           </LoadingLayout>
         ) : (
           <>
-            {tabletData?.map(tablet => {
+            {getTablet?.map(tablet => {
               return (
                 <InoutTableBodyTr
                   key={tablet.tabletId}
@@ -235,12 +125,23 @@ const AdminTable: FC<AdminTableProps> = ({
                     {tablet.tabletName}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[3].width}>
-                    {formatDateDash(new Date(tablet.createdAt))}
+                    {tablet.createdAt === undefined
+                      ? "미지정"
+                      : formatDateDash(new Date(tablet.createdAt))}
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[4].width}>
                     <SvgIcon
                       component={MemoIcon}
-                      onClick={() => handleMemoModal(tablet.patientId, tablet.patientName)}
+                      onClick={() => {
+                        onChangeSelected(
+                          tablet.tabletId,
+                          tablet.patientName,
+                          tablet.areaId,
+                          tablet.tabletName,
+                          tablet.createdAt,
+                        );
+                        handleMemoModal(tablet.patientId, tablet.patientName);
+                      }}
                     />
                   </InoutTableBodyTd>
                   <InoutTableBodyTd width={columnsHeader[5].width}>
