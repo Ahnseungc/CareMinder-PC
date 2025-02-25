@@ -4,7 +4,7 @@ import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
 import PaginationComponent from "@components/common/pagination";
 import { motion, AnimatePresence } from "framer-motion";
-import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
+
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -22,6 +22,7 @@ import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeS
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import MemoModal from "@components/admin/admininout/modal/memo-modal";
 import EditModal from "@components/admin/admininout/modal/edit-modal";
+import useGetMenagePatientList from "@hooks/mutation/useGetMenagePatientList";
 
 export type SelectedItem = {
   name: string;
@@ -31,36 +32,56 @@ export type SelectedItem = {
   admissionDate: string;
 };
 
+export type FilterData = {
+  areaFilter: null | number[];
+  patientNameFilter: null | string;
+  patientNameSort: null | "ASC" | "DESC";
+  tabletNameSort: null | "ASC" | "DESC";
+  admissionDateSort: null | "ASC" | "DESC";
+};
+
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const token = Cookies.get("accessTokenStaff") as string;
+
   //@ts-ignore
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   //@ts-ignore
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
-  const [debounceValue, setDebounceValue] = useState("");
   const [isModal, setIsModal] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [isMemoModal, setIsMemoModal] = useState(false);
   const [selected, setSelected] = useState<Array<SelectedItem>>([]);
+  const [getPatientFilterData, setGetPatientFilterData] = useState<FilterData>({
+    areaFilter: null,
+    patientNameFilter: null,
+    patientNameSort: null,
+    tabletNameSort: null,
+    admissionDateSort: null,
+  });
+  const [getTablet, setGetTablet] = useState<undefined | any>(undefined);
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
   }, []);
 
-  const {
-    data: getTablet,
-    refetch,
-    isLoading,
-  } = useGetWardTabletRequests({
-    token: token,
-    patientName: debounceValue,
-    myArea: isMyArea,
-    page: currentPage,
-  });
+  const { mutate: getPatientList } = useGetMenagePatientList();
+
+  useEffect(() => {
+    getPatientList(
+      {
+        page: currentPage,
+        object: getPatientFilterData,
+      },
+      {
+        onSuccess: data => {
+          setGetTablet(data.data);
+        },
+      },
+    );
+  }, [getPatientFilterData, currentPage]);
 
   const { mutate } = useDischargePatients();
 
@@ -129,7 +150,7 @@ const StaffWardInoutManagementPage = () => {
 
   const debounceSearchValue = useCallback(
     debounce((value: string) => {
-      setDebounceValue(value);
+      setGetPatientFilterData(prev => ({ ...prev, patientNameFilter: value }));
     }, 200),
     [searchValue],
   );
@@ -138,6 +159,20 @@ const StaffWardInoutManagementPage = () => {
     defaultValues: defaultValuesUpdate,
     mode: "onChange",
   });
+
+  const refetch = () => {
+    getPatientList(
+      {
+        page: currentPage,
+        object: getPatientFilterData,
+      },
+      {
+        onSuccess: data => {
+          setGetTablet(data.data);
+        },
+      },
+    );
+  };
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
@@ -284,9 +319,8 @@ const StaffWardInoutManagementPage = () => {
         </AnimatePresence>
 
         <TableLayout>
-          {!isLoading && (
+          {getTablet !== undefined && (
             <AdminTable
-              isLoading={isLoading}
               getTablet={getTablet?.data}
               onChangeSelected={onChangeSelected}
               onChangeSelectAll={onChangeSelectAll}
@@ -294,6 +328,8 @@ const StaffWardInoutManagementPage = () => {
               selected={selected}
               handleMemoModal={handleMemoModal}
               handleEditPatient={handleEditPatient}
+              getPatientFilterData={getPatientFilterData}
+              setGetPatientFilterData={setGetPatientFilterData}
             />
           )}
         </TableLayout>

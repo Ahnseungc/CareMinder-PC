@@ -12,9 +12,7 @@ interface ChargeModalProps extends Omit<CMModalProps, "title"> {
 }
 
 const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalProps) => {
-  const { data: getMemoList, refetch } = useGetPatientMemo(
-    selectList.map((el: { id: number }) => el.id),
-  );
+  const { data: getMemoList } = useGetPatientMemo(selectList.map((el: { id: number }) => el.id));
   const [memo, setMemo] = useState<string>("");
 
   const onAddMemo = () => {
