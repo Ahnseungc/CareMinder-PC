@@ -9,18 +9,39 @@ import { useRecoilValue } from "recoil";
 
 import HelpSection from "@components/FindAccount/HelpSection";
 import { useSearchParams } from "react-router-dom";
+import FindIdModal from "@components/FindAccount/Modal/findIdModal";
+import FindInputPwModal from "@components/FindAccount/Modal/findInputPwModal";
+import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
+import { SEVER_URL } from "@constants/baseUrl";
+import axios from "axios";
+import useFindChangePassword from "@hooks/mutation/useFindChangePassword";
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";
+type FindModalType = "IdModal" | "PwInputModal" | "PwSecondModal" | undefined;
 type Account = "어드민" | "병동" | "스태프";
+export type PasswordType = {
+  password: string;
+  confirmPassword: string;
+};
 
 export default function FindAccountPage() {
   const [activeTab, setActiveTab] = useState<FindAccountType>("아이디 찾기");
+  const [isAccessToken, setIsAccessToken] = useState<string | undefined>(undefined);
+  const [isOpenModal, setIsOpenModal] = useState<FindModalType>(undefined);
+  const [findPWLevel, setFindPWLevel] = useState<1 | 2>(1);
+  const [resId, setResId] = useState("");
   const [type, setType] = useState<Account>();
+
+  const { mutate: changePW } = useFindChangePassword();
 
   const verifyPhone = useRecoilValue(verifyPhoneState);
 
   const [searchParams] = useSearchParams();
   const userType = searchParams.get("type");
+
+  const onCloseModal = () => {
+    setIsOpenModal(undefined);
+  };
 
   useEffect(() => {
     switch (userType) {
@@ -48,8 +69,73 @@ export default function FindAccountPage() {
   const { handleSubmit } = form;
 
   /** api 생성 후  */
-  const onSubmit: SubmitHandler<FindAccount> = data => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FindAccount> = async data => {
+    if (activeTab === "아이디 찾기") {
+      const _phoneNumber = data.phoneNumber.replace(/-/g, "");
+      try {
+        const res = await axios.post(`${SEVER_URL}/users/find-login-id`, {
+          name: data.name,
+          phoneNumber: _phoneNumber,
+          accountType: userType,
+        });
+        setResId(res.data);
+        setIsOpenModal("IdModal");
+        form.reset();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (activeTab === "비밀번호 찾기") {
+      const _phoneNumber = data.phoneNumber.replace(/-/g, "");
+      try {
+        const res = await axios.post(`${SEVER_URL}/users/find-password`, {
+          name: data.name,
+          loginId: data.id,
+          phoneNumber: _phoneNumber,
+          accountType: userType,
+        });
+
+        setIsAccessToken(res.data.jwtResponse.accessToken);
+        // setResId(res);
+        setIsOpenModal("PwInputModal");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const onCheckId: SubmitHandler<FindAccount> = async data => {
+    try {
+      const res = await axios.post(`${SEVER_URL}/users/check-login-id`, {
+        loginId: data.id,
+        accountType: userType,
+      });
+
+      if (res.status === 200) {
+        form.setError("id", {
+          type: "required",
+          message: "존재하지 않는 아이디입니다. 다시 확인해주세요.",
+        });
+      }
+    } catch (err: any) {
+      if (err.status === 409) {
+        setFindPWLevel(2);
+      }
+    }
+  };
+
+  const onChangePW = (inputData: PasswordType) => {
+    if (inputData.password !== inputData.confirmPassword) return;
+    const data = { newPassword: inputData.password, accessToken: isAccessToken! };
+    changePW(data, {
+      onSuccess: () => {
+        setIsOpenModal("PwSecondModal");
+        setIsAccessToken(undefined);
+      },
+      onError: error => {
+        console.error(error);
+      },
+    });
   };
 
   return (
@@ -80,15 +166,25 @@ export default function FindAccountPage() {
               ),
               "비밀번호 찾기": (
                 <>
-                  {" "}
-                  {findAccountField.map(field => (
+                  {findPWLevel === 1 ? (
                     <FindAccountField
-                      key={field.name}
-                      field={field}
+                      key={findPWLevelOne.name}
+                      field={findPWLevelOne}
                       form={form}
                       type={"password"}
                     />
-                  ))}
+                  ) : (
+                    <>
+                      {findAccountField.map(field => (
+                        <FindAccountField
+                          key={field.name}
+                          field={field}
+                          form={form}
+                          type={"password"}
+                        />
+                      ))}
+                    </>
+                  )}
                 </>
               ),
             }}
@@ -96,15 +192,32 @@ export default function FindAccountPage() {
         </Stack>
       </ContentLayout>
       <CButtonContainer>
-        <CButton
-          buttontype="primarySpaureWhite"
-          onClick={handleSubmit(onSubmit)}
-          disabled={!verifyPhone}
-        >
-          찾기
-        </CButton>
+        {activeTab === "비밀번호 찾기" && findPWLevel === 1 ? (
+          <CButton buttontype="primarySpaureWhite" onClick={handleSubmit(onCheckId)}>
+            완료
+          </CButton>
+        ) : (
+          <CButton
+            buttontype="primarySpaureWhite"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!verifyPhone}
+          >
+            찾기
+          </CButton>
+        )}
       </CButtonContainer>
       <HelpSection />
+      {isOpenModal === "IdModal" && (
+        <FindIdModal onClose={onCloseModal} setActiveTab={setActiveTab} type={type!} id={resId} />
+      )}
+      {isOpenModal === "PwInputModal" && (
+        <FindInputPwModal
+          onClose={onCloseModal}
+          setActiveTab={setActiveTab}
+          onChangePW={onChangePW}
+        />
+      )}
+      {isOpenModal === "PwSecondModal" && <FindPwSecond onClose={onCloseModal} type={type!} />}
     </Container>
   );
 }
@@ -125,9 +238,15 @@ export type FindAccountFieldType = {
 
 const findAccountField: FindAccountFieldType[] = [
   { name: "name", label: "이름", placeholder: "이름을 입력해주세요." },
-  { name: "id", label: "아이디", placeholder: "아이디를 입력해주세요." },
+  // { name: "id", label: "아이디", placeholder: "아이디를 입력해주세요." },
   { name: "phoneNumber", label: "전화번호", placeholder: "010-0000-0000" },
 ];
+
+const findPWLevelOne: FindAccountFieldType = {
+  name: "id",
+  label: "아이디",
+  placeholder: "아이디를 입력해주세요.",
+};
 
 interface TabProps {
   isActive?: boolean;
