@@ -5,10 +5,11 @@ import Stack from "@mui/material/Stack";
 type PaginationProps = {
   totalPage: number;
   onChange: (event: React.ChangeEvent<unknown>, page: number) => void;
-  customColor?: string; // 커스텀 색상 prop 추가
+  customColor?: string;
+  page?: number;
 };
 
-function PaginationComponent({ totalPage, onChange, customColor }: PaginationProps) {
+function PaginationComponent({ totalPage, onChange, customColor, page = 1 }: PaginationProps) {
   return (
     <Wrapper>
       <Stack spacing={2}>
@@ -17,9 +18,8 @@ function PaginationComponent({ totalPage, onChange, customColor }: PaginationPro
           showFirstButton
           showLastButton
           count={totalPage}
-          defaultPage={1}
+          page={page}
           shape="rounded"
-          defaultValue={1}
           onChange={onChange}
         />
       </Stack>

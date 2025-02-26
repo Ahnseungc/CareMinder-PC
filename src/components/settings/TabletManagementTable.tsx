@@ -486,6 +486,7 @@ const TabletManagementTable = ({
             <PaginationComponent
               totalPage={wardTabletList?.totalPages as number}
               onChange={(e, page) => handleChangePage(e, page)}
+              page={currentPage}
             />
           </div>
         </PaginationContainer>
