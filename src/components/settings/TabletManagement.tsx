@@ -15,6 +15,7 @@ import InfoModal from "./modal/InfoModal";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import palette from "@styles/palette";
+import useDebounce from "@utils/useDebounce";
 
 //태블릿 병상 관리
 
@@ -26,6 +27,7 @@ export const TabletManagement = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
+  const debouncedSearchValue = useDebounce(searchValue, 300);
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -125,8 +127,8 @@ export const TabletManagement = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="검색할 내용을 입력해주세요."
-                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    placeholder="환자 이름을 검색해주세요."
+                    inputProps={{ "aria-label": "환자 이름을 검색해주세요." }}
                     value={searchValue}
                     onChange={e => {
                       setSearchValue(e.target.value);
@@ -150,7 +152,11 @@ export const TabletManagement = () => {
           )}
         </AnimatePresence>
       </BodyTitleContainer>
-      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} searchValue={searchValue} />
+      <TabletManagementTable
+        isClear={isClear}
+        setIsClear={setIsClear}
+        searchValue={debouncedSearchValue}
+      />
     </>
   );
 };

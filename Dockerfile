@@ -31,7 +31,7 @@ COPY nginx.conf /etc/nginx/conf.d/
 COPY --from=build /code/dist /usr/share/nginx/html
 
 # frontend Port를 설정한다.
-EXPOSE 5050
+EXPOSE 6060
 
 #container 종료 될때 정상 종료 유도
 STOPSIGNAL SIGTERM

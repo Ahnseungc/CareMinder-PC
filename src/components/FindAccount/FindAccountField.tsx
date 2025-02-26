@@ -16,6 +16,7 @@ import useTimer from "@utils/useTimer";
 import axios from "axios";
 import { FindAccount, FindAccountFieldType } from "@pages/find_account/FindAccountPage";
 import { SwitchCase } from "@toss/react";
+import { useSearchParams } from "react-router-dom";
 
 type FindAccountProps = {
   form: UseFormReturn<FindAccount>;
@@ -35,6 +36,9 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     formState: { errors },
     getValues,
   } = form;
+
+  const [searchParams] = useSearchParams();
+  const userType = searchParams.get("type");
 
   const validationRules = {
     name: {
@@ -92,7 +96,17 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
   };
 
   const verifyPhoneNumber = async () => {
+    const inputName = getValues("name");
     const phoneNumber = getValues("phoneNumber");
+    const loginId = getValues("id");
+
+    if (!inputName) {
+      form.setError("name", {
+        type: "required",
+        message: "이름을 입력해주세요.",
+      });
+      return;
+    }
     if (!phoneNumber) {
       form.setError("phoneNumber", {
         type: "required",
@@ -113,13 +127,30 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     try {
       resetTimer();
       const _phoneNumber = phoneNumber.replace(/-/g, "");
-      const res = await axios.post(`${SEVER_URL}/sms/send`, {
-        phoneNumber: _phoneNumber,
-      });
-      console.log(res.data);
+      const res =
+        type === "id"
+          ? await axios.post(`${SEVER_URL}/sms/send-find-id`, {
+              phoneNumber: _phoneNumber,
+              accountType: userType,
+              name: inputName,
+            })
+          : await axios.post(`${SEVER_URL}/sms/send-find-pw`, {
+              phoneNumber: _phoneNumber,
+              accountType: userType,
+              name: inputName,
+              loginId: loginId,
+            });
+
       setShowVerifyCode(true);
-    } catch (err) {
-      console.log(err);
+      console.log(res.data);
+    } catch (err: any) {
+      if (err.status === 404) {
+        form.setError("name", {
+          type: "required",
+          message: "이름 혹은 전화번호가 올바르지 않습니다.",
+        });
+      }
+      //status
     }
   };
 
@@ -218,22 +249,22 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                 defaultComponent={
                   <>
                     {type === "id" ? (
-                      <TextField
-                        {...field}
-                        id={name}
-                        placeholder={placeholder}
-                        value={""}
-                        onChange={() => null}
-                        error={Boolean(errors[name])}
-                        sx={{ width: "420px", display: field.name === "id" ? "none" : "flex" }}
-                      />
+                      <>
+                        <TextField
+                          {...field}
+                          id={name}
+                          placeholder={placeholder}
+                          onChange={e => field.onChange(e)}
+                          error={Boolean(errors[name])}
+                          sx={{ width: "420px", display: field.name === "id" ? "none" : "flex" }}
+                        />
+                      </>
                     ) : (
                       <TextField
                         {...field}
                         id={name}
                         placeholder={placeholder}
-                        value={""}
-                        onChange={() => null}
+                        onChange={e => field.onChange(e)}
                         error={Boolean(errors[name])}
                         sx={{
                           width: "420px",
@@ -264,6 +295,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
             }}
             onChange={e => setVerifyCode(e.target.value)}
           />
+
           {!verifyPhone && <Timer>{formatTime()}</Timer>}
           <VerifyCodeButtonWrapper>
             <CButton
