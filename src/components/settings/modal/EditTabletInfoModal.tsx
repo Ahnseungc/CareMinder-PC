@@ -72,6 +72,8 @@ export default function EditTableInfoModal({
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
 
   const onSubmit: SubmitHandler<EditTablet> = data => {
+    console.log(switchState);
+
     const tabletStatusType =
       tabletStatus === "강제종료"
         ? "FORCE_TERMINATE"
@@ -98,7 +100,7 @@ export default function EditTableInfoModal({
           startMinute: startMinute,
           endHour: endHour,
           endMinute: endMinute,
-          type: sleepSimpleModeType,
+          type: switchState ? sleepSimpleModeType : null,
         },
         admissionDate: tabletData ? tabletData.admissionAt : "",
       },
