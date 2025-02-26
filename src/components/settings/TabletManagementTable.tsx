@@ -7,13 +7,17 @@ import { motion } from "framer-motion";
 import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Info } from "@assets/alert.svg";
-import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
-import { ReactComponent as DEFAULT_Array } from "@/assets/filter-vertical-icon.svg";
-import { ReactComponent as ASC_Array } from "@/assets/ASC_array.svg";
-import { ReactComponent as DESC_Array } from "@/assets/DESC_array.svg";
+// import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
+// import { ReactComponent as DEFAULT_Array } from "@/assets/filter-vertical-icon.svg";
+// import { ReactComponent as ASC_Array } from "@/assets/ASC_array.svg";
+// import { ReactComponent as DESC_Array } from "@/assets/DESC_array.svg";
 
 import { useBooleanState } from "@toss/react";
-import { TableStatus, WardTabledListType } from "@hooks/queries/useGetWardTabletList";
+import {
+  TableStatus,
+  useGetWardTabletList,
+  WardTabledListType,
+} from "@hooks/queries/useGetWardTabletList";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import PaginationComponent from "@components/common/pagination";
 import tabletEditingState from "@libraries/recoil/settings/tabletEdit";
@@ -23,8 +27,8 @@ import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
-import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
-import {  useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { TabletFilter } from "@hooks/mutation/useTabletList";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -57,44 +61,49 @@ const TabletManagementTable = ({
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const {
-    mutate: tabletListsMutation,
-    data: wardTabletList,
-    isPending: isLoading,
-  } = useTabletLists();
-
-  // const { data: areaList } = useGetAreaList();
   const { data: areaList } = useGetStaffAreaList();
+  const { data: wardTabletList, isLoading } = useGetWardTabletList({
+    page: currentPage - 1,
+    size: 20,
+    patientName: searchValue,
+    myArea: false,
+  });
 
-  const removeDefaultFilters = (filter: TabletFilter) => {
-    const filteredObj = { ...filter };
+  // const {
+  //   mutate: tabletListsMutation,
+  //   data: wardTabletList,
+  //   isPending: isLoading,
+  // } = useTabletLists();
 
-    Object.keys(filteredObj).forEach(key => {
-      const typedKey = key as keyof TabletFilter;
-      const value = filteredObj[typedKey];
+  // const removeDefaultFilters = (filter: TabletFilter) => {
+  //   const filteredObj = { ...filter };
 
-      if (value === "DEFAULT" || value === undefined || value === null) {
-        delete filteredObj[typedKey];
-      }
-    });
+  //   Object.keys(filteredObj).forEach(key => {
+  //     const typedKey = key as keyof TabletFilter;
+  //     const value = filteredObj[typedKey];
 
-    return filteredObj;
-  };
+  //     if (value === "DEFAULT" || value === undefined || value === null) {
+  //       delete filteredObj[typedKey];
+  //     }
+  //   });
 
-  useEffect(() => {
-    const currentFilter: TabletFilter = {
-      ...filter,
-      patientNameFilter: searchValue || undefined,
-    };
+  //   return filteredObj;
+  // };
 
-    const processedFilter = removeDefaultFilters(currentFilter);
+  // useEffect(() => {
+  //   const currentFilter: TabletFilter = {
+  //     ...filter,
+  //     patientNameFilter: searchValue || undefined,
+  //   };
 
-    tabletListsMutation({
-      page: currentPage - 1,
-      size: 20,
-      filter: processedFilter,
-    });
-  }, [tabletListsMutation, currentPage, searchValue, filter]);
+  //   const processedFilter = removeDefaultFilters(currentFilter);
+
+  //   tabletListsMutation({
+  //     page: currentPage - 1,
+  //     size: 20,
+  //     filter: processedFilter,
+  //   });
+  // }, [tabletListsMutation, currentPage, searchValue, filter]);
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -177,7 +186,7 @@ const TabletManagementTable = ({
       headerName: (
         <ColumnName onClick={handleFilter}>
           <span>구역</span>
-          <Filter />
+          {/* <Filter /> */}
         </ColumnName>
       ),
     },
@@ -186,7 +195,7 @@ const TabletManagementTable = ({
       headerName: (
         <ColumnName onClick={() => handleSort("TabletName")}>
           <span>태블릿 이름</span>
-          <span style={{ color: `${palette.primary.main}` }}>
+          {/* <span style={{ color: `${palette.primary.main}` }}>
             {filter.tabletNameSort === "ASC" ? (
               <ASC_Array />
             ) : filter.tabletNameSort === "DESC" ? (
@@ -194,7 +203,7 @@ const TabletManagementTable = ({
             ) : (
               <DEFAULT_Array />
             )}
-          </span>
+          </span> */}
         </ColumnName>
       ),
     },
@@ -203,7 +212,7 @@ const TabletManagementTable = ({
       headerName: (
         <ColumnName onClick={() => handleSort("PatientName")}>
           <span>환자 이름</span>
-          <span style={{ color: `${palette.primary.main}` }}>
+          {/* <span style={{ color: `${palette.primary.main}` }}>
             {filter.patientNameSort === "ASC" ? (
               <ASC_Array />
             ) : filter.patientNameSort === "DESC" ? (
@@ -211,7 +220,7 @@ const TabletManagementTable = ({
             ) : (
               <DEFAULT_Array />
             )}
-          </span>
+          </span> */}
         </ColumnName>
       ),
     },
