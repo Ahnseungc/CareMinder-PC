@@ -43,6 +43,14 @@ export default function EditTableInfoModal({
     if (!tabletData) {
       return;
     }
+    setStartHour(tabletData.sleepModeSimple.startHour);
+    setStartMinute(tabletData.sleepModeSimple.startMinute);
+    setEndHour(tabletData.sleepModeSimple.endHour);
+    setEndMinute(tabletData.sleepModeSimple.endMinute);
+    setSleepSimpleMode(
+      tabletData.sleepModeSimple.type ? tabletData.sleepModeSimple.type : "FORCE_TERMINATE",
+    );
+
     setSwitchState(tabletData.sleepModeSimple.type === null ? false : true);
   }, [tabletData, onClose]);
 
@@ -52,22 +60,18 @@ export default function EditTableInfoModal({
 
   const form = useForm<EditTablet>({
     defaultValues: {
-      area: 0,
+      area: -1,
       patientName: "",
       tabletName: "",
     },
     mode: "onChange",
   });
+
   const { handleSubmit, reset } = form;
 
   const { mutate: updateTabletInfo } = useUpdateTabletInfo();
-  const onSubmit: SubmitHandler<EditTablet> = data => {
-    // if (!tabletData) {
-    //   console.log(isSelectedTablet);
-    //   console.log(data);
-    //   return;
-    // }
 
+  const onSubmit: SubmitHandler<EditTablet> = data => {
     const tabletStatusType =
       tabletStatus === "강제종료"
         ? "FORCE_TERMINATE"
@@ -80,7 +84,7 @@ export default function EditTableInfoModal({
         ? "FORCE_TERMINATE"
         : sleepSimpleMode === "요청만 가능"
           ? "REQUEST_ONLY"
-          : null;
+          : "FORCE_TERMINATE";
 
     updateTabletInfo(
       {
@@ -109,10 +113,6 @@ export default function EditTableInfoModal({
       },
     );
   };
-
-  // if (!tabletData) {
-  //   return null;
-  // }
 
   return (
     <>

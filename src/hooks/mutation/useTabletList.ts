@@ -1,7 +1,9 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
+import { tabletEvents } from "@utils/events";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 export type TableStatus = "FULL_ACCESS" | "REQUEST_ONLY" | "FORCE_TERMINATE" | null;
 
@@ -64,9 +66,23 @@ export default function useTabletLists(): UseMutationResult<
   AxiosError,
   TabletListsProps
 > {
-  return useMutation({
+  const mutation = useMutation<GetWardTabletListResponse, AxiosError, TabletListsProps>({
     mutationFn: tabletLists,
     onSuccess: () => {},
     onError: () => {},
   });
+
+  useEffect(() => {
+    const unsubscribe = tabletEvents.subscribe(() => {
+      if (mutation.isSuccess && mutation.variables) {
+        mutation.mutate(mutation.variables);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [mutation]);
+
+  return mutation;
 }

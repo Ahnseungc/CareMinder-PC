@@ -50,9 +50,16 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
   }, [areaList, tabletData, setValue]);
 
   const validationRules = {
-    area: {},
+    area: {
+      validate: {
+        notDefaultValue: (value: string | number) => {
+          const numValue = typeof value === "string" ? parseInt(value, 10) : value;
+          return (numValue !== -1 && numValue !== undefined) || "구역을 선택해주세요";
+        },
+      },
+    },
     patientName: {},
-    tabletName: {},
+    tabletName: { required: "태블릿 이름을 입력해주세요" },
   };
 
   if (!areaList) {
@@ -113,7 +120,7 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
                   value={area}
                   onChange={handleChangeArea}
                 />
-                <Typography variant="body2" color={palette.primary.main} sx={{ marginTop: "8px" }}>
+                <Typography variant="body2" color={palette.primary.main} sx={{ marginTop: "20px" }}>
                   간호사가 진행 중인 요청은 수정과 상관 없이 유지됩니다.
                 </Typography>
               </CComboBoxLayout>

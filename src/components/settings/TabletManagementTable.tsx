@@ -8,7 +8,7 @@ import { ReactComponent as Leave } from "@/assets/Leave.svg";
 import { ReactComponent as Edit } from "@/assets/accountEdit.svg";
 import { ReactComponent as Info } from "@assets/alert.svg";
 import { ReactComponent as Filter } from "@/assets/filter-icon.svg";
-import { ReactComponent as Array } from "@/assets/filter-vertical-icon.svg";
+import { ReactComponent as DEFAULT_Array } from "@/assets/filter-vertical-icon.svg";
 import { ReactComponent as ASC_Array } from "@/assets/ASC_array.svg";
 import { ReactComponent as DESC_Array } from "@/assets/DESC_array.svg";
 
@@ -191,7 +191,7 @@ const TabletManagementTable = ({
             ) : filter.tabletNameSort === "DESC" ? (
               <DESC_Array />
             ) : (
-              <Array />
+              <DEFAULT_Array />
             )}
           </span>
         </ColumnName>
@@ -208,7 +208,7 @@ const TabletManagementTable = ({
             ) : filter.patientNameSort === "DESC" ? (
               <DESC_Array />
             ) : (
-              <Array />
+              <DEFAULT_Array />
             )}
           </span>
         </ColumnName>
@@ -283,56 +283,61 @@ const TabletManagementTable = ({
         tabletData={selectedTabletData as WardTabledListType}
       />
 
-      {wardTabletList?.data.length === 0 ? (
-        <></>
-      ) : (
-        <TableContainer>
-          <StTable>
-            <thead>
-              <tr>
-                {columns.map((column, index) => {
-                  if (column.field === "check") {
-                    return (
-                      <th key={index}>
-                        <Checkbox
-                          {...label}
-                          sx={{
-                            "&.MuiCheckbox-root": {
-                              color: "#ECECEC",
-                            },
+      <TableContainer>
+        <StTable>
+          <thead>
+            <tr>
+              {columns.map((column, index) => {
+                if (column.field === "check") {
+                  return (
+                    <th key={index}>
+                      <Checkbox
+                        {...label}
+                        sx={{
+                          "&.MuiCheckbox-root": {
+                            color: "#ECECEC",
+                          },
+                          "& .MuiSvgIcon-root": {
+                            fontSize: 28,
+                          },
+                          "&.Mui-checked": {
                             "& .MuiSvgIcon-root": {
-                              fontSize: 28,
+                              fill: "#B4C0FF",
                             },
-                            "&.Mui-checked": {
-                              "& .MuiSvgIcon-root": {
-                                fill: "#B4C0FF",
-                              },
-                            },
-                          }}
-                          checked={selectIndex.length === wardTabletList?.data.length}
-                          indeterminate={selectedItems > 0 && selectedItems < totalItems}
-                          onClick={handleSelectAll}
-                        />
-                        {/* 필터 기능 완성 후 주석 해제 */}
-                        {isFilterOpen && (
-                          <div style={{ position: "absolute", zIndex: 10 }}>
-                            <CFilter
-                              options={areaList.map(area => area.name)}
-                              type={"WARD"}
-                              onApply={handleAreaFilter}
-                              prevFilter={areaList
-                                .filter(area => filter.areaFilter?.includes(area.id))
-                                .map(area => area.name)}
-                            />
-                          </div>
-                        )}
-                      </th>
-                    );
-                  }
-                  return <th key={index}>{column.headerName}</th>;
-                })}
-              </tr>
-            </thead>
+                          },
+                        }}
+                        checked={selectIndex.length === wardTabletList?.data.length}
+                        indeterminate={selectedItems > 0 && selectedItems < totalItems}
+                        onClick={handleSelectAll}
+                      />
+                      {isFilterOpen && (
+                        <div style={{ position: "absolute", zIndex: 10 }}>
+                          <CFilter
+                            options={areaList.map(area => area.name)}
+                            type={"WARD"}
+                            onApply={handleAreaFilter}
+                            prevFilter={areaList
+                              .filter(area => filter.areaFilter?.includes(area.id))
+                              .map(area => area.name)}
+                          />
+                        </div>
+                      )}
+                    </th>
+                  );
+                }
+                return <th key={index}>{column.headerName}</th>;
+              })}
+            </tr>
+          </thead>
+          {wardTabletList.data.length === 0 ? (
+            <tbody>
+              {Array.from(Array(9).keys()).map((_, index) => (
+                <td key={index} style={{ textAlign: "center", paddingTop: "20px" }}>
+                  -
+                </td>
+              ))}
+            </tbody>
+          ) : (
             <tbody>
               {wardTabletList?.data.map((row, index) => {
                 return (
@@ -471,17 +476,20 @@ const TabletManagementTable = ({
                 );
               })}
             </tbody>
-          </StTable>
-        </TableContainer>
+          )}
+        </StTable>
+      </TableContainer>
+
+      {wardTabletList?.data.length === 0 ? null : (
+        <PaginationContainer>
+          <div>
+            <PaginationComponent
+              totalPage={wardTabletList?.totalPages as number}
+              onChange={(e, page) => handleChangePage(e, page)}
+            />
+          </div>
+        </PaginationContainer>
       )}
-      <PaginationContainer>
-        <div>
-          <PaginationComponent
-            totalPage={wardTabletList?.totalPages as number}
-            onChange={(e, page) => handleChangePage(e, page)}
-          />
-        </div>
-      </PaginationContainer>
     </>
   );
 };
