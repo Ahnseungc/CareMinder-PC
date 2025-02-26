@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import axiosInstance from "@utils/axios/axiosInstance";
+import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { tabletEvents } from "@utils/events";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
@@ -54,10 +54,11 @@ export type TabletListsProps = {
 
 const tabletLists = async ({ page, size, filter }: TabletListsProps) => {
   const res = await axiosInstance.post(`/wards/tablet-list?page=${page}&size=${size}`, filter, {
-    headers: {
+    customHeader: true,
+    headers: {      
       Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
     },
-  });
+  }as CustomAxiosRequestConfig) ;
   return res.data as GetWardTabletListResponse;
 };
 
