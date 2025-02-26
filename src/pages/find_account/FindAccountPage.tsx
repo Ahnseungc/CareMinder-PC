@@ -12,9 +12,11 @@ import { useSearchParams } from "react-router-dom";
 import FindIdModal from "@components/FindAccount/Modal/findIdModal";
 import FindInputPwModal from "@components/FindAccount/Modal/findInputPwModal";
 import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
-import { SEVER_URL } from "@constants/baseUrl";
+
 import axios from "axios";
 import useFindChangePassword from "@hooks/mutation/useFindChangePassword";
+
+const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 type FindAccountType = "아이디 찾기" | "비밀번호 찾기";
 type FindModalType = "IdModal" | "PwInputModal" | "PwSecondModal" | undefined;
