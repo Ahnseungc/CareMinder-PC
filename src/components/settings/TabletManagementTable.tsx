@@ -24,7 +24,7 @@ import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
-import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import {  useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -63,7 +63,8 @@ const TabletManagementTable = ({
     isPending: isLoading,
   } = useTabletLists();
 
-  const { data: areaList } = useGetAreaList();
+  // const { data: areaList } = useGetAreaList();
+  const { data: areaList } = useGetStaffAreaList();
 
   const removeDefaultFilters = (filter: TabletFilter) => {
     const filteredObj = { ...filter };
