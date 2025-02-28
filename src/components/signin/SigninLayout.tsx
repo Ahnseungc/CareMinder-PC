@@ -12,6 +12,7 @@ import { ReactElement, useEffect, useState } from "react";
 import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 
 import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
+import PublicIcon from "@mui/icons-material/Public";
 
 import { SwitchCase, useBooleanState } from "@toss/react";
 
@@ -70,13 +71,16 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
       <InfoModal open={open} onClose={closeModal} modalType={isModalType} message={errorMessage} />
 
       <Container item xs>
-        <SwitchCase
+        {/* <SwitchCase
           value={type}
           caseBy={{
             ADMIN: <Tag>어드민</Tag>,
             WARD: <Tag>병동</Tag>,
           }}
-        />
+        /> */}
+        <Tag>
+          <PublicIcon fontSize="small" color="disabled" /> <span> ko | en</span>
+        </Tag>
         <Content>
           <SigninHeader />
           <UserTypeTag type={type} />
@@ -111,20 +115,26 @@ const Container = styled(Grid)({
 });
 
 const Tag = styled(Box)({
-  position: "absolute",
-  right: "23px",
+  "position": "absolute",
+  "right": "23px",
 
-  display: "inline-flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "36px",
-  padding: "4px 24px",
+  "display": "flex",
+  "alignItems": "center",
+  "height": "36px",
+  "padding": "4px 20px 4px 16px",
 
-  backgroundColor: "#5d6dbe",
-  borderRadius: "100px",
-  color: "#ffffff",
-  fontSize: "22px",
-  fontWeight: "500",
+  "backgroundColor": "#5d6dbe",
+  "borderRadius": "100px",
+  "color": "#d8d6d6",
+  "fontSize": "16px",
+
+  "fontWeight": "500",
+  "cursor": "pointer",
+  "&>span": {
+    marginLeft: "10px",
+    marginTop: "2px",
+    fontWeight: "600",
+  },
 });
 
 const Content = styled(Stack)({
