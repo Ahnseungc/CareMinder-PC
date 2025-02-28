@@ -17,6 +17,7 @@ import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
 import getNewRequest from "@utils/getNewRequest";
+import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 // import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
@@ -32,6 +33,7 @@ function StaffPatientListBox({
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  // const [isModal, setIsModal] = useState<boolean>(false);
 
   const { pendingRefetch } = refetchProps!;
 
@@ -97,6 +99,13 @@ function StaffPatientListBox({
       color={roleColorPick.light}
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
+      {/* <DischargeModal
+        modalTitle={"주의"}
+        subTitle={"테스트"}
+        onClose={() => setIsModal(false)}
+        open={isModal}
+        onDisCharge={mutateDischargeByWeb(data.tabletSimple.tabletId)}
+      /> */}
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <TitleLeft>
           {data?.areaSimple?.areaName} | {data?.patientSimple?.patientName} (
@@ -117,9 +126,7 @@ function StaffPatientListBox({
               ) : (
                 <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
               )}
-              <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
-                퇴원
-              </Option>
+              {/* <Option onMouseDown={() => setIsModal(true)}>퇴원</Option> */}
             </Options>
           )}
           {isEdit && (

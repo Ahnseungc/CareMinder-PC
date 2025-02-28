@@ -9,7 +9,6 @@ import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useCallback, useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
