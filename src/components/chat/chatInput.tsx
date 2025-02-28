@@ -1,6 +1,7 @@
 import { styled } from "@mui/material";
 import { SendChat } from "./chattingModel";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function ChatInput({
   roomId,
@@ -32,6 +33,8 @@ function ChatInput({
   //   setChat(el);
   // };
 
+  const { t } = useTranslation();
+
   return (
     <>
       {/* <WordComplete id="word"> */}
@@ -45,7 +48,7 @@ function ChatInput({
       <Wrapper>
         <Input
           type="text"
-          placeholder="메세지를 입력해 주세요"
+          placeholder={t("메세지를 입력해 주세요")}
           onClick={e => e.stopPropagation()}
           onChange={e => setChat(e.target.value)}
           value={chat}

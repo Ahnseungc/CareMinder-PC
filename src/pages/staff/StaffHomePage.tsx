@@ -25,6 +25,7 @@ import accountActiveState from "@libraries/recoil/accountActive";
 import StopAccountActiveModal from "@components/settings/modal/StopAccountActive";
 import useSignOut from "@hooks/mutation/useSignout";
 import { UserType } from "@models/user";
+import { useTranslation } from "react-i18next";
 
 export default function StaffHomePage() {
   const setlayoutState = useSetRecoilState(layoutState);
@@ -93,6 +94,8 @@ export default function StaffHomePage() {
     console.log("비밀번호 변경");
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       {/* 비밀번호 변경 요청 모달 */}
@@ -125,18 +128,18 @@ export default function StaffHomePage() {
       />
 
       <LeftSection>
-        <Title>대기중인 환자</Title>
+        <Title>{t("대기중인 환자")}</Title>
         <SubTitle>
           <SubTitleLeft>
-            <span>내 환자만 보기</span>
+            <span>{t("내 환자만 보기")}</span>
             <CSwitch onChange={(el: CSwitchType) => setStaffWaitIsMine(el.target.checked)} />
           </SubTitleLeft>
           <SubTitleRight>
-            <span>직종</span>
+            <span>{t("직종")}</span>
             <CComboBox
               placeholder={"전체"}
               options={["전체", "간호사", "조무사", "직원", "의사"]}
-              value={OPTIONS.find(el => el.role === isRole)?.value || "전체"}
+              value={OPTIONS.find(el => el.role === isRole)?.value || "-"}
               onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>
@@ -152,10 +155,10 @@ export default function StaffHomePage() {
         ))}
       </LeftSection>
       <RightSection>
-        <Title>수락중인 환자</Title>
+        <Title>{t("수락중인 환자")}</Title>
         <SubTitle>
           <SubTitleLeft>
-            <span>환자별로 묶기</span>
+            <span>{t("환자별로 묶기")}</span>
             <CSwitch onChange={(el: CSwitchType) => setStaffAcceptIsGroup(el.target.checked)} />
           </SubTitleLeft>
         </SubTitle>

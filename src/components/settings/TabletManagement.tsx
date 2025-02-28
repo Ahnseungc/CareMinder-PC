@@ -16,6 +16,7 @@ import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import palette from "@styles/palette";
 import useDebounce from "@utils/useDebounce";
+import { useTranslation } from "react-i18next";
 
 //태블릿 병상 관리
 
@@ -64,6 +65,7 @@ export const TabletManagement = () => {
     setIsClear(true);
     setIsSticky(false);
   };
+  const { t } = useTranslation();
 
   return (
     <>
@@ -99,7 +101,9 @@ export const TabletManagement = () => {
               isSticky={isSticky}
             >
               <X style={{ cursor: "pointer" }} onClick={handleClear} />
-              <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+              <EditMenuText>
+                {isEditing.length} {t("항목 선택됨")}
+              </EditMenuText>
               <EditMenuBox>
                 <Edit onClick={openTabletEditModal} />
                 <LogoutButton onClick={openLogoutModal}>환자로그아웃</LogoutButton>
@@ -127,7 +131,7 @@ export const TabletManagement = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="환자 이름을 검색해주세요."
+                    placeholder={t("환자 이름을 검색해주세요.")}
                     inputProps={{ "aria-label": "환자 이름을 검색해주세요." }}
                     value={searchValue}
                     onChange={e => {
@@ -146,7 +150,7 @@ export const TabletManagement = () => {
               </SearchBarContainer>
 
               <MainTitleContainer>
-                <Title variant="h1">태블릿 병상 관리</Title>
+                <Title variant="h1">{t("태블릿 병상 관리")}</Title>
               </MainTitleContainer>
             </TextContainer>
           )}

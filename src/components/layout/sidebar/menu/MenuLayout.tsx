@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import { useRecoilValue } from "recoil";
 import { userState } from "@libraries/recoil";
+import { useTranslation } from "react-i18next";
 
 type PageButtonProps = {
   routePath: string;
@@ -31,13 +32,14 @@ export default function MenuLayout({ pageName, routePath, icon }: PageButtonProp
       break;
   }
 
+  const { t } = useTranslation();
   return (
     <Container>
       <Link href={routePath} sx={menuButtonStyle}>
         <SvgIcon component={icon} inheritViewBox />
       </Link>
       <Typography variant="h5" sx={getTypographyStyles(isActive, user?.type!)}>
-        {pageName}
+        {t(pageName)}
       </Typography>
     </Container>
   );

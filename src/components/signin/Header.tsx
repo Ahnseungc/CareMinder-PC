@@ -1,10 +1,13 @@
 import { Stack, Typography, styled } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
+  const { t } = useTranslation();
+
   return (
     <Container>
       <Title variant="h1">careminder</Title>
-      <Subtitle variant="h2">케어마인더에 오신걸 환영합니다.</Subtitle>
+      <Subtitle variant="h2">{t("케어마인더에 오신걸 환영합니다.")}</Subtitle>
     </Container>
   );
 }

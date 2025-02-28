@@ -26,6 +26,7 @@ import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { useQueryClient } from "@tanstack/react-query";
 import MemoModal from "@components/admin/admininout/modal/memo-modal";
+import { useTranslation } from "react-i18next";
 
 type SelectedItem = {
   name: string;
@@ -244,6 +245,8 @@ const StaffWardInoutManagementPage = () => {
     setSelectSingle([]);
   }, [selected]);
 
+  const { t } = useTranslation();
+
   return (
     <>
       {isMemoModal && (
@@ -257,7 +260,7 @@ const StaffWardInoutManagementPage = () => {
       )}
       {isModal && (
         <DischargeModal
-          modalTitle={"주의"}
+          modalTitle={t("주의")}
           subTitle={"테스트"}
           onClose={handleModal}
           open={isModal}
@@ -273,7 +276,7 @@ const StaffWardInoutManagementPage = () => {
       )}
       {isSuccessModal}
       <Container>
-        <Title variant="h1">환자 관리</Title>
+        <Title variant="h1">{t("환자 관리")}</Title>
         <AnimatePresence mode="wait">
           {selected?.length > 0 ? (
             <motion.div
@@ -289,7 +292,9 @@ const StaffWardInoutManagementPage = () => {
                     <Button onClick={() => setSelected([])}>
                       <StaffCancelIcon />
                     </Button>
-                    <Text>{selected?.length}항목 선택됨</Text>
+                    <Text>
+                      {selected?.length} {t("항목 선택됨")}
+                    </Text>
                   </div>
                   <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
                     <ComBoxLayout width={"192px"}>
@@ -335,7 +340,7 @@ const StaffWardInoutManagementPage = () => {
                       </CalendarSelect>
                     </ComBoxLayout> */}
                     <CButton buttontype={"impactRed"} onClick={handleModal}>
-                      환자 퇴원 처리
+                      {t("환자 퇴원 처리")}
                     </CButton>
                   </div>
                 </div>
@@ -354,7 +359,7 @@ const StaffWardInoutManagementPage = () => {
                   <CSearchBox
                     value={searchValue}
                     onChange={onChangeSearchValue}
-                    placeholder={"검색할 내용을 입력해 주세요."}
+                    placeholder={t("검색할 내용을 입력해 주세요.")}
                     borderColor={"#ECECEC"}
                   />
                 </SearchLayout>

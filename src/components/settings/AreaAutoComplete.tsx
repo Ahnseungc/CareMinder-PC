@@ -7,6 +7,7 @@ import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaLi
 import { useSetRecoilState } from "recoil";
 import { selectAreaState } from "@libraries/recoil";
 import { Areas } from "@hooks/queries/useGetStaffList";
+import { useTranslation } from "react-i18next";
 
 interface AreaAutoCompleteProp {
   value: Areas[];
@@ -80,6 +81,7 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
       );
     }
   }, [selectedAreas, setSelectAreaState, areaList]);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -107,7 +109,7 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
             renderInput={params => (
               <TextField
                 {...params}
-                placeholder={selectedAreas.length === 0 ? "구역을 선택해주세요" : ""}
+                placeholder={selectedAreas.length === 0 ? t("구역을 선택해주세요") : ""}
                 error={selectedAreas.length === 0}
                 sx={{
                   "& .MuiOutlinedInput-root": {
@@ -152,11 +154,11 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
           />
         )}
         {selectedAreas.length === 0 && (
-          <ErrorMessage>하나 이상의 구역을 선택해주세요.</ErrorMessage>
+          <ErrorMessage>{t("하나 이상의 구역을 선택해주세요.")}</ErrorMessage>
         )}
       </AreaComboBoxLayout>
       <InfoMessage>
-        &nbsp;&nbsp;・&nbsp;&nbsp;간호사가 진행 중인 요청은 수정과 상관없이 유지됩니다.
+        &nbsp;&nbsp;・&nbsp;&nbsp;{t("간호사가 진행 중인 요청은 수정과 상관없이 유지됩니다.")}
       </InfoMessage>
     </>
   );

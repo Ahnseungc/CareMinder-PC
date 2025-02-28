@@ -9,6 +9,7 @@ import { createMemoReqest } from "@hooks/mutation/useCreateMemo";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDateDash } from "@utils/getDateform";
+import { useTranslation } from "react-i18next";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
@@ -49,6 +50,8 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
     );
   }, [memo, patientId]);
 
+  const { t } = useTranslation();
+
   return (
     <CMModal
       maxWidth="xs"
@@ -58,11 +61,11 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
       footer={
         <>
           <ModalActionButton hoverColor="#19181813" color="secondary" onClick={onClose}>
-            취소
+            {t("취소")}
           </ModalActionButton>
 
           <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={handleCreateMemo}>
-            변경
+            {t("변경")}
           </ModalActionButton>
         </>
       }
@@ -79,7 +82,7 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
             paddingTop: "20px",
           }}
         >
-          <Text>이전 메모</Text>
+          <Text>{t("이전 메모")}</Text>
           {isLoading ? (
             <Box
               sx={{
@@ -126,12 +129,12 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
             paddingTop: "20px",
           }}
         >
-          <Text>메모</Text>
+          <Text>{t("메모")}</Text>
         </Box>
         <Textarea
           maxRows={5}
           aria-label="memo"
-          placeholder="메모를 입력해주세요."
+          placeholder={t("메모를 입력해주세요.")}
           minRows={5}
           defaultValue={""}
           onChange={e => {

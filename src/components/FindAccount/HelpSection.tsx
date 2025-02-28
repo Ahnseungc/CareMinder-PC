@@ -3,9 +3,11 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as Arrow } from "@/assets/DownArrow.svg";
 import { Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function HelpSection() {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Container>
@@ -16,7 +18,7 @@ export default function HelpSection() {
         whileTap={{ scale: 0.98 }}
       >
         <Text isOpen={isOpen}>
-          아이디/비밀번호를 찾는데 어려움이 있으신가요?
+          {t("아이디/비밀번호를 찾는데 어려움이 있으신가요?")}
           <Arrow />
         </Text>
       </motion.div>
@@ -33,10 +35,10 @@ export default function HelpSection() {
                 ease: "easeOut",
               }}
             >
-              <Typography variant="subtitle1">케어마인더로 연락해주세요.</Typography>
-              번호: 010-1234-5678
+              <Typography variant="subtitle1">{t("케어마인더로 연락해주세요.")}</Typography>
+              {t("번호:")} 010-1234-5678
               <br />
-              이메일:{" "}
+              {t("이메일:")}
               <span style={{ textDecoration: "underline", paddingBottom: "3px" }}>
                 salescareminder@gmail.com
               </span>

@@ -17,6 +17,7 @@ import axios from "axios";
 import { FindAccount, FindAccountFieldType } from "@pages/find_account/FindAccountPage";
 import { SwitchCase } from "@toss/react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type FindAccountProps = {
   form: UseFormReturn<FindAccount>;
@@ -94,6 +95,8 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     const seconds = timer % 60;
     return `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
+
+  const { t } = useTranslation();
 
   const verifyPhoneNumber = async () => {
     const inputName = getValues("name");
@@ -185,7 +188,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
           sx={{ "gap": "3px", "& .MuiInputLabel-asterisk": { color: "#FF7253 !important" } }}
         >
           <InputLabel htmlFor={name} required>
-            {label}
+            {t(label)}
           </InputLabel>
           <Controller
             name={name}
@@ -240,7 +243,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                           }}
                           onClick={verifyPhoneNumber}
                         >
-                          {showVerifyCode ? "인증번호 재요청" : "인증번호 요청"}
+                          {showVerifyCode ? t("인증번호 재요청") : t("인증번호 요청")}
                         </CButton>
                       </CButtonWrapper>
                     </>
@@ -253,7 +256,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                         <TextField
                           {...field}
                           id={name}
-                          placeholder={placeholder}
+                          placeholder={t(placeholder)}
                           onChange={e => field.onChange(e)}
                           error={Boolean(errors[name])}
                           sx={{ width: "420px", display: field.name === "id" ? "none" : "flex" }}
@@ -263,7 +266,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                       <TextField
                         {...field}
                         id={name}
-                        placeholder={placeholder}
+                        placeholder={t(placeholder)}
                         onChange={e => field.onChange(e)}
                         error={Boolean(errors[name])}
                         sx={{

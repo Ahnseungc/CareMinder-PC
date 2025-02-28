@@ -10,6 +10,7 @@ import { SwitchCase } from "@toss/react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 type Step = "어드민 계정 생성 약관 동의서" | "어드민 계정 생성";
 
@@ -80,6 +81,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
       },
     });
   };
+  const { t } = useTranslation();
 
   return (
     <CMModal
@@ -97,7 +99,7 @@ export default function CreateAdminModal({ onClose, ...props }: CMModalProps) {
           overflowY: "hidden",
         },
       }}
-      title={step}
+      title={t(step)}
       footer={
         <SwitchCase
           value={step}

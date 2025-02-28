@@ -8,6 +8,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useSetRecoilState } from "recoil";
 import { wardNameCheckState } from "@libraries/recoil/idDoubleCheck";
+import { useTranslation } from "react-i18next";
 
 type InputFieldProps = {
   form: UseFormReturn<EditWard>;
@@ -20,6 +21,8 @@ export default function EditWardInfoField({ field, form, wardData }: InputFieldP
   const [newManagerName, setNewManagerName] = useState<string>(wardData.managerName || "");
   const [newManagerEmail, setNewManagerEmial] = useState<string>(wardData.managerEmail);
   const setWardNameDoubleCheck = useSetRecoilState(wardNameCheckState);
+
+  const { t } = useTranslation();
 
   const [validState, setValidState] = useState<{
     wardName?: {
@@ -114,7 +117,7 @@ export default function EditWardInfoField({ field, form, wardData }: InputFieldP
       }}
     >
       <InputLabel htmlFor={name} required={name !== "managerEmail"}>
-        {label}
+        {t(label)}
       </InputLabel>
       <Controller
         name={name}
@@ -156,7 +159,7 @@ export default function EditWardInfoField({ field, form, wardData }: InputFieldP
                     onClick={doubleCheckWardName}
                     disabled={wardData.wardName === newWardName}
                   >
-                    중복 확인
+                    {t("중복 확인")}
                   </CButton>
                 </div>
               </>

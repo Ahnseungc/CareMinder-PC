@@ -20,6 +20,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import useTimer from "@utils/useTimer";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
+import { useTranslation } from "react-i18next";
 
 type InputFieldProps = { form: UseFormReturn<NewWard>; field: NewWardField };
 
@@ -250,6 +251,8 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       <FormControl
@@ -263,10 +266,10 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
         }}
       >
         <InputLabel htmlFor={name} required={name !== "managerEmail"}>
-          {label}
+          {t(label)}
         </InputLabel>
         <span style={{ position: "absolute", right: "0", fontSize: "10px" }}>
-          {label === "비밀번호" ? "4자 이상의 영문(대/소문자)또는 숫자" : ""}
+          {/* {label === "비밀번호" ? "4자 이상의 영문(대/소문자)또는 숫자" : ""} */}
         </span>
         <Controller
           name={name}
@@ -307,7 +310,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
                       }}
                       onClick={doubleCheckWardName}
                     >
-                      중복 확인
+                      {t("중복 확인")}
                     </CButton>
                   </div>
                 </>
@@ -344,7 +347,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
                       }}
                       onClick={doubleCheck}
                     >
-                      중복 확인
+                      {t("중복 확인")}
                     </CButton>
                   </div>
                 </>
@@ -393,7 +396,7 @@ export default function NewWardInputField({ field, form }: InputFieldProps) {
                       }}
                       onClick={verifyPhoneNumber}
                     >
-                      {showVerifyCode ? "인증번호 재요청" : "인증번호 요청"}
+                      {t(showVerifyCode ? "인증번호 재요청" : "인증번호 요청")}
                     </CButton>
                   </CButtonWrapper>
                 </>

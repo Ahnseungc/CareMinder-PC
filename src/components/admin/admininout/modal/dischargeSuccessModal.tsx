@@ -1,12 +1,15 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { styled, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { useTranslation } from "react-i18next";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
 }
 
 const DischargeSuccessModal = ({ onClose, modalTitle, ...props }: ChargeModalProps) => {
+  const { t } = useTranslation();
+
   return (
     <CMModal
       maxWidth="xs"
@@ -15,14 +18,14 @@ const DischargeSuccessModal = ({ onClose, modalTitle, ...props }: ChargeModalPro
       footer={
         <>
           <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onClose}>
-            완료
+            {t("완료")}
           </ModalActionButton>
         </>
       }
       {...props}
     >
       <View>
-        <Text>퇴원 처리가 완료되었습니다.</Text>
+        <Text>{t("퇴원 처리가 완료되었습니다.")}</Text>
       </View>
     </CMModal>
   );

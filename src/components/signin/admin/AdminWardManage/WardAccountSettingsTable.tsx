@@ -18,6 +18,7 @@ import CreateWardModal from "@components/admin/adminModal/CreateWardModal";
 import wardEditingState from "@libraries/recoil/wardEdit";
 import EditWardInfoModal from "@components/admin/adminModal/EditWardInfoModal";
 import wardListState from "@libraries/recoil/wardList";
+import { useTranslation } from "react-i18next";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -47,6 +48,7 @@ const WardAccountSettingsTable = ({
     size: 20,
   });
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const { t } = useTranslation();
 
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [selectedWard, setSelectedWard] = useState<WardListType>();
@@ -120,14 +122,14 @@ const WardAccountSettingsTable = ({
       {wardList?.data.length === 0 ? (
         <EmptyStaffContainer>
           <EmptyStaff />
-          <EmptyText>등록된 병동계정이 없습니다.</EmptyText>
+          <EmptyText>{t("등록된 병동계정이 없습니다.")}</EmptyText>
           <div style={{ maxWidth: "148px" }}>
             <CButton
               buttontype="primarySpaureWhite"
               onClick={openCreateModal}
               style={{ border: "1px solid #5DB8BE", color: "#5DB8BE" }}
             >
-              병동 계정 생성
+              {t("병동 계정 생성")}
             </CButton>
           </div>
         </EmptyStaffContainer>
@@ -164,7 +166,7 @@ const WardAccountSettingsTable = ({
                   }
                   return (
                     <th key={index}>
-                      <>{column.headerName}</>
+                      <>{t(column.headerName)}</>
                     </th>
                   );
                 })}
@@ -253,7 +255,7 @@ const WardAccountSettingsTable = ({
                         <LongComBoxLayout>
                           <CInput
                             variant={"outlined"}
-                            placeholder={"담당자 이메일 입력"}
+                            placeholder={"-"}
                             onChange={() => null}
                             value={row.managerEmail}
                             disabled={row.userStatusInfo.accountLocked}
@@ -281,12 +283,12 @@ const WardAccountSettingsTable = ({
                             <>
                               {row.userStatusInfo.timeSinceLogout ? (
                                 <Typography>
-                                  미접속
+                                  {t("미접속")}
                                   <br />
                                   <TimeSince time={row.userStatusInfo.timeSinceLogout} />
                                 </Typography>
                               ) : (
-                                <Typography>로그인 기록 없음</Typography>
+                                <Typography> {t("로그인 기록 없음")}</Typography>
                               )}
                             </>
                           )}

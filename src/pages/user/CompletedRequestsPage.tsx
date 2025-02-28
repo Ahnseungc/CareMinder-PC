@@ -8,6 +8,7 @@ import useGetCompleted from "@hooks/queries/useGetCompleted";
 import useGetCompletedGroup from "@hooks/queries/useGetCompletedGroup";
 import useCompleteDischargeByWeb from "@hooks/mutation/useCompleteDischargeByWeb";
 import usePatchRestore from "@hooks/mutation/usePatchRestore";
+import { useTranslation } from "react-i18next";
 
 export default function CompletedRequestsPage() {
   const [isPatient, setIsPatient] = useState<boolean>(false);
@@ -37,17 +38,19 @@ export default function CompletedRequestsPage() {
     setIsFocusPatientData(null);
   };
 
+  const { t } = useTranslation();
+
   return (
     <Wrapper>
-      <Title>완료 요청 히스토리</Title>
+      <Title>{t("완료 요청 히스토리")}</Title>
       <SubTitle>
-        <span>완료된 내 구역 요청 리스트</span>
+        <span>{t("완료된 내 구역 요청 리스트")}</span>
         <CSwitch
           onChange={() => {
             setMyArea(prev => !prev), setIsFocusPatientData(null);
           }}
         />
-        <span>환자별로 보기</span>
+        <span>{t("환자별로 보기")}</span>
         <CSwitch
           onChange={() => {
             setIsPatient(prev => !prev), setIsFocusPatientData(null);

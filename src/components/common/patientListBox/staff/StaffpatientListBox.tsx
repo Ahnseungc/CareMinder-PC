@@ -17,6 +17,7 @@ import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
 import getNewRequest from "@utils/getNewRequest";
+import { useTranslation } from "react-i18next";
 // import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
@@ -91,6 +92,7 @@ function StaffPatientListBox({
   // const userInfo = filterMessages[filterMessages.length - 1];
   // mutateReadMs(userInfo.messageId);
   // }, [messages]);
+  const { t } = useTranslation();
 
   return (
     <InnerContainer
@@ -113,18 +115,18 @@ function StaffPatientListBox({
           {isOptions && (
             <Options>
               {isAccept ? (
-                <Option onClick={el => onCancelAccept(el)}>수락취소</Option>
+                <Option onClick={el => onCancelAccept(el)}>{t("수락취소")}</Option>
               ) : (
-                <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
+                <Option onMouseDown={() => setIsEdit(true)}>{t("담당직종 변경")}</Option>
               )}
               <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
-                퇴원
+                {t("퇴원")}
               </Option>
             </Options>
           )}
           {isEdit && (
             <Options tabIndex={0}>
-              <span>담당직종 변경</span>
+              <span>{t("담당직종 변경")}</span>
               <BoxWrapper>
                 <CComboBox
                   placeholder={"직종 선택"}

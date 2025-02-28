@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
+import { useTranslation } from "react-i18next";
 
 const columnsHeader = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
@@ -172,6 +173,8 @@ const AdminTable: FC<AdminTableProps> = ({
     }, 1000);
   };
 
+  const { t } = useTranslation();
+
   return (
     <StTable>
       <thead>
@@ -185,7 +188,7 @@ const AdminTable: FC<AdminTableProps> = ({
           {columnsHeader.map(column => {
             return (
               <InoutTableHeaderTh key={column.id} width={column.width}>
-                <p>{column.headerName}</p>
+                <p>{t(column.headerName)}</p>
                 {column.icon ? column.icon : ""}
               </InoutTableHeaderTh>
             );
@@ -218,7 +221,7 @@ const AdminTable: FC<AdminTableProps> = ({
                       <label htmlFor="section"></label>
                       <CInput
                         focusColorType="STAFF"
-                        placeholder={"환자 이름"}
+                        placeholder={t("환자 이름")}
                         value={tablet.patientName}
                         onChange={e => onChangeData(e, tablet.tabletId, "patientName")}
                         variant={"outlined"}
@@ -267,7 +270,7 @@ const AdminTable: FC<AdminTableProps> = ({
                         onDisCharge(tablet.tabletId);
                       }}
                     >
-                      환자 퇴원 처리
+                      {t("환자 퇴원 처리")}
                     </CButton>
                   </InoutTableBodyTd>
                 </InoutTableBodyTr>
