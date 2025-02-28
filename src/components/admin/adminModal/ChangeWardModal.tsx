@@ -5,6 +5,7 @@ import ChangeModal from "@components/settings/modal/ChangeModal";
 import { Box, styled, Typography } from "@mui/material";
 import { useBooleanState } from "@toss/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
   const [options] = useState<string[]>(["구역1", "구역2", "구역3", "구역4"]);
@@ -16,6 +17,7 @@ export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
   const [email, setEmail] = useState<string>("User1234@email.com");
 
   const [open, openModal, closeModal] = useBooleanState();
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     console.log({
@@ -38,9 +40,10 @@ export default function ChangeWardModal({ onClose, ...props }: CMModalProps) {
         subTitle={"신규 비밀번호"}
         rightText={"다음"}
       />
+
       <CMModal
         onClose={onClose}
-        title={"계정 정보 변경"}
+        title={t("계정 정보 변경")}
         footer={
           <>
             <ModalActionButton color="secondary" onClick={onClose}>

@@ -1,6 +1,7 @@
 import { CMModal, ModalActionButton } from "@components/common";
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 type ModalProps = {
@@ -12,6 +13,8 @@ type ModalProps = {
 
 function FindIdModal({ onClose, setActiveTab, type, id }: ModalProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [prevType, setPrevType] = useState<
     "/sign-in" | "/sign-in/admin" | "/staff/inout" | undefined
   >(undefined);
@@ -43,16 +46,16 @@ function FindIdModal({ onClose, setActiveTab, type, id }: ModalProps) {
               onClose(), setActiveTab("비밀번호 찾기");
             }}
           >
-            비밀번호 찾기
+            {t("비밀번호 찾기")}
           </ModalActionButton>
           <ModalActionButton onClick={() => navigate(prevType!)} color={"primary"}>
-            로그인 하러가기
+            {t("로그인 하러가기")}
           </ModalActionButton>
         </>
       }
     >
       <Title>
-        아이디는 <Point>{id}</Point> 입니다.
+        {t("아이디는")} <Point>{id}</Point> {t("입니다.")}
       </Title>
     </CMModal>
   );

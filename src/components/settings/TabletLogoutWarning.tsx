@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { ReactComponent as Warn } from "@/assets/Warning.svg";
+import { useTranslation } from "react-i18next";
 
 const WarningContainer = styled.div`
   text-align: center;
@@ -35,26 +36,28 @@ const WarningConfirm = styled.p`
 `;
 
 const TabletLogoutWarning = () => {
+  const { t } = useTranslation();
+
   return (
     <WarningContainer>
       <WarningHeader>
         <WarningTitle>
           <Warn />
         </WarningTitle>
-        경고
+        {t("경고")}
       </WarningHeader>
       <>
         <WarningText>
-          다음 환자 사용을 위해서는
+          {t("다음 환자 사용을 위해서는")}
           <br />
-          현재 환자의 로그아웃이 필요합니다.
+          {t("현재 환자의 로그아웃이 필요합니다.")}
         </WarningText>
         <WarningDescription>
-          로그아웃 시, 현재 환자의 정보는
+          {t("로그아웃 시, 현재 환자의 정보는")}
           <br />
-          모두 초기화되며, 복구할 수 없습니다.
+          {t("모두 초기화되며, 복구할 수 없습니다.")}
         </WarningDescription>
-        <WarningConfirm>해당 환자를 로그아웃 하시겠습니까?</WarningConfirm>
+        <WarningConfirm>{t("해당 환자를 로그아웃 하시겠습니까?")}</WarningConfirm>
       </>
     </WarningContainer>
   );

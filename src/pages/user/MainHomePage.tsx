@@ -8,6 +8,7 @@ import layoutState from "@libraries/recoil/layout";
 import modalState from "@libraries/recoil/modal";
 import { Box, styled } from "@mui/material";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
@@ -34,6 +35,7 @@ export default function MainHomePage() {
   const handleOnClose = () => {
     setIsModal(false);
   };
+  const { t } = useTranslation();
 
   useEffect(() => {
     setlayoutState("home");
@@ -53,18 +55,18 @@ export default function MainHomePage() {
       <>
         <StaffSigninModal onClose={handleOnClose} open={isModal} />
         <LeftSection>
-          <Title>대기중인 환자</Title>
+          <Title>{t("대기중인 환자")}</Title>
           <SubTitle>
             <SubTitleLeft>
-              <span>내 환자만 보기</span>
+              <span>{t("내 환자만 보기")}</span>
               <span onClick={onStaffLogIn}>
                 <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>
             </SubTitleLeft>
             <SubTitleRight onClick={onStaffLogIn} isDisable={userStatus?.type === "WARD"}>
-              <span>직종</span>
+              <span>{t("직종")}</span>
               <CComboBox
-                placeholder={"전체"}
+                placeholder={"-"}
                 options={["테스트1", "테스트2"]}
                 value={""}
                 onChange={() => onStaffLogIn}
@@ -76,10 +78,10 @@ export default function MainHomePage() {
           ))}
         </LeftSection>
         <RightSection>
-          <Title>수락중인 환자</Title>
+          <Title>{t("수락중인 환자")}</Title>
           <SubTitle>
             <SubTitleLeft>
-              <span>환자별로 묶기</span>
+              <span>{t("환자별로 묶기")}</span>
               <span onClick={onStaffLogIn}>
                 <CSwitch disabled={userStatus?.type === "WARD"} />
               </span>

@@ -8,6 +8,7 @@ import getPrevTimes from "@utils/getPrevTimes";
 import ChatBox from "@components/chat/chatBox";
 import { LoadChatHistory } from "@components/chat/chattingModel";
 import { Message } from "@models/staff";
+import { useTranslation } from "react-i18next";
 
 function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffListBoxProps) {
   const roleColorPick = roleColor(data.aiRole);
@@ -35,6 +36,8 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
       getHistoryChatting();
     }
   }, [data]);
+
+  const { t } = useTranslation();
 
   return (
     <InnerContainer
@@ -65,11 +68,11 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
           {isOptions && (
             <Options>
               <Option onClick={e => onMutates(e, data.patientRequestId, "restore")}>
-                복원하기
+                {t("복원하기")}
               </Option>
 
               <Option onClick={e => onMutates(e, data.tabletSimple.tabletId, "discharge")}>
-                퇴원 처리하기
+                {t("퇴원 처리하기")}
               </Option>
             </Options>
           )}
@@ -101,13 +104,13 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
               color={roleColorPick.dark}
               onClick={e => onMutates(e, data.patientRequestId, "accept")}
             >
-              요청 복원하기
+              {t("요청 복원하기")}
             </Restore>
           </RestoreWrapper>
           <InputWrapper>
             <Input
               type="text"
-              placeholder="현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다."
+              placeholder={t("현재는 메세지를 입력할 수 없습니다 / 이미 처리 완료된 채팅입니다.")}
               disabled={true}
             />
             <SendButton></SendButton>

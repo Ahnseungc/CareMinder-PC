@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { NewPassword, NewPassWordField } from "@models/ward";
+import { useTranslation } from "react-i18next";
 
 type InputFieldProps = { form: UseFormReturn<NewPassword>; field: NewPassWordField };
 
@@ -21,6 +22,8 @@ export default function NewPasswordField({ field, form }: InputFieldProps) {
       message?: string;
     };
   }>({});
+
+  const { t } = useTranslation();
 
   const handleClickShowPassword = () => setShowPassword(show => !show);
 
@@ -70,7 +73,7 @@ export default function NewPasswordField({ field, form }: InputFieldProps) {
       }}
     >
       <InputLabel htmlFor={name} required>
-        {label}
+        {t(label)}
       </InputLabel>
       <Controller
         name={name}

@@ -6,6 +6,7 @@ import { useBooleanState } from "@toss/react";
 import ChangeWardMoadl from "@components/admin/adminModal/ChangeWardModal";
 import ChangeModal from "@components/settings/modal/ChangeModal";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function AdminWardManagementPage() {
   const [openEdit, openEditModal, closeEditModal] = useBooleanState(false);
@@ -15,6 +16,7 @@ export default function AdminWardManagementPage() {
   const handleChangePage = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   };
+  const { t } = useTranslation();
 
   return (
     <>
@@ -30,10 +32,10 @@ export default function AdminWardManagementPage() {
       <Container>
         <HeadContainer>
           <div>
-            <Title variant="h1">병동 계정 관리</Title>
+            <Title variant="h1">{t("병동 계정 관리")}</Title>
           </div>
           <div style={{ maxWidth: "148px" }}>
-            <CButton buttontype="primarySpaureWhite">병동 계정 생성</CButton>
+            <CButton buttontype="primarySpaureWhite">{t("병동 계정 생성")}</CButton>
           </div>
         </HeadContainer>
         <BodyContainer>

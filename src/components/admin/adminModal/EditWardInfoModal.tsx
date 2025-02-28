@@ -17,6 +17,7 @@ import wardListState from "@libraries/recoil/wardList";
 import { toast } from "react-toastify";
 import InfoModal from "@components/settings/modal/InfoModal";
 import useChangeWardInfo, { NewWardInfo } from "@hooks/mutation/usePutChangeWardInfo";
+import { useTranslation } from "react-i18next";
 
 type Tab = "계정 정보 수정" | "비밀번호 강제 변경";
 
@@ -90,6 +91,8 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
     });
   };
 
+  const { t } = useTranslation();
+
   /** 병동 계정 비밀번호 강제 변경 로직 */
 
   const changePWform = useForm<NewPassword>({
@@ -152,7 +155,7 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
       <CMModal
         onClose={handleClear}
         maxWidth="md"
-        title={"병동 계정 정보 수정하기"}
+        title={t("병동 계정 정보 수정하기")}
         footer={
           <>
             <ModalActionButton
@@ -164,7 +167,7 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
                 },
               }}
             >
-              취소
+              {t("취소")}
             </ModalActionButton>
             <ModalActionButton
               color="info"
@@ -175,7 +178,7 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
               }
               disabled={isWardNameChange && !isWardNameChecked}
             >
-              변경
+              {t("변경")}
             </ModalActionButton>
           </>
         }
@@ -190,13 +193,13 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
             isActive={activeTab === "계정 정보 수정"}
             onClick={() => setActiveTab("계정 정보 수정")}
           >
-            계정 정보 수정
+            {t("계정 정보 수정")}
           </TabMenu>
           <TabMenu
             isActive={activeTab === "비밀번호 강제 변경"}
             onClick={() => setActiveTab("비밀번호 강제 변경")}
           >
-            비밀번호 강제 변경
+            {t("비밀번호 강제 변경")}
           </TabMenu>
         </TabMenuContainer>
         <FieldContainer>
@@ -218,16 +221,16 @@ export default function EditWardInfoModal({ onClose, wardData, ...props }: EditW
               ["비밀번호 강제 변경"]: (
                 <Stack gap={"24px"}>
                   <Typography variant="h2" sx={{ marginBottom: "9px", textAlign: "center" }}>
-                    새로운 비밀번호를 입력해주세요.
+                    {t("새로운 비밀번호를 입력해주세요.")}
                   </Typography>
                   {editPWfields.map(field => (
                     <NewPasswordField key={field.name} field={field} form={changePWform} />
                   ))}
                   <Typography variant="h4" sx={{ textAlign: "start", color: "#878787" }}>
-                    ・ 영문(대소문자)또는 숫자 조합의 4~20자
+                    {t("영문(대소문자)또는 숫자 조합의 4~20자")}
                   </Typography>
                   <Typography variant="h4" sx={{ textAlign: "center", color: "#878787" }}>
-                    강제변경하기
+                    {t("강제변경하기")}
                   </Typography>
                 </Stack>
               ),

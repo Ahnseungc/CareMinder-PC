@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { ReactComponent as Warn } from "@/assets/Warning.svg";
 import { UserType } from "@models/user";
+import { useTranslation } from "react-i18next";
 
 const WarningContainer = styled.div`
   text-align: center;
@@ -43,22 +44,24 @@ type AutoLogoutMessageProps = {
 };
 
 const AutoLogoutMessage = ({ userType }: AutoLogoutMessageProps) => {
+  const { t } = useTranslation();
+
   return (
     <WarningContainer>
       <WarningHeader userType={userType}>
         <WarningTitle>
           <Warn />
         </WarningTitle>
-        경고
+        {t("경고")}
       </WarningHeader>
       <>
         <WarningText>
-          30분 이상 활동이 없어,
+          {t("30분 이상 활동이 없어,")}
           <br />
-          정보 보호를 위해 자동으로 로그아웃됩니다.
+          {t("정보 보호를 위해 자동으로 로그아웃됩니다.")}
         </WarningText>
-        <WarningDescription>사용을 계속하시겠습니까?</WarningDescription>
-        <WarningConfirm>10초 후 자동 로그아웃됩니다.</WarningConfirm>
+        <WarningDescription>t{"사용을 계속하시겠습니까?"}</WarningDescription>
+        <WarningConfirm>t{"10초 후 자동 로그아웃됩니다."}</WarningConfirm>
       </>
     </WarningContainer>
   );

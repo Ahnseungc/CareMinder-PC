@@ -11,8 +11,16 @@ import {
 import { ReactComponent as Settings } from "@assets/menuIcons/settings.svg";
 import { styled } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
+import { useTranslation } from "react-i18next";
 
 export default function StaffSidebar() {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = () => {
+    const newLang = i18n.language === "en" ? "ko" : "en";
+    i18n.changeLanguage(newLang);
+  };
+
   return (
     <Wrapper>
       <div>
@@ -26,11 +34,10 @@ export default function StaffSidebar() {
         <SettingsMenu />
 
         {/* 베드로 병원 */}
-        <MenuLayout routePath={"/settings"} pageName="병동 설정" icon={Settings} />
       </div>
-      <div style={{ cursor: "pointer" }}>
+      <div style={{ cursor: "pointer" }} onClick={changeLanguage}>
         <PublicIcon fontSize="large" color="disabled" />
-        <Lan>Ko | en</Lan>
+        <Lan>{t("en")}</Lan>
       </div>
     </Wrapper>
   );
@@ -45,7 +52,8 @@ const Wrapper = styled("div")`
   align-items: center;
 `;
 const Lan = styled("div")`
-  font-size: 12px;
+  font-size: 15px;
   color: #c8c6c6;
-  font-weight: 700;
+  font-weight: 600;
+  text-align: center;
 `;

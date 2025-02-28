@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 function getPrevTimes(createdAt: string) {
+  const { t } = useTranslation();
+
   const today = new Date(); //오늘
   const createdDay = new Date(createdAt); //받은 날짜
   const diffMSec = today.getTime() - createdDay.getTime();
@@ -7,9 +11,9 @@ function getPrevTimes(createdAt: string) {
   const diffHour = diffMSec / (60 * 60 * 1000); // 시 비교
   const diffMin = diffMSec / (60 * 1000); // 분 비교
 
-  if (diffDate >= 1) return Math.floor(diffDate) + "일 전";
-  if (diffHour >= 1) return Math.floor(diffHour) + "시간 전";
-  if (diffMin >= 1) return Math.floor(diffMin) + "분 전";
+  if (diffDate >= 1) return Math.floor(diffDate) + t("일 전");
+  if (diffHour >= 1) return Math.floor(diffHour) + t("시간 전");
+  if (diffMin >= 1) return Math.floor(diffMin) + t("분 전");
   return "방금 전";
 }
 export default getPrevTimes;

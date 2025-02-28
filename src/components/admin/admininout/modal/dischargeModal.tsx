@@ -1,6 +1,7 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { styled, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { useTranslation } from "react-i18next";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
@@ -15,6 +16,8 @@ const DischargeModal = ({
   onDisCharge,
   ...props
 }: ChargeModalProps) => {
+  const { t } = useTranslation();
+
   return (
     <CMModal
       maxWidth="sm"
@@ -23,10 +26,10 @@ const DischargeModal = ({
       footer={
         <>
           <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={onClose}>
-            취소하기
+            {t("취소하기")}
           </ModalActionButton>
           <ModalActionButton hoverColor="#19181813" color="secondary" onClick={onDisCharge}>
-            퇴원하기
+            {t("퇴원하기")}
           </ModalActionButton>
         </>
       }
@@ -34,13 +37,14 @@ const DischargeModal = ({
     >
       <View>
         <Text>
-          퇴원 처리 시 복구가 불가능합니다. <br />
+          {t("퇴원 처리 시 복구가 불가능합니다.")} <br />
           <br />
-          해당 환자의 요청은 모두 완료/삭제 처리가 되며,
+          {t("해당 환자의 요청은 모두 완료/삭제 처리가 되며,")}
           <br />
-          태블릿 내 환자 계정은 로그아웃 및 초기화됩니다.
+          {t("태블릿 내 환자 계정은 로그아웃 및 초기화됩니다.")}
           <br />
-          <br /> 퇴원 처리하시겠습니까?
+          <br />
+          {t("퇴원 처리하시겠습니까?")}
         </Text>
       </View>
     </CMModal>

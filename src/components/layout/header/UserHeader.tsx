@@ -1,5 +1,5 @@
 // import SearchBox from "@components/common/SearachBox/SearchBox";
-// import SignOutButton from "./SignOutButton";
+import SignOutButton from "./SignOutButton";
 import { Box, styled, Typography } from "@mui/material";
 import { ReactComponent as Logo } from "@assets/full-logo.svg";
 import Alarm from "@components/alarm/alarm.tsx";
@@ -14,8 +14,8 @@ export default function UserHeader() {
         <HeaderContainer>
           {/* <SearchBoxWrapper>
             <SearchBox />
-          </SearchBoxWrapper>
-          <SignOutButton /> */}
+          </SearchBoxWrapper>*/}
+          <SignOutButton />
         </HeaderContainer>
       </Typography>
       <Alarm />

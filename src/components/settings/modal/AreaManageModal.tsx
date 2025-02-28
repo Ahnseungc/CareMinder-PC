@@ -11,6 +11,7 @@ import { useGetWardAreaLists } from "@hooks/queries/useGetWardAreaLists";
 import useUpdateWardAreaLists from "@hooks/mutation/useUpdateWardAreaLists";
 import { useRecoilState } from "recoil";
 import { editedWardNamesState } from "@libraries/recoil/editWardNames";
+import { useTranslation } from "react-i18next";
 
 interface AreaManageModalProps extends CMModalProps {
   isAdmin?: boolean;
@@ -23,6 +24,8 @@ export default function AreaManageModal({
   title = "구역 관리하기",
   ...props
 }: AreaManageModalProps) {
+  const { t } = useTranslation();
+
   const [areaData, setAreaData] = useState<AreaInfo[]>([]);
   const [editedWardNames, setEditedWardNames] = useRecoilState(editedWardNamesState);
 
@@ -163,11 +166,9 @@ export default function AreaManageModal({
           variant="h4"
           sx={{ color: "#878787", fontSize: "16px", fontWeight: "500", margin: "40px 0 " }}
         >
-          {`${isAdmin ? "병동/구역 관리에서는 병동 또는 구역 이름을" : "구역 관리에서는 구역 이름을"} 더블 클릭해 수정하고, 구역을 추가하거나 삭제할 수 있습니다.`}
-          <br />
-          또한, 메모란에 각 구역의 호실 이름이나 기타 메모를 입력할 수 있습니다.
-          <br />
-          해당 메모는 현 팝업(구역 관리하기)에서만 확인이 가능합니다.
+          {t(
+            "구역 관리에서는 구역 이름을 또한, 더블 클릭해 수정하고, 구역을 추가하거나 삭제할 수 있습니다.<br/> 메모란에 각 구역의 호실 이름이나 기타 메모를 입력할 수 있습니다.<br />해당 메모는 현 팝업(구역 관리하기)에서만 확인이 가능합니다.",
+          )}
         </Typography>
         {tableData && (
           <AreaManageTable

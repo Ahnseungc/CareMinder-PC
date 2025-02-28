@@ -14,7 +14,8 @@ import InfoModal, { ModalType } from "@components/settings/modal/InfoModal";
 import { Grid, Divider, styled, Stack, Box, Link } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
 
-import { SwitchCase, useBooleanState } from "@toss/react";
+import { useBooleanState } from "@toss/react";
+import { useTranslation } from "react-i18next";
 
 type SigninLayoutProps = {
   type: UserType;
@@ -63,6 +64,13 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
     }
   }, [error]);
 
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = () => {
+    const newLang = i18n.language === "en" ? "ko" : "en";
+    i18n.changeLanguage(newLang);
+  };
+
   const onSubmit = signin;
 
   return (
@@ -79,7 +87,8 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
           }}
         /> */}
         <Tag>
-          <PublicIcon fontSize="small" color="disabled" /> <span> ko | en</span>
+          <PublicIcon fontSize="small" color="disabled" />
+          <span onClick={changeLanguage}>{t("en")}</span>
         </Tag>
         <Content>
           <SigninHeader />
@@ -91,7 +100,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
           <Footer divider={<Divider orientation="vertical" />}>
             {/* Todo */}
             <Link href={`${RoutePath.FindAccount}?type=${type}`} variant="h3">
-              ID / PW 찾기
+              {t("ID / PW 찾기")}
             </Link>
             {footer}
           </Footer>
