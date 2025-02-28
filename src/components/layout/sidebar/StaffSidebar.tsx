@@ -5,10 +5,8 @@ import {
   CompletedRequestsMenu,
   // NoticeMenu,
   SettingsMenu,
-  MenuLayout,
   // DietMenu,
 } from "@components/layout/sidebar/menu";
-import { ReactComponent as Settings } from "@assets/menuIcons/settings.svg";
 import { styled } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
 import { useTranslation } from "react-i18next";

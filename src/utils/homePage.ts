@@ -55,16 +55,6 @@ export const isFindRole = (role: CSwitchProps) => {
       return "DOCTOR";
     case "전체":
       return null;
-    case "간호사":
-      return "NURSE";
-    case "조무사":
-      return "NURSE_ASSISTANT";
-    case "직원":
-      return "WORKER";
-    case "의사":
-      return "DOCTOR";
-    case "전체":
-      return null;
   }
 };
 
