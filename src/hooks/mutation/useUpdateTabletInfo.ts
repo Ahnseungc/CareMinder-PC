@@ -10,7 +10,7 @@ export type TabletInfo = {
   tabletName: string;
   patientName: string;
   featureRestrictionType: TableStatus;
-  sleepModeSimple: SleepModeSimple;
+  sleepModeSimple: SleepModeSimple | null;
   admissionDate: string;
 };
 
