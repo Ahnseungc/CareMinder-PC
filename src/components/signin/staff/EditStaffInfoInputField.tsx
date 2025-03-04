@@ -61,7 +61,7 @@ export default function EditStaffInfoInputField({
           return true;
         }
         if (value.length < 4) {
-          return "비밀번호는 최소 4자 이상이어야 합니다.";
+          return t("비밀번호는 최소 4자 이상이어야 합니다.");
         }
         return true;
       },
@@ -76,7 +76,7 @@ export default function EditStaffInfoInputField({
             ...prev,
             confirmpassword: {
               isValid: true,
-              message: "비밀번호가 올바르게 확인되었습니다.",
+              message: t("비밀번호가 올바르게 확인되었습니다."),
             },
           }));
           return true;
@@ -85,7 +85,7 @@ export default function EditStaffInfoInputField({
           ...prev,
           confirmpassword: undefined,
         }));
-        return "비밀번호가 일치하지 않습니다.";
+        return t("비밀번호가 일치하지 않습니다.");
       },
     },
     email: {
@@ -174,9 +174,9 @@ export default function EditStaffInfoInputField({
               staffRole: (
                 <ComboBoxLayout>
                   <CComboBox
-                    placeholder={"간호사"}
-                    options={OPTIONS.map(option => option.value)}
-                    value={staffRole}
+                    placeholder={t("간호사")}
+                    options={OPTIONS.map(option => t(option.value))}
+                    value={t(staffRole)}
                     isStaff={true}
                     onChange={handleChangeRole}
                   />

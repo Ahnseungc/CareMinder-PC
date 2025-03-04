@@ -66,7 +66,7 @@ export default function InfoModal({
         modalType === "successChangeInfo" ||
         modalType === "successChangePW" ||
         modalType === "successChangePWReq"
-          ? "스태프 정보 수정하기"
+          ? t("스태프 정보 수정하기")
           : ""
       }
       footer={

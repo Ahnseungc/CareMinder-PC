@@ -25,6 +25,7 @@ import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { useTranslation } from "react-i18next";
 
 export type Columns = {
   field: string;
@@ -49,6 +50,8 @@ const TabletManagementTable = ({
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<TabletFilter>({});
+
+  const { t } = useTranslation();
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -175,7 +178,7 @@ const TabletManagementTable = ({
       field: "Section",
       headerName: (
         <ColumnName onClick={handleFilter}>
-          <span>구역</span>
+          <span>{t("구역")}</span>
           <Filter />
         </ColumnName>
       ),
@@ -184,7 +187,7 @@ const TabletManagementTable = ({
       field: "TabletName",
       headerName: (
         <ColumnName onClick={() => handleSort("TabletName")}>
-          <span>태블릿 이름</span>
+          <span>{t("태블릿 이름")}</span>
           <span style={{ color: `${palette.primary.main}` }}>
             {filter.tabletNameSort === "ASC" ? (
               <ASC_Array />
@@ -201,7 +204,7 @@ const TabletManagementTable = ({
       field: "PatientName",
       headerName: (
         <ColumnName onClick={() => handleSort("PatientName")}>
-          <span>환자 이름</span>
+          <span>{t("환자 이름")}</span>
           <span style={{ color: `${palette.primary.main}` }}>
             {filter.patientNameSort === "ASC" ? (
               <ASC_Array />
@@ -218,15 +221,15 @@ const TabletManagementTable = ({
       field: "AdmissionDate",
       headerName: (
         <ColumnName /**onClick={() => handleSort("AdmissionDate")}*/>
-          <span>입원 일자</span>
+          <span>{t("입원 일자")}</span>
           {/* <Array /> */}
         </ColumnName>
       ),
     },
-    { field: "TabletStatus", headerName: "태블릿 상태" },
-    { field: "SleepModeControl", headerName: "수면제한" },
-    { field: "TabletManageMent", headerName: "태블릿 관리" },
-    { field: "Logout", headerName: "환자 로그아웃" },
+    { field: "TabletStatus", headerName: t("태블릿 상태") },
+    { field: "SleepModeControl", headerName: t("수면제한") },
+    { field: "TabletManageMent", headerName: t("태블릿 관리") },
+    { field: "Logout", headerName: t("환자 로그아웃") },
   ];
 
   useEffect(() => {
@@ -268,8 +271,8 @@ const TabletManagementTable = ({
         open={isLogoutModalOpen}
         onClose={closeLogoutModal}
         modalType="checkDelete"
-        leftText="취소"
-        rightText="중단"
+        leftText={t("취소")}
+        rightText={t("중단")}
         userType={"WARD"}
         onConfirm={() => null}
         message={<TabletLogoutWarning />}
@@ -409,11 +412,13 @@ const TabletManagementTable = ({
                     <td>
                       <LongComBoxLayout>
                         <TabletTypography status={row.featureRestrictionType}>
-                          {row.featureRestrictionType === "FULL_ACCESS"
-                            ? "● 전체가능"
-                            : row.featureRestrictionType === "REQUEST_ONLY"
-                              ? "● 요청가능"
-                              : "● 강제종료"}
+                          {t(
+                            row.featureRestrictionType === "FULL_ACCESS"
+                              ? "● 전체가능"
+                              : row.featureRestrictionType === "REQUEST_ONLY"
+                                ? "● 요청가능"
+                                : "● 강제종료",
+                          )}
                         </TabletTypography>
                       </LongComBoxLayout>
                     </td>
@@ -427,11 +432,13 @@ const TabletManagementTable = ({
                               status={row.sleepModeSimple.type}
                               sx={{ marginRight: "8px" }}
                             >
-                              {row.sleepModeSimple.type === "FULL_ACCESS"
-                                ? "● 전체가능"
-                                : row.sleepModeSimple.type === "REQUEST_ONLY"
-                                  ? "● 요청가능"
-                                  : "● 강제종료"}
+                              {t(
+                                row.sleepModeSimple.type === "FULL_ACCESS"
+                                  ? "● 전체가능"
+                                  : row.sleepModeSimple.type === "REQUEST_ONLY"
+                                    ? "● 요청가능"
+                                    : "● 강제종료",
+                              )}
                             </TabletTypography>
                             <span>
                               {formatTimeRange({
