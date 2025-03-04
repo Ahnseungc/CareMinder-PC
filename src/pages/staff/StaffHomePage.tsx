@@ -106,11 +106,11 @@ export default function StaffHomePage() {
         modalTitle={"비밀번호 변경 요청"}
         subTitle={
           <Typography variant="body1" sx={{ textAlign: "center", lineHeight: "1.8" }}>
-            비밀번호 변경 요청이 왔습니다. 비밀번호를 변경해주세요.
-            <br /> 2024년 11월 30일까지 변경하지 않을 경우, 계정이 잠기게 됩니다.
+            {t("비밀번호 변경 요청이 왔습니다. 비밀번호를 변경해주세요.")}
+            <br /> {t("2024년 11월 30일까지 변경하지 않을 경우, 계정이 잠기게 됩니다.")}
           </Typography>
         }
-        rightText={"변경하기"}
+        rightText={t("변경하기")}
         isPasswordChange={true}
       />
 
@@ -138,8 +138,9 @@ export default function StaffHomePage() {
             <span>{t("직종")}</span>
             <CComboBox
               placeholder={"전체"}
-              options={["전체", "간호사", "조무사", "직원", "의사"]}
-              value={OPTIONS.find(el => el.role === isRole)?.value || "-"}
+              options={[t("전체"), t("간호사"), t("조무사"), t("직원"), t("의사")]}
+              value={t(OPTIONS.find(el => el.role === isRole)?.value!) || t("전체")}
+              // value={isRole || t("전체")}
               onChange={el => setIsRole(isFindRole(el.target.value))}
             />
           </SubTitleRight>

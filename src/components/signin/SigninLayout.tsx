@@ -25,9 +25,10 @@ type SigninLayoutProps = {
 
 export default function SigninLayout({ type, footer, options }: SigninLayoutProps) {
   const form = useForm<SigninFormData>();
+
   const { mutate: signin, error } = useSignin();
   const [open, openModal, closeModal] = useBooleanState();
-
+  const { t, i18n } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModalType, setIsModalType] = useState<ModalType>("waiting");
 
@@ -38,7 +39,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
       // @ts-ignore
       if (error?.response.data.statusCode === "401") {
         // @ts-ignore
-        if (error?.response.data.message.includes("비밀번호가 틀립니다.")) {
+        if (error?.response.data.message.includes(t("비밀번호가 틀립니다."))) {
           // @ts-ignore
           setErrorMessage(error?.response.data.message as string);
           setIsModalType("valueError");
@@ -49,7 +50,7 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
             setIsModalType("accountLock");
           } else if (type === "STAFF") {
             // onOpenAccountModal();
-            setErrorMessage("계정이 잠겼습니다. 관리자에게 문의하세요.");
+            setErrorMessage(t("계정이 잠겼습니다. 관리자에게 문의하세요."));
             setIsModalType("accountLock");
           }
         }
@@ -63,8 +64,6 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
       openModal();
     }
   }, [error]);
-
-  const { t, i18n } = useTranslation();
 
   const changeLanguage = () => {
     const newLang = i18n.language === "en" ? "ko" : "en";
@@ -86,9 +85,9 @@ export default function SigninLayout({ type, footer, options }: SigninLayoutProp
             WARD: <Tag>병동</Tag>,
           }}
         /> */}
-        <Tag>
+        <Tag onClick={changeLanguage}>
           <PublicIcon fontSize="small" color="disabled" />
-          <span onClick={changeLanguage}>{t("en")}</span>
+          <span>{t("en")}</span>
         </Tag>
         <Content>
           <SigninHeader />

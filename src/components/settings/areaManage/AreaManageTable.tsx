@@ -15,6 +15,7 @@ import { AreaInfo } from "@hooks/mutation/useUpdateAreaInfo";
 import { AreasType, GetWardAreaListsResponse } from "@hooks/queries/useGetWardAreaLists";
 import { useRecoilState } from "recoil";
 import { editedWardNamesState } from "@libraries/recoil/editWardNames";
+import { useTranslation } from "react-i18next";
 
 interface AreaManageTableProps {
   onUpdate: React.Dispatch<SetStateAction<AreaInfo[]>>;
@@ -56,6 +57,7 @@ export default function AreaManageTable({
   }, [areaList]);
 
   const { mutate: deleteArea } = useDeleteArea();
+  const { t } = useTranslation();
 
   const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null);
   const [isDeleteIndex, setIsDeleteIndex] = useState<number>();
@@ -183,11 +185,11 @@ export default function AreaManageTable({
     }
     deleteArea(isDeleteIndex, {
       onSuccess: () => {
-        toast.success("구역을 삭제했습니다.");
+        toast.success(t("구역을 삭제했습니다."));
       },
       onError: error => {
         console.error(error);
-        toast.error("구역 삭제에 실패했습니다.");
+        toast.error(t("구역 삭제에 실패했습니다."));
       },
     });
     closeCheckDeleteModal();
@@ -210,8 +212,8 @@ export default function AreaManageTable({
         open={isOpenCheckDeleteModal}
         onClose={closeCheckDeleteModal}
         modalType="checkDelete"
-        leftText="취소하기"
-        rightText="삭제하기"
+        leftText={t("취소하기")}
+        rightText={t("삭제하기")}
         userType={isAllList ? "ADMIN" : "WARD"}
         onConfirm={() => handleDeleteArea()}
         message={<DeleteWarning />}

@@ -129,9 +129,11 @@ function StaffPatientListBox({
               <span>{t("담당직종 변경")}</span>
               <BoxWrapper>
                 <CComboBox
-                  placeholder={"직종 선택"}
-                  options={["간호사", "의사", "조무사", "직원"]}
-                  value={OPTIONS.find(el => el.role === data.aiRole)?.value || "정의되지 않음"}
+                  placeholder={t("직종 선택")}
+                  options={[t("간호사"), t("의사"), t("조무사"), t("직원")]}
+                  value={
+                    t(OPTIONS.find(el => el.role === data.aiRole)?.value!) || t("정의되지 않음")
+                  }
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper>
@@ -273,7 +275,7 @@ const Option = styled("div")`
 `;
 const BoxWrapper = styled("div")`
   height: 39px;
-  width: 130px;
+  width: 180px;
   margin-top: 8px;
 `;
 const TitleLeft = styled("div")`

@@ -15,6 +15,7 @@ import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 import TabletSelect from "../tabletManage/TabletSelect";
 import TabletTimeInput from "../tabletManage/TabletTimeInput";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface EditTabletInfoModalProps extends CMModalProps {
   tabletId?: number;
@@ -38,6 +39,8 @@ export default function EditTableInfoModal({
   const [startMinute, setStartMinute] = useState<number>(0);
   const [endHour, setEndHour] = useState<number>(0);
   const [endMinute, setEndMinute] = useState<number>(0);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!tabletData) {
@@ -106,11 +109,11 @@ export default function EditTableInfoModal({
       },
       {
         onSuccess: () => {
-          toast.success("태블릿 정보 변경이 완료되었습니다.");
+          toast.success(t("태블릿 정보 변경이 완료되었습니다."));
           onClose();
         },
         onError: () => {
-          toast.error("태블릿 정보 변경 중 오류가 발생했습니다.");
+          toast.error(t("태블릿 정보 변경 중 오류가 발생했습니다."));
         },
       },
     );
@@ -133,7 +136,7 @@ export default function EditTableInfoModal({
             overflowY: "hidden",
           },
         }}
-        title={"태블릿 관리"}
+        title={t("태블릿 관리")}
         footer={
           <>
             <ModalActionButton
@@ -144,9 +147,9 @@ export default function EditTableInfoModal({
                 reset();
               }}
             >
-              취소
+              {t("취소")}
             </ModalActionButton>
-            <ModalActionButton onClick={handleSubmit(onSubmit)}>변경하기</ModalActionButton>
+            <ModalActionButton onClick={handleSubmit(onSubmit)}>{t("변경하기")}</ModalActionButton>
           </>
         }
       >
@@ -155,7 +158,7 @@ export default function EditTableInfoModal({
             variant="body2"
             sx={{ textAlign: "center", color: `${palette.primary.main}`, fontWeight: 600 }}
           >
-            {isSelectedTablet.length}명 선택됨
+            {isSelectedTablet.length} {t("항목 선택됨")}
           </Typography>
         )}
 
@@ -172,7 +175,7 @@ export default function EditTableInfoModal({
           <Divider component="div" sx={{ marginTop: "10px", marginBottom: "10px" }} />
 
           <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
-            태블릿 상태
+            {t("태블릿 상태")}
           </Typography>
 
           {tabletData ? (
@@ -186,19 +189,19 @@ export default function EditTableInfoModal({
           )}
 
           <Typography sx={{ fontWeight: 600, fontSize: "16px", color: `${palette.text.dark}` }}>
-            수면제한
+            {t("수면제한")}
           </Typography>
 
           <SleepModeContainer>
             <SleepControlBox>
-              <SleepMenuText>사용</SleepMenuText>
+              <SleepMenuText>{t("사용")}</SleepMenuText>
               <CSwitch checked={switchState} onChange={handleSwitchChange} onText="" offText="" />
             </SleepControlBox>
 
             {switchState && (
               <>
                 <SleepControlBox>
-                  <SleepMenuText>시작 시간</SleepMenuText>
+                  <SleepMenuText>{t("시작 시간")}</SleepMenuText>
                   <TabletTimeInput
                     hourValue={startHour}
                     minuteValue={startMinute}
@@ -207,7 +210,7 @@ export default function EditTableInfoModal({
                   />
                 </SleepControlBox>
                 <SleepControlBox>
-                  <SleepMenuText>종료 시간</SleepMenuText>
+                  <SleepMenuText>{t("종료 시간")}</SleepMenuText>
                   <TabletTimeInput
                     hourValue={endHour}
                     minuteValue={endMinute}
@@ -216,7 +219,7 @@ export default function EditTableInfoModal({
                   />
                 </SleepControlBox>
                 <SleepControlBox>
-                  <SleepMenuText>제한 설정</SleepMenuText>
+                  <SleepMenuText>{t("제한 설정")}</SleepMenuText>
                   <div style={{ width: "300px", height: "40px" }}>
                     {tabletData ? (
                       <TabletSelect
