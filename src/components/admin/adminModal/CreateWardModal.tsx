@@ -242,8 +242,6 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       회사는 원활한 서비스 운영을 위해 개인정보 처리 업무를 다음과 같이 외부에
                       위탁할 수 있습니다: <br />
                       <br />
-                      위탁받는 자: (위탁 업체 명시) <br />
-                      <br />
                       위탁하는 업무의 내용: 서버 관리 및 유지보수, 고객 상담 지원 등. <br />
                       <br />
                       위탁 계약 시 개인정보보호법에 따른 보호 조치를 계약서에 명시하여 관리 및
@@ -260,7 +258,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       조치합니다.
                       <br />
                       <br />
-                      문의처: (문의처 정보 명시) <br />
+                      문의처: contact@careminder.biz 또는 010-5930-7359 <br />
                       <br />
                     </Typography>
                     <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
@@ -276,6 +274,20 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       <br />
                       파기 방법: 전자적 파일 형태의 정보는 복구할 수 없도록 영구 삭제하며, 종이
                       문서는 분쇄기로 분쇄 또는 소각하여 파기합니다.
+                      <br />
+                      <br />
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ fontWeight: "500" }} color="black">
+                      제 8 조. 개인정보보호 책임자
+                      <br />
+                      <br />
+                    </Typography>
+                    <Typography variant="body2">
+                      회사는 개인정보 처리와 관련한 문의, 불만처리 및 피해구제를 위하여 개인정보보호
+                      책임자를 지정하고 있습니다:
+                      <br />
+                      <br />
+                      개인정보보호 책임자: 강준구
                     </Typography>
                   </TOSContentField>
                 </TOSContainer>

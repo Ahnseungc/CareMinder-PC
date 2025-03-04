@@ -11,7 +11,10 @@ export type CustomButtonProps = {
     | "primaryBlack"
     | "primarySpaureLong"
     | "impactRed"
-    | "primarySecond";
+    | "primarySecond"
+    | "primarySquareWhiteSecond"
+    | "primarySquareWhiteAdmin"
+    | "primarySquareWhiteStaff";
   icon?: React.ReactNode;
 } & ButtonProps;
 
@@ -132,6 +135,24 @@ const StyledButton = styled(Button)<CustomButtonProps>(({ buttontype, theme }) =
       color: "#ffffff",
     },
   }),
+  ...(buttontype === "primarySquareWhiteSecond" && {
+    backgroundColor: theme.palette.primary.contrastText,
+    color: "#949599",
+    border: `1px solid ${theme.palette.divider}`,
+    width: "100%",
+  }),
+  ...(buttontype === "primarySquareWhiteAdmin" && {
+    backgroundColor: theme.palette.primary.contrastText,
+    color: "#5DACBE",
+    border: "1px solid #5DACBE",
+    width: "100%",
+  }),
+  ...(buttontype === "primarySquareWhiteStaff" && {
+    backgroundColor: theme.palette.primary.contrastText,
+    color: `${theme.palette.secondary.main}`,
+    border: `1px solid ${theme.palette.secondary.main}`,
+    width: "100%",
+  }),
 }));
 const IconWrapper = styled("span")({
   display: "flex",
@@ -140,7 +161,7 @@ const IconWrapper = styled("span")({
   right: 9,
 });
 
-/* 
+/*
 EX)
 <CButton buttonType="primary">파란색 원형 기본</CButton>
 <CButton buttonType="primaryWhite">하얀색 원형 기본</CButton>

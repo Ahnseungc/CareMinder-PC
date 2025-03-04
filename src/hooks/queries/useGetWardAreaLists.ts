@@ -19,9 +19,12 @@ export const getWardAreaLists = async () => {
   return res.data;
 };
 
-export const useGetWardAreaLists = (): UseQueryResult<GetWardAreaListsResponse[], AxiosError> => {
+export const useGetWardAreaLists = (options?: {
+  enabled?: boolean;
+}): UseQueryResult<GetWardAreaListsResponse[], AxiosError> => {
   return useQuery<GetWardAreaListsResponse[], AxiosError>({
     queryKey: ["ward-area-List"],
     queryFn: getWardAreaLists,
+    enabled: options?.enabled,
   });
 };

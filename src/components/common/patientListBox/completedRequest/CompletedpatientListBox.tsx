@@ -64,7 +64,9 @@ function CompletedPatientListBox({ isAccept, data, onMutates, roomId }: StaffLis
 
           {isOptions && (
             <Options>
-              <Option onClick={e => onMutates(e, data.patientRequestId, "accept")}>복원하기</Option>
+              <Option onClick={e => onMutates(e, data.patientRequestId, "restore")}>
+                복원하기
+              </Option>
 
               <Option onClick={e => onMutates(e, data.tabletSimple.tabletId, "discharge")}>
                 퇴원 처리하기

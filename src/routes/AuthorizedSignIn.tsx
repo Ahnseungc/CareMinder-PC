@@ -1,6 +1,6 @@
 import { userState } from "@libraries/recoil";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import Cookies from "js-cookie";
 import { Box, CircularProgress } from "@mui/material";
@@ -11,7 +11,7 @@ const AuthenticatedSignIn = () => {
   const setUserState = useSetRecoilState(userState);
   const setWardState = useSetRecoilState(wardState);
   const [isChecking, setIsChecking] = useState(true);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(isElectron());
@@ -19,6 +19,8 @@ const AuthenticatedSignIn = () => {
       const handleMessage = (event: MessageEvent) => {
         console.log("Electron 받은 메세지 :", event.data);
         const userInfo = event.data;
+        console.log(userInfo.tokensStaff);
+          console.log(userInfo.tokensWard);
         if (userInfo.type === "WARD") {
           setUserState(userInfo.user);
           setWardState(userInfo.wardState);
@@ -27,6 +29,22 @@ const AuthenticatedSignIn = () => {
             Cookies.set("refreshTokenWard", userInfo.token.refreshToken),
           ]).then(() => {
             setIsChecking(false);
+          });
+        }
+        if (userInfo.type === "STAFF") {
+          console.log("스태프 로그인");
+          setUserState(userInfo.user);
+          console.log(userInfo.tokensStaff);
+          console.log(userInfo.tokensWard);
+          setWardState(userInfo.wardState);
+          Promise.all([
+            Cookies.set("accessTokenWard", userInfo.tokensWard.accessToken),
+            Cookies.set("refreshTokenWard", userInfo.tokensWard.refreshToken),
+            Cookies.set("accessTokenStaff", userInfo.tokensStaff.accessToken),
+            Cookies.set("refreshTokenStaff", userInfo.tokensStaff.refreshToken),
+          ]).then(() => {
+            setIsChecking(false);
+            navigate("/staff");
           });
         }
         if (userInfo.type === "ADMIN") {

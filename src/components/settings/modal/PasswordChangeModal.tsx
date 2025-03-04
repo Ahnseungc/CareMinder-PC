@@ -82,6 +82,8 @@ export default function PasswordChangeModal({
   const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isSaveModalOpen, openSaveModal, closeSaveModal] = useBooleanState(false);
   const [isRequestModalOpen, openRequestModal, closeRequestModal] = useBooleanState(false);
+  const [isPWChangeReqModalOpen, openPWChangeReqModal, closePWChangeReqModal] =
+    useBooleanState(false);
 
   const [selectStaffList, setSelectStaffList] = useRecoilState(staffListState);
   const selectAreaList = useRecoilValue(selectAreaState);
@@ -222,6 +224,7 @@ export default function PasswordChangeModal({
         onSuccess: () => {
           setSelectStaffList([]);
           closeRequestModal();
+          openPWChangeReqModal();
         },
         onError: error => {
           toast.error(error.message);
@@ -256,7 +259,14 @@ export default function PasswordChangeModal({
       {/* 바말번호 변경 완료 안내 모달 */}
       <InfoModal modalType="successChangePW" open={isInfoModalOpen} onClose={closeInfoModal} />
 
-      {/* 바말번호 변경 요청 성공 안내 모달 */}
+      {/* 바말번호 변경 요청 전송 완료 안내 모달 */}
+      <InfoModal
+        modalType="successChangePWReq"
+        open={isPWChangeReqModalOpen}
+        onClose={closePWChangeReqModal}
+      />
+
+      {/* 계정 정보 변경 완료 안내 모달 */}
       <InfoModal modalType="successChangeInfo" open={isSaveModalOpen} onClose={closeSaveModal} />
 
       {/* 비밀번호 변경 요청하기 모달 */}
