@@ -497,11 +497,11 @@ i18n
           "2024년 11월 30일까지 변경하지 않을 경우, 계정이 잠기게 됩니다.":
             "If you do not change it by November 30, 2024, your account will be locked.",
           "비밀번호 변경 요청": "Password change request.",
-          "간호사": "Nurse.",
-          "조무사": "NURSE_ASSISTANT.",
-          "직원": "WORKER.",
-          "의사": "DOCTOR.",
-          "전체": "ALL.",
+          "간호사": "NURSE",
+          "조무사": "NURSE_ASSISTANT",
+          "직원": "WORKER",
+          "의사": "DOCTOR",
+          "전체": "ALL",
           "비밀번호는 최소 4자 이상이어야 합니다.":
             "The password must be at least 4 characters long.",
           "비밀번호가 일치하지 않습니다.": "Passwords do not match.",
