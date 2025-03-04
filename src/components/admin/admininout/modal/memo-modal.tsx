@@ -5,27 +5,73 @@ import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base/TextareaAuto
 import { useState } from "react";
 import useGetPatientMemo from "@hooks/queries/useGetPatientMemo";
 import { ReactComponent as Plus } from "@/assets/plus.svg";
+import { ReactComponent as Edit } from "@/assets/edit2.svg";
+import { ReactComponent as Delete } from "@/assets/delete2.svg";
+import usePostMemo from "@hooks/mutation/usePostMemo";
+import DeleteModal from "./deleteModal";
+import useDeleteMemo from "@hooks/mutation/useDeleteMemo";
+import CloseIcon from "@mui/icons-material/Close";
+import DoneIcon from "@mui/icons-material/Done";
+import useEditMemo from "@hooks/mutation/useEditMemo";
+import { formatDateDash } from "@utils/getDateform";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
   selectList: any;
 }
 
+export interface PostMemoType {
+  patientIds: number[];
+  content: string;
+}
+
+interface MemoListType {
+  content: string;
+  createdAt: string;
+  isMine: boolean;
+  lastModifiedAt: string;
+  memoId: number;
+  staffName: string;
+  staffRole: string;
+}
+
 const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalProps) => {
-  const { data: getMemoList } = useGetPatientMemo(selectList.map((el: { id: number }) => el.id));
   const [memo, setMemo] = useState<string>("");
+  const [deleteMemo, setDeleteMemo] = useState<undefined | number>(undefined);
+  const [editId, setEditId] = useState<undefined | { id: number; content: string }>(undefined);
+
+  const { data: getMemoList, refetch } = useGetPatientMemo(selectList[0].id, selectList.length);
+  const { mutate: postMemo } = usePostMemo();
+  const { mutate: delMemo } = useDeleteMemo(refetch, setDeleteMemo);
+  const { mutate: editMemo } = useEditMemo();
 
   const onAddMemo = () => {
-    console.log(memo);
-    //mutate 메모 등록
-    //등록하면  메모 조회 다시 들고오기 //    refetch();
+    const data = {
+      patientIds: selectList.map((el: { id: number }) => el.id),
+      content: memo,
+    };
+
+    postMemo(data, {
+      onSuccess: () => {
+        setMemo(""), refetch();
+      },
+    });
+  };
+
+  const onEditMemo = () => {
+    editMemo(editId!, {
+      onSuccess: () => {
+        setEditId(undefined);
+        refetch();
+      },
+    });
   };
 
   return (
     <CMModal
       maxWidth="md"
       onClose={onClose}
-      title={modalTitle !== null ? modalTitle : "이름 없음"}
+      title={modalTitle !== null ? modalTitle : "미지정"}
       titleColor="#21262B"
       footer={
         <>
@@ -33,24 +79,80 @@ const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalPro
             취소
           </ModalActionButton>
 
-          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={() => null}>
+          {/* <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={() => null}>
             확인
-          </ModalActionButton>
+          </ModalActionButton> */}
         </>
       }
       {...props}
     >
+      <DeleteModal
+        onClose={() => setDeleteMemo(undefined)}
+        open={deleteMemo !== undefined ? true : false}
+        onDelete={() => delMemo(deleteMemo!)}
+      />
+
       <View sx={{ width: "100%", paddingLeft: "20px", paddingRight: "20px" }}>
+        {selectList.length === 1 ? (
+          <Name>{selectList[0].name === "" ? "미지정" : selectList[0].name} 환자</Name>
+        ) : (
+          <Name2>
+            선택 환자 모두 보기
+            <Selects>
+              {selectList.map((el: { name: string }) => (
+                <span>{el.name === "" ? "미지정" : el.name},</span>
+              ))}
+            </Selects>
+          </Name2>
+        )}
         <Box sx={{ width: "100%", maxHeight: "390px", margin: "16px 0px", overflow: "auto" }}>
-          {getMemoList?.map((memo: any) => (
-            <MemoBox key={memo.patientId}>
-              <Top>
-                <span>name</span>
-                <span>date</span>
-              </Top>
-              <Bottom>{memo.content}</Bottom>
-            </MemoBox>
-          ))}
+          {selectList.length === 1 &&
+            getMemoList?.map((memo: MemoListType) => (
+              <MemoBox key={memo.memoId}>
+                <Top>
+                  <div>
+                    <span>{memo.staffName}</span>
+                    <span>{formatDateDash(new Date(memo?.createdAt))}</span>
+                  </div>
+                  <div>
+                    {memo.isMine && (
+                      <>
+                        <span style={{ cursor: "pointer" }}>
+                          {editId?.id === memo.memoId ? (
+                            <CloseIcon
+                              fontSize="small"
+                              color="disabled"
+                              onClick={() => setEditId(undefined)}
+                            />
+                          ) : (
+                            <Edit
+                              onClick={() => setEditId({ id: memo.memoId, content: memo.content })}
+                            />
+                          )}
+                        </span>
+                        <span style={{ marginLeft: "16px", cursor: "pointer" }}>
+                          {editId?.id === memo.memoId ? (
+                            <DoneIcon fontSize="small" color="secondary" onClick={onEditMemo} />
+                          ) : (
+                            <Delete onClick={() => setDeleteMemo(memo.memoId)} />
+                          )}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </Top>
+                <Bottom>
+                  {editId?.id === memo.memoId ? (
+                    <Textarea
+                      value={editId.content}
+                      onChange={e => setEditId(prev => ({ id: prev!.id, content: e.target.value }))}
+                    />
+                  ) : (
+                    <>{memo.content}</>
+                  )}
+                </Bottom>
+              </MemoBox>
+            ))}
         </Box>
 
         <TextAreaBox>
@@ -65,7 +167,7 @@ const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalPro
             aria-label="memo"
             placeholder="메모를 입력하세요."
             minRows={3}
-            defaultValue={""}
+            value={memo}
             onChange={e => setMemo(e.target.value)}
           />
         </TextAreaBox>
@@ -90,12 +192,16 @@ const MemoBox = styled("div")(() => ({
   fontSize: "16px",
 }));
 const Top = styled("div")(() => ({
-  "&>span:first-child": {
+  "display": "flex",
+  "justifyContent": "space-between",
+  "alignContent": "center",
+
+  "&>div:first-child>span:first-child": {
     color: "#1F1F1F",
     marginRight: "6px",
     fontWeight: "600",
   },
-  "&>span:last-child": {
+  "&>div:first-child>span:last-child": {
     color: "#949599",
     fontSize: "14px",
   },
@@ -146,5 +252,41 @@ const Textarea = styled(BaseTextareaAutosize)(
     }
   `,
 );
+
+const Name = styled("div")(() => ({
+  color: "#30B4FF",
+  fontSize: "16px",
+  fontWeight: "600",
+}));
+const Name2 = styled("div")(() => ({
+  "color": "#30B4FF",
+  "fontSize": "16px",
+  "fontWeight": "600",
+  "borderBottom": "1px solid #30B4FF",
+  "cursor": "pointer",
+  "position": "relative",
+  ":hover": {
+    "&>div": {
+      display: "block",
+    },
+  },
+}));
+
+const Selects = styled("div")(() => ({
+  "background": "#00000081",
+  "width": "360px",
+  "maxHeight": "70px",
+  "borderRadius": "4px",
+  "color": "#FFFFFF",
+  "padding": "8px 12px",
+  "fontSize": "12px",
+  "position": "absolute",
+  "top": "30px",
+  "right": "-100%",
+  "&>span": {
+    marginRight: "2px",
+  },
+  "display": "none",
+}));
 
 export default MemoModal;
