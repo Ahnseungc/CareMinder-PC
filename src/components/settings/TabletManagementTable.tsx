@@ -24,7 +24,7 @@ import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
-import {  useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -63,7 +63,6 @@ const TabletManagementTable = ({
     isPending: isLoading,
   } = useTabletLists();
 
-  // const { data: areaList } = useGetAreaList();
   const { data: areaList } = useGetStaffAreaList();
 
   const removeDefaultFilters = (filter: TabletFilter) => {
@@ -143,13 +142,14 @@ const TabletManagementTable = ({
         ...filter,
         tabletNameSort: currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
       };
-    } /**else if (field === "AdmissionDate") {
+    } else if (field === "AdmissionDate") {
       const currentSort = filter.admissionDateSort;
       newFilter = {
         ...filter,
-        admissionDateSort: currentSort === "ASC" ? "DESC" : "ASC",
+        admissionDateSort:
+          currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
       };
-    }*/
+    }
 
     setFilter(newFilter);
   };
@@ -218,9 +218,17 @@ const TabletManagementTable = ({
     {
       field: "AdmissionDate",
       headerName: (
-        <ColumnName /**onClick={() => handleSort("AdmissionDate")}*/>
+        <ColumnName onClick={() => handleSort("AdmissionDate")}>
           <span>입원 일자</span>
-          {/* <Array /> */}
+          <span style={{ color: `${palette.primary.main}` }}>
+            {filter.admissionDateSort === "ASC" ? (
+              <ASC_Array />
+            ) : filter.admissionDateSort === "DESC" ? (
+              <DESC_Array />
+            ) : (
+              <DEFAULT_Array />
+            )}
+          </span>
         </ColumnName>
       ),
     },
@@ -397,52 +405,72 @@ const TabletManagementTable = ({
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography variant="body2">{row.patientName || "미배정"}</Typography>
+                        <Typography variant="body2">
+                          {row.patientName ? row.patientName : "미배정"}
+                        </Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
                         <Typography variant="body2">
-                          {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
+                          {row.patientName ? (
+                            <>
+                              {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
+                            </>
+                          ) : (
+                            <>-</>
+                          )}
                         </Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
                         <TabletTypography status={row.featureRestrictionType}>
-                          {row.featureRestrictionType === "FULL_ACCESS"
-                            ? "● 전체가능"
-                            : row.featureRestrictionType === "REQUEST_ONLY"
-                              ? "● 요청가능"
-                              : "● 강제종료"}
+                          {row.patientName ? (
+                            <>
+                              {row.featureRestrictionType === "FULL_ACCESS"
+                                ? "● 전체가능"
+                                : row.featureRestrictionType === "REQUEST_ONLY"
+                                  ? "● 요청가능"
+                                  : "● 강제종료"}
+                            </>
+                          ) : (
+                            <>-</>
+                          )}
                         </TabletTypography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        {row.sleepModeSimple.type === null ? (
-                          "사용 안함"
-                        ) : (
+                        {row.patientName ? (
                           <>
-                            <TabletTypography
-                              status={row.sleepModeSimple.type}
-                              sx={{ marginRight: "8px" }}
-                            >
-                              {row.sleepModeSimple.type === "FULL_ACCESS"
-                                ? "● 전체가능"
-                                : row.sleepModeSimple.type === "REQUEST_ONLY"
-                                  ? "● 요청가능"
-                                  : "● 강제종료"}
-                            </TabletTypography>
-                            <span>
-                              {formatTimeRange({
-                                startHour: row.sleepModeSimple.startHour,
-                                startMinute: row.sleepModeSimple.startMinute,
-                                endHour: row.sleepModeSimple.endHour,
-                                endMinute: row.sleepModeSimple.endMinute,
-                              })}
-                            </span>
+                            {row.sleepModeSimple === null ? (
+                              "사용 안함"
+                            ) : (
+                              <>
+                                <TabletTypography
+                                  status={row.sleepModeSimple.type}
+                                  sx={{ marginRight: "8px" }}
+                                >
+                                  {row.sleepModeSimple.type === "FULL_ACCESS"
+                                    ? "● 전체가능"
+                                    : row.sleepModeSimple.type === "REQUEST_ONLY"
+                                      ? "● 요청가능"
+                                      : "● 강제종료"}
+                                </TabletTypography>
+                                <span>
+                                  {formatTimeRange({
+                                    startHour: row.sleepModeSimple.startHour,
+                                    startMinute: row.sleepModeSimple.startMinute,
+                                    endHour: row.sleepModeSimple.endHour,
+                                    endMinute: row.sleepModeSimple.endMinute,
+                                  })}
+                                </span>
+                              </>
+                            )}
                           </>
+                        ) : (
+                          <>-</>
                         )}
                       </LongComBoxLayout>
                     </td>
