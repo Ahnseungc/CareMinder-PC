@@ -175,8 +175,8 @@ export default function EditStaffInfoInputField({
                 <ComboBoxLayout>
                   <CComboBox
                     placeholder={t("간호사")}
-                    options={OPTIONS.map(option => t(option.value))}
-                    value={t(staffRole)}
+                    options={OPTIONS.map(option => option.value)}
+                    value={staffRole}
                     isStaff={true}
                     onChange={handleChangeRole}
                   />
