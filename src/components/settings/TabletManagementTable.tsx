@@ -24,7 +24,7 @@ import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
-import {  useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -63,7 +63,6 @@ const TabletManagementTable = ({
     isPending: isLoading,
   } = useTabletLists();
 
-  // const { data: areaList } = useGetAreaList();
   const { data: areaList } = useGetStaffAreaList();
 
   const removeDefaultFilters = (filter: TabletFilter) => {
@@ -143,13 +142,14 @@ const TabletManagementTable = ({
         ...filter,
         tabletNameSort: currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
       };
-    } /**else if (field === "AdmissionDate") {
+    } else if (field === "AdmissionDate") {
       const currentSort = filter.admissionDateSort;
       newFilter = {
         ...filter,
-        admissionDateSort: currentSort === "ASC" ? "DESC" : "ASC",
+        admissionDateSort:
+          currentSort === "ASC" ? "DESC" : currentSort === "DESC" ? "DEFAULT" : "ASC",
       };
-    }*/
+    }
 
     setFilter(newFilter);
   };
@@ -165,10 +165,6 @@ const TabletManagementTable = ({
     });
     setIsFilterOpen(false);
   };
-
-  useEffect(() => {
-    console.log(filter);
-  }, [filter]);
 
   const columns: Columns[] = [
     { field: "check", headerName: "" },
@@ -186,7 +182,7 @@ const TabletManagementTable = ({
       headerName: (
         <ColumnName onClick={() => handleSort("TabletName")}>
           <span>태블릿 이름</span>
-          <span style={{ color: `${palette.primary.main}` }}>
+          <span style={{ color: `${palette.primary.main}`, height: "21px" }}>
             {filter.tabletNameSort === "ASC" ? (
               <ASC_Array />
             ) : filter.tabletNameSort === "DESC" ? (
@@ -203,7 +199,7 @@ const TabletManagementTable = ({
       headerName: (
         <ColumnName onClick={() => handleSort("PatientName")}>
           <span>환자 이름</span>
-          <span style={{ color: `${palette.primary.main}` }}>
+          <span style={{ color: `${palette.primary.main}`, height: "21px" }}>
             {filter.patientNameSort === "ASC" ? (
               <ASC_Array />
             ) : filter.patientNameSort === "DESC" ? (
@@ -218,16 +214,24 @@ const TabletManagementTable = ({
     {
       field: "AdmissionDate",
       headerName: (
-        <ColumnName /**onClick={() => handleSort("AdmissionDate")}*/>
+        <ColumnName onClick={() => handleSort("AdmissionDate")}>
           <span>입원 일자</span>
-          {/* <Array /> */}
+          <span style={{ color: `${palette.primary.main}`, height: "21px" }}>
+            {filter.admissionDateSort === "ASC" ? (
+              <ASC_Array />
+            ) : filter.admissionDateSort === "DESC" ? (
+              <DESC_Array />
+            ) : (
+              <DEFAULT_Array />
+            )}
+          </span>
         </ColumnName>
       ),
     },
     { field: "TabletStatus", headerName: "태블릿 상태" },
     { field: "SleepModeControl", headerName: "수면제한" },
     { field: "TabletManageMent", headerName: "태블릿 관리" },
-    { field: "Logout", headerName: "환자 로그아웃" },
+    { field: "Logout", headerName: "태블릿 로그아웃" },
   ];
 
   useEffect(() => {
@@ -397,59 +401,108 @@ const TabletManagementTable = ({
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography variant="body2">{row.patientName || "미배정"}</Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: `${row.patientName === null ? "#878787" : palette.primary.dark}`,
+                          }}
+                        >
+                          {row.patientName ? row.patientName : "미배정"}
+                        </Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        <Typography variant="body2">
-                          {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: `${row.patientName === null ? "#878787" : palette.primary.dark}`,
+                          }}
+                        >
+                          {row.patientName ? (
+                            <>
+                              {row.admissionAt ? row.admissionAt.substring(0, 10) : row.admissionAt}
+                            </>
+                          ) : (
+                            <>-</>
+                          )}
                         </Typography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
                         <TabletTypography status={row.featureRestrictionType}>
-                          {row.featureRestrictionType === "FULL_ACCESS"
-                            ? "● 전체가능"
-                            : row.featureRestrictionType === "REQUEST_ONLY"
-                              ? "● 요청가능"
-                              : "● 강제종료"}
+                          {row.patientName ? (
+                            <>
+                              {row.featureRestrictionType === "FULL_ACCESS"
+                                ? "● 전체가능"
+                                : row.featureRestrictionType === "REQUEST_ONLY"
+                                  ? "● 요청가능"
+                                  : "● 강제종료"}
+                            </>
+                          ) : (
+                            <Typography
+                              sx={{
+                                color: `${row.patientName === null ? "#878787" : palette.primary.dark}`,
+                              }}
+                            >
+                              -
+                            </Typography>
+                          )}
                         </TabletTypography>
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <LongComBoxLayout>
-                        {row.sleepModeSimple.type === null ? (
-                          "사용 안함"
-                        ) : (
+                        {row.patientName ? (
                           <>
-                            <TabletTypography
-                              status={row.sleepModeSimple.type}
-                              sx={{ marginRight: "8px" }}
-                            >
-                              {row.sleepModeSimple.type === "FULL_ACCESS"
-                                ? "● 전체가능"
-                                : row.sleepModeSimple.type === "REQUEST_ONLY"
-                                  ? "● 요청가능"
-                                  : "● 강제종료"}
-                            </TabletTypography>
-                            <span>
-                              {formatTimeRange({
-                                startHour: row.sleepModeSimple.startHour,
-                                startMinute: row.sleepModeSimple.startMinute,
-                                endHour: row.sleepModeSimple.endHour,
-                                endMinute: row.sleepModeSimple.endMinute,
-                              })}
-                            </span>
+                            {row.sleepModeSimple.type === null ? (
+                              <Typography
+                                sx={{
+                                  color: "#CFCFD1",
+                                  fontWeight: "600",
+                                }}
+                              >
+                                사용 안함
+                              </Typography>
+                            ) : (
+                              <>
+                                <TabletTypography
+                                  status={row.sleepModeSimple.type}
+                                  sx={{ marginRight: "8px" }}
+                                >
+                                  {row.sleepModeSimple.type === "FULL_ACCESS"
+                                    ? "● 전체가능"
+                                    : row.sleepModeSimple.type === "REQUEST_ONLY"
+                                      ? "● 요청가능"
+                                      : "● 강제종료"}
+                                </TabletTypography>
+                                <span>
+                                  {formatTimeRange({
+                                    startHour: row.sleepModeSimple.startHour,
+                                    startMinute: row.sleepModeSimple.startMinute,
+                                    endHour: row.sleepModeSimple.endHour,
+                                    endMinute: row.sleepModeSimple.endMinute,
+                                  })}
+                                </span>
+                              </>
+                            )}
                           </>
+                        ) : (
+                          <Typography
+                            sx={{
+                              color: `${row.patientName === null ? "#878787" : palette.primary.dark}`,
+                            }}
+                          >
+                            -
+                          </Typography>
                         )}
                       </LongComBoxLayout>
                     </td>
                     <td>
                       <ShortComBoxLayout>
                         <Edit
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: "pointer", color: "#C4C5CC" }}
                           onClick={() => {
                             handleEditTablet(row.tabletId);
                             setSelectedTabletData(row);
@@ -537,6 +590,7 @@ const StTable = styled.table`
       padding-top: 11.52px;
       text-align: center;
       border-bottom: 1px solid ${palette.divider};
+      color: ${palette.primary.dark};
     }
   }
 `;
@@ -602,7 +656,9 @@ const TabletTypography = styled(Typography)<{ status: TableStatus }>`
       ? palette.tablet.main
       : props.status === "REQUEST_ONLY"
         ? palette.tablet.light
-        : palette.tablet.dark};
+        : props.status === "FORCE_TERMINATE"
+          ? palette.tablet.dark
+          : "#CFCFD1"};
 `;
 
 const PaginationContainer = styled.div`
