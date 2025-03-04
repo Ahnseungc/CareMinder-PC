@@ -96,6 +96,7 @@ export default function StaffHomePage() {
   return (
     <>
       {/* 비밀번호 변경 요청 모달 */}
+
       <ChangeModal
         open={isRequestModalOpen}
         onClose={closeRequestModal}

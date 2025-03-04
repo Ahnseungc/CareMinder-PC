@@ -10,7 +10,7 @@ import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chatt
 import ChatInput from "@components/chat/chatInput";
 import { isFindRole } from "@utils/homePage";
 import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
-import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
+// import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
@@ -32,12 +32,13 @@ function StaffPatientListBox({
   const [isOptions, setIsOptions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  // const [isModal, setIsModal] = useState<boolean>(false);
 
   const { pendingRefetch } = refetchProps!;
 
   const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
 
-  const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
+  // const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
   // const { mutate: mutateReadMs } = useReadMessage(roomId!);
 
@@ -97,10 +98,17 @@ function StaffPatientListBox({
       color={roleColorPick.light}
       onClick={() => onOpenChatting(data.patientRequestId)}
     >
+      {/* <DischargeModal
+        modalTitle={"주의"}
+        subTitle={"테스트"}
+        onClose={() => setIsModal(false)}
+        open={isModal}
+        onDisCharge={mutateDischargeByWeb(data.tabletSimple.tabletId)}
+      /> */}
       <Title color={roleColorPick.dark} tabIndex={0} onBlur={() => setIsOptions(false)}>
         <TitleLeft>
-          {data.areaSimple.areaName} | {data.patientSimple.patientName} (
-          {data.tabletSimple.tabletName})
+          {data?.areaSimple?.areaName} | {data?.patientSimple?.patientName} (
+          {data?.tabletSimple?.tabletName})
           {isAccept
             ? data.unreadCount !== 0 && <New>new</New>
             : getNewRequest(data.createdAt) && <New>new</New>}
@@ -117,9 +125,7 @@ function StaffPatientListBox({
               ) : (
                 <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
               )}
-              <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
-                퇴원
-              </Option>
+              {/* <Option onMouseDown={() => setIsModal(true)}>퇴원</Option> */}
             </Options>
           )}
           {isEdit && (

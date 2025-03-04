@@ -1,26 +1,24 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
-import CInput from "@components/common/atom/C-Input";
-import { Box, CircularProgress, SvgIcon } from "@mui/material";
+import { SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
+import { ReactComponent as Pencil } from "@/assets/pencil.svg";
+import { ReactComponent as HomeIcon } from "@/assets/home.svg";
 import { ReactComponent as FilterVerticalIcon } from "@/assets/filter-vertical-icon.svg";
-import CButton from "@components/common/atom/C-Button";
+import { ReactComponent as FilterVerticalIcon1 } from "@/assets/filter-vertical-icon1.svg";
+import { ReactComponent as FilterVerticalIcon2 } from "@/assets/filter-vertical-icon2.svg";
 import { formatDateDash } from "@utils/getDateform";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 //@ts-ignore
-import { Area, useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
 import CCheckBox from "@components/common/atom/C-CheckBox";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
-import useChangeTabletInfo from "@hooks/mutation/useChangeTabletInfo";
 import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
+import { FilterData } from "@pages/staff/StaffWardInoutManagementPage";
 
 const columnsHeader = [
   { id: 0, field: "PatientName", headerName: "환자", icon: <FilterVerticalIcon />, width: "8.31%" },
-  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "11.08%" },
+  { id: 1, field: "Section", headerName: "구역", icon: <FilterIcon />, width: "10.08%" },
   {
     id: 2,
     field: "TableName",
@@ -36,23 +34,30 @@ const columnsHeader = [
     width: "8.54%",
   },
   { id: 4, field: "TableName", headerName: "메모 보기", width: "8.69%" },
-  { id: 5, field: "TableName", headerName: "퇴원 처리 하기", width: "11.14%" },
+  { id: 5, field: "TableName", headerName: "환자 정보 수정하기", width: "10.69%" },
+  { id: 6, field: "TableName", headerName: "퇴원 처리 하기", width: "8.14%" },
 ];
 
 interface AdminTableProps {
   getTablet: Array<WardTabletType>;
-  onChangeSelected: (tabletId: number, patientName: string, areaName: string) => void;
+  onChangeSelected: (
+    tabletId: number,
+    patientName: string,
+    areaId: number,
+    tabletName: string,
+    admissionDate: string,
+  ) => void;
   onChangeSelectAll: any;
   selected: Array<{
     name: string;
     id: number;
-    areaName: string;
+    areaId: number;
   }>;
-  isLoading: boolean;
-  areaList: any;
-  area: Array<string>;
   onDisCharge: (tabletId: number) => void;
   handleMemoModal: (patientId: number, patientName: string) => void;
+  handleEditPatient: any;
+  getPatientFilterData: FilterData;
+  setGetPatientFilterData: React.Dispatch<React.SetStateAction<FilterData>>;
 }
 
 const AdminTable: FC<AdminTableProps> = ({
@@ -60,116 +65,43 @@ const AdminTable: FC<AdminTableProps> = ({
   getTablet,
   selected,
   onChangeSelected,
-  isLoading,
   onDisCharge,
-  areaList,
-  area,
   handleMemoModal,
+  handleEditPatient,
+  getPatientFilterData,
+  setGetPatientFilterData,
 }) => {
-  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
-  const { mutate: changeTabletInfo } = useChangeTabletInfo();
-  const queryClient = useQueryClient();
-  const [isLaunch, setIsLaunch] = useState(true);
-
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = event.target.value;
-    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
-    changeTabletArea(
-      {
-        userIds: [id],
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
+  const filterIcon = (type: null | "ASC" | "DESC") => {
+    if (type === null)
+      return (
+        <FilterVerticalIcon style={{ cursor: "pointer", marginLeft: "2px", marginBottom: "2px" }} />
+      );
+    if (type === "ASC")
+      return (
+        <FilterVerticalIcon2
+          style={{ cursor: "pointer", marginLeft: "2px", marginBottom: "2px" }}
+        />
+      );
+    if (type === "DESC")
+      return (
+        <FilterVerticalIcon1
+          style={{ cursor: "pointer", marginLeft: "2px", marginBottom: "2px" }}
+        />
+      );
   };
 
-  const [changedColumns, setChangedColumns] = useState<{ [key: number]: boolean }>({});
-  const [tabletData, setTabletData] = useState<any[]>(getTablet);
-  const [isChanging, setIsChanging] = useState(false);
-  const changeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const onClickFilter = (type: "patientNameSort" | "tabletNameSort" | "admissionDateSort") => {
+    const prevType = getPatientFilterData[type];
 
-  useEffect(() => {
-    setIsLaunch(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isChanging) {
-      setTabletData(getTablet);
+    if (prevType === null) {
+      setGetPatientFilterData(prev => ({ ...prev, [type]: "ASC" }));
     }
-  }, [getTablet]);
-
-  useEffect(() => {
-    if (!isChanging && !isLaunch) {
-      const tabletIds = Object.keys(changedColumns).map(num => Number(num));
-
-      Promise.all(
-        tabletIds.map(tabletId => {
-          const updateTabletInfo = tabletData?.find(data => data.tabletId === tabletId);
-          return changeTabletInfo({
-            tabletIds: [tabletId],
-            areaId: updateTabletInfo?.areaId,
-            tabletName: updateTabletInfo?.tabletName,
-            patientName: updateTabletInfo?.patientName,
-          });
-        }),
-      )
-        .then(() => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          toast.success("정보 변경이 완료되었습니다.");
-        })
-        .catch(() => {
-          toast.error("정보 변경에 실패하였습니다.");
-        });
+    if (prevType === "ASC") {
+      setGetPatientFilterData(prev => ({ ...prev, [type]: "DESC" }));
     }
-  }, [isChanging]);
-  useEffect(() => {
-    if (!isChanging) {
-      setTabletData(getTablet);
+    if (prevType === "DESC") {
+      setGetPatientFilterData(prev => ({ ...prev, [type]: null }));
     }
-  }, [getTablet]);
-
-  const onChangeData = (e: React.ChangeEvent<HTMLInputElement>, tabletId: number, type: string) => {
-    setIsChanging(true);
-    const { value } = e.currentTarget;
-
-    // 변경된 데이터 추적
-    if (type === "patientName") {
-      setTabletData(prevTabletData =>
-        prevTabletData.map(tablet =>
-          tablet.tabletId === tabletId ? { ...tablet, patientName: value } : tablet,
-        ),
-      );
-    }
-    if (type === "tabletName") {
-      setTabletData(prevTabletData =>
-        prevTabletData.map(tablet =>
-          tablet.tabletId === tabletId ? { ...tablet, tabletName: value } : tablet,
-        ),
-      );
-    }
-
-    setChangedColumns(prev => ({
-      ...prev,
-      [tabletId as number]: true,
-    }));
-
-    if (changeTimerRef.current) {
-      clearTimeout(changeTimerRef.current);
-    }
-
-    changeTimerRef.current = setTimeout(() => {
-      setIsChanging(false);
-    }, 1000);
   };
 
   return (
@@ -182,99 +114,117 @@ const AdminTable: FC<AdminTableProps> = ({
               checked={getTablet?.length > 0 && selected?.length === getTablet?.length}
             />
           </th>
-          {columnsHeader.map(column => {
-            return (
-              <InoutTableHeaderTh key={column.id} width={column.width}>
-                <p>{column.headerName}</p>
-                {column.icon ? column.icon : ""}
-              </InoutTableHeaderTh>
-            );
-          })}
+          <InoutTableHeaderTh
+            width={"8.31%"}
+            style={{ cursor: "pointer" }}
+            onClick={() => onClickFilter("patientNameSort")}
+          >
+            <p>환자</p>
+            {filterIcon(getPatientFilterData.patientNameSort)}
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"10.08%"}>
+            <p>구역</p>
+            <FilterIcon style={{ cursor: "pointer" }} />
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh
+            width={"11.08%"}
+            style={{ cursor: "pointer" }}
+            onClick={() => onClickFilter("tabletNameSort")}
+          >
+            <p>태블릿 이름</p>
+            {filterIcon(getPatientFilterData.tabletNameSort)}
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh
+            width={"8.54%"}
+            style={{ cursor: "pointer" }}
+            onClick={() => onClickFilter("admissionDateSort")}
+          >
+            <p>입원일자</p>
+            {filterIcon(getPatientFilterData.admissionDateSort)}
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"8.69%"}>
+            <p>메모 보기</p>
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"10.69%"}>
+            <p>환자 정보 수정하기</p>
+          </InoutTableHeaderTh>
+          <InoutTableHeaderTh width={"8.14%"}>
+            <p>퇴원 처리 하기</p>
+          </InoutTableHeaderTh>
         </InoutTableHedaerTr>
       </thead>
       <tbody>
-        {isLoading ? (
-          <LoadingLayout>
-            <CircularProgress />
-          </LoadingLayout>
-        ) : (
-          <>
-            {tabletData?.map(tablet => {
-              return (
-                <InoutTableBodyTr
-                  key={tablet.serialNumber || tablet.tabletId}
-                  isSelected={selected?.some(item => item.id === tablet.tabletId)}
-                >
-                  <InoutTableBodyTd width="1.62%">
-                    <CCheckBox
-                      onChange={() =>
-                        onChangeSelected(tablet.tabletId, tablet.patientName, tablet.areaName)
-                      }
-                      checked={selected?.some(item => item.id === tablet.tabletId)}
-                    />
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[0].width}>
-                    <div style={{ width: "100%", height: "36px" }}>
-                      <label htmlFor="section"></label>
-                      <CInput
-                        focusColorType="STAFF"
-                        placeholder={"환자 이름"}
-                        value={tablet.patientName}
-                        onChange={e => onChangeData(e, tablet.tabletId, "patientName")}
-                        variant={"outlined"}
-                        disabled={false}
-                        id={"section"}
-                      />
-                    </div>
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[1].width}>
-                    <ComBoxLayout width={"100%"}>
-                      <CComboBox
-                        placeholder={"구역"}
-                        options={area}
-                        isStaff={true}
-                        value={tablet.areaName}
-                        onChange={e => handleChangeArea(e, tablet.tabletId)}
-                      />
-                    </ComBoxLayout>
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[2].width}>
-                    <ComBoxLayout width={"100%"}>
-                      <CInput
-                        focusColorType="STAFF"
-                        variant={"outlined"}
-                        placeholder={"태블릿 이름"}
-                        onChange={e => onChangeData(e, tablet.tabletId, "tabletName")}
-                        value={tablet.tabletName}
-                        disabled={false}
-                        id={""}
-                      ></CInput>
-                    </ComBoxLayout>
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[3].width}>
-                    {formatDateDash(new Date(tablet.admissionAt))}
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[4].width}>
-                    <SvgIcon
-                      component={MemoIcon}
-                      onClick={() => handleMemoModal(tablet.patientId, tablet.patientName)}
-                    />
-                  </InoutTableBodyTd>
-                  <InoutTableBodyTd width={columnsHeader[5].width}>
-                    <CButton
-                      buttontype={"impactRed"}
-                      onClick={() => {
-                        onDisCharge(tablet.tabletId);
-                      }}
-                    >
-                      환자 퇴원 처리
-                    </CButton>
-                  </InoutTableBodyTd>
-                </InoutTableBodyTr>
-              );
-            })}
-          </>
-        )}
+        {getTablet?.map(tablet => {
+          return (
+            <InoutTableBodyTr
+              key={tablet.tabletId}
+              isSelected={selected?.some(item => item.id === tablet.tabletId)}
+            >
+              <InoutTableBodyTd width="1.62%">
+                <CCheckBox
+                  onChange={() =>
+                    onChangeSelected(
+                      tablet.tabletId,
+                      tablet.patientName,
+                      tablet.areaName,
+                      tablet.tabletName,
+                      tablet.createdAt,
+                    )
+                  }
+                  checked={selected?.some(item => item.id === tablet.tabletId)}
+                />
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[0].width}>
+                {tablet.patientName}
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[1].width}>{tablet.areaName}</InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[2].width}>
+                {tablet.tabletName}
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[3].width}>
+                {tablet.createdAt === undefined
+                  ? "미지정"
+                  : formatDateDash(new Date(tablet.createdAt))}
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[4].width}>
+                <SvgIcon
+                  component={MemoIcon}
+                  onClick={() => {
+                    onChangeSelected(
+                      tablet.tabletId,
+                      tablet.patientName,
+                      tablet.areaId,
+                      tablet.tabletName,
+                      tablet.createdAt,
+                    );
+                    handleMemoModal(tablet.patientId, tablet.patientName);
+                  }}
+                />
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[5].width}>
+                <Pencil
+                  onClick={() => {
+                    onChangeSelected(
+                      tablet.tabletId,
+                      tablet.patientName,
+                      tablet.areaId,
+                      tablet.tabletName,
+                      tablet.createdAt,
+                    );
+                    handleEditPatient();
+                  }}
+                />
+              </InoutTableBodyTd>
+              <InoutTableBodyTd width={columnsHeader[6].width}>
+                <HomeIcon
+                  onClick={() => {
+                    onDisCharge(tablet.tabletId);
+                  }}
+                />
+              </InoutTableBodyTd>
+            </InoutTableBodyTr>
+          );
+        })}
       </tbody>
     </StTable>
   );
@@ -303,13 +253,15 @@ const StTable = styled.table`
   }
 `;
 
-export const ComBoxLayout = styled.div<{ width: string }>`
+export const ComBoxLayout = styled.div<{ width?: string; border?: true }>`
   width: ${props => props.width || "100%"};
   height: 36px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   gap: 13px;
+  border: ${props => props.border && "1px solid rgb(212, 213, 218)"};
+  border-radius: 8px;
 `;
 
 const InoutTableHedaerTr = styled.tr`
@@ -347,9 +299,7 @@ const InoutTableBodyTr = styled.tr<{ isSelected: boolean }>`
   padding-right: 32px;
   padding-top: 16px;
   padding-bottom: 16px;
-  cursor: pointer;
   background-color: ${({ isSelected }) => (isSelected ? "#30b4ff1a" : "#ffffff")};
-
   &:hover {
     background-color: #30b4ff1a;
   }
@@ -366,11 +316,3 @@ const InoutTableBodyTd = styled.td<{ width: string }>`
   font-weight: 400;
   line-height: 20px;
 `;
-
-const LoadingLayout = styled(Box)({
-  width: "100%",
-  Height: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});

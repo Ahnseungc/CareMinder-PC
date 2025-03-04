@@ -1,59 +1,77 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
-import { CircularProgress, styled, Typography } from "@mui/material";
+import { styled } from "@mui/material";
 import { Box } from "@mui/system";
 import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base/TextareaAutosize";
-import useGetMemo from "@hooks/queries/useGetMemo";
-import useCreateMemo from "@hooks/mutation/useCreateMemo";
-import { useCallback, useState } from "react";
-import { createMemoReqest } from "@hooks/mutation/useCreateMemo";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import useGetPatientMemo from "@hooks/queries/useGetPatientMemo";
+import { ReactComponent as Plus } from "@/assets/plus.svg";
+import { ReactComponent as Edit } from "@/assets/edit2.svg";
+import { ReactComponent as Delete } from "@/assets/delete2.svg";
+import usePostMemo from "@hooks/mutation/usePostMemo";
+import DeleteModal from "./deleteModal";
+import useDeleteMemo from "@hooks/mutation/useDeleteMemo";
+import CloseIcon from "@mui/icons-material/Close";
+import DoneIcon from "@mui/icons-material/Done";
+import useEditMemo from "@hooks/mutation/useEditMemo";
 import { formatDateDash } from "@utils/getDateform";
 
 interface ChargeModalProps extends Omit<CMModalProps, "title"> {
   modalTitle: string;
-  subTitle: string | React.ReactNode;
-  patientId: number;
+  selectList: any;
 }
 
-type MemoData = {
+export interface PostMemoType {
+  patientIds: number[];
+  content: string;
+}
+
+interface MemoListType {
+  content: string;
+  createdAt: string;
+  isMine: boolean;
+  lastModifiedAt: string;
   memoId: number;
   staffName: string;
   staffRole: string;
-  content: string;
-  createdAt: string;
-  isMine: true;
-};
+}
 
-const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: ChargeModalProps) => {
-  const { data, isLoading } = useGetMemo(patientId);
-  const [memo, setMemo] = useState<createMemoReqest>({ patientId: patientId, content: "" });
-  const { mutate: createMemo } = useCreateMemo();
-  const queryClient = useQueryClient();
+const MemoModal = ({ onClose, modalTitle, selectList, ...props }: ChargeModalProps) => {
+  const [memo, setMemo] = useState<string>("");
+  const [deleteMemo, setDeleteMemo] = useState<undefined | number>(undefined);
+  const [editId, setEditId] = useState<undefined | { id: number; content: string }>(undefined);
 
-  const handleCreateMemo = useCallback(() => {
-    createMemo(
-      { patientId: memo?.patientId as number, content: memo?.content as string },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["useGetMemo"]);
-          toast.success("메모가 추가되었습니다.");
-          onClose();
-        },
-        onError: error => {
-          console.error(error);
-          toast.error("메모 추가에 실패했습니다.");
-        },
+  const { data: getMemoList, refetch } = useGetPatientMemo(selectList[0].id, selectList.length);
+  const { mutate: postMemo } = usePostMemo();
+  const { mutate: delMemo } = useDeleteMemo(refetch, setDeleteMemo);
+  const { mutate: editMemo } = useEditMemo();
+
+  const onAddMemo = () => {
+    const data = {
+      patientIds: selectList.map((el: { id: number }) => el.id),
+      content: memo,
+    };
+
+    postMemo(data, {
+      onSuccess: () => {
+        setMemo(""), refetch();
       },
-    );
-  }, [memo, patientId]);
+    });
+  };
+
+  const onEditMemo = () => {
+    editMemo(editId!, {
+      onSuccess: () => {
+        setEditId(undefined);
+        refetch();
+      },
+    });
+  };
 
   return (
     <CMModal
-      maxWidth="xs"
+      maxWidth="md"
       onClose={onClose}
-      title={modalTitle !== null ? modalTitle : "이름 없음"}
+      title={modalTitle !== null ? modalTitle : "미지정"}
       titleColor="#21262B"
       footer={
         <>
@@ -61,95 +79,102 @@ const MemoModal = ({ onClose, patientId, modalTitle, subTitle, ...props }: Charg
             취소
           </ModalActionButton>
 
-          <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={handleCreateMemo}>
-            변경
-          </ModalActionButton>
+          {/* <ModalActionButton hoverColor="#30b3ff55" color="success" onClick={() => null}>
+            확인
+          </ModalActionButton> */}
         </>
       }
       {...props}
     >
+      <DeleteModal
+        onClose={() => setDeleteMemo(undefined)}
+        open={deleteMemo !== undefined ? true : false}
+        onDelete={() => delMemo(deleteMemo!)}
+      />
+
       <View sx={{ width: "100%", paddingLeft: "20px", paddingRight: "20px" }}>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "start",
-            paddingBottom: "10px",
-            paddingTop: "20px",
-          }}
-        >
-          <Text>이전 메모</Text>
-          {isLoading ? (
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress size={5} color="secondary" />
-            </Box>
-          ) : (
-            <Box sx={{ marginTop: 2 }}>
-              {data?.map((memo: MemoData) => {
-                return (
-                  <Box sx={{ marginTop: 1, display: "flex", justifyContent: "space-between" }}>
-                    <Typography
-                      sx={{
-                        maxWidth: "200px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {memo.content}
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Typography>{memo.staffName}</Typography>
-                      <Typography>({formatDateDash(new Date(memo.createdAt))})</Typography>
-                    </Box>
-                  </Box>
-                );
-              })}
-            </Box>
-          )}
+        {selectList.length === 1 ? (
+          <Name>{selectList[0].name === "" ? "미지정" : selectList[0].name} 환자</Name>
+        ) : (
+          <Name2>
+            선택 환자 모두 보기
+            <Selects>
+              {selectList.map((el: { name: string }) => (
+                <span>{el.name === "" ? "미지정" : el.name},</span>
+              ))}
+            </Selects>
+          </Name2>
+        )}
+        <Box sx={{ width: "100%", maxHeight: "390px", margin: "16px 0px", overflow: "auto" }}>
+          {selectList.length === 1 &&
+            getMemoList?.map((memo: MemoListType) => (
+              <MemoBox key={memo.memoId}>
+                <Top>
+                  <div>
+                    <span>{memo.staffName}</span>
+                    <span>{formatDateDash(new Date(memo?.createdAt))}</span>
+                  </div>
+                  <div>
+                    {memo.isMine && (
+                      <>
+                        <span style={{ cursor: "pointer" }}>
+                          {editId?.id === memo.memoId ? (
+                            <CloseIcon
+                              fontSize="small"
+                              color="disabled"
+                              onClick={() => setEditId(undefined)}
+                            />
+                          ) : (
+                            <Edit
+                              onClick={() => setEditId({ id: memo.memoId, content: memo.content })}
+                            />
+                          )}
+                        </span>
+                        <span style={{ marginLeft: "16px", cursor: "pointer" }}>
+                          {editId?.id === memo.memoId ? (
+                            <DoneIcon fontSize="small" color="secondary" onClick={onEditMemo} />
+                          ) : (
+                            <Delete onClick={() => setDeleteMemo(memo.memoId)} />
+                          )}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </Top>
+                <Bottom>
+                  {editId?.id === memo.memoId ? (
+                    <Textarea
+                      value={editId.content}
+                      onChange={e => setEditId(prev => ({ id: prev!.id, content: e.target.value }))}
+                    />
+                  ) : (
+                    <>{memo.content}</>
+                  )}
+                </Bottom>
+              </MemoBox>
+            ))}
         </Box>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "start",
-            paddingBottom: "10px",
-            paddingTop: "20px",
-          }}
-        >
-          <Text>메모</Text>
-        </Box>
-        <Textarea
-          maxRows={5}
-          aria-label="memo"
-          placeholder="메모를 입력해주세요."
-          minRows={5}
-          defaultValue={""}
-          onChange={e => {
-            setMemo(prev => ({ ...prev, content: e.target.value }));
-          }}
-        />
+
+        <TextAreaBox>
+          <TextAreaTop>
+            <div>
+              <Plus /> <span> 새 메모</span>
+            </div>
+            <AddBtn onClick={onAddMemo}>완료</AddBtn>
+          </TextAreaTop>
+          <Textarea
+            maxRows={3}
+            aria-label="memo"
+            placeholder="메모를 입력하세요."
+            minRows={3}
+            value={memo}
+            onChange={e => setMemo(e.target.value)}
+          />
+        </TextAreaBox>
       </View>
     </CMModal>
   );
 };
-
-const Text = styled(Typography)(() => ({
-  color: "#000000",
-  fontWeight: 600,
-  fontSize: 14,
-  lineHeight: "19.9px",
-  letterSpacing: "-3%",
-}));
 
 const View = styled(Box)(() => ({
   display: "flex",
@@ -157,11 +182,62 @@ const View = styled(Box)(() => ({
   justifyContent: "center",
   alignItems: "center",
 }));
+
+const MemoBox = styled("div")(() => ({
+  background: "#FAFAFB",
+  borderRadius: "16px",
+  padding: "16px 20px 16px 20px",
+  color: "#5E5F65",
+  marginBottom: "16px",
+  fontSize: "16px",
+}));
+const Top = styled("div")(() => ({
+  "display": "flex",
+  "justifyContent": "space-between",
+  "alignContent": "center",
+
+  "&>div:first-child>span:first-child": {
+    color: "#1F1F1F",
+    marginRight: "6px",
+    fontWeight: "600",
+  },
+  "&>div:first-child>span:last-child": {
+    color: "#949599",
+    fontSize: "14px",
+  },
+}));
+const Bottom = styled("div")(() => ({
+  color: "#5E5F65",
+  fontWeight: "400",
+  fontSize: "14px",
+}));
+const TextAreaBox = styled("div")(() => ({
+  background: "#EAF7FF",
+  width: "100%",
+  padding: "20px 16px",
+  borderRadius: "16px",
+}));
+const TextAreaTop = styled("div")(() => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "6px",
+  color: "#30B4FF",
+  fontSize: "14px",
+}));
+const AddBtn = styled("div")(() => ({
+  background: "#FFFFFF",
+  border: "1px solid #30B4FF",
+  borderRadius: "6px",
+  padding: "3px 5px",
+  cursor: "pointer",
+}));
+
 const Textarea = styled(BaseTextareaAutosize)(
   ({}) => `
     box-sizing: border-box;
     resize:none;
-    width: 376px;
+    width:100%;
     height: 140px;
     border:1px solid #ECECEC;
     font-family: 'IBM Plex Sans', sans-serif;
@@ -176,5 +252,41 @@ const Textarea = styled(BaseTextareaAutosize)(
     }
   `,
 );
+
+const Name = styled("div")(() => ({
+  color: "#30B4FF",
+  fontSize: "16px",
+  fontWeight: "600",
+}));
+const Name2 = styled("div")(() => ({
+  "color": "#30B4FF",
+  "fontSize": "16px",
+  "fontWeight": "600",
+  "borderBottom": "1px solid #30B4FF",
+  "cursor": "pointer",
+  "position": "relative",
+  ":hover": {
+    "&>div": {
+      display: "block",
+    },
+  },
+}));
+
+const Selects = styled("div")(() => ({
+  "background": "#00000081",
+  "width": "360px",
+  "maxHeight": "70px",
+  "borderRadius": "4px",
+  "color": "#FFFFFF",
+  "padding": "8px 12px",
+  "fontSize": "12px",
+  "position": "absolute",
+  "top": "30px",
+  "right": "-100%",
+  "&>span": {
+    marginRight: "2px",
+  },
+  "display": "none",
+}));
 
 export default MemoModal;
