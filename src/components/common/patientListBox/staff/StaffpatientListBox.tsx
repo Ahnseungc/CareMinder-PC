@@ -10,14 +10,13 @@ import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chatt
 import ChatInput from "@components/chat/chatInput";
 import { isFindRole } from "@utils/homePage";
 import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
-import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
+// import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
 import getNewRequest from "@utils/getNewRequest";
-import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 // import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
@@ -39,7 +38,7 @@ function StaffPatientListBox({
 
   const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
 
-  const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
+  // const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
   // const { mutate: mutateReadMs } = useReadMessage(roomId!);
 

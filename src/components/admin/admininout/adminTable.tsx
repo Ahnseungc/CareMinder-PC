@@ -1,7 +1,7 @@
 import { FC } from "react";
 import styled from "@emotion/styled";
 import palette from "@styles/palette";
-import { Box, SvgIcon } from "@mui/material";
+import { SvgIcon } from "@mui/material";
 import { WardTabletType } from "@models/ward-tablet";
 import { ReactComponent as FilterIcon } from "@/assets/filter-icon.svg";
 import { ReactComponent as Pencil } from "@/assets/pencil.svg";
