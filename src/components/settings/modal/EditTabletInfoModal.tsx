@@ -51,7 +51,7 @@ export default function EditTableInfoModal({
       setSleepSimpleMode(
         tabletData.sleepModeSimple.type ? tabletData.sleepModeSimple.type : "FORCE_TERMINATE",
       );
-      setSwitchState(tabletData.sleepModeSimple === null ? false : true);
+      setSwitchState(tabletData.sleepModeSimple.type === null ? false : true);
     } else {
       setSwitchState(false);
     }
