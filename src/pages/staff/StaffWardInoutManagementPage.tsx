@@ -343,6 +343,7 @@ const StaffWardInoutManagementPage = () => {
               customColor={"#30B4FF"}
               totalPage={getTablet?.totalPages}
               onChange={(e, page) => handleChangePage(e, page)}
+              page={currentPage + 1}
             />
           </div>
         </FooterLayout>
