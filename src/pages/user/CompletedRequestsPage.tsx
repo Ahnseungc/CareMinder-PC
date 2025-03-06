@@ -173,7 +173,8 @@ export const RightSection = styled(S.SectionBase)<{ color: string }>`
   background-color: ${({ color }) => color};
   position: relative;
   max-height: 88vh;
-  box-shadow: rgba(0, 0, 0, 0.18) 0px -200px 36px -28px inset;
+  box-shadow: ${({ color }) =>
+    color !== "white" ? "rgba(0, 0, 0, 0.18) 0px -200px 36px -28px inset" : "none"};
 `;
 
 const ChatWrapper = styled("div")`
