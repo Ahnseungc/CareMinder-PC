@@ -10,7 +10,7 @@ import { ConnectChat, DisConnect, LoadChatHistory } from "@components/chat/chatt
 import ChatInput from "@components/chat/chatInput";
 import { isFindRole } from "@utils/homePage";
 import useStaffChangeRole from "@hooks/mutation/useStaffChangeRole";
-// import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
+import usePatientDischargeByWeb from "@hooks/mutation/usePatientDischargeByWeb";
 import { useStaffDecline } from "@hooks/mutation";
 import { Message } from "@models/staff";
 import ChatBox from "@components/chat/chatBox";
@@ -39,7 +39,7 @@ function StaffPatientListBox({
 
   const { mutate: mutateRole } = useStaffChangeRole(pendingRefetch);
 
-  // const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
+  const { mutate: mutateDischargeByWeb } = usePatientDischargeByWeb(refetchProps!);
   const { mutate: mutateDecline } = useStaffDecline(refetchProps!);
   // const { mutate: mutateReadMs } = useReadMessage(roomId!);
 
