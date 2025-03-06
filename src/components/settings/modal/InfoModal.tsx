@@ -2,6 +2,7 @@ import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { UserType } from "@models/user";
 import { Box, styled, Typography } from "@mui/material";
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const MODAL_CONTEXTS = {
   require: { title: "필수 입력 사항이 누락되었습니다.", controlAccount: false },
@@ -55,6 +56,7 @@ export default function InfoModal({
     () => MODAL_CONTEXTS[modalType] || { title: "", controlAccount: false },
     [modalType],
   );
+  const { t } = useTranslation();
 
   return (
     <CMModal
@@ -64,7 +66,7 @@ export default function InfoModal({
         modalType === "successChangeInfo" ||
         modalType === "successChangePW" ||
         modalType === "successChangePWReq"
-          ? "스태프 정보 수정하기"
+          ? t("스태프 정보 수정하기")
           : ""
       }
       footer={
@@ -91,7 +93,7 @@ export default function InfoModal({
             onClick={onClose}
             color={userType === "STAFF" ? "success" : userType === "ADMIN" ? "info" : "primary"}
           >
-            확인
+            {t("확인")}
           </ModalActionButton>
         )
       }
@@ -101,7 +103,7 @@ export default function InfoModal({
         <Typography variant="h2">
           {modalType === "accountLock" || modalType === "valueError" || modalType === "checkDelete"
             ? message
-            : title}
+            : t(title)}
         </Typography>
       </ContentLayout>
     </CMModal>

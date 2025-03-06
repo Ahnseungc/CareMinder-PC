@@ -7,6 +7,7 @@ import { useRecoilValue } from "recoil";
 import { selectAreaState } from "@libraries/recoil";
 import useChangeStaffSettingInfo from "@hooks/mutation/usePatchStaffInfo";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 interface StaffSettingsModalProps extends CMModalProps {
   staffInfo: GetStaffInfoResponse;
@@ -54,11 +55,13 @@ export default function StaffSettingsModal({
     });
   };
 
+  const { t } = useTranslation();
+
   return (
     <CMModal
       {...props}
       maxWidth="xs"
-      title={"계정 정보 변경"}
+      title={t("계정 정보 변경")}
       onClose={() => {
         onClose();
       }}
@@ -78,14 +81,14 @@ export default function StaffSettingsModal({
               onClose();
             }}
           >
-            취소
+            {t("취소")}
           </ModalActionButton>
           <ModalActionButton
             hoverColor="#30b3ff55"
             color="success"
             onClick={handleSubmit(onSubmit)}
           >
-            변경하기
+            {t("변경하기")}
           </ModalActionButton>
         </>
       }

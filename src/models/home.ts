@@ -42,7 +42,7 @@ export type CSwitchType = React.ChangeEvent<HTMLInputElement>;
 
 export type PatientStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED";
 
-export type CSwitchProps = "간호사" | "조무사" | "직원" | "의사" | "전체";
+export type CSwitchProps = "간호사" | "조무사" | "직원" | "의사" | "전체" | "ALL";
 export type isRoleType =
   | "NURSE"
   | "NURSE_ASSISTANT"

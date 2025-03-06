@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import InfoModal from "@components/settings/modal/InfoModal";
 import adminPendingState from "@libraries/recoil/adminPending";
 import { isElectron } from "@utils/isElectron";
+import { useTranslation } from "react-i18next";
 
 export default function AdminSigninPage() {
   const user = useRecoilValue(userState);
@@ -35,6 +36,8 @@ export default function AdminSigninPage() {
     }
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <>
       {/* 어드민 페이지 첫 경고 안내 모달 */}
@@ -49,7 +52,7 @@ export default function AdminSigninPage() {
           type="ADMIN"
           footer={
             <Link href={RoutePath.Signin} variant="h3">
-              병동 계정 로그인
+              {t("병동 계정 로그인")}
             </Link>
           }
           options={<CreateAdminButton />}

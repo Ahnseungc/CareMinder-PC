@@ -17,6 +17,7 @@ import ChatBox from "@components/chat/chatBox";
 import getPrevTimes from "@utils/getPrevTimes";
 import { OPTIONS } from "@components/settings/const";
 import getNewRequest from "@utils/getNewRequest";
+import { useTranslation } from "react-i18next";
 // import useReadMessage from "@hooks/mutation/useReadMessage";
 
 function StaffPatientListBox({
@@ -92,6 +93,7 @@ function StaffPatientListBox({
   // const userInfo = filterMessages[filterMessages.length - 1];
   // mutateReadMs(userInfo.messageId);
   // }, [messages]);
+  const { t } = useTranslation();
 
   return (
     <InnerContainer
@@ -121,21 +123,25 @@ function StaffPatientListBox({
           {isOptions && (
             <Options>
               {isAccept ? (
-                <Option onClick={el => onCancelAccept(el)}>수락취소</Option>
+                <Option onClick={el => onCancelAccept(el)}>{t("수락취소")}</Option>
               ) : (
-                <Option onMouseDown={() => setIsEdit(true)}>담당직종 변경</Option>
+                <Option onMouseDown={() => setIsEdit(true)}>{t("담당직종 변경")}</Option>
               )}
-              {/* <Option onMouseDown={() => setIsModal(true)}>퇴원</Option> */}
+              <Option onMouseDown={() => mutateDischargeByWeb(data.tabletSimple.tabletId)}>
+                {t("퇴원")}
+              </Option>
             </Options>
           )}
           {isEdit && (
             <Options tabIndex={0}>
-              <span>담당직종 변경</span>
+              <span>{t("담당직종 변경")}</span>
               <BoxWrapper>
                 <CComboBox
-                  placeholder={"직종 선택"}
-                  options={["간호사", "의사", "조무사", "직원"]}
-                  value={OPTIONS.find(el => el.role === data.aiRole)?.value || "정의되지 않음"}
+                  placeholder={t("직종 선택")}
+                  options={[t("간호사"), t("의사"), t("조무사"), t("직원")]}
+                  value={
+                    t(OPTIONS.find(el => el.role === data.aiRole)?.value!) || t("정의되지 않음")
+                  }
                   onChange={el => onChangePatientRole(el.target.value)}
                 />
               </BoxWrapper>
@@ -277,7 +283,7 @@ const Option = styled("div")`
 `;
 const BoxWrapper = styled("div")`
   height: 39px;
-  width: 130px;
+  width: 180px;
   margin-top: 8px;
 `;
 const TitleLeft = styled("div")`

@@ -16,6 +16,7 @@ import AreaAutoComplete from "@components/settings/AreaAutoComplete";
 import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { GetStaffInfoResponse } from "@hooks/queries/useGetStaffInfo";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 type InputFieldProps = {
   form: UseFormReturn<EditStaffInfo>;
@@ -60,7 +61,7 @@ export default function EditStaffInfoInputField({
           return true;
         }
         if (value.length < 4) {
-          return "비밀번호는 최소 4자 이상이어야 합니다.";
+          return t("비밀번호는 최소 4자 이상이어야 합니다.");
         }
         return true;
       },
@@ -75,7 +76,7 @@ export default function EditStaffInfoInputField({
             ...prev,
             confirmpassword: {
               isValid: true,
-              message: "비밀번호가 올바르게 확인되었습니다.",
+              message: t("비밀번호가 올바르게 확인되었습니다."),
             },
           }));
           return true;
@@ -84,7 +85,7 @@ export default function EditStaffInfoInputField({
           ...prev,
           confirmpassword: undefined,
         }));
-        return "비밀번호가 일치하지 않습니다.";
+        return t("비밀번호가 일치하지 않습니다.");
       },
     },
     email: {
@@ -120,13 +121,13 @@ export default function EditStaffInfoInputField({
     (fieldName: keyof EditStaffInfo) => {
       switch (fieldName) {
         case "name":
-          return `${initialStaffInfo.staffName} (기존 이름은 수정 불가)`;
+          return `${initialStaffInfo.staffName} ${t("(기존 이름은 수정 불가)")}`;
         case "wardName":
-          return `${initialStaffInfo.waraName} (기존 소속 병동은 수정 불가)`;
+          return `${initialStaffInfo.waraName} ${t("(기존 소속 병동은 수정 불가)")}`;
         case "id":
-          return `${initialStaffInfo.loginId} (기존 아이디는 수정 불가)`;
+          return `${initialStaffInfo.loginId} ${t("(기존 아이디는 수정 불가)")}`;
         case "phoneNumber":
-          return `${initialStaffInfo.phoneNumber} (기존 전화번호는 수정 불가)`;
+          return `${initialStaffInfo.phoneNumber} ${t("(기존 전화번호는 수정 불가)")}`;
         case "email":
           return email;
         default:
@@ -137,6 +138,8 @@ export default function EditStaffInfoInputField({
   );
 
   const handleClickShowPassword = () => setShowPassword(show => !show);
+
+  const { t } = useTranslation();
 
   return (
     <FormControl
@@ -158,7 +161,7 @@ export default function EditStaffInfoInputField({
           name !== "email"
         }
       >
-        {label}
+        {t(label)}
       </InputLabel>
       <Controller
         name={name}
@@ -171,7 +174,7 @@ export default function EditStaffInfoInputField({
               staffRole: (
                 <ComboBoxLayout>
                   <CComboBox
-                    placeholder={"간호사"}
+                    placeholder={t("간호사")}
                     options={OPTIONS.map(option => option.value)}
                     value={staffRole}
                     isStaff={true}

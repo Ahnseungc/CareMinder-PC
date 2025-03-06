@@ -17,6 +17,7 @@ import axios from "axios";
 import { FindAccount, FindAccountFieldType } from "@pages/find_account/FindAccountPage";
 import { SwitchCase } from "@toss/react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type FindAccountProps = {
   form: UseFormReturn<FindAccount>;
@@ -30,6 +31,7 @@ const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
 export default function FindAccountField({ field, form, type }: FindAccountProps) {
   const { name, label, placeholder } = field;
+  const { t } = useTranslation();
 
   const {
     control,
@@ -42,14 +44,14 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
 
   const validationRules = {
     name: {
-      required: "이름을 입력해주세요.",
+      required: t("이름을 입력해주세요."),
     },
     id: {
-      required: "아이디를 입력해주세요.",
+      required: t("아이디를 입력해주세요."),
     },
     phoneNumber: {
-      required: "전화번호를 입력해주세요.",
-      pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: "올바른 전화번호 형식을 입력해주세요." },
+      required: t("전화번호를 입력해주세요."),
+      pattern: { value: /^\d{3}-\d{4}-\d{4}$/, message: t("올바른 전화번호 형식을 입력해주세요.") },
       validate: (value: string, { phoneNumber }: FindAccount) => {
         if (value === phoneNumber) {
           setValidState(prev => ({
@@ -66,7 +68,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
           ...prev,
           phoneNumber: undefined,
         }));
-        return "전화번호를 올바르게 입력해주세요.";
+        return t("전화번호를 올바르게 입력해주세요.");
       },
     },
   };
@@ -103,14 +105,14 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     if (!inputName) {
       form.setError("name", {
         type: "required",
-        message: "이름을 입력해주세요.",
+        message: t("이름을 입력해주세요."),
       });
       return;
     }
     if (!phoneNumber) {
       form.setError("phoneNumber", {
         type: "required",
-        message: "전화번호를 입력해주세요.",
+        message: t("전화번호를 입력해주세요."),
       });
       return;
     }
@@ -119,7 +121,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
     if (!phonePattern.test(phoneNumber)) {
       form.setError("phoneNumber", {
         type: "pattern",
-        message: "올바른 전화번호 형식을 입력해주세요.",
+        message: t("올바른 전화번호 형식을 입력해주세요."),
       });
       return;
     }
@@ -147,7 +149,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
       if (err.status === 404) {
         form.setError("name", {
           type: "required",
-          message: "이름 혹은 전화번호가 올바르지 않습니다.",
+          message: t("이름 혹은 전화번호가 올바르지 않습니다."),
         });
       }
       //status
@@ -169,7 +171,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
         setVerifyPhone(true);
         stopTimer();
       } else {
-        alert("인증번호가 일치하지 않습니다.");
+        alert(t("인증번호가 일치하지 않습니다."));
       }
     } catch (error) {
       console.log(error);
@@ -185,7 +187,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
           sx={{ "gap": "3px", "& .MuiInputLabel-asterisk": { color: "#FF7253 !important" } }}
         >
           <InputLabel htmlFor={name} required>
-            {label}
+            {t(label)}
           </InputLabel>
           <Controller
             name={name}
@@ -240,7 +242,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                           }}
                           onClick={verifyPhoneNumber}
                         >
-                          {showVerifyCode ? "인증번호 재요청" : "인증번호 요청"}
+                          {showVerifyCode ? t("인증번호 재요청") : t("인증번호 요청")}
                         </CButton>
                       </CButtonWrapper>
                     </>
@@ -253,7 +255,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                         <TextField
                           {...field}
                           id={name}
-                          placeholder={placeholder}
+                          placeholder={t(placeholder)}
                           onChange={e => field.onChange(e)}
                           error={Boolean(errors[name])}
                           sx={{ width: "420px", display: field.name === "id" ? "none" : "flex" }}
@@ -263,7 +265,7 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
                       <TextField
                         {...field}
                         id={name}
-                        placeholder={placeholder}
+                        placeholder={t(placeholder)}
                         onChange={e => field.onChange(e)}
                         error={Boolean(errors[name])}
                         sx={{
@@ -305,15 +307,15 @@ export default function FindAccountField({ field, form, type }: FindAccountProps
               }}
               onClick={handleCheckVerifyCode}
             >
-              인증번호 확인
+              {t("인증번호 확인")}
             </CButton>
           </VerifyCodeButtonWrapper>
           {verifyPhone ? (
-            <SuccessText>인증이 완료되었습니다.</SuccessText>
+            <SuccessText>{t("인증이 완료되었습니다.")}</SuccessText>
           ) : (
             <VerifyText>
-              인증번호는 3분 이내 입력해야 합니다. <br />
-              제한시간이 지났을 경우 인증번호를 다시 받아 주세요.
+              {t("인증번호는 3분 이내 입력해야 합니다.")} <br />
+              {t("제한시간이 지났을 경우 인증번호를 다시 받아 주세요.")}
             </VerifyText>
           )}
         </div>

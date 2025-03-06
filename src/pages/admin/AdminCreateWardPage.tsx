@@ -18,6 +18,7 @@ import AreaManageModal from "@components/settings/modal/AreaManageModal";
 import wardListState from "@libraries/recoil/wardList";
 import InfoModal from "@components/settings/modal/InfoModal";
 import DeleteWarning from "@components/settings/areaManage/DeleteWarning";
+import { useTranslation } from "react-i18next";
 
 export default function AdminCreateWardPage() {
   const [isClear, setIsClear] = useState<boolean>(false);
@@ -134,6 +135,8 @@ export default function AdminCreateWardPage() {
     setIsClear(true);
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       {/* 병동 계정 생성 모달 */}
@@ -143,7 +146,7 @@ export default function AdminCreateWardPage() {
       <AreaManageModal
         open={isAreaManageModalOpen}
         onClose={closeAreaManageModal}
-        title="병동/구역 관리하기"
+        title={t("병동/구역 관리하기")}
         isAdmin={true}
       />
 
@@ -152,8 +155,8 @@ export default function AdminCreateWardPage() {
         open={isOpenCheckLockModal}
         onClose={closeCheckLockModal}
         modalType="checkDelete"
-        leftText="취소"
-        rightText="잠금"
+        leftText={t("취소")}
+        rightText={t("잠금")}
         userType="ADMIN"
         onConfirm={selectedWardList.length === 1 ? handleLock : handleAllLock}
         message={<DeleteWarning isLock={true} />}
@@ -170,7 +173,7 @@ export default function AdminCreateWardPage() {
       <Container>
         <HeadContainer>
           <div>
-            <Title variant="h1">병동 계정 관리</Title>
+            <Title variant="h1">{t("병동 계정 관리")}</Title>
           </div>
           {isEditing.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "32px" }}>
@@ -188,8 +191,8 @@ export default function AdminCreateWardPage() {
               >
                 <InputBase
                   sx={{ ml: 1, flex: 1 }}
-                  placeholder="검색할 내용을 입력해주세요."
-                  inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                  placeholder={t("검색할 내용을 입력해 주세요.")}
+                  inputProps={{ "aria-label": "검색할 내용을 입력해 주세요." }}
                 />
                 <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
                   <Search />
@@ -197,7 +200,7 @@ export default function AdminCreateWardPage() {
               </Paper>
               <div ref={settingRef} style={{ position: "relative" }}>
                 <SettingButton isClick={isSetting} onClick={() => setIsSetting(prev => !prev)}>
-                  <span>설정</span>
+                  <span>{t("설정")}</span>
                   <span style={{ position: "absolute", right: "10px" }}>
                     <DownArrow style={{ transform: isSetting ? "rotate(180deg)" : "none" }} />
                   </span>
@@ -211,7 +214,7 @@ export default function AdminCreateWardPage() {
                         setIsSetting(false);
                       }}
                     >
-                      병동 계정 생성하기
+                      {t("병동 계정 생성하기")}
                     </div>
                     <div
                       style={{ padding: "10px", textAlign: "center" }}
@@ -220,7 +223,7 @@ export default function AdminCreateWardPage() {
                         setIsSetting(false);
                       }}
                     >
-                      병동/구역 관리하기
+                      {t("병동/구역 관리하기")}
                     </div>
                   </SettingDropdown>
                 )}
@@ -238,7 +241,7 @@ export default function AdminCreateWardPage() {
             >
               <X style={{ cursor: "pointer" }} onClick={handleClear} />
               <EditMenu sx={{ marginRight: "60px", textDecoration: "none" }}>
-                {isEditing.length}개 항목 선택됨
+                {isEditing.length} {t("항목 선택됨")}
               </EditMenu>
               <div style={{ color: "#21262B", display: "flex", gap: "20px", cursor: "pointer" }}>
                 <span>

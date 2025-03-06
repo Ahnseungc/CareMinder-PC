@@ -1,6 +1,7 @@
 import { CMModal, CMModalProps, ModalActionButton } from "@components/common";
 import { Box, styled } from "@mui/material";
 import { ReactComponent as StopIcon } from "@assets/stop.svg";
+import { useTranslation } from "react-i18next";
 
 interface StopAccountActiveModalProps extends CMModalProps {
   onConfirm: () => void;
@@ -11,6 +12,8 @@ export default function StopAccountActiveModal({
   onConfirm,
   ...props
 }: StopAccountActiveModalProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <CMModal
@@ -29,17 +32,17 @@ export default function StopAccountActiveModal({
       >
         <ContentLayout>
           <Title>
-            <StopIcon /> <div> 경고</div>
+            <StopIcon /> <div>{t("경고")}</div>
           </Title>
           <Text>
-            본인 인증이 완료되지 않았습니다.
+            {t("본인 인증이 완료되지 않았습니다.")}
             <br />
             <br />
-            본인 인증을 완료하지 않으면 <br />
-            계정을 사용할 수 없습니다.
+            {t("본인 인증을 완료하지 않으면")} <br />
+            {t("계정을 사용할 수 없습니다.")}
             <br />
             <br />
-            계정을 활성화를 중단하시겠습니까?
+            {t("계정을 활성화를 중단하시겠습니까?")}
           </Text>
         </ContentLayout>
       </CMModal>

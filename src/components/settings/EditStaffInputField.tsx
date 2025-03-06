@@ -32,7 +32,7 @@ export default function EditStaffInputField({
   } = form;
 
   const [staffRole, setStaffRole] = useState<string>(
-    OPTIONS.find(option => option.role === initialStaffInfo?.staffRole)?.value || OPTIONS[0].value,
+    OPTIONS.find(option => option.role === initialStaffInfo?.staffRole)?.value! || OPTIONS[0].value,
   );
   const [email, setEmail] = useState<string>(initialStaffInfo?.email || "");
   const [staffInfo, setStaffInfo] = useState<StaffListType | undefined>(initialStaffInfo);
@@ -101,6 +101,7 @@ export default function EditStaffInputField({
 
   const handleChangeRole = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStaffRole(event.target.value);
+    console.log(event.target.value);
     setValue("staffRole", event.target.value);
   };
 

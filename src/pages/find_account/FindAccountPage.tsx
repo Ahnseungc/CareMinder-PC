@@ -15,6 +15,7 @@ import FindPwSecond from "@components/FindAccount/Modal/findPwSecondModal";
 
 import axios from "axios";
 import useFindChangePassword from "@hooks/mutation/useFindChangePassword";
+import { useTranslation } from "react-i18next";
 
 const SEVER_URL = import.meta.env.VITE_SEVER_URL;
 
@@ -106,6 +107,8 @@ export default function FindAccountPage() {
     }
   };
 
+  const { t } = useTranslation();
+
   const onCheckId: SubmitHandler<FindAccount> = async data => {
     try {
       const res = await axios.post(`${SEVER_URL}/users/check-login-id`, {
@@ -144,14 +147,14 @@ export default function FindAccountPage() {
     <Container>
       <Title variant="h1">careminder</Title>
       <Typography variant="h1" sx={{ marginBottom: "30px" }}>
-        {type} 계정 찾기
+        {t(type!)} {t("계정 찾기")}
       </Typography>
       <TabContainer style={{ display: "flex", gap: "20px" }}>
         <Tab onClick={() => setActiveTab("아이디 찾기")} isActive={activeTab === "아이디 찾기"}>
-          아이디 찾기
+          {t("아이디 찾기")}
         </Tab>
         <Tab onClick={() => setActiveTab("비밀번호 찾기")} isActive={activeTab === "비밀번호 찾기"}>
-          비밀번호 찾기
+          {t("비밀번호 찾기")}
         </Tab>
       </TabContainer>
       <ContentLayout>
@@ -196,7 +199,7 @@ export default function FindAccountPage() {
       <CButtonContainer>
         {activeTab === "비밀번호 찾기" && findPWLevel === 1 ? (
           <CButton buttontype="primarySpaureWhite" onClick={handleSubmit(onCheckId)}>
-            완료
+            {t("완료")}
           </CButton>
         ) : (
           <CButton
@@ -204,7 +207,7 @@ export default function FindAccountPage() {
             onClick={handleSubmit(onSubmit)}
             disabled={!verifyPhone}
           >
-            찾기
+            {t("찾기")}
           </CButton>
         )}
       </CButtonContainer>

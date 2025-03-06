@@ -1,4 +1,5 @@
 import { styled } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 type ChatData = {
   content: string;
@@ -15,6 +16,8 @@ type ChatBoxProps = {
 };
 
 function ChatBox({ data, color, darkColor }: ChatBoxProps) {
+  const { t } = useTranslation();
+
   const leftOrRight = data.role === "TABLET" ? "left" : "right";
 
   const makeTwoDigits = (time: number) => {
@@ -25,9 +28,9 @@ function ChatBox({ data, color, darkColor }: ChatBoxProps) {
     const time = new Date(createdAt);
     const hours = time.getHours();
     const minutes = time.getMinutes();
-    if (hours === 12) return "오후 " + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
-    if (hours > 12) return "오후 " + makeTwoDigits(hours - 12) + ":" + makeTwoDigits(minutes);
-    if (hours < 12) return "오전 " + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
+    if (hours === 12) return t("오후 ") + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
+    if (hours > 12) return t("오후 ") + makeTwoDigits(hours - 12) + ":" + makeTwoDigits(minutes);
+    if (hours < 12) return t("오전 ") + makeTwoDigits(hours) + ":" + makeTwoDigits(minutes);
   };
 
   return (

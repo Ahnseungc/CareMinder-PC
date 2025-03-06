@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { doubleCheckState, wardNameCheckState } from "@libraries/recoil/idDoubleCheck";
 import verifyPhoneState from "@libraries/recoil/verifyPhone";
+import { useTranslation } from "react-i18next";
 
 type Step = "병동 계정 생성 약관 동의서" | "병동 계정 생성";
 
@@ -31,6 +32,8 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
   const [isWardNameChecked, setIsWardNameChecked] = useRecoilState(wardNameCheckState);
   const [isLoginIdChecked, setIsLoginIdChecked] = useRecoilState(doubleCheckState);
   const [isVerifyPhoneChecked, setIsVerifyPhoneChecked] = useRecoilState(verifyPhoneState);
+
+  const { t } = useTranslation();
 
   const form = useForm<NewWard>({
     defaultValues,
@@ -85,7 +88,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
             overflowY: "hidden",
           },
         }}
-        title={step}
+        title={t(step)}
         footer={
           <>
             <SwitchCase
@@ -105,14 +108,14 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                         },
                       }}
                     >
-                      취소
+                      {t("취소")}
                     </ModalActionButton>
                     <ModalActionButton
                       color="info"
                       disabled={!agreementChecked}
                       onClick={() => setStep("병동 계정 생성")}
                     >
-                      동의합니다
+                      {t("동의합니다")}
                     </ModalActionButton>
                   </>
                 ),
@@ -132,14 +135,14 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                         },
                       }}
                     >
-                      취소
+                      {t("취소")}
                     </ModalActionButton>
                     <ModalActionButton
                       color="info"
                       onClick={handleSubmit(onSubmit)}
                       disabled={!isWardNameChecked || !isLoginIdChecked || !isVerifyPhoneChecked}
                     >
-                      완료
+                      {t("완료")}
                     </ModalActionButton>
                   </>
                 ),
@@ -304,7 +307,7 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
                       }}
                     />
                   }
-                  label="필수 약관에 동의합니다."
+                  label={t("필수 약관에 동의합니다.")}
                 />
               </>
             ),
@@ -325,17 +328,17 @@ export default function CreateWardModal({ onClose, ...props }: CMModalProps) {
 /** utils */
 
 const fields: NewWardField[] = [
-  { name: "wardName", label: "병동명", placeholder: "병동명을 입력해주세요." },
-  { name: "loginId", label: "아이디", placeholder: "아이디를 입력해주세요." },
-  { name: "password", label: "비밀번호", placeholder: "비밀번호를 입력해주세요." },
-  { name: "confirmPassword", label: "비밀번호 확인", placeholder: "비밀번호를 재입력해주세요." },
-  { name: "managerName", label: "담당자 이름", placeholder: "담당자 이름을 입력해주세요." },
+  { name: "wardName", label: "병동명", placeholder: "-" },
+  { name: "loginId", label: "아이디", placeholder: "-" },
+  { name: "password", label: "비밀번호", placeholder: "-" },
+  { name: "confirmPassword", label: "비밀번호 확인", placeholder: "-" },
+  { name: "managerName", label: "담당자 이름", placeholder: "-" },
   {
     name: "managerPhoneNumber",
     label: "담당자 전화번호",
-    placeholder: "담당자 전화번호를 입력해주세요.",
+    placeholder: "-",
   },
-  { name: "managerEmail", label: "담당자 이메일", placeholder: "담당자 이메일을 입력해주세요." },
+  { name: "managerEmail", label: "담당자 이메일", placeholder: "-" },
 ];
 
 /** styles */

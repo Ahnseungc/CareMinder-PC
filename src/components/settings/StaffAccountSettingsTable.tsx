@@ -17,6 +17,7 @@ import { TimeSince } from "./TimeSince";
 import PaginationComponent from "@components/common/pagination";
 import PasswordChangeModal from "./modal/PasswordChangeModal";
 import { useBooleanState } from "@toss/react";
+import { useTranslation } from "react-i18next";
 
 const columns = [
   { field: "check", headerName: "" },
@@ -49,6 +50,8 @@ const StaffAccountSettingsTable = ({
     areaFilter: [4, 5],
     staffRoleFilter: ["NURSE"],
   });
+
+  const { t } = useTranslation();
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -259,7 +262,7 @@ const StaffAccountSettingsTable = ({
                             onChange={() => null}
                             value={
                               row.areas.length === 0
-                                ? "미지정"
+                                ? t("미지정")
                                 : row.areas.map(area => area.areaName).join(",")
                             }
                             disabled={row.accountLocked}
@@ -317,19 +320,19 @@ const StaffAccountSettingsTable = ({
                                   marginRight: "7px",
                                 }}
                               ></div>
-                              <Typography sx={{ color: "#1ADE00" }}>접속중</Typography>
+                              <Typography sx={{ color: "#1ADE00" }}>{t("접속중")}</Typography>
                             </>
                           ) : (
                             <>
                               {row.timeSinceLogout ? (
                                 <Typography>
-                                  미접속
+                                  {t("미접속")}
                                   <br />
                                   <TimeSince time={row.timeSinceLogout} />
                                 </Typography>
                               ) : (
                                 // 계정 생성 후 로그인 기록이 없는 경우 처리
-                                <Typography>로그인 기록 없음</Typography>
+                                <Typography>{t("로그인 기록 없음")}</Typography>
                               )}
                             </>
                           )}

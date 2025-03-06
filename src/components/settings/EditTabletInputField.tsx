@@ -14,6 +14,7 @@ import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { useEffect, useState } from "react";
 import { WardTabledListType } from "@hooks/queries/useGetWardTabletList";
 import palette from "@styles/palette";
+import { useTranslation } from "react-i18next";
 
 type InputFieldProps = {
   form: UseFormReturn<EditTablet>;
@@ -24,6 +25,7 @@ type InputFieldProps = {
 export default function EditTabletInputField({ field, form, tabletData }: InputFieldProps) {
   // const { data: areaList } = useGetAreaList();
   const { data: areaList } = useGetStaffAreaList();
+  const { t } = useTranslation();
 
   const [area, setArea] = useState<string>(tabletData ? tabletData.areaName : "");
   const [patientName, setPatientName] = useState<string>(
@@ -104,7 +106,7 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
           fontSize: "14px",
         }}
       >
-        {label}
+        {t(label)}
       </InputLabel>
       <Controller
         name={name}

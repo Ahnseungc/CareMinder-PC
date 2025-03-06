@@ -55,6 +55,10 @@ export const isFindRole = (role: CSwitchProps) => {
       return "DOCTOR";
     case "전체":
       return null;
+    case "ALL":
+      return null;
+    default:
+      return role;
   }
 };
 

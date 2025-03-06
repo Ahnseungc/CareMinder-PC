@@ -24,6 +24,7 @@ import AreaManageModal from "./modal/AreaManageModal";
 import DeleteWarning from "./areaManage/DeleteWarning";
 import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export const StaffAccount = () => {
   const [isTOSModalOpen, openTOSModal, closeTOSModal] = useBooleanState(false);
@@ -143,6 +144,8 @@ export const StaffAccount = () => {
     );
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       {/* 약관 동의 모달 */}
@@ -201,7 +204,9 @@ export const StaffAccount = () => {
               isSticky={isSticky}
             >
               <X style={{ cursor: "pointer" }} onClick={handleClear} />
-              <EditMenuText>{isEditing.length}개 항목 선택됨</EditMenuText>
+              <EditMenuText>
+                {isEditing.length} {t("항목 선택됨")}
+              </EditMenuText>
               <EditMenuBox>
                 <Edit
                   onClick={() => {
@@ -235,8 +240,8 @@ export const StaffAccount = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="검색할 내용을 입력해주세요."
-                    inputProps={{ "aria-label": "검색할 내용을 입력해주세요." }}
+                    placeholder={t("검색할 내용을 입력해 주세요.")}
+                    inputProps={{ "aria-label": "검색할 내용을 입력해 주세요." }}
                     value={searchValue}
                     onChange={e => setSearchValue(e.target.value)}
                     onKeyDown={e => {

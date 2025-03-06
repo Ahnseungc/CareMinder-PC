@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 import { StaffAccount } from "../../components/settings/StaffAccount";
 import { TabletManagement } from "../../components/settings/TabletManagement";
 import settingsLoginState from "@libraries/recoil/settings/login";
+import { useTranslation } from "react-i18next";
 
 export type TabButtonProps = {
   isActive?: boolean;
@@ -50,6 +51,7 @@ export default function SettingsPage() {
         break;
     }
   };
+  const { t } = useTranslation();
 
   return (
     <>
@@ -57,10 +59,10 @@ export default function SettingsPage() {
       <Container>
         <HeadContainer>
           <div>
-            <Title variant="h1">병동 계정 설정</Title>
+            <Title variant="h1">{t("병동 계정 설정")}</Title>
           </div>
           {/* <TabContainer> */}
-            {/* <TabButton
+          {/* <TabButton
               isActive={activeTab === "태블릿 컨텐츠 수정"}
               value={"태블릿 컨텐츠 수정"}
               onClick={() => handleTabClick("태블릿 컨텐츠 수정")}
@@ -68,15 +70,15 @@ export default function SettingsPage() {
               태블릿 컨텐츠 수정
             </TabButton> */}
 
-            {/* 베드로 병원 */}
-            {/* <TabButton
+          {/* 베드로 병원 */}
+          {/* <TabButton
               isActive={activeTab === "스태프 계정 수정"}
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
               스태프 계정 관리
             </TabButton> */}
-            {/* <TabButton
+          {/* <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
               value={"태블릿 병상 관리"}
               onClick={() => handleTabClick("태블릿 병상 관리")}

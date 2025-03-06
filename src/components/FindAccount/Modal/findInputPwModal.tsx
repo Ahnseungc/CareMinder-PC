@@ -6,6 +6,7 @@ import { NewPassWordField } from "@models/ward";
 import { NewPassword } from "@models/ward";
 import { useForm } from "react-hook-form";
 import { PasswordType } from "@pages/find_account/FindAccountPage";
+import { useTranslation } from "react-i18next";
 
 type ModalProps = {
   onClose: (event?: object, reason?: "backdropClick" | "escapeKeyDown") => void;
@@ -14,6 +15,8 @@ type ModalProps = {
 };
 
 function FindInputPwModal({ onClose, setActiveTab, onChangePW }: ModalProps) {
+  const { t } = useTranslation();
+
   const defaultValuesPW: NewPassword = {
     password: "",
     confirmPassword: "",
@@ -54,15 +57,15 @@ function FindInputPwModal({ onClose, setActiveTab, onChangePW }: ModalProps) {
               onClose(), setActiveTab("비밀번호 찾기");
             }}
           >
-            취소
+            {t("취소")}
           </ModalActionButton>
           <ModalActionButton onClick={handleSubmit(onSubmit)} color={"primary"}>
-            완료하기
+            {t("완료하기")}
           </ModalActionButton>
         </>
       }
     >
-      <Title>새로운 비밀번호를 입력해주세요.</Title>
+      <Title>{t("새로운 비밀번호를 입력해주세요.")}</Title>
       <Stack gap={"25px"} sx={{ padding: "20px 10px" }}>
         {fields.map(field => (
           <NewPasswordField key={field.name} field={field} form={form} />

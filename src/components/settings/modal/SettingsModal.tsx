@@ -9,6 +9,7 @@ import { useBooleanState } from "@toss/react";
 import { useSetRecoilState } from "recoil";
 import { settingsLoginState } from "@libraries/recoil";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsModal({ onClose, ...props }: CMModalProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -54,26 +55,28 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
     onClose();
   };
 
+  const { t } = useTranslation();
+
   return (
     <>
       <InfoModal
         open={isOpen}
         onClose={closeModal}
         modalType="valueError"
-        message="비밀번호가 틀렸습니다"
+        message={t("비밀번호가 틀렸습니다")}
       />
       <CMModal
         maxWidth="xs"
         onClose={handleModalClose}
-        title={"병동 설정 비밀번호 확인"}
-        footer={<ModalActionButton onClick={handleSubmit}>확인</ModalActionButton>}
+        title={t("병동 설정 비밀번호 확인")}
+        footer={<ModalActionButton onClick={handleSubmit}>{t("확인")}</ModalActionButton>}
         {...props}
       >
         <Container>
           <Typography variant="body1" sx={{ textAlign: "center" }}>
-            병동 설정 페이지는 보안이 필요한 관리자 전용 기능입니다.
+            {t("병동 설정 페이지는 보안이 필요한 관리자 전용 기능입니다.")}
             <br />
-            계정 비밀번호를 입력하여 본인 인증을 진행해 주세요.
+            {t("계정 비밀번호를 입력하여 본인 인증을 진행해 주세요.")}
           </Typography>
           <form onSubmit={handleSubmit}>
             <PasswordInputContainer>

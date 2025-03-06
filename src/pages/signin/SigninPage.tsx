@@ -5,6 +5,7 @@ import RoutePath from "@routes/routePath";
 import { isElectron } from "@utils/isElectron";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
@@ -14,6 +15,7 @@ export default function SigninPage() {
   const accessTokenAdmin = Cookies.get("accessTokenAdmin");
   const navigate = useNavigate();
   const [isCheck, setIsCheck] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isElectron()) {
@@ -46,7 +48,7 @@ export default function SigninPage() {
         type="WARD"
         footer={
           <Link href={RoutePath.AdminSignin} variant="h3">
-            어드민 계정 로그인
+            {t("어드민 계정 로그인")}
           </Link>
         }
       />
