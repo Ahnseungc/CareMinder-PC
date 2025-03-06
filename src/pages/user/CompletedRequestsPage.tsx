@@ -48,7 +48,7 @@ export default function CompletedRequestsPage() {
     if (type === "discharge") {
       mutateDischarge(id);
     }
-    setIsFocusPatientData(null);
+    setIsFocusPatientData(undefined);
   };
 
   const getHistoryChatting = async () => {
@@ -67,8 +67,10 @@ export default function CompletedRequestsPage() {
     }
   }, [isFocusPatientData]);
 
+  console.log(isFocusPatientData);
+
   const roleColorPick = roleColor(
-    isFocusPatientData === undefined ? "NURSE" : isFocusPatientData!.aiRole,
+    isFocusPatientData === undefined || null ? "NURSE" : isFocusPatientData!.aiRole,
   );
 
   return (
