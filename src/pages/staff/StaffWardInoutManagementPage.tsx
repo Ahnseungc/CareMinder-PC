@@ -4,102 +4,132 @@ import CButton from "@components/common/atom/C-Button";
 import CSearchBox from "@components/common/atom/C-SearchBox";
 import PaginationComponent from "@components/common/pagination";
 import { motion, AnimatePresence } from "framer-motion";
-import useGetWardTabletRequests from "@/hooks/queries/useGetStaffsTablet";
+
 import useDischargePatients from "@hooks/mutation/usePatientsDischarge";
 import { WardTabletType } from "@models/ward-tablet";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import Cookies from "js-cookie";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ComBoxLayout } from "@components/admin/admininout/adminTable";
-import { CComboBox } from "@components/common/atom/C-ComboBox";
 import { ReactComponent as StaffCancelIcon } from "@assets/staff-cancel-icon.svg";
-// import { ReactComponent as DrowDownIcon } from "@assets/dropdown-bottom.svg";
-// import { ReactComponent as CalendarIcon } from "@assets/calendar/calendar-icon.svg";
-// import CCalendar, { Value } from "@components/common/atom/Calendar/C-Calendar";
+import { ReactComponent as Pencil } from "@/assets/pencil2.svg";
+import { ReactComponent as MemoIcon } from "@assets/memo-icon.svg";
 import { Value } from "@components/common/atom/Calendar/C-Calendar";
-// import { formatDateYYYYMMDD } from "@utils/getDateform";
 import { debounce } from "lodash";
 import DischargeModal from "@components/admin/admininout/modal/dischargeModal";
 import DischargeSuccessModal from "@components/admin/admininout/modal/dischargeSuccessModal";
-import useChangeTabletArea from "@hooks/mutation/useChangeWardTabletArea";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
-import { useQueryClient } from "@tanstack/react-query";
 import MemoModal from "@components/admin/admininout/modal/memo-modal";
+import EditModal from "@components/admin/admininout/modal/edit-modal";
+import useGetMenagePatientList from "@hooks/mutation/useGetMenagePatientList";
 import { useTranslation } from "react-i18next";
 
-type SelectedItem = {
+export type SelectedItem = {
   name: string;
   id: number;
-  areaName: string;
+  areaId: number;
+  tabletName: string;
+  admissionDate: string;
+};
+
+export type FilterData = {
+  areaFilter: null | number[];
+  patientNameFilter: null | string;
+  patientNameSort: null | "ASC" | "DESC";
+  tabletNameSort: null | "ASC" | "DESC";
+  admissionDateSort: null | "ASC" | "DESC";
 };
 
 const StaffWardInoutManagementPage = () => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const token = Cookies.get("accessTokenStaff") as string;
+
   //@ts-ignore
   const [isMyArea, setIsMyArea] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [isAcitve, setIsActive] = useState(false);
+
   //@ts-ignore
   const [disChargeDate, setDisChargeDate] = useState<Value>(new Date());
-  const [debounceValue, setDebounceValue] = useState("");
   const [isModal, setIsModal] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [isMemoModal, setIsMemoModal] = useState(false);
+  const [selected, setSelected] = useState<Array<SelectedItem>>([]);
+  const [getPatientFilterData, setGetPatientFilterData] = useState<FilterData>({
+    areaFilter: null,
+    patientNameFilter: null,
+    patientNameSort: null,
+    tabletNameSort: null,
+    admissionDateSort: null,
+  });
+  const [getTablet, setGetTablet] = useState<undefined | any>(undefined);
 
   const handleChangePage = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page - 1);
   }, []);
 
-  const {
-    data: getTablet,
-    refetch,
-    isLoading,
-  } = useGetWardTabletRequests({
-    token: token,
-    patientName: debounceValue,
-    myArea: isMyArea,
-    page: currentPage,
-  });
+  const { mutate: getPatientList } = useGetMenagePatientList();
 
   useEffect(() => {
-    setSelected([]);
-  }, [currentPage]);
+    getPatientList(
+      {
+        page: currentPage,
+        object: getPatientFilterData,
+      },
+      {
+        onSuccess: data => {
+          setGetTablet(data.data);
+        },
+      },
+    );
+  }, [getPatientFilterData, currentPage]);
 
   const { mutate } = useDischargePatients();
-  const [selected, setSelected] = useState<Array<SelectedItem>>([]);
-  const [memoData, setMemoData] = useState<{ patientName: string; patientId: number }>();
 
-  const onChangeSelectAll = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.checked) {
-        setSelected(
-          getTablet?.data.map((tablet: any) => ({
-            name: tablet.patientName,
-            id: tablet.tabletId,
-            areaName: tablet.areaName,
-          })),
-        );
-      } else {
-        setSelected([]);
-      }
-    },
-    [selected],
-  );
+  const onChangeSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setSelected(
+        getTablet?.data.map((tablet: any) => ({
+          name: tablet.patientName,
+          id: tablet.tabletId,
+          areaName: tablet.areaName,
+          tabletName: tablet.tabletName,
+          admissionDate: tablet.createdAt,
+        })),
+      );
+    } else {
+      setSelected([]);
+    }
+  };
 
   const onChangeSelected = useCallback(
-    (tabletId: number, patientName: string, areaName: string) => {
+    (
+      tabletId: number,
+      patientName: string,
+      areaId: number,
+      tabletName: string,
+      createdAt: string,
+    ) => {
       setSelected(prev => {
         if (prev.some(item => item.id === tabletId)) {
           return prev.filter(item => item.id !== tabletId);
         } else {
-          return [...prev, { name: patientName, id: tabletId, areaName: areaName }];
+          return [
+            ...prev,
+            {
+              name: patientName,
+              id: tabletId,
+              areaId: areaId,
+              tabletName: tabletName,
+              admissionDate: createdAt,
+            },
+          ];
         }
       });
+      // setSelected([{ name: patientName, id: tabletId, areaId: areaId, tabletName: tabletName }]);
     },
     [selected],
   );
+
   const defaultValuesUpdate: WardTabletType = {
     areaId: 0,
     tabletId: 0,
@@ -110,14 +140,6 @@ const StaffWardInoutManagementPage = () => {
     patientName: "",
     createdAt: "",
   };
-  //@ts-ignore
-  const handleActive = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
-      setIsActive(prev => !prev);
-    },
-    [isAcitve],
-  );
 
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -128,7 +150,7 @@ const StaffWardInoutManagementPage = () => {
 
   const debounceSearchValue = useCallback(
     debounce((value: string) => {
-      setDebounceValue(value);
+      setGetPatientFilterData(prev => ({ ...prev, patientNameFilter: value }));
     }, 200),
     [searchValue],
   );
@@ -138,13 +160,19 @@ const StaffWardInoutManagementPage = () => {
     mode: "onChange",
   });
 
-  useEffect(() => {
-    isAcitve && setIsActive(false);
-  }, [disChargeDate]);
-
-  useEffect(() => {
-    selected?.length === 0 && isAcitve && setIsActive(false);
-  }, [selected]);
+  const refetch = () => {
+    getPatientList(
+      {
+        page: currentPage,
+        object: getPatientFilterData,
+      },
+      {
+        onSuccess: data => {
+          setGetTablet(data.data);
+        },
+      },
+    );
+  };
 
   const { handleSubmit: handleDischarge } = formDischarge;
 
@@ -165,38 +193,7 @@ const StaffWardInoutManagementPage = () => {
     );
   };
 
-  const { mutate: changeTabletArea } = useChangeTabletArea({ type: "STAFF" });
   const { data: areaList } = useGetStaffAreaList();
-  const queryClient = useQueryClient();
-
-  const [area, setArea] = useState<string[]>([""]);
-  const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const areaId = areaList?.find((item: any) => item.name === value)?.id as number;
-    const userIds = selected?.map(item => item.id);
-    changeTabletArea(
-      {
-        userIds: userIds,
-        areaId: areaId,
-      },
-      {
-        onSuccess: () => {
-          //@ts-ignore
-          queryClient.invalidateQueries(["areaListStaff"]);
-          setSelected([]);
-          toast.success("구역 변경이 완료되었습니다");
-        },
-        onError: () => {
-          toast.error("구역 변경을 실패했습니다");
-        },
-      },
-    );
-  };
-  useEffect(() => {
-    if (areaList) {
-      setArea(areaList.map((item: any) => item.name));
-    }
-  }, [areaList]);
 
   const onDisCharge = handleDischarge(updateDischarge);
 
@@ -206,8 +203,7 @@ const StaffWardInoutManagementPage = () => {
     setIsModal(prev => !prev);
   };
 
-  const handleMemoModal = (patientId: number, patientName: string) => {
-    setMemoData(prev => ({ ...prev, patientName: patientName, patientId: patientId }));
+  const handleMemoModal = () => {
     setIsMemoModal(prev => !prev);
   };
 
@@ -216,30 +212,9 @@ const StaffWardInoutManagementPage = () => {
     handleModal();
   };
 
-  const mostFrequentAreaName = useMemo(() => {
-    if (!selected || selected.length === 0) return null;
-
-    const frequencyMap: Record<string, number> = {};
-
-    // selectedList에서 areaName 빈도수 계산
-    selected?.forEach(item => {
-      if (frequencyMap[item.areaName]) {
-        frequencyMap[item.areaName] += 1;
-      } else {
-        frequencyMap[item.areaName] = 1;
-      }
-    });
-
-    let maxFrequency = 0;
-    let mostFrequentArea = null;
-    for (const [areaName, frequency] of Object.entries(frequencyMap)) {
-      if (frequency > maxFrequency) {
-        maxFrequency = frequency;
-        mostFrequentArea = areaName;
-      }
-    }
-    return mostFrequentArea;
-  }, [selected, getTablet]);
+  const handleEditPatient = () => {
+    setIsEditModal(true);
+  };
 
   useEffect(() => {
     setSelectSingle([]);
@@ -251,11 +226,12 @@ const StaffWardInoutManagementPage = () => {
     <>
       {isMemoModal && (
         <MemoModal
-          modalTitle={memoData?.patientName as string}
-          subTitle={undefined}
-          patientId={memoData?.patientId as number}
-          onClose={() => setIsMemoModal(false)}
+          modalTitle={"환자 메모 보기"}
+          onClose={() => {
+            setIsMemoModal(false), setSelected([]);
+          }}
           open={isMemoModal}
+          selectList={selected}
         />
       )}
       {isModal && (
@@ -274,7 +250,20 @@ const StaffWardInoutManagementPage = () => {
           open={isSuccessModal}
         />
       )}
-      {isSuccessModal}
+
+      {isEditModal && (
+        <EditModal
+          onClose={() => {
+            isEditModal && setIsEditModal(false);
+            setSelected([]);
+          }}
+          selectList={selected}
+          open={isEditModal}
+          areaList={areaList}
+          refetch={refetch}
+        />
+      )}
+
       <Container>
         <Title variant="h1">{t("환자 관리")}</Title>
         <AnimatePresence mode="wait">
@@ -297,48 +286,13 @@ const StaffWardInoutManagementPage = () => {
                     </Text>
                   </div>
                   <div style={{ display: "flex", marginLeft: 60, gap: 24 }}>
-                    <ComBoxLayout width={"192px"}>
-                      <CComboBox
-                        placeholder={"구역"}
-                        options={area}
-                        isStaff={false}
-                        value={mostFrequentAreaName as string}
-                        onChange={e => handleChangeArea(e)}
-                      />
+                    <ComBoxLayout width={"30px"}>
+                      <MemoIcon style={{ cursor: "pointer" }} onClick={handleMemoModal} />
                     </ComBoxLayout>
-                    {/* <ComBoxLayout width={"160px"}>
-                      <CalendarSelect onClick={handleActive}>
-                        {disChargeDate !== new Date() ? (
-                          <Text
-                            sx={{
-                              fontSize: 14,
-                              lineHeight: 20,
-                              fontWeight: 400,
-                              letterSpacing: "-3%",
-                              opacity: 1,
-                            }}
-                          >
-                            {formatDateYYYYMMDD(disChargeDate as Date)}
-                          </Text>
-                        ) : (
-                          <Text
-                            sx={{
-                              fontSize: 14,
-                              lineHeight: 20,
-                              fontWeight: 400,
-                              letterSpacing: "-3%",
-                              opacity: 0.3,
-                            }}
-                          >
-                            예상 퇴원 날짜
-                          </Text>
-                        )}
-                        <CalendarIcon />
-                        {isAcitve && (
-                          <CCalendar value={disChargeDate} setState={setDisChargeDate} />
-                        )}
-                      </CalendarSelect>
-                    </ComBoxLayout> */}
+                    <ComBoxLayout width={"30px"}>
+                      <Pencil style={{ cursor: "pointer" }} onClick={handleEditPatient} />
+                    </ComBoxLayout>
+
                     <CButton buttontype={"impactRed"} onClick={handleModal}>
                       {t("환자 퇴원 처리")}
                     </CButton>
@@ -369,17 +323,17 @@ const StaffWardInoutManagementPage = () => {
         </AnimatePresence>
 
         <TableLayout>
-          {!isLoading && (
+          {getTablet !== undefined && (
             <AdminTable
-              isLoading={isLoading}
               getTablet={getTablet?.data}
               onChangeSelected={onChangeSelected}
               onChangeSelectAll={onChangeSelectAll}
               onDisCharge={handleDischargeSingle}
               selected={selected}
-              areaList={areaList}
-              area={area}
               handleMemoModal={handleMemoModal}
+              handleEditPatient={handleEditPatient}
+              getPatientFilterData={getPatientFilterData}
+              setGetPatientFilterData={setGetPatientFilterData}
             />
           )}
         </TableLayout>
