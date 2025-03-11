@@ -25,6 +25,7 @@ import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
 import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import useQueryString from "@utils/useQueryParamSetting";
 
 export type Columns = {
   field: string;
@@ -57,6 +58,8 @@ const TabletManagementTable = ({
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
+  const [searchParam, setSearchParam] = useQueryString("searchValue", "");
+
   const {
     mutate: tabletListsMutation,
     data: wardTabletList,
@@ -79,21 +82,6 @@ const TabletManagementTable = ({
 
     return filteredObj;
   };
-
-  useEffect(() => {
-    const currentFilter: TabletFilter = {
-      ...filter,
-      patientNameFilter: searchValue || undefined,
-    };
-
-    const processedFilter = removeDefaultFilters(currentFilter);
-
-    tabletListsMutation({
-      page: currentPage - 1,
-      size: 20,
-      filter: processedFilter,
-    });
-  }, [tabletListsMutation, currentPage, searchValue, filter]);
 
   const totalItems = wardTabletList?.data?.length ?? 0;
   const selectedItems = selectIndex.length;
@@ -253,6 +241,29 @@ const TabletManagementTable = ({
     const index = selectIndex.map(item => wardTabletList?.data[item].tabletId) as number[];
     setSelectTabletList(index);
   }, [setSelectTabletList, selectIndex, wardTabletList]);
+
+  useEffect(() => {
+    const currentFilter: TabletFilter = {
+      ...filter,
+      patientNameFilter: searchValue || searchParam,
+    };
+
+    const processedFilter = removeDefaultFilters(currentFilter);
+
+    tabletListsMutation({
+      page: currentPage - 1,
+      size: 20,
+      filter: processedFilter,
+    });
+
+    if (processedFilter) {
+      if (processedFilter.patientNameFilter) {
+        if (processedFilter.patientNameFilter.trim().length !== 0) {
+          setSearchParam(processedFilter.patientNameFilter);
+        }
+      }
+    }
+  }, [tabletListsMutation, currentPage, searchValue, filter]);
 
   if (isLoading) {
     return <div>로딩 중</div>;

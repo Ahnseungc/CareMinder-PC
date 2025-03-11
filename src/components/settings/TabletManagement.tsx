@@ -15,7 +15,7 @@ import InfoModal from "./modal/InfoModal";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import palette from "@styles/palette";
-import useDebounce from "@utils/useDebounce";
+import { useSearchParams } from "react-router-dom";
 
 //태블릿 병상 관리
 
@@ -27,10 +27,18 @@ export const TabletManagement = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const debouncedSearchValue = useDebounce(searchValue, 300);
+  const [startSearch, setStartSearch] = useState<string>("");
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
+
+  const [params] = useSearchParams();
+
+  const handleClear = () => {
+    setIsEditing([]);
+    setIsClear(true);
+    setIsSticky(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,11 +67,12 @@ export const TabletManagement = () => {
     }
   }, [isEditing]);
 
-  const handleClear = () => {
-    setIsEditing([]);
-    setIsClear(true);
-    setIsSticky(false);
-  };
+  useEffect(() => {
+    const searchTerms = params.get("searchValue");
+    if (searchTerms) {
+      setSearchValue(searchTerms);
+    }
+  }, []);
 
   return (
     <>
@@ -135,7 +144,10 @@ export const TabletManagement = () => {
                     }}
                     onKeyDown={e => {
                       if (e.key === "Enter") {
-                        console.log(searchValue);
+                        e.preventDefault();
+                        if (searchValue.trim().length !== 0) {
+                          setStartSearch(searchValue);
+                        }
                       }
                     }}
                   />
@@ -152,11 +164,7 @@ export const TabletManagement = () => {
           )}
         </AnimatePresence>
       </BodyTitleContainer>
-      <TabletManagementTable
-        isClear={isClear}
-        setIsClear={setIsClear}
-        searchValue={debouncedSearchValue}
-      />
+      <TabletManagementTable isClear={isClear} setIsClear={setIsClear} searchValue={startSearch} />
     </>
   );
 };

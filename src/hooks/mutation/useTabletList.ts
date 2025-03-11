@@ -55,10 +55,10 @@ export type TabletListsProps = {
 const tabletLists = async ({ page, size, filter }: TabletListsProps) => {
   const res = await axiosInstance.post(`/wards/tablet-list?page=${page}&size=${size}`, filter, {
     customHeader: true,
-    headers: {      
+    headers: {
       Authorization: `Bearer ${Cookies.get("accessTokenWard")}`,
     },
-  }as CustomAxiosRequestConfig) ;
+  } as CustomAxiosRequestConfig);
   return res.data as GetWardTabletListResponse;
 };
 
