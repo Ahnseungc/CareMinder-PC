@@ -23,9 +23,14 @@ import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
-import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
+import useTabletLists, {
+  GetWardTabletListResponse,
+  Order,
+  TabletFilter,
+} from "@hooks/mutation/useTabletList";
 import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
-import useQueryString from "@utils/useQueryParamSetting";
+import useQueryParamSetting from "@utils/useQueryParamSetting";
+import qs from "qs";
 
 export type Columns = {
   field: string;
@@ -35,13 +40,15 @@ export type Columns = {
 interface TabletManagementTableProps {
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
-  searchValue: string;
+  searchValue: string | null;
+  searchType: string;
 }
 
 const TabletManagementTable = ({
   isClear,
   setIsClear,
   searchValue,
+  searchType,
 }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
@@ -50,6 +57,10 @@ const TabletManagementTable = ({
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<TabletFilter>({});
+  const [paramFilter, setParamFilter] = useState<TabletFilter>({});
+  const [wardTabletList, setWardTabletList] = useState<undefined | GetWardTabletListResponse>(
+    undefined,
+  );
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -58,13 +69,10 @@ const TabletManagementTable = ({
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const [searchParam, setSearchParam] = useQueryString("searchValue", "");
+  const queryString = useQueryParamSetting(paramFilter);
+  window.history.pushState({}, "", `${window.location.pathname}?${queryString}`);
 
-  const {
-    mutate: tabletListsMutation,
-    data: wardTabletList,
-    isPending: isLoading,
-  } = useTabletLists();
+  const { mutate: tabletListsMutation } = useTabletLists();
 
   const { data: areaList } = useGetStaffAreaList();
 
@@ -243,31 +251,64 @@ const TabletManagementTable = ({
   }, [setSelectTabletList, selectIndex, wardTabletList]);
 
   useEffect(() => {
-    const currentFilter: TabletFilter = {
-      ...filter,
-      patientNameFilter: searchValue || searchParam,
-    };
+    let processedFilter = {};
+    let originFilter = {};
 
-    const processedFilter = removeDefaultFilters(currentFilter);
+    if (searchValue) {
+      const currentFilter: TabletFilter = {
+        ...filter,
+        ...(searchType === "환자 이름"
+          ? { patientNameFilter: searchValue }
+          : { tabletNameFilter: searchValue }),
+      };
+      originFilter = currentFilter;
+      processedFilter = removeDefaultFilters(currentFilter);
+    } else {
+      const currentFilter: TabletFilter = {
+        ...filter,
+      };
+      originFilter = currentFilter;
+      processedFilter = removeDefaultFilters(currentFilter);
+    }
 
-    tabletListsMutation({
-      page: currentPage - 1,
-      size: 20,
-      filter: processedFilter,
+    tabletListsMutation(
+      {
+        page: currentPage - 1,
+        size: 20,
+        filter: processedFilter,
+      },
+      {
+        onSuccess: data => {
+          setWardTabletList(data);
+          setParamFilter(originFilter);
+        },
+      },
+    );
+  }, [tabletListsMutation, currentPage, searchValue, filter, searchType]);
+
+  useEffect(() => {
+    const query = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
     });
 
-    if (processedFilter) {
-      if (processedFilter.patientNameFilter) {
-        if (processedFilter.patientNameFilter.trim().length !== 0) {
-          setSearchParam(processedFilter.patientNameFilter);
-        }
-      }
-    }
-  }, [tabletListsMutation, currentPage, searchValue, filter]);
+    setFilter(prevFilter => ({
+      ...prevFilter,
 
-  if (isLoading) {
-    return <div>로딩 중</div>;
-  }
+      ...(searchType === "환자 이름"
+        ? {
+            patientNameFilter: query.patientNameFilter as string,
+            tabletNameFilter: undefined,
+          }
+        : {
+            tabletNameFilter: query.tabletNameFilter as string,
+            patientNameFilter: undefined,
+          }),
+
+      patientNameSort: query.patientNameSort as Order,
+      tabletNameSort: query.tabletNameSort as Order,
+      admissionDateSort: query.admissionDateSort as Order,
+    }));
+  }, [searchType]);
 
   if (!wardTabletList) {
     return null;

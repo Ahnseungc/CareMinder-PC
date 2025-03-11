@@ -15,7 +15,7 @@ export type SleepModeSimple = {
   type: TableStatus;
 };
 
-export type WardTabledListType = {
+export type WardTabletListType = {
   areaId: number;
   areaName: string;
   tabletId: number;
@@ -29,7 +29,7 @@ export type WardTabledListType = {
 };
 
 export type GetWardTabletListResponse = {
-  data: WardTabledListType[];
+  data: WardTabletListType[];
   page: number;
   size: number;
   totalElements: number;
@@ -41,8 +41,10 @@ export type Order = "ASC" | "DESC" | "DEFAULT";
 export type TabletFilter = {
   areaFilter?: number[];
   patientNameFilter?: string;
+  tabletNameFilter?: string;
   patientNameSort?: Order;
   tabletNameSort?: Order;
+  areaSort?: Order;
   admissionDateSort?: Order;
 };
 
