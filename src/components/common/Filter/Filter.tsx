@@ -137,7 +137,6 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
         open
         options={options}
         disableCloseOnSelect
-        disableListWrap
         value={selectFilter}
         onChange={handleSelectionChange}
         PaperComponent={({ children }) => <Paper elevation={0}>{children}</Paper>}
@@ -209,6 +208,7 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
             <TextField
               {...params}
               sx={{
+                "width": 241,
                 ".MuiAutocomplete-endAdornment": {
                   display: "none",
                 },
