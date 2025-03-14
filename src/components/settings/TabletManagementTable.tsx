@@ -45,6 +45,10 @@ interface TabletManagementTableProps {
   searchType: string;
 }
 
+interface ParamFilter extends TabletFilter {
+  pagination?: number;
+}
+
 const TabletManagementTable = ({
   isClear,
   setIsClear,
@@ -66,7 +70,7 @@ const TabletManagementTable = ({
   const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<TabletFilter>({});
-  const [paramFilter, setParamFilter] = useState<TabletFilter>({});
+  const [paramFilter, setParamFilter] = useState<ParamFilter>({});
   const [wardTabletList, setWardTabletList] = useState<undefined | GetWardTabletListResponse>(
     undefined,
   );
@@ -282,7 +286,10 @@ const TabletManagementTable = ({
       {
         onSuccess: data => {
           setWardTabletList(data);
-          setParamFilter(originFilter);
+          setParamFilter({
+            ...originFilter,
+            pagination: currentPage,
+          });
         },
       },
     );
@@ -311,6 +318,7 @@ const TabletManagementTable = ({
       tabletNameSort: query.tabletNameSort as Order,
       admissionDateSort: query.admissionDateSort as Order,
     }));
+    setCurrentPage(query.pagination ? parseInt(query.pagination as string) : 1);
   }, [searchType]);
 
   if (!wardTabletList) {
