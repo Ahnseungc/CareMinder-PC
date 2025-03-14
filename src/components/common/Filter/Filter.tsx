@@ -6,6 +6,8 @@ import palette from "@styles/palette";
 import CButton from "../atom/C-Button";
 import { useState, useEffect, useRef } from "react";
 import { ReactComponent as X } from "@assets/x-Icon.svg";
+import { Order } from "@hooks/mutation/useTabletList";
+import qs from "qs";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -13,13 +15,13 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 interface CFilterProps {
   options: string[];
   type: "ADMIN" | "WARD" | "STAFF";
-  onApply: (selected: string[]) => void;
+  onApply: (selected: string[], orderType: Order) => void;
   prevFilter: string[];
 }
 
 export default function CFilter({ options, type, onApply, prevFilter }: CFilterProps) {
   const [selectFilter, setSelectFilter] = useState<string[]>(prevFilter);
-
+  const [currentOrder, setCurrentOrder] = useState<"오름차순" | "내림차순">("오름차순");
   const [containerHeight, setContainerHeight] = useState<number>(308);
   const inputRef = useRef<HTMLDivElement>(null);
   const listboxRef = useRef<HTMLUListElement>(null);
@@ -115,6 +117,18 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
     );
   };
 
+  useEffect(() => {
+    const query = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    if (query.areaSort) {
+      setCurrentOrder(query.areaSort === "ASC" ? "오름차순" : "내림차순");
+    } else {
+      setCurrentOrder("오름차순");
+    }
+  }, []);
+
   return (
     <FilterContainer $height={containerHeight}>
       <Autocomplete
@@ -164,7 +178,6 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
           ),
         }}
         renderOption={(props, option, { selected }) => {
-          //@ts-ignore
           const { key, ...optionProps } = props;
           return (
             <li
@@ -215,19 +228,15 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
       />
       <ButtonContainer>
         <CButton
-          buttontype={`${type === "ADMIN" ? "primarySquareWhiteAdmin" : type === "WARD" ? "primarySpaureWhite" : "primarySquareWhiteStaff"}`}
-          onClick={() => onApply(selectFilter)}
-          sx={{ borderRadius: "999px" }}
-        >
-          적용하기
-        </CButton>
-        {/* <CButton
           buttontype={
             currentOrder === "오름차순"
               ? `${type === "ADMIN" ? "primarySquareWhiteAdmin" : type === "WARD" ? "primarySpaureWhite" : "primarySquareWhiteStaff"}`
               : "primarySquareWhiteSecond"
           }
-          onClick={() => setCurrentOrder("오름차순")}
+          onClick={() => {
+            onApply(selectFilter, "ASC");
+            setCurrentOrder("오름차순");
+          }}
           sx={{ borderRadius: "999px" }}
         >
           오름차순
@@ -238,11 +247,14 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
               ? `${type === "ADMIN" ? "primarySquareWhiteAdmin" : type === "WARD" ? "primarySpaureWhite" : "primarySquareWhiteStaff"}`
               : "primarySquareWhiteSecond"
           }
-          onClick={() => setCurrentOrder("내림차순")}
+          onClick={() => {
+            onApply(selectFilter, "DESC");
+            setCurrentOrder("내림차순");
+          }}
           sx={{ borderRadius: "999px" }}
         >
           내림차순
-        </CButton> */}
+        </CButton>
       </ButtonContainer>
     </FilterContainer>
   );

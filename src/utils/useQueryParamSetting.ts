@@ -38,7 +38,11 @@ export default function useQueryParamSetting(obj: any) {
         continue;
       }
 
-      if (Array.isArray(obj[key])) {
+      if (key === "areaFilter" && Array.isArray(obj[key])) {
+        if (obj[key].length > 0) {
+          newParams.append(key, JSON.stringify(obj[key]));
+        }
+      } else if (Array.isArray(obj[key])) {
         obj[key].forEach((value: string) => {
           if (shouldAddParam(key, value)) {
             newParams.append(key, value);

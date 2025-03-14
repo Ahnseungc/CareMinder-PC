@@ -28,9 +28,10 @@ import useTabletLists, {
   Order,
   TabletFilter,
 } from "@hooks/mutation/useTabletList";
-import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+
 import useQueryParamSetting from "@utils/useQueryParamSetting";
 import qs from "qs";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -51,6 +52,14 @@ const TabletManagementTable = ({
   searchType,
 }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
+  const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
+  const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
+
+  const setIsEditing = useSetRecoilState(tabletEditingState);
+  const isEditing = useRecoilValue(tabletEditingState);
+  const setSelectTabletList = useSetRecoilState(tabletListState);
+
   const [selectIndex, setSelectIndex] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
@@ -62,19 +71,14 @@ const TabletManagementTable = ({
     undefined,
   );
 
-  const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
-  const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
-
-  const setIsEditing = useSetRecoilState(tabletEditingState);
-  const isEditing = useRecoilValue(tabletEditingState);
-  const setSelectTabletList = useSetRecoilState(tabletListState);
-
   const queryString = useQueryParamSetting(paramFilter);
   window.history.pushState({}, "", `${window.location.pathname}?${queryString}`);
 
   const { mutate: tabletListsMutation } = useTabletLists();
+  const { data: areaList } = useGetAreaList();
 
-  const { data: areaList } = useGetStaffAreaList();
+  const totalItems = wardTabletList?.data?.length ?? 0;
+  const selectedItems = selectIndex.length;
 
   const removeDefaultFilters = (filter: TabletFilter) => {
     const filteredObj = { ...filter };
@@ -90,9 +94,6 @@ const TabletManagementTable = ({
 
     return filteredObj;
   };
-
-  const totalItems = wardTabletList?.data?.length ?? 0;
-  const selectedItems = selectIndex.length;
 
   const handleSelectAll = () => {
     if (wardTabletList) {
@@ -150,7 +151,7 @@ const TabletManagementTable = ({
     setFilter(newFilter);
   };
 
-  const handleAreaFilter = (selectedAreas: string[]) => {
+  const handleAreaFilter = (selectedAreas: string[], orderType: Order) => {
     const areaIds = areaList
       ?.filter(area => selectedAreas.includes(area.name))
       .map(area => area.id) as number[];
@@ -158,6 +159,7 @@ const TabletManagementTable = ({
     setFilter({
       ...filter,
       areaFilter: areaIds.length > 0 ? areaIds : undefined,
+      areaSort: orderType,
     });
     setIsFilterOpen(false);
   };
@@ -303,7 +305,8 @@ const TabletManagementTable = ({
             tabletNameFilter: query.tabletNameFilter as string,
             patientNameFilter: undefined,
           }),
-
+      areaFilter: query.areaFilter ? JSON.parse(query.areaFilter as string) : undefined,
+      areaSort: query.areaSort as Order,
       patientNameSort: query.patientNameSort as Order,
       tabletNameSort: query.tabletNameSort as Order,
       admissionDateSort: query.admissionDateSort as Order,
