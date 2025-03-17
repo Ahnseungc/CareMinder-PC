@@ -5,7 +5,7 @@ import EditStaffInfoInputField from "./EditStaffInfoInputField";
 import { GetStaffInfoResponse } from "@hooks/queries/useGetStaffInfo";
 import { useRecoilValue } from "recoil";
 import { selectAreaState } from "@libraries/recoil";
-import useChangeStaffSettingInfo from "@hooks/mutation/usePatchStaffInfo";
+import useChangeStaffSettingInfo, { NewStaffInfoData } from "@hooks/mutation/usePatchStaffInfo";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 
@@ -39,13 +39,28 @@ export default function StaffSettingsModal({
   const { handleSubmit } = form;
 
   const onSubmit: SubmitHandler<EditStaffInfo> = data => {
-    const patchData = {
-      staffId: staffInfo.staffId,
-      staffRole: data.staffRole,
-      areaIds: selectAreaList,
-      password: data.password,
-      email: data.email,
-    };
+    let patchData: NewStaffInfoData = {} as NewStaffInfoData;
+
+    if (data.password.length !== 0) {
+      const _patchData = {
+        staffId: staffInfo.staffId,
+        staffRole: data.staffRole,
+        areaIds: selectAreaList,
+        password: data.password,
+        email: data.email,
+      };
+
+      patchData = _patchData;
+    } else {
+      const _patchData = {
+        staffId: staffInfo.staffId,
+        staffRole: data.staffRole,
+        areaIds: selectAreaList,
+        email: data.email,
+      };
+
+      patchData = _patchData;
+    }
 
     changeStaffSettingInfo(patchData, {
       onSuccess: () => {

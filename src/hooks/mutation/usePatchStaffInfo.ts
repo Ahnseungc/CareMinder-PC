@@ -1,8 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@utils/axios/axiosInstance";
-import { NewStaffInfo } from "./usePutChangeStaffInfo";
 
-const changeStaffSettingInfo = async (newStaffInfo: NewStaffInfo & { password: string }) => {
+export interface NewStaffInfoData {
+  staffId: number;
+  staffRole: string;
+  areaIds: number[];
+  password?: string;
+  email: string;
+}
+
+const changeStaffSettingInfo = async (newStaffInfo: NewStaffInfoData) => {
   const res = await axiosInstance.patch("/staffs", newStaffInfo);
   return res.data;
 };
