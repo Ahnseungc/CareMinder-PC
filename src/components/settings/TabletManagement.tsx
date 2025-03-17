@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { IconButton, InputBase, Paper, Typography } from "@mui/material";
+import { Box, IconButton, InputBase, Paper, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { useBooleanState } from "@toss/react";
@@ -15,6 +15,8 @@ import InfoModal from "./modal/InfoModal";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import TabletLogoutWarning from "./TabletLogoutWarning";
 import palette from "@styles/palette";
+import { useSearchParams } from "react-router-dom";
+import { CComboBox } from "@components/common/atom/C-ComboBox";
 import useDebounce from "@utils/useDebounce";
 
 //태블릿 병상 관리
@@ -27,10 +29,25 @@ export const TabletManagement = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [isClear, setIsClear] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const debouncedSearchValue = useDebounce(searchValue, 300);
+  const debounceSearchValue = useDebounce(searchValue, 10);
+  const [searchType, setSearchType] = useState<string>("환자 이름");
+
+  const [startSearch, setStartSearch] = useState<string>("");
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
+
+  const [params] = useSearchParams();
+
+  const handleClear = () => {
+    setIsEditing([]);
+    setIsClear(true);
+    setIsSticky(false);
+  };
+
+  const handleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchType(e.target.value);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,11 +76,18 @@ export const TabletManagement = () => {
     }
   }, [isEditing]);
 
-  const handleClear = () => {
-    setIsEditing([]);
-    setIsClear(true);
-    setIsSticky(false);
-  };
+  useEffect(() => {
+    const patientName = params.get("patientNameFilter");
+    const tabletName = params.get("tabletNameFilter");
+    if (patientName) {
+      setSearchValue(patientName);
+      setSearchType("환자 이름");
+    }
+    if (tabletName) {
+      setSearchValue(tabletName);
+      setSearchType("태블릿 이름");
+    }
+  }, [params]);
 
   return (
     <>
@@ -114,12 +138,21 @@ export const TabletManagement = () => {
               transition={{ duration: 0.2 }}
             >
               <SearchBarContainer>
+                <Box sx={{ width: 122, height: 44 }}>
+                  <CComboBox
+                    placeholder={"이름"}
+                    options={["환자 이름", "태블릿 이름"]}
+                    value={searchType}
+                    onChange={handleChangeSearch}
+                  />
+                </Box>
                 <Paper
                   sx={{
                     p: "2px 4px",
                     display: "flex",
                     alignItems: "center",
-                    width: 300,
+                    width: 400,
+                    height: 44,
                     border: "1px solid #ECECEC",
                     borderRadius: "6px",
                     boxShadow: "none",
@@ -127,15 +160,25 @@ export const TabletManagement = () => {
                 >
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
-                    placeholder="환자 이름을 검색해주세요."
-                    inputProps={{ "aria-label": "환자 이름을 검색해주세요." }}
+                    placeholder={
+                      searchType === "환자 이름"
+                        ? "환자 이름을 검색해주세요."
+                        : "태블릿 이름을 검색해주세요."
+                    }
+                    inputProps={{
+                      "aria-label":
+                        searchType === "환자 이름"
+                          ? "환자 이름을 검색해주세요."
+                          : "태블릿 이름을 검색해주세요.",
+                    }}
                     value={searchValue}
                     onChange={e => {
                       setSearchValue(e.target.value);
                     }}
                     onKeyDown={e => {
                       if (e.key === "Enter") {
-                        console.log(searchValue);
+                        e.preventDefault();
+                        setStartSearch(debounceSearchValue);
                       }
                     }}
                   />
@@ -155,7 +198,8 @@ export const TabletManagement = () => {
       <TabletManagementTable
         isClear={isClear}
         setIsClear={setIsClear}
-        searchValue={debouncedSearchValue}
+        searchValue={startSearch}
+        searchType={searchType}
       />
     </>
   );
@@ -183,6 +227,8 @@ const TextContainer = styled(motion.div)`
 `;
 
 const SearchBarContainer = styled.div`
+  display: flex;
+  gap: 8px;
   position: absolute;
   top: -5;
   left: 0;

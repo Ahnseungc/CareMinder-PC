@@ -3,7 +3,7 @@ import { Autocomplete, Checkbox, ListItem, TextField } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import styled from "@emotion/styled";
-import { useGetAreaList, useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
 import { useSetRecoilState } from "recoil";
 import { selectAreaState } from "@libraries/recoil";
 import { Areas } from "@hooks/queries/useGetStaffList";
@@ -45,10 +45,8 @@ const InfoMessage = styled.p`
 `;
 
 const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
-  const { data: wardAreaList } = useGetAreaList();
-  const { data: staffAreaList } = useGetStaffAreaList();
-
-  const areaList = type === "WARD" ? wardAreaList : staffAreaList;
+  // const { data: wardAreaList } = useGetAreaList();
+  const { data: areaList } = useGetStaffAreaList();
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -67,15 +65,15 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
       return;
     }
     event.preventDefault();
-    const allSelected = areaList.length === selectedAreas.length;
-    setSelectedAreas(allSelected ? [] : areaList.map(area => area.name));
+    const allSelected = areaList.areas.length === selectedAreas.length;
+    setSelectedAreas(allSelected ? [] : areaList.areas.map(area => area.areaName));
   };
 
   useEffect(() => {
     if (areaList) {
       setSelectAreaState(
         selectedAreas.map(
-          selectArea => areaList.find(area => area.name === selectArea)?.id as number,
+          selectArea => areaList.areas.find(area => area.areaName === selectArea)?.areaId as number,
         ),
       );
     }
@@ -89,7 +87,7 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
             multiple
             limitTags={4}
             id="checkboxes-tags-demo"
-            options={areaList.map(area => area.name)}
+            options={areaList.areas.map(area => area.areaName)}
             value={selectedAreas}
             disableCloseOnSelect
             onChange={handleSelectionChange}
@@ -142,7 +140,7 @@ const AreaAutoComplete = ({ value, type = "WARD" }: AreaAutoCompleteProp) => {
                     icon={icon}
                     checkedIcon={checkedIcon}
                     style={{ marginRight: 8, color: type === "STAFF" ? "#30B4FF" : "#5D6DBE" }}
-                    checked={areaList.length === selectedAreas.length}
+                    checked={areaList.areas.length === selectedAreas.length}
                   />
                   전체 선택
                 </ListItem>

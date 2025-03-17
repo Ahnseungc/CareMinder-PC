@@ -2,12 +2,12 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import axiosInstance, { CustomAxiosRequestConfig } from "@utils/axios/axiosInstance";
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { Areas } from "./useGetStaffList";
 
-export type GetAreaListResponse = {
-  id: number;
+export type GetAreaResponse = {
   wardId: number;
-  name: string;
-  memo: string;
+  wardName: string;
+  areas: Areas[];
 };
 
 export type GetAreaListRequest = {
@@ -29,16 +29,16 @@ export const getAreaList = async ({ type }: GetAreaListRequest) => {
 
 export const useGetAreaList = (options?: {
   enabled?: boolean;
-}): UseQueryResult<GetAreaListResponse[], AxiosError> => {
-  return useQuery<GetAreaListResponse[], AxiosError>({
+}): UseQueryResult<GetAreaResponse, AxiosError> => {
+  return useQuery<GetAreaResponse, AxiosError>({
     queryKey: ["areaList"],
     queryFn: () => getAreaList({ type: "WARD" }),
     enabled: options?.enabled,
   });
 };
 
-export const useGetStaffAreaList = (): UseQueryResult<GetAreaListResponse[], AxiosError> => {
-  return useQuery<GetAreaListResponse[], AxiosError>({
+export const useGetStaffAreaList = (): UseQueryResult<GetAreaResponse, AxiosError> => {
+  return useQuery<GetAreaResponse, AxiosError>({
     queryKey: ["areaListStaff"],
     retry: 3,
     retryDelay: 1000,

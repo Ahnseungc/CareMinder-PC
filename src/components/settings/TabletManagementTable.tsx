@@ -23,8 +23,15 @@ import tabletListState from "@libraries/recoil/settings/tabletList";
 import EditTableInfoModal from "./modal/EditTabletInfoModal";
 import CFilter from "@components/common/Filter/Filter";
 import { formatTimeRange } from "@utils/formatSleepModeTime";
-import useTabletLists, { TabletFilter } from "@hooks/mutation/useTabletList";
-import { useGetStaffAreaList } from "@hooks/queries/useGetAreaList";
+import useTabletLists, {
+  GetWardTabletListResponse,
+  Order,
+  TabletFilter,
+} from "@hooks/mutation/useTabletList";
+
+import useQueryParamSetting from "@utils/useQueryParamSetting";
+import qs from "qs";
+import { useGetAreaList } from "@hooks/queries/useGetAreaList";
 
 export type Columns = {
   field: string;
@@ -34,21 +41,21 @@ export type Columns = {
 interface TabletManagementTableProps {
   isClear: boolean;
   setIsClear: React.Dispatch<React.SetStateAction<boolean>>;
-  searchValue: string;
+  searchValue: string | null;
+  searchType: string;
+}
+
+interface ParamFilter extends TabletFilter {
+  pagination?: number;
 }
 
 const TabletManagementTable = ({
   isClear,
   setIsClear,
   searchValue,
+  searchType,
 }: TabletManagementTableProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  const [selectIndex, setSelectIndex] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
-  const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<TabletFilter>({});
 
   const [isLogoutModalOpen, openLogoutModal, closeLogoutModal] = useBooleanState();
   const [isTabletEditModalOpen, openTabletEditModal, closeTabletEditModal] = useBooleanState();
@@ -57,13 +64,25 @@ const TabletManagementTable = ({
   const isEditing = useRecoilValue(tabletEditingState);
   const setSelectTabletList = useSetRecoilState(tabletListState);
 
-  const {
-    mutate: tabletListsMutation,
-    data: wardTabletList,
-    isPending: isLoading,
-  } = useTabletLists();
+  const [selectIndex, setSelectIndex] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedTabletId, setSelectedTabletId] = useState<number | null>(null);
+  const [selectedTabletData, setSelectedTabletData] = useState<WardTabledListType | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<TabletFilter>({});
+  const [paramFilter, setParamFilter] = useState<ParamFilter>({});
+  const [wardTabletList, setWardTabletList] = useState<undefined | GetWardTabletListResponse>(
+    undefined,
+  );
 
-  const { data: areaList } = useGetStaffAreaList();
+  const queryString = useQueryParamSetting(paramFilter);
+  window.history.pushState({}, "", `${window.location.pathname}?${queryString}`);
+
+  const { mutate: tabletListsMutation } = useTabletLists();
+  const { data: areaList } = useGetAreaList();
+
+  const totalItems = wardTabletList?.data?.length ?? 0;
+  const selectedItems = selectIndex.length;
 
   const removeDefaultFilters = (filter: TabletFilter) => {
     const filteredObj = { ...filter };
@@ -79,24 +98,6 @@ const TabletManagementTable = ({
 
     return filteredObj;
   };
-
-  useEffect(() => {
-    const currentFilter: TabletFilter = {
-      ...filter,
-      patientNameFilter: searchValue || undefined,
-    };
-
-    const processedFilter = removeDefaultFilters(currentFilter);
-
-    tabletListsMutation({
-      page: currentPage - 1,
-      size: 20,
-      filter: processedFilter,
-    });
-  }, [tabletListsMutation, currentPage, searchValue, filter]);
-
-  const totalItems = wardTabletList?.data?.length ?? 0;
-  const selectedItems = selectIndex.length;
 
   const handleSelectAll = () => {
     if (wardTabletList) {
@@ -154,14 +155,15 @@ const TabletManagementTable = ({
     setFilter(newFilter);
   };
 
-  const handleAreaFilter = (selectedAreas: string[]) => {
-    const areaIds = areaList
-      ?.filter(area => selectedAreas.includes(area.name))
-      .map(area => area.id) as number[];
+  const handleAreaFilter = (selectedAreas: string[], orderType: Order) => {
+    const areaIds = areaList?.areas
+      ?.filter(area => selectedAreas.includes(area.areaName))
+      .map(area => area.areaId) as number[];
 
     setFilter({
       ...filter,
       areaFilter: areaIds.length > 0 ? areaIds : undefined,
+      areaSort: orderType,
     });
     setIsFilterOpen(false);
   };
@@ -254,9 +256,70 @@ const TabletManagementTable = ({
     setSelectTabletList(index);
   }, [setSelectTabletList, selectIndex, wardTabletList]);
 
-  if (isLoading) {
-    return <div>로딩 중</div>;
-  }
+  useEffect(() => {
+    let processedFilter = {};
+    let originFilter = {};
+
+    if (searchValue) {
+      const currentFilter: TabletFilter = {
+        ...filter,
+        ...(searchType === "환자 이름"
+          ? { patientNameFilter: searchValue }
+          : { tabletNameFilter: searchValue }),
+      };
+      originFilter = currentFilter;
+      processedFilter = removeDefaultFilters(currentFilter);
+    } else {
+      const currentFilter: TabletFilter = {
+        ...filter,
+      };
+      originFilter = currentFilter;
+      processedFilter = removeDefaultFilters(currentFilter);
+    }
+
+    tabletListsMutation(
+      {
+        page: currentPage - 1,
+        size: 20,
+        filter: processedFilter,
+      },
+      {
+        onSuccess: data => {
+          setWardTabletList(data);
+          setParamFilter({
+            ...originFilter,
+            pagination: currentPage,
+          });
+        },
+      },
+    );
+  }, [tabletListsMutation, currentPage, searchValue, filter, searchType]);
+
+  useEffect(() => {
+    const query = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    setFilter(prevFilter => ({
+      ...prevFilter,
+
+      ...(searchType === "환자 이름"
+        ? {
+            patientNameFilter: query.patientNameFilter as string,
+            tabletNameFilter: undefined,
+          }
+        : {
+            tabletNameFilter: query.tabletNameFilter as string,
+            patientNameFilter: undefined,
+          }),
+      areaFilter: query.areaFilter ? JSON.parse(query.areaFilter as string) : undefined,
+      areaSort: query.areaSort as Order,
+      patientNameSort: query.patientNameSort as Order,
+      tabletNameSort: query.tabletNameSort as Order,
+      admissionDateSort: query.admissionDateSort as Order,
+    }));
+    setCurrentPage(query.pagination ? parseInt(query.pagination as string) : 1);
+  }, [searchType]);
 
   if (!wardTabletList) {
     return null;
@@ -318,12 +381,12 @@ const TabletManagementTable = ({
                       {isFilterOpen && (
                         <div style={{ position: "absolute", zIndex: 10 }}>
                           <CFilter
-                            options={areaList.map(area => area.name)}
+                            options={areaList.areas.map(area => area.areaName)}
                             type={"WARD"}
                             onApply={handleAreaFilter}
-                            prevFilter={areaList
-                              .filter(area => filter.areaFilter?.includes(area.id))
-                              .map(area => area.name)}
+                            prevFilter={areaList.areas
+                              .filter(area => filter.areaFilter?.includes(area.areaId))
+                              .map(area => area.areaName)}
                           />
                         </div>
                       )}

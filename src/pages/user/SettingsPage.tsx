@@ -21,22 +21,20 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<string>("태블릿 병상 관리"); // 변경
 
   useEffect(() => {
-    setIsModalOpen(false);
+    setIsModalOpen(true);
 
     return () => {
       setIsModalOpen(true);
     };
   }, [setIsModalOpen]);
 
-  const handleCloseModal = () => {
-    setTimeout(() => {
-      setIsModalOpen(true);
-    }, 100);
-  };
-
   // const handleTabClick = (value: string) => {
   //   setActiveTab(value);
   // };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -53,14 +51,14 @@ export default function SettingsPage() {
 
   return (
     <>
-      <SettingsModal open={!isModalOpen} onClose={handleCloseModal} />
+      <SettingsModal open={isModalOpen} onClose={handleClose} />
       <Container>
         <HeadContainer>
           <div>
             <Title variant="h1">병동 계정 설정</Title>
           </div>
           {/* <TabContainer> */}
-            {/* <TabButton
+          {/* <TabButton
               isActive={activeTab === "태블릿 컨텐츠 수정"}
               value={"태블릿 컨텐츠 수정"}
               onClick={() => handleTabClick("태블릿 컨텐츠 수정")}
@@ -68,15 +66,15 @@ export default function SettingsPage() {
               태블릿 컨텐츠 수정
             </TabButton> */}
 
-            {/* 베드로 병원 */}
-            {/* <TabButton
+          {/* 베드로 병원 */}
+          {/* <TabButton
               isActive={activeTab === "스태프 계정 수정"}
               value={"스태프 계정 수정"}
               onClick={() => handleTabClick("스태프 계정 수정")}
             >
               스태프 계정 관리
             </TabButton> */}
-            {/* <TabButton
+          {/* <TabButton
               isActive={activeTab === "태블릿 병상 관리"}
               value={"태블릿 병상 관리"}
               onClick={() => handleTabClick("태블릿 병상 관리")}
@@ -88,7 +86,7 @@ export default function SettingsPage() {
         </HeadContainer>
         <BodyContainer>
           <>
-            {!isModalOpen && (
+            {isModalOpen && (
               <div
                 style={{
                   position: "absolute",

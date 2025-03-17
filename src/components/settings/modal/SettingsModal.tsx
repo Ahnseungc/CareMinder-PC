@@ -50,7 +50,7 @@ export default function SettingsModal({ onClose, ...props }: CMModalProps) {
   };
 
   const handleModalClose = () => {
-    navigate(-1); // 인증 실패 상태에서 닫을 때만 이전 페이지로
+    navigate("/");
     onClose();
   };
 
