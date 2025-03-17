@@ -40,7 +40,7 @@ export default function CreateStaffModal({ onClose, ...props }: CMModalProps) {
       return;
     }
     const areaIds = data.areaName.map(
-      areaName => areaList.find(area => area.name === areaName)!.id,
+      areaName => areaList.areas.find(area => area.areaName === areaName)!.areaId,
     );
     const newStaffRequesets = {
       name: data.name,

@@ -20,8 +20,7 @@ import PasswordChangeModal from "@components/settings/modal/PasswordChangeModal"
 import useLockAccount from "@hooks/mutation/useLockAccount";
 import useUnLockAccount from "@hooks/mutation/useUnLockAccount";
 import CreateStaffModal from "@components/settings/modal/CreateStaffModal";
-import AreaManageModal from "./modal/AreaManageModal";
-import DeleteWarning from "./areaManage/DeleteWarning";
+
 import useDeleteStaff from "@hooks/mutation/useDeleteStaff";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -31,7 +30,7 @@ export const StaffAccount = () => {
     useBooleanState(false);
   const [isInfoModalOpen, openInfoModal, closeInfoModal] = useBooleanState(false);
   const [isPWChangeModalOpen, openPWChangeModal, closePWChangeModal] = useBooleanState(false);
-  const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
+
   const [isOpenCheckLockModal, openCheckLockModal, closeCheckLockModal] = useBooleanState(false);
 
   const [isClear, setIsClear] = useState<boolean>(false);
@@ -151,9 +150,6 @@ export const StaffAccount = () => {
       {/* 스태프 계정 생성 모달 */}
       <CreateStaffModal open={isCreateStaffModalOpen} onClose={closeCreateStaffModal} />
 
-      {/* 구역 관리 하기 모달 */}
-      <AreaManageModal open={isAreaManageModalOpen} onClose={closeAreaManageModal} />
-
       {/* 계정 관리 등 정보 모달 */}
       <InfoModal
         open={isInfoModalOpen}
@@ -185,7 +181,7 @@ export const StaffAccount = () => {
         rightText="잠금"
         userType="WARD"
         onConfirm={selectStaffList[0].length === 1 ? handleLock : handleAllLock}
-        message={<DeleteWarning isLock={true} />}
+        // message={<DeleteWarning isLock={true} />}
       />
 
       <BodyTitleContainer>
@@ -276,7 +272,6 @@ export const StaffAccount = () => {
                     style={{ padding: "10px", textAlign: "center" }}
                     onClick={() => {
                       setIsSetting(false);
-                      openAreaManageModal();
                     }}
                   >
                     구역 관리하기
