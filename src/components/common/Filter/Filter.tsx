@@ -177,7 +177,7 @@ export default function CFilter({ options, type, onApply, prevFilter }: CFilterP
           ),
         }}
         renderOption={(props, option, { selected }) => {
-          const { key, ...optionProps } = props;
+          const { key, ...optionProps } = props as any;
           return (
             <li
               key={key}
