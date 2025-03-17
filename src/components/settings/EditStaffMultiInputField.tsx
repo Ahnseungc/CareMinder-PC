@@ -21,9 +21,10 @@ export default function EditStaffMultiField({ field, form }: InputFieldProps) {
 
   useEffect(() => {
     if (areaList) {
-      const transformedAreas: Areas[] = areaList.map(area => ({
-        areaId: area.id,
-        areaName: area.name,
+      const transformedAreas = areaList.areas.map(area => ({
+        areaId: area.areaId,
+        areaName: area.areaName,
+        memo: area.memo,
       }));
       setAreaData(transformedAreas);
     }

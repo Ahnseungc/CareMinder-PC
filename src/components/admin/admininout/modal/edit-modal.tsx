@@ -9,9 +9,10 @@ import { ReactComponent as GrayCalendar } from "@assets/calendar/calendar-gray.s
 import CustomEditCalendar from "./edit-calendar";
 import { useState } from "react";
 import { formatDateDash } from "@utils/getDateform";
-import { GetAreaListResponse } from "@hooks/queries/useGetAreaList";
+
 import useEditTabletData from "@hooks/mutation/useEditTabletData";
 import { toast } from "react-toastify";
+import { Areas } from "@hooks/queries/useGetStaffList";
 
 type ValuePiece = Date | null;
 export type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -31,12 +32,12 @@ const EditModal = ({ onClose, selectList, areaList, refetch, ...props }: any) =>
   const [putEditData, setPutEditData] = useState<EditData>({});
 
   const handleChangeArea = (name: string) => {
-    const areaId = areaList?.find((item: GetAreaListResponse) => item.name === name)?.id;
+    const areaId = areaList.areas?.find((item: Areas) => item.areaName === name)?.id;
     setPutEditData(prev => ({ ...prev, areaId }));
   };
 
   const findAreaName = (areaId: number) => {
-    const areaName = areaList?.find((item: GetAreaListResponse) => item.id === areaId)?.name;
+    const areaName = areaList?.find((item: Areas) => item.areaId === areaId)?.name;
     return areaName;
   };
 
@@ -105,7 +106,7 @@ const EditModal = ({ onClose, selectList, areaList, refetch, ...props }: any) =>
           <ComBoxLayout border={true}>
             <CComboBox
               placeholder={"구역"}
-              options={areaList.map((el: GetAreaListResponse) => el.name)}
+              options={areaList.areas.map((el: Areas) => el.areaName)}
               isStaff={false}
               value={
                 putEditData?.areaId === undefined

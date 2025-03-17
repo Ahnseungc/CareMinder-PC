@@ -17,6 +17,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useGetAreaList } from "@hooks/queries/useGetAreaList";
+import { Areas } from "@hooks/queries/useGetStaffList";
 
 type InputFieldProps = { form: UseFormReturn<NewStaff>; field: NewStaffField };
 
@@ -105,14 +106,14 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
     setValue("occupation", options.filter(option => option.value === value)[0].label);
   };
   //@ts-ignore
-  const handleAreaChange = (event: React.SyntheticEvent, newValue: typeof areaList) => {
+  const handleAreaChange = (event: React.SyntheticEvent, newValue: Areas[]) => {
     console.log("Selected areas:", newValue);
     if (!newValue) {
       return;
     }
     setValue(
       "areaName",
-      newValue?.map(value => value.name),
+      newValue?.map(value => value.areaName),
     );
   };
 
@@ -197,9 +198,9 @@ export default function NewStaffInputField({ field, form }: InputFieldProps) {
                     multiple
                     limitTags={2}
                     id="multiple-limit-tags"
-                    options={areaList}
+                    options={areaList.areas.map(area => area)}
                     onChange={handleAreaChange}
-                    getOptionLabel={option => option.name}
+                    getOptionLabel={option => option.areaName}
                     renderInput={params => (
                       <TextField
                         {...params}

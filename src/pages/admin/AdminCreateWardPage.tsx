@@ -14,10 +14,8 @@ import { useEffect, useRef, useState } from "react";
 import WardAccountSettingsTable from "@components/signin/admin/AdminWardManage/WardAccountSettingsTable";
 import { useRecoilState, useRecoilValue } from "recoil";
 import wardEditingState from "@libraries/recoil/wardEdit";
-import AreaManageModal from "@components/settings/modal/AreaManageModal";
 import wardListState from "@libraries/recoil/wardList";
 import InfoModal from "@components/settings/modal/InfoModal";
-import DeleteWarning from "@components/settings/areaManage/DeleteWarning";
 
 export default function AdminCreateWardPage() {
   const [isClear, setIsClear] = useState<boolean>(false);
@@ -25,7 +23,6 @@ export default function AdminCreateWardPage() {
   const [isSticky, setIsSticky] = useState(false);
 
   const [open, openCreateModal, closeCreateModal] = useBooleanState(false);
-  const [isAreaManageModalOpen, openAreaManageModal, closeAreaManageModal] = useBooleanState(false);
   const [isOpenCheckLockModal, openCheckLockModal, closeCheckLockModal] = useBooleanState();
   const [isOpenSuccessLockModal, openSuccessLockModal, closeSuccessLockModal] = useBooleanState();
 
@@ -139,14 +136,6 @@ export default function AdminCreateWardPage() {
       {/* 병동 계정 생성 모달 */}
       <CreateWardModal open={open} onClose={closeCreateModal} />
 
-      {/* 구역 관리 하기 모달 */}
-      <AreaManageModal
-        open={isAreaManageModalOpen}
-        onClose={closeAreaManageModal}
-        title="병동/구역 관리하기"
-        isAdmin={true}
-      />
-
       {/* 계정 잠금 경고 모달 */}
       <InfoModal
         open={isOpenCheckLockModal}
@@ -156,7 +145,7 @@ export default function AdminCreateWardPage() {
         rightText="잠금"
         userType="ADMIN"
         onConfirm={selectedWardList.length === 1 ? handleLock : handleAllLock}
-        message={<DeleteWarning isLock={true} />}
+        // message={<DeleteWarning isLock={true} />}
       />
 
       {/* 계정 잠금 처리 확인 모달 */}
@@ -216,7 +205,6 @@ export default function AdminCreateWardPage() {
                     <div
                       style={{ padding: "10px", textAlign: "center" }}
                       onClick={() => {
-                        openAreaManageModal();
                         setIsSetting(false);
                       }}
                     >

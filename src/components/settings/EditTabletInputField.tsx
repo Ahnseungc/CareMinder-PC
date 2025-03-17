@@ -44,7 +44,10 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
       return;
     }
 
-    setValue("area", areaList?.find(area => area.name === tabletData.areaName)?.id as number);
+    setValue(
+      "area",
+      areaList?.areas.find(area => area.areaName === tabletData.areaName)?.areaId as number,
+    );
     setValue("patientName", tabletData.patientName);
     setValue("tabletName", tabletData.tabletName);
   }, [areaList, tabletData, setValue]);
@@ -68,7 +71,10 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
 
   const handleChangeArea = (event: React.ChangeEvent<HTMLInputElement>) => {
     setArea(event.target.value);
-    setValue("area", areaList.find(area => area.name === event.target.value)?.id as number);
+    setValue(
+      "area",
+      areaList.areas.find(area => area.areaName === event.target.value)?.areaId as number,
+    );
   };
 
   const handleChangeName = (
@@ -116,7 +122,7 @@ export default function EditTabletInputField({ field, form, tabletData }: InputF
               <CComboBoxLayout>
                 <CComboBox
                   placeholder="구역 정보를 입력하세요"
-                  options={areaList.map(area => area.name)}
+                  options={areaList.areas.map(area => area.areaName)}
                   value={area}
                   onChange={handleChangeArea}
                 />
