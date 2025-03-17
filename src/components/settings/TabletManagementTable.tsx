@@ -156,9 +156,9 @@ const TabletManagementTable = ({
   };
 
   const handleAreaFilter = (selectedAreas: string[], orderType: Order) => {
-    const areaIds = areaList
-      ?.filter(area => selectedAreas.includes(area.name))
-      .map(area => area.id) as number[];
+    const areaIds = areaList?.areas
+      ?.filter(area => selectedAreas.includes(area.areaName))
+      .map(area => area.areaId) as number[];
 
     setFilter({
       ...filter,
@@ -381,12 +381,12 @@ const TabletManagementTable = ({
                       {isFilterOpen && (
                         <div style={{ position: "absolute", zIndex: 10 }}>
                           <CFilter
-                            options={areaList.map(area => area.name)}
+                            options={areaList.areas.map(area => area.areaName)}
                             type={"WARD"}
                             onApply={handleAreaFilter}
-                            prevFilter={areaList
-                              .filter(area => filter.areaFilter?.includes(area.id))
-                              .map(area => area.name)}
+                            prevFilter={areaList.areas
+                              .filter(area => filter.areaFilter?.includes(area.areaId))
+                              .map(area => area.areaName)}
                           />
                         </div>
                       )}

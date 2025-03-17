@@ -13,7 +13,7 @@ export default function useChangeStaffSettingInfo() {
     mutationFn: changeStaffSettingInfo,
     onSuccess: () => {
       console.log("계정 정보 변경 완료");
-      queryClient.invalidateQueries({ queryKey: ["staffList"] });
+      queryClient.invalidateQueries({ queryKey: ["staffInfo"] });
     },
     onError: error => {
       console.error("계정 정보 변경 실패", error);

@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 export type Areas = {
   areaId: number;
   areaName: string;
+  memo: string;
 };
 
 export type StaffListType = {
