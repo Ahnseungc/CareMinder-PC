@@ -9,6 +9,9 @@
 
 CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
 
+**개발 기록** — [병원 B2B 서비스 개발기](https://blog.omnipo58-e94.workers.dev/series/hospital-b2b/)<br/>
+[Git-flow 도입기](https://blog.omnipo58-e94.workers.dev/posts/thoughts-on-gitflow/) · [3단계 권한 토큰 자동 매핑](https://blog.omnipo58-e94.workers.dev/posts/three-tier-login-roles/) · [Electron 전환과 웹뷰 구조](https://blog.omnipo58-e94.workers.dev/posts/electron-migration/)
+
 ![React](https://img.shields.io/badge/React_18-20232A?logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
