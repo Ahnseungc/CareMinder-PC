@@ -20,19 +20,4 @@ CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
 
 </div>
 
-<img src="docs/images/00-showcase.png" alt="CareMinder PC 화면" />
-
-## 기술 스택
-
-<img src="docs/images/01-tech-stack.png" alt="기술 스택" />
-
-## 기술 구조
-
-<img src="docs/images/02-roles.png" alt="역할별 화면과 권한" />
-<img src="docs/images/03-realtime.png" alt="환자 요청 실시간 흐름" />
-<img src="docs/images/04-architecture.png" alt="폴더 구조" />
-<img src="docs/images/05-build-deploy.png" alt="웹과 데스크톱 배포" />
-
-## 함께 만든 사람들
-
-<img src="docs/images/06-contributors.png" alt="Contributors" />
+<p><img src="docs/images/00-showcase.png" width="100%" alt="CareMinder PC 화면" /><img src="docs/images/01-tech-stack.png" width="100%" alt="기술 스택" /><img src="docs/images/02-roles.png" width="100%" alt="역할별 화면과 권한" /><img src="docs/images/03-realtime.png" width="100%" alt="환자 요청 실시간 흐름" /><img src="docs/images/04-architecture.png" width="100%" alt="폴더 구조" /><img src="docs/images/05-build-deploy.png" width="100%" alt="웹과 데스크톱 배포" /><img src="docs/images/06-contributors.png" width="100%" alt="함께 만든 사람들" /></p>
