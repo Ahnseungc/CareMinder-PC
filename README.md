@@ -23,4 +23,4 @@ CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
 
 </div>
 
-<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 주요 기능, 계정 권한별 기능, 시스템 구조(태블릿 STT → NLP 직종 분류 → API 서버 → PC), 설계, 기술 스택, 팀" />
+<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 주요 기능, 계정 권한 구조(관리자 › 병동 › 스태프), 시스템 구조(태블릿 STT → NLP 직종 분류 → API 서버 → PC), 설계, 기술 스택, 팀" />
