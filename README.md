@@ -23,4 +23,4 @@ CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
 
 </div>
 
-<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 환자 요청 실시간 흐름, 폴더 구조, 웹과 데스크톱 배포, 함께 만든 사람들" />
+<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 주요 기능, 기술 스택, 환자 요청 실시간 흐름, 폴더 구조, 웹과 데스크톱 배포, 함께 만든 사람들" />

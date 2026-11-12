@@ -67,6 +67,31 @@ const tablets = PATIENTS.map((patientName, i) => ({
 
 const WARDS = ["7병동", "8병동", "9병동", "중환자실", "응급실", "소아병동", "산부인과병동", "재활병동"];
 
+const notices = [
+  ["12월 병동 감염관리 교육 안내", "김간호", "12월 셋째 주 수요일 14시, 7층 세미나실에서 감염관리 교육이 있습니다. 근무 일정에 맞춰 참석해 주세요."],
+  ["면회 시간 변경 안내 (평일 18~20시)", "박의사", "다음 주부터 평일 면회 시간이 18시~20시로 변경됩니다. 보호자분들께 안내 부탁드립니다."],
+  ["낙상 예방 체크리스트 업데이트", "이조무", "야간 라운딩 시 침대 난간과 호출벨 위치를 함께 확인해 주세요."],
+  ["연말 병동 대청소 일정", "최직원", "12월 마지막 주 토요일 오전에 병동 대청소를 진행합니다."],
+].map(([title, staffName, content], i) => ({
+  noticeId: 40 - i,
+  staffId: i + 1,
+  title,
+  content,
+  fileUrl: "",
+  staffName,
+  staffPhoneNumber: "010-0000-0000",
+  createdAt: minutesAgo(60 * 24 * (i + 1)),
+  lastModifiedAt: minutesAgo(60 * 24 * (i + 1)),
+  receivers: [patient(i), patient(i + 1)].map((p) => ({ patientId: String(p.patientId), patientName: p.patientName })),
+}));
+
+const CHAT = [
+  ["TABLET", "김영희", "수액이 다 들어간 것 같아요. 확인 부탁드려요", 12],
+  ["STAFF", "김간호", "네, 지금 바로 확인하러 갈게요.", 10],
+  ["TABLET", "김영희", "감사합니다. 팔이 조금 붓는 것 같아요", 9],
+  ["STAFF", "김간호", "주사 부위도 같이 볼게요. 잠시만 기다려 주세요.", 8],
+].map(([role, senderName, content, m], i) => ({ messageId: 900 + i, role, senderName, content, isRead: true, createdAt: minutesAgo(m) }));
+
 export const routes = {
   // 병동 · 의료진 공통
   "/ward-patient-requests/pending": { data: pending },
@@ -78,25 +103,9 @@ export const routes = {
   "/staff-patient-requests/completed/patient-group": { data: groups(completed) },
   "/staffs/patient-list": { data: tablets.slice(0, 10), totalPages: 2, totalElements: tablets.length },
   "/areas": AREAS.map((a) => ({ id: a.areaId, wardId: 1, name: a.areaName, memo: "" })),
-  "/notices/list-by-web": {
-    data: [
-      ["12월 병동 감염관리 교육 안내", "김간호"],
-      ["면회 시간 변경 안내 (평일 18~20시)", "박의사"],
-      ["낙상 예방 체크리스트 업데이트", "이조무"],
-      ["연말 병동 대청소 일정", "최직원"],
-    ].map(([title, staffName], i) => ({
-      noticeId: 40 - i,
-      staffId: i + 1,
-      title,
-      content: `${title} 내용입니다.`,
-      fileUrl: "",
-      staffName,
-      staffPhoneNumber: "010-0000-0000",
-      createdAt: minutesAgo(60 * 24 * (i + 1)),
-      lastModifiedAt: minutesAgo(60 * 24 * (i + 1)),
-      receivers: [patient(i), patient(i + 1)].map((p) => ({ patientId: String(p.patientId), patientName: p.patientName })),
-    })),
-  },
+  "/notices/list-by-web": { data: notices },
+  "/notices/:id": ({ params }) => notices.find((n) => n.noticeId === Number(params[0])) ?? notices[0],
+  "/chat-history/:id": { data: CHAT },
 
   // 관리자
   "/admins/ward-list": {
