@@ -2,10 +2,10 @@
 
 <img src="public/CareFlow-icon.png" width="96" alt="CareMinder" />
 
-### CareMinder PC — 병동 환자 요청 실시간 관리
+### CareMinder PC
 
-병상 태블릿에서 들어온 환자 요청을 **병동 PC와 의료진에게 직종별로 나눠 전달**하는 병원용 PC 애플리케이션입니다.<br/>
-병동 · 의료진 · 병원 관리자 권한별 화면을 하나의 React 앱으로 만들고, 웹과 Electron 데스크톱 앱으로 함께 배포했습니다.
+병상 태블릿 요청을 직종별로 나눠 병동 PC와 의료진 화면에 표시하는 병원용 앱<br/>
+웹 · Electron 데스크톱 동시 배포
 
 🏆 **정주영 창업경진대회 우수상**<br/>
 CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
@@ -23,4 +23,4 @@ CareMinder-Basic 팀 프로젝트 · 2024.06 ~ 2025.03
 
 </div>
 
-<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 주요 기능, 기술 스택, 환자 요청 실시간 흐름, 폴더 구조, 웹과 데스크톱 배포, 함께 만든 사람들" />
+<img src="docs/images/readme-overview.png" alt="CareMinder PC 화면, 주요 기능, 요청 처리 흐름, 설계, 기술 스택, 팀" />
